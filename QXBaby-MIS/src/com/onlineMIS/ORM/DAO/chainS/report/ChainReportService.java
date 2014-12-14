@@ -2,7 +2,11 @@ package com.onlineMIS.ORM.DAO.chainS.report;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +59,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelOne;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelTwo;
-import com.onlineMIS.ORM.entity.chainS.report.ChainAutoRptRepositoty;
+import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainDailySalesAnalysis;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReportItem;
@@ -67,17 +71,17 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevel
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesReport;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesReportTemplate;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelOne;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelTwo;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisticsReportTemplate;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWMRank;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWMRankItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWeeklySales;
 import com.onlineMIS.ORM.entity.chainS.report.VIPReportVO;
+import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportTemplate;
+import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesStatisticsReportTemplate;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.PurchaseOrderTemplate;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
@@ -153,7 +157,7 @@ public class ChainReportService {
 	private ChainVIPPrepaidImpl chainVIPPrepaidImpl;
 	
 	@Autowired
-	private ChainAutoRptRepositoryDaoImpl chainAutoRptRepositoryDaoImpl;
+	private ChainBatchRptRepositotyDaoImpl chainAutoRptRepositoryDaoImpl;
 	/**
 	 * to prepare the generate the report UI
 	 * @param uiBean
@@ -405,7 +409,7 @@ public class ChainReportService {
 	    //4. 计算累计还有多少预存款
 	    double prepaidTotal = 0;
 	    if (!skipTotalPrepaid){
-	    	String hqlPreaidSum = "SELECT sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.status="+ ChainVIPPrepaidFlow.STATUS_SUCCESS + " AND " + chainCriteriaPrepaid;
+	    	String hqlPreaidSum = "SELECT sum(calculatedAmt) FROM ChainVIPPrepaidFlow c WHERE c.status="+ ChainVIPPrepaidFlow.STATUS_SUCCESS + " AND " + chainCriteriaPrepaid;
 	    	List<Object> prepaidTotalObj = chainVIPPrepaidImpl.executeHQLSelect(hqlPreaidSum, null, null, true);
 			for (Object record : prepaidTotalObj){
 				prepaidTotal = Common_util.getDouble(record);
@@ -3445,13 +3449,13 @@ public class ChainReportService {
 	public void prepareChainRptRepositoryUI(ChainReportActionFormBean formBean,
 			ChainReportActionUIBean uiBean) {
 		
-		Map<Integer, List<ChainAutoRptRepositoty>> dataMap = chainAutoRptRepositoryDaoImpl.getRptRepositoryDateMap();
+		Map<Integer, List<ChainBatchRptRepositoty>> dataMap = chainAutoRptRepositoryDaoImpl.getRptRepositoryDateMap();
 		Iterator<Integer> ids = dataMap.keySet().iterator();
 		
 		while (ids.hasNext()){
 			int id = ids.next();
 			switch (id) {
-				case ChainAutoRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT:
+				case ChainBatchRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT:
 				    uiBean.setCurrentSalesDates(dataMap.get(id));
 					break;
 
@@ -3459,6 +3463,39 @@ public class ChainReportService {
 					break;
 			}
 		}
+	}
+
+	/**
+	 * 下载batch report
+	 * @param rptRepository
+	 * @param userInfor
+	 * @return
+	 */
+	public Response loadBatchRptRepository(
+			ChainBatchRptRepositoty rptRepository, ChainUserInfor userInfor) {
+		Response response = new Response();
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		int rptType = rptRepository.getRptId();
+		java.sql.Date rptDate = rptRepository.getRptDate();
+		
+		rptRepository = chainAutoRptRepositoryDaoImpl.getByPk(rptType, rptDate);
+		if (rptRepository == null){
+			response.setFail("无法找到报表");
+		} else {
+			File file = new File(rptRepository.getRptPathByType() + rptRepository.getDownloadRptName());
+			InputStream inputStream = null;
+			try {
+				inputStream = new FileInputStream(file);
+				result.put("download", inputStream);
+				result.put("name", rptRepository.getDownloadRptName());
+				response.setReturnValue(result);
+			} catch (FileNotFoundException e) {
+				response.setFail("无法找到报表");
+			}
+		}
+
+		return response;
 	}
 
 

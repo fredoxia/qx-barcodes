@@ -37,12 +37,17 @@ public class ChainStoreConf implements Serializable {
 	private String address = "";
 	private int defaultVipScoreMultiple = 1;
 	private int hideDiscountPrint = 0;
-	//允许我店铺使用 其他连锁店的预存金
+	//0: 严格使用预存款,只能在当前连锁店使用当前vip
+	//1. 我的vip卡可以在关联连锁店消费/充值，
 	private int allowMyPrepaidCrossStore = 0;
+	public static final int PREPAID_ALL_PREPAID_CROSS_STORE = 1;
+	
 	/**
 	 * type=1 : amount * 1.1 = calculated amount
 	 */
 	private int prepaidCalculationType = 0;
+	public static final int PREPAID_CALCULATION_TYPE_1 = 1;
+	public static final int PREPAID_CALCULATION_TYPE_NORMAL = 0;
 	
 	public ChainStoreConf(){
 		

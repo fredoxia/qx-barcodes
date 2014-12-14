@@ -1,4 +1,4 @@
-package com.onlineMIS.ORM.entity.chainS.report;
+package com.onlineMIS.ORM.entity.chainS.report.rptTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelFourInventoryItem;
+import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;

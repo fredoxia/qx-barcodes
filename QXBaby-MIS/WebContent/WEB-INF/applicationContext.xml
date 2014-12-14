@@ -34,15 +34,15 @@
         <property name="testOnReturn" value="false"/>   
         <property name="validationInterval" value="30000"/>  
         <property name="validationQuery" value="SELECT 1"/>   
-        <property name="timeBetweenEvictionRunsMillis" value="30000"/>   
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>   
         <property name="maxActive" value="100"/>   
         <property name="initialSize" value="25"/>   
         <property name="maxWait" value="10000"/>   
-        <property name="minEvictableIdleTimeMillis" value="30000"/>   
+        <property name="minEvictableIdleTimeMillis" value="60000"/>   
         <property name="minIdle" value="20"/>   
         <property name="logAbandoned" value="false"/>   
         <property name="removeAbandoned" value="true"/>   
-        <property name="removeAbandonedTimeout" value="60"/> 
+        <property name="removeAbandonedTimeout" value="120"/> 
         <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
     </bean>    
  
@@ -204,7 +204,17 @@
     <bean id="monthlyHotBrandBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="monthlyHotBrandBatchJob"
    		 p:cronExpression="0 7 0 1 * ?"/> 
- 
+   		 
+    <!-- 运行每周报表 ：
+         1.每周分析当季货品销售情况-->
+    <bean id="weeklyBatchRptJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainBatchRptService"
+   		 p:targetMethod="runWeeklyRptBatch"
+   		 p:concurrent="false"/>
+   <bean id="weeklyBatchRptTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="weeklyBatchRptJob"
+   	     p:cronExpression="0 15 0 ? * MON"/> 
+   		 
     <!-- monthly dummy hot brand batch job -->
     <!--<bean id="monthlyDummyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainDailySalesService"
@@ -234,6 +244,7 @@
    		 		<ref bean="monthlyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyGenBarcodeTrigger"/>
    		 		<ref bean="dailyCheckInvetoryOrderTrigger"/>
+   		 		<ref bean="weeklyBatchRptTrigger"/>
    		 		<!--<ref bean="monthlyDummyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyDummySalesBatchTrigger"/>-->
    		 	</list>

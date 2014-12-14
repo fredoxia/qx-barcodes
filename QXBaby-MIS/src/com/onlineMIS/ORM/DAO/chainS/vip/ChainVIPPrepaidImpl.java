@@ -25,7 +25,7 @@ public class ChainVIPPrepaidImpl extends BaseDAO<ChainVIPPrepaidFlow> {
 				vipCardList += "'" + vipCardNo.getId() + "',";
 			vipCardList += "'" + vipCardNos.get(0).getId() + "')";
 			
-			String sql = "select vipCard.id, sum(amount) from ChainVIPPrepaidFlow where status= " + ChainVIPPrepaidFlow.STATUS_SUCCESS + " AND vipCard.id in "+ vipCardList +" group by vipCard.id";
+			String sql = "select vipCard.id, sum(calculatedAmt) from ChainVIPPrepaidFlow where status= " + ChainVIPPrepaidFlow.STATUS_SUCCESS + " AND vipCard.id in "+ vipCardList +" group by vipCard.id";
 			
 			List<Object> results_accu = this.executeHQLSelect(sql, new Object[]{}, null,true);
 			

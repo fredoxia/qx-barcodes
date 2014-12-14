@@ -760,7 +760,7 @@ public class ChainStoreSalesService {
 		if (vipCard != null && vipCard.getId() != 0){
 			vipCard = chainVIPCardImpl.get(vipCard.getId(), true);
 			ChainVIPType vipType = vipCard.getVipType();
-			int chainId = vipCard.getIssueChainStore().getChain_id();
+			int chainId = salesOrder.getChainStore().getChain_id();
 			double couponRatio = vipType.getCouponRatio();
 			
 			/**
@@ -873,7 +873,8 @@ public class ChainStoreSalesService {
 					vipPrepaid.setComment(commentHeader + " 单据 :" + salesOrder.getId());
 	                vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP);
 					vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
-					vipPrepaid.setChainStore(vipCard.getIssueChainStore());
+					vipPrepaid.setCalculatedAmt(vipPrepaidAmt * offsetPrepaid);
+					vipPrepaid.setChainStore(salesOrder.getChainStore());
 					vipPrepaid.setDateD(salesOrder.getOrderDate());
 					vipPrepaid.setCreateDate(Common_util.getToday());
 					ChainUserInfor operator = salesOrder.getSaler();

@@ -445,8 +445,18 @@
                     attachment;filename=${excelFileName}   
                  </param>  
                 <param name="bufferSize">1024</param>  
-               </result>  
-            
+            </result>  
+             <result type="stream" name="zipReport">  
+                 <param name="contentType">  
+                     application/zip;charset=UTF-8
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result>  
+                       
             <result name="PreSalesReportBySaler">/jsp/chainStore/report/GenerateSalesReportBySaler.jsp</result>
             <result name="PreVIPConsumpReport">/jsp/chainStore/report/VIPConsumpReport.jsp</result>
             

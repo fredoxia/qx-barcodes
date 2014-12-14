@@ -3,7 +3,7 @@ package com.onlineMIS.ORM.entity.chainS.report;
 import java.io.Serializable;
 import java.sql.Date;
 
-public class ChainAutoRptRepositoty implements Serializable {
+public class ChainBatchRptRepositoty implements Serializable {
 	/**
 	 * 
 	 */
@@ -15,6 +15,11 @@ public class ChainAutoRptRepositoty implements Serializable {
 	 */
 	public static final int TYPE_WEEKLY_SALES_ANALYSIS_RPT = 1;
 	
+	public static final String REPORITORY_ROOT = "C:\\QXBaby-MIS\\BatchReport";
+	
+	/**
+	 * rpt type id
+	 */
 	private int rptId;
 	private Date rptDate;
 	private String rptName;
@@ -23,6 +28,7 @@ public class ChainAutoRptRepositoty implements Serializable {
 	 * 2015-1-2 至 2015-2-1
 	 */
 	private String rptDes;
+	private String rptPath;
 	
 	public String getRptDes() {
 		return rptDes;
@@ -30,6 +36,10 @@ public class ChainAutoRptRepositoty implements Serializable {
 	public void setRptDes(String rptDes) {
 		this.rptDes = rptDes;
 	}
+	public void setRptDes(java.sql.Date startDate, java.sql.Date endDate){
+		this.setRptDes(startDate + " 至  " + endDate);
+	}
+	
 	public int getRptId() {
 		return rptId;
 	}
@@ -49,5 +59,26 @@ public class ChainAutoRptRepositoty implements Serializable {
 		this.rptName = rptName;
 	}
 	
-	
+	public String getRptPath() {
+		return rptPath;
+	}
+	public void setRptPath(String rptPath) {
+		this.rptPath = rptPath;
+	}
+	public String getRptPathByType(){
+		switch (rptId) {
+		case TYPE_WEEKLY_SALES_ANALYSIS_RPT:
+			return REPORITORY_ROOT + "\\WeeklySalesAnalysis\\";
+		default:
+			return "";
+		}
+	}
+	public String getDownloadRptName(){
+		switch (this.rptId) {
+		case TYPE_WEEKLY_SALES_ANALYSIS_RPT:
+			return "DangJiFenXi" + rptDate + ".zip";
+		default:
+			return "download.zip";
+		}
+	}
 }

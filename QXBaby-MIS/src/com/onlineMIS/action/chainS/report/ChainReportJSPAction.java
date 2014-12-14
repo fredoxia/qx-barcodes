@@ -1,6 +1,7 @@
 package com.onlineMIS.action.chainS.report;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelOne;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelTwo;
+import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelOne;
@@ -465,8 +467,28 @@ public class ChainReportJSPAction extends ChainReportAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"generateChainRptRepository");
     	
-    	return "";
-    	
+    	ChainBatchRptRepositoty rptRepository =  formBean.getRptRepository();
+
+		Response response = new Response();
+		try {
+			response = chainReportService.loadBatchRptRepository(rptRepository, userInfor);     
+		} catch (Exception e) {
+			response.setReturnCode(Response.FAIL);
+			response.setMessage(e.getMessage());
+		}
+ 
+		if (response.getReturnCode() == Response.SUCCESS){
+			Map<String, Object> result = (Map)response.getReturnValue();
+		    InputStream excelStream= (InputStream)result.get("download");
+		    this.setExcelStream(excelStream);
+		    
+		    String fileName = "";
+			fileName = (String)result.get("name");           
+			this.setExcelFileName(fileName);
+
+		    return "zipReport"; 
+		} else 
+			return ERROR;	
 	}
 
 }

@@ -11,7 +11,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelOne;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelTwo;
-import com.onlineMIS.ORM.entity.chainS.report.ChainAutoRptRepositoty;
+import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelOne;
@@ -64,15 +64,15 @@ public class ChainReportActionUIBean {
 	/**
 	 * report repository的参数
 	 */
-	private List<ChainAutoRptRepositoty> currentSalesDates = new ArrayList<ChainAutoRptRepositoty>();
+	private List<ChainBatchRptRepositoty> currentSalesDates = new ArrayList<ChainBatchRptRepositoty>();
 	
 	
 	
-	public List<ChainAutoRptRepositoty> getCurrentSalesDates() {
+	public List<ChainBatchRptRepositoty> getCurrentSalesDates() {
 		return currentSalesDates;
 	}
 
-	public void setCurrentSalesDates(List<ChainAutoRptRepositoty> currentSalesDates) {
+	public void setCurrentSalesDates(List<ChainBatchRptRepositoty> currentSalesDates) {
 		this.currentSalesDates = currentSalesDates;
 	}
 

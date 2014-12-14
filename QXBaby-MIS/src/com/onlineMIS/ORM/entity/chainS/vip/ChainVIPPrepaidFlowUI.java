@@ -18,9 +18,10 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	public ChainVIPPrepaidFlowUI(ChainVIPPrepaidFlow c){
 		BeanUtils.copyProperties(c, this);
 		String amount = String.valueOf(Common_util.roundDouble(this.getAmount(), 1));
+		String calculatedAmt = String.valueOf(Common_util.roundDouble(this.getCalculatedAmt(), 1));
 		if (this.getOperationType().equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP)){
 			prepaidType = "消费-预存金";
-			consump = amount;
+			consump = calculatedAmt;
 		} else if (this.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD)){
 			prepaidType = "充值";
 			depositCard = amount;

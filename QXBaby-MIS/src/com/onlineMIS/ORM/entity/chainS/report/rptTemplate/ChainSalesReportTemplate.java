@@ -1,15 +1,17 @@
-package com.onlineMIS.ORM.entity.chainS.report;
+package com.onlineMIS.ORM.entity.chainS.report.rptTemplate;
 
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
+import com.onlineMIS.ORM.entity.chainS.report.ChainSalesReport;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;

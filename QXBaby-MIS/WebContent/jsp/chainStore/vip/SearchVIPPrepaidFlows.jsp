@@ -69,8 +69,8 @@ $(document).ready(function(){
 					{field:'prepaidType', width:45,title:'交易类别'},
 					{field:'depositCash', width:45,title:'现金 预存金额'},
 					{field:'depositCard', width:45,title:'刷卡 预存金额'},
-					{field:'calculatedAmts', width:45,title:'客户实际到帐'},
 					{field:'consump', width:50,title:'消费 预存金额'},
+					{field:'calculatedAmts', width:45,title:'账户增减'},
 					{field:'createDate', width:60,title:'操作时间'},
 					{field:'comment', width:50,title:'备注'},
 					{					

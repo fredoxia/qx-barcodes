@@ -21,8 +21,8 @@ function generateCurrentSalesReport(){
 </head>
 <body>
    <s:form id="preGenReportForm" name="preGenReportForm" action="/actionChain/chainReportJSPAction!generateChainRptRepository" theme="simple" method="POST"> 
-   		<s:textfield id="reportType" name="formBean.rptRepository.rptId"/>
-   		<s:textfield id="reportDate" name="formBean.rptRepository.rptDate"/> 
+   		<s:hidden id="reportType" name="formBean.rptRepository.rptId"/>
+   		<s:hidden id="reportDate" name="formBean.rptRepository.rptDate"/> 
    </s:form>
    <s:form id="tempForm" name="tempForm" action="" theme="simple" method="POST"> 
      <table width="90%" align="center"  class="OuterTable">

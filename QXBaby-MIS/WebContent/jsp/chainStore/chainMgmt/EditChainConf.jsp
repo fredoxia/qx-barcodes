@@ -42,6 +42,8 @@ function backProcessGetChainStore(data){
 			 var printTemplate = chainStoreConf.printTemplate;
 			 var address = chainStoreConf.address;
 			 var hideDiscountPrint = chainStoreConf.hideDiscountPrint;
+			 var prepaidUsage = chainStoreConf.allowMyPrepaidCrossStore;
+			 var prepaidType = chainStoreConf.prepaidCalculationType;
 			 
 			 $("#amtType").val(discountAmtType).attr("selected", true);
 			 $("#printCopy").attr("value", printCopy);
@@ -51,6 +53,8 @@ function backProcessGetChainStore(data){
 			 $("#printTemplate").attr("value", printTemplate);
 			 $("#address").attr("value",address);
 			 $("#hideDiscountPrint").attr("value",hideDiscountPrint);
+			 $("#prepaidUsage").attr("value",prepaidUsage);
+			 $("#prepaidType").attr("value",prepaidType);
 		}
 	}
 }
@@ -202,6 +206,17 @@ function clearChainStoreConf(){
           <td>&nbsp;</td>
           <td>&nbsp;</td>
        </tr>
+       <tr class="InnerTableContent">
+   	      <td height="25"><strong>跨连锁店使用预付金 </strong></td>
+   	      <td><s:select id="prepaidUsage" name="formBean.chainStoreConf.allowMyPrepaidCrossStore"  list="#{0:'不允许我的vip的预存金在其他连锁店使用',1:'允许我的vip在关联连锁店充值/使用预存金'}" listKey="key" listValue="value" />
+   	      </td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+       </tr>        
        <tr class="InnerTableContent">
    	      <td height="25"><strong>预存金 使用计划</strong></td>
    	      <td><s:select id="prepaidType" name="formBean.chainStoreConf.prepaidCalculationType"  list="#{0:'正常预存 - 预存100抵用100',1:'1.1倍 - 预存500抵用550,预存1000抵用1100'}" listKey="key" listValue="value" />

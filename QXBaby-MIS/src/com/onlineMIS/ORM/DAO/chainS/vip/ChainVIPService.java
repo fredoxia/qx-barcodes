@@ -965,15 +965,34 @@ public class ChainVIPService {
 	 * @param chainStore
 	 * @return
 	 */
+	@Transactional
 	public Response getVIPCardVIPPrepaid(String vipCardNo, ChainStore chainStore) {
 		Response response = new Response();
 		
 		ChainVIPCard vipCard = getVIPCardByCardNo(vipCardNo);
+		int issueStoreId = vipCard.getIssueChainStore().getChain_id();
+		
+		vipCard.setIssueChainStore(chainStoreDaoImpl.get(issueStoreId, true));
 		if (vipCard == null){
 			response.setFail("错误 : VIP卡  " + vipCardNo + " 不存在");
 		} else if (vipCard.getStatus() != ChainVIPCard.STATUS_GOOD) {
 			response.setFail("错误: 此vip卡已经处于停用/挂失状态，请修改vip卡状态之后,再充值");
-		} else if (vipCard.getIssueChainStore().getChain_id() != chainStore.getChain_id()){
+		} else if (issueStoreId != chainStore.getChain_id()){
+			
+			/**
+			 * 如果vip卡号的连锁店配置了 允许其他关联连锁店使用vip预存金， 那么就可以选择
+			 */
+			ChainStoreConf cardIssueStoreConf = chainStoreConfDaoImpl.getChainStoreConfByChainId(issueStoreId);
+			if (cardIssueStoreConf != null && cardIssueStoreConf.getAllowMyPrepaidCrossStore() == ChainStoreConf.ALLOW_MY_PREPAID_CROSS){
+				int targetStore = chainStore.getChain_id();
+				Set<Integer> ids = chainStoreGroupDaoImpl.getChainGroupStoreIdList(issueStoreId, null, Common_util.CHAIN_ACCESS_LEVEL_3);
+				
+				if (ids.contains(targetStore)){
+					response.setReturnValue(vipCard);
+					return response;
+				}
+
+			}
 			response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店.充值仅限于当前连锁店的客户.");
 		} else {
 			response.setReturnValue(vipCard);
@@ -1004,42 +1023,63 @@ public class ChainVIPService {
 		} else if (vipCard.getStatus() != ChainVIPCard.STATUS_GOOD) {
 			response.setFail("错误: 此vip卡已经处于停用/挂失状态，请修改vip卡状态之后,再充值");
 		} else if (vipCard.getIssueChainStore().getChain_id() != chainStore.getChain_id()){
-			response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店.充值仅限于当前连锁店的客户.");
-		} else {
-			//1. 获取连锁店配置，看看是哪种计划形式
-			int chainId = chainStore.getChain_id();
-			ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
-			if (conf == null || conf.getPrepaidCalculationType() == 0)
-				vipPrepaid.setCalculatedAmt(amount);
-			else {
-				vipPrepaid.setCalculatedAmt(conf.getRatioByPrepaidType() * amount);
-			}
-			
-			//1. 第一步保存 prepaid
-			chainStore = chainStoreDaoImpl.get(chainId, true);
-			vipPrepaid.setChainStore(chainStore);
-			vipPrepaid.setCreateDate(new java.util.Date());
-			vipPrepaid.setDateD(Common_util.getToday());
-			vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT);
-			vipPrepaid.setOperator(operator);
-			vipPrepaid.setVipCard(vipCard);
-			vipPrepaid.setStatus(ChainVIPPrepaidFlow.STATUS_SUCCESS);
-			chainVIPPrepaidImpl.save(vipPrepaid, true);
-			
-			//2. 第二步保存到vip score
-            chainVIPScoreImpl.saveCascadingVIPPrepaid(vipPrepaid);
-            
-            //3. 获取vip总的剩余预存款
-            double accumulateVipPrepaid = getAcumulateVipPrepaid(vipCard);
-            vipPrepaid.setAccumulateVipPrepaid(accumulateVipPrepaid);
-            
-            response.setReturnValue(vipPrepaid);
-            String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值" + Common_util.roundDouble(vipPrepaid.getAmount(), 0) +"元 \n";
-            msg += "实际到帐 :" + Common_util.roundDouble(vipPrepaid.getCalculatedAmt(),0) + "元\n";
-            msg += "剩余可用预存款 :" + Common_util.roundDouble(accumulateVipPrepaid,0) + "元";
-            response.setMessage(msg);   
+			validateChainConfAndChain(vipCard, chainStore, response);
+		} 
+		
+		if (response.getReturnCode() == Response.FAIL)
+			return response;
+		
+		//1. 获取连锁店配置，看看是哪种计划形式
+		int chainId = chainStore.getChain_id();
+		ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
+		if (conf == null || conf.getPrepaidCalculationType() == ChainStoreConf.PREPAID_CALCULATION_TYPE_NORMAL)
+			vipPrepaid.setCalculatedAmt(amount);
+		else {
+			vipPrepaid.setCalculatedAmt(conf.getRatioByPrepaidType() * amount);
 		}
+		
+		//1. 第一步保存 prepaid
+		chainStore = chainStoreDaoImpl.get(chainId, true);
+		vipPrepaid.setChainStore(chainStore);
+		vipPrepaid.setCreateDate(new java.util.Date());
+		vipPrepaid.setDateD(Common_util.getToday());
+		vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT);
+		vipPrepaid.setOperator(operator);
+		vipPrepaid.setVipCard(vipCard);
+		vipPrepaid.setStatus(ChainVIPPrepaidFlow.STATUS_SUCCESS);
+		chainVIPPrepaidImpl.save(vipPrepaid, true);
+		
+		//2. 第二步保存到vip score
+        chainVIPScoreImpl.saveCascadingVIPPrepaid(vipPrepaid);
+        
+        //3. 获取vip总的剩余预存款
+        double accumulateVipPrepaid = getAcumulateVipPrepaid(vipCard);
+        vipPrepaid.setAccumulateVipPrepaid(accumulateVipPrepaid);
+        
+        response.setReturnValue(vipPrepaid);
+        String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值" + Common_util.roundDouble(vipPrepaid.getAmount(), 0) +"元 \n";
+        msg += "实际到帐 :" + Common_util.roundDouble(vipPrepaid.getCalculatedAmt(),0) + "元\n";
+        msg += "剩余可用预存款 :" + Common_util.roundDouble(accumulateVipPrepaid,0) + "元";
+        response.setMessage(msg);   
+
 		return response;
+	}
+
+	private void validateChainConfAndChain(ChainVIPCard vipCard, ChainStore chainStore, Response response ) {
+		int issueStoreId = vipCard.getIssueChainStore().getChain_id();
+		
+		ChainStoreConf cardIssueStoreConf = chainStoreConfDaoImpl.getChainStoreConfByChainId(issueStoreId);
+		if (cardIssueStoreConf != null && cardIssueStoreConf.getAllowMyPrepaidCrossStore() == ChainStoreConf.ALLOW_MY_PREPAID_CROSS){
+			int targetStore = chainStore.getChain_id();
+			Set<Integer> ids = chainStoreGroupDaoImpl.getChainGroupStoreIdList(issueStoreId, null, Common_util.CHAIN_ACCESS_LEVEL_3);
+			
+			if (!ids.contains(targetStore)){
+				response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店或者关联连锁店.充值仅限于当前连锁店和关联连锁店的客户.");
+			}
+
+		} else 
+		    response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店.充值仅限于当前连锁店的客户.");
+		
 	}
 
 	/**
@@ -1059,17 +1099,20 @@ public class ChainVIPService {
 		
 		if (vipPrepaid.getStatus() != ChainVIPPrepaidFlow.STATUS_SUCCESS){
 			response.setFail("错误: 当前预付款单据状态无法红冲.");
-		} else if (!ChainUserInforService.isMgmtFromHQ(operator) && vipCard.getIssueChainStore().getChain_id() != operator.getMyChainStore().getChain_id()){
-			response.setFail("错误: 此vip卡的发卡连锁店不是当前操作员的连锁店.此操作仅限于当前连锁店的人员.");
+		} else if (!ChainUserInforService.isMgmtFromHQ(operator) && vipPrepaid.getChainStore().getChain_id() != operator.getMyChainStore().getChain_id()){
+			response.setFail("错误: 此预存金的连锁店不是当前操作员的连锁店.此操作仅限于当前连锁店的人员.");
 //		} else if (!operator.getRoleType().isOwner()){
 //			response.setFail("错误: 只有连锁店经营者有权限红冲预付款单据.");
+		} else if (!validatePrepaidOverDay(vipPrepaid, operator) ){
+			response.setFail("错误: 当前账号不能红冲历史单据，请使用经营者账号或者联系管理员");	
 		} else if (!vipPrepaid.getOperationType().equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT)){
 			response.setFail("错误: 预存金消费 不能在此处红冲");
-		} else if (!validatePrepaidOverDay(vipPrepaid, operator) ){
-			response.setFail("错误: 当前账号不能红冲历史单据，请使用经营者账号或者联系管理员");		
-		} else {
+		} 
+		
+		if (response.getReturnCode() == Response.FAIL)
+			return response;
+		
 			//1. 第一步保存 prepaid
-			
 			vipPrepaid.setStatus(ChainVIPPrepaidFlow.STATUS_CANCEL);
 			chainVIPPrepaidImpl.update(vipPrepaid, true);
 			
@@ -1079,7 +1122,7 @@ public class ChainVIPService {
             String msg = "成功为VIP " + vipCard.getVipCardNo() + " 红冲预付款";
 
             response.setMessage(msg);   
-		}
+
 		return response;
 	}
 	
@@ -1213,9 +1256,8 @@ public class ChainVIPService {
 						} else if (ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD.equalsIgnoreCase(deType)){
 							totalPrepaid.setDepositCard(String.valueOf(Common_util.roundDouble(amt, 1)));
 						} 
-						
-						totalCalculatedAmt += calculatedAmt;
 					}
+					totalCalculatedAmt += calculatedAmt;
 			  }
 			  
 			  totalPrepaid.setCalculatedAmt(String.valueOf(Common_util.roundDouble(totalCalculatedAmt, 1)));

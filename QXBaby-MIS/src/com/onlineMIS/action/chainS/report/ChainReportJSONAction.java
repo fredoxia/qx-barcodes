@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.batchRpt.ChainBatchRptService;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
@@ -37,6 +40,10 @@ public class ChainReportJSONAction extends ChainReportAction {
 	public void setJsonObject(JSONObject jsonObject) {
 		this.jsonObject = jsonObject;
 	}
+	
+	@Autowired
+	public ChainBatchRptService chainBatchRptService;
+	
 	/**
 	 * the action to generate the 销售报表 report
 	 * @return
@@ -44,6 +51,8 @@ public class ChainReportJSONAction extends ChainReportAction {
 	public String generateSalesReportByHQ(){
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"generateSalesReportByHQ : " + formBean);
+    	
+    	chainBatchRptService.runWeeklyRptBatch();
     	
 		Response response = new Response();
 		try {

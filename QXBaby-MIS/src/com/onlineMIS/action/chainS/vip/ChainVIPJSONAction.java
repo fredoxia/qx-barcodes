@@ -241,7 +241,13 @@ public class ChainVIPJSONAction extends ChainVIPAction {
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"getVIPCardVIPPrepaid");
     	
 		String vipCardNo = formBean.getVipCard().getVipCardNo();
-		Response response = chainVIPService.getVIPCardVIPPrepaid(vipCardNo,formBean.getChainStore());
+		Response response = new Response();
+		try {
+			response = chainVIPService.getVIPCardVIPPrepaid(vipCardNo,formBean.getChainStore());
+		} catch (Exception e){
+			e.printStackTrace();
+			response.setFail(e.getMessage());
+		}
 	
 	    
 	    jsonMap.put("response", response);
@@ -249,7 +255,6 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		
 		//to excludes the set and list inforamtion
 		JsonConfig jsonConfig = new JsonConfig();
-		jsonConfig.setExcludes( new String[]{"issueChainStore"} );
 		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
 		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
 		try{

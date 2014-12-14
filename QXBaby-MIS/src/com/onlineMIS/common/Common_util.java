@@ -33,12 +33,14 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.hibernate.hql.ast.tree.Case2Node;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.format.number.PercentFormatter;
 
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 
 
 public class Common_util {
+	public static final DecimalFormat pf = new DecimalFormat("#0.0%");
 	public static final DecimalFormat df = new DecimalFormat("#.00");
 	public static  final SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd");
 	public static  final SimpleDateFormat dateFormat_f =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -618,18 +620,6 @@ public class Common_util {
 		return uuid.toString();
 	}
 
-	
-	public static void main(String[] args){
-//		List<java.sql.Date> weekDays = Common_util.getMonthDate(new java.util.Date());
-//		for (java.sql.Date day : weekDays){
-//			System.out.println(day);
-//		}
-		
-		System.out.println(Common_util.roundDouble(58*1.25, 0).toString());
-		
-		
-//		System.out.println(getMonday(new java.sql.Date(new Date().getTime())));
-	}
 
 	public static List<Integer> getList(String months) {
 		List<Integer> monthList = new ArrayList<Integer>();
@@ -656,6 +646,8 @@ public class Common_util {
 		return weekdays[i];
 	}
 
-
+	public static void main(String[] args){
+		System.out.println(Common_util.getLastWeekDays());
+	}
 
 }
