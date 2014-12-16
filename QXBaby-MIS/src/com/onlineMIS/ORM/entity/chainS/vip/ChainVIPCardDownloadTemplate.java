@@ -72,7 +72,7 @@ public class ChainVIPCardDownloadTemplate extends ExcelTemplate{
 				row.createCell(comment_column).setCellValue(vipCard.getComment());
 				row.createCell(address_column).setCellValue(vipCard.getProvince() + vipCard.getCity() + vipCard.getZone() + vipCard.getStreet());
 				
-				List<Double> vipScores = vipScoreMap.get(vipCard.getVipCardNo());
+				List<Double> vipScores = vipScoreMap.get(vipCard.getId());
 				double scoreValue = vipCard.getInitialScore();
 				if (vipScores != null){
 					scoreValue += vipScores.get(0) - vipScores.get(1);

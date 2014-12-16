@@ -289,28 +289,7 @@ public class Common_util {
 		return var_decode;
 	}
 	
-	public static List<String> readFile(File file ) {
-		List<String> outputList = new ArrayList<String>();
-		
-		BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader(file));
-			String line="";
-			
-			while((line=br.readLine())!=null){
-				outputList.add(line);
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return outputList;
 
-	}
 	
 	public static boolean isTrue(){
 		double a = Math.random();

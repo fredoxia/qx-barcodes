@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.FileOperation;
 import com.onlineMIS.common.loggerLocal;
 
 public class InventoryFileTemplate {
@@ -39,7 +40,7 @@ public class InventoryFileTemplate {
 		
 		if (inventoryFile != null){
 			
-			List<String> files = Common_util.readFile(inventoryFile);
+			List<String> files = FileOperation.readFile(inventoryFile);
 
 			//1. format the original data
 			String[] eles = null;

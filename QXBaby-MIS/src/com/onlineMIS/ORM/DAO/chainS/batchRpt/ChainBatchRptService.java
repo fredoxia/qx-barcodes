@@ -11,7 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
 import org.hibernate.criterion.DetachedCriteria;
@@ -21,6 +23,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.QxbabyConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.report.ChainBatchRptRepositotyDaoImpl;
@@ -56,6 +59,7 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.FileCompressionUtil;
 import com.onlineMIS.common.loggerLocal;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -303,33 +307,51 @@ public class ChainBatchRptService {
 		List<ChainCurrentSeasonSalesAnalysisItem> rptItems = new ArrayList<ChainCurrentSeasonSalesAnalysisItem>(rptItemMap.values());
 		rpt.setRptItems(rptItems);
 		
-		/**
-		 * 9. 写入数据库
-		 */
-		loggerLocal.infoB("写入报表数据到数据库");
-		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
-		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT);;
-		chainBatchRptRepositoty.setRptDate(startDate);
-		chainBatchRptRepositoty.setRptDes(startDate, endDate);
-		chainBatchRptRepositotyDaoImpl.saveOrUpdate(chainBatchRptRepositoty, true);
+
 		
 		HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
 		String contextPath= request.getRealPath("/");
 
-		try {
+		/**
+		 * 9. 保存数据
+		 */
+		
+		/**
+		 * 9.1 准备数据
+		 */
+		
+		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
+		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT);;
+		chainBatchRptRepositoty.setRptDate(startDate);
+		chainBatchRptRepositoty.setRptDes(startDate, endDate);
+		
+	   /**
+	    * 9.2 所有连锁店的数据
+	    */
+	   Map<String, HSSFWorkbook> bookMap = new HashMap<String, HSSFWorkbook>();
+		
+	   try {
+		   loggerLocal.infoB("准备zip文件");
 		   ChainCurrentSeasonSalesAnalysisTemplate rptTemplate = new ChainCurrentSeasonSalesAnalysisTemplate(rpt, contextPath + "WEB-INF\\template\\");
-		   HSSFWorkbook rptWorkbook = rptTemplate.process();
+		   HSSFWorkbook wholeChainWorkbook = rptTemplate.process();
+		   String wholeChainWorkbookName = rpt.getChainStore().getChain_name() + ".xls";
 		   
-//           FileOutputStream fileOutputStream = new FileOutputStream(chainBatchRptRepositoty.getRptPathByType() + chainBatchRptRepositoty.getDownloadRptName());    
-//           CheckedOutputStream cos = new CheckedOutputStream(fileOutputStream,new CRC32());    
-//           ZipOutputStream out = new ZipOutputStream(cos);  
-
-		   FileOutputStream fileOutputStream = new FileOutputStream("d://abc.xls");
-		   
-		   rptWorkbook.write(fileOutputStream);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+		   bookMap.put(wholeChainWorkbookName, wholeChainWorkbook);
+	
+	       String zipFilePath = chainBatchRptRepositoty.getRptPathByType() + "\\" + chainBatchRptRepositoty.getDownloadRptName();    
+	
+	       loggerLocal.infoB("zip文件名: " + zipFilePath);
+	       FileCompressionUtil.zipWorkbooks(zipFilePath, bookMap);
+	       
+	       //如果打包出现错误回滚
+	       loggerLocal.infoB("写入报表数据到数据库");
+		   chainBatchRptRepositotyDaoImpl.saveOrUpdate(chainBatchRptRepositoty, true);
+			
+	   } catch (Exception e){
+		   loggerLocal.error("发生严重错误 : ");
+		   loggerLocal.errorB(e);
+	   }
+	
 	}
 	
 	private void calculateSalesMap(java.sql.Date startDate, java.sql.Date endDate, Map<Integer, Integer> salesMap,  Year year, Quarter quarter){
