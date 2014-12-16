@@ -1,5 +1,7 @@
 package com.onlineMIS.ORM.entity.chainS.batchRpt;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
@@ -8,28 +10,6 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.common.Common_util;
 
 public class ChainCurrentSeasonSalesAnalysisItem {
-	private NumberFormat percentage = new NumberFormat() {
-		
-		@Override
-		public Number parse(String source, ParsePosition parsePosition) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public StringBuffer format(long number, StringBuffer toAppendTo,
-				FieldPosition pos) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public StringBuffer format(double number, StringBuffer toAppendTo,
-				FieldPosition pos) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	};
 	private int rank;
 	private ProductBarcode pb;
 	private java.sql.Date marketDate;
@@ -125,8 +105,8 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 		double accumulatedDigestRatio = 0;
 		
 		if (purchaseAccumulated != 0){
-			weeklyDigestRatio = salesWeekly / purchaseAccumulated;
-			accumulatedDigestRatio = salesAccumulated / purchaseAccumulated;
+			weeklyDigestRatio = new BigDecimal(salesWeekly).divide(new BigDecimal(purchaseAccumulated)).doubleValue();
+			accumulatedDigestRatio = new BigDecimal(salesAccumulated).divide(new BigDecimal(purchaseAccumulated)).doubleValue();
 		}
 		
 		digestRatioAccumulated = Common_util.pf.format(accumulatedDigestRatio);
