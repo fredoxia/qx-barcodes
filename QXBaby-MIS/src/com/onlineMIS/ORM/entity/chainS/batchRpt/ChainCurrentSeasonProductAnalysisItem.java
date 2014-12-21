@@ -9,7 +9,7 @@ import java.text.ParsePosition;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.common.Common_util;
 
-public class ChainCurrentSeasonSalesAnalysisItem {
+public class ChainCurrentSeasonProductAnalysisItem {
 	private int rank;
 	private ProductBarcode pb;
 	private java.sql.Date marketDate;
@@ -25,11 +25,11 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 	private int currentInentory;
 	private int quantityInDelivery;
 	
-	public ChainCurrentSeasonSalesAnalysisItem(){
+	public ChainCurrentSeasonProductAnalysisItem(){
 		
 	}
 	
-	public ChainCurrentSeasonSalesAnalysisItem(ProductBarcode pb){
+	public ChainCurrentSeasonProductAnalysisItem(ProductBarcode pb){
 		this.setPb(pb);
 	}
 	
@@ -105,8 +105,8 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 		double accumulatedDigestRatio = 0;
 		
 		if (purchaseAccumulated != 0){
-			weeklyDigestRatio = new BigDecimal(salesWeekly).divide(new BigDecimal(purchaseAccumulated)).doubleValue();
-			accumulatedDigestRatio = new BigDecimal(salesAccumulated).divide(new BigDecimal(purchaseAccumulated)).doubleValue();
+			weeklyDigestRatio = new BigDecimal(salesWeekly).divide(new BigDecimal(purchaseAccumulated),4,BigDecimal.ROUND_HALF_DOWN).doubleValue();
+			accumulatedDigestRatio = new BigDecimal(salesAccumulated).divide(new BigDecimal(purchaseAccumulated),4,BigDecimal.ROUND_HALF_DOWN).doubleValue();
 		}
 		
 		digestRatioAccumulated = Common_util.pf.format(accumulatedDigestRatio);

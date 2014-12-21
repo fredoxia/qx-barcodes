@@ -99,10 +99,10 @@ public class Common_util {
 	/**
 	 * 每周需要排名的热销品牌个数和产品个数
 	 */
-	public static final int HOT_BRAND_NUM = 45;
-	public static final int HOT_PRODUCT_NUM = 10;
+	public static final int HOT_BRAND_NUM = 15;
+	public static final int HOT_PRODUCT_NUM = 6;
 	
-	public static final int MONTHLY_HOT_PRODUCT_NUM = 20;
+	public static final int MONTHLY_HOT_PRODUCT_NUM = 8;
 	
 	/**
 	 * vip 日, 每月八号
@@ -289,7 +289,15 @@ public class Common_util {
 		return var_decode;
 	}
 	
-
+	public static String encodeAttachment(String originalStr){
+		try {
+			return java.net.URLEncoder.encode(originalStr,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return originalStr;
+		} 
+	}
 	
 	public static boolean isTrue(){
 		double a = Math.random();

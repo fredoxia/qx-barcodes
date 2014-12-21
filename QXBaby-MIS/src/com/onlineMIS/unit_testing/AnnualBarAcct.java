@@ -18,7 +18,8 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
-import com.onlineMIS.ORM.entity.chainS.batchRpt.ChainCurrentSeasonSalesAnalysisItem;
+import com.onlineMIS.ORM.DAO.chainS.batchRpt.ChainBatchRptService;
+import com.onlineMIS.ORM.entity.chainS.batchRpt.ChainCurrentSeasonProductAnalysisItem;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStockArchive;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStockCopy;
@@ -35,13 +36,9 @@ public class AnnualBarAcct {
 	 * @throws SecurityException 
 	 */
 	public static void main(String[] args) throws SecurityException, IOException {
-		ChainCurrentSeasonSalesAnalysisItem item = new ChainCurrentSeasonSalesAnalysisItem();
-		item.setPurchaseAccumulated(500);
-		item.setSalesWeekly(10);
-		item.setSalesAccumulated(400);
-		item.calculateRatio();
-		
-		System.out.println(item.getDigestRatioAccumulated() + "," + item.getDigestRatioWeekly());
+		List<java.sql.Date> dates = Common_util.getLastWeekDays();
+		System.out.println("last week : " + dates.get(0) + dates.get(6));
+		//ChainBatchRptService.calculateAccumulatedDates(dates.get(0), dates.get(6));
 
 	}
 

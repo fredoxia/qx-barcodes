@@ -28,21 +28,18 @@
 		<property name="driverClassName" value="${mysql.jdbc.driverClassName}"/>
 		<property name="url" value="${mysql.jdbc.url}"/>
 		<property name="username" value="${mysql.jdbc.username}"/>
-		<property name="password" value="${mysql.jdbc.password}"/>
-        <property name="testWhileIdle" value="true"/> 
-        <property name="testOnBorrow" value="true"/>   
-        <property name="testOnReturn" value="false"/>   
+		<property name="password" value="${mysql.jdbc.password}"/> 
+         <property name="testOnBorrow" value="true"/> 
+         <property name="testWhileIdle" value="false"/> 
         <property name="validationInterval" value="30000"/>  
         <property name="validationQuery" value="SELECT 1"/>   
-        <property name="timeBetweenEvictionRunsMillis" value="60000"/>   
+        <property name="timeBetweenEvictionRunsMillis" value="5000"/>   
         <property name="maxActive" value="100"/>   
-        <property name="initialSize" value="25"/>   
-        <property name="maxWait" value="10000"/>   
-        <property name="minEvictableIdleTimeMillis" value="60000"/>   
-        <property name="minIdle" value="20"/>   
+        <property name="initialSize" value="25"/>    
+        <property name="minIdle" value="10"/>     
         <property name="logAbandoned" value="false"/>   
         <property name="removeAbandoned" value="true"/>   
-        <property name="removeAbandonedTimeout" value="120"/> 
+        <property name="removeAbandonedTimeout" value="3600"/> 
         <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
     </bean>    
  
@@ -87,20 +84,17 @@
 		<property name="url" value="${SQLServer.jdbc.url}"/>
 		<property name="username" value="${SQLServer.jdbc.username}"/>
 		<property name="password" value="${SQLServer.jdbc.password}"/>
-		<property name="testWhileIdle" value="true"/> 
-        <property name="testOnBorrow" value="true"/>   
-        <property name="testOnReturn" value="false"/>   
+	    <property name="testOnBorrow" value="true"/> 
+         <property name="testWhileIdle" value="false"/> 
         <property name="validationInterval" value="30000"/>  
         <property name="validationQuery" value="SELECT 1"/>   
-        <property name="timeBetweenEvictionRunsMillis" value="30000"/>   
-        <property name="maxActive" value="20"/>   
-        <property name="initialSize" value="5"/>   
-        <property name="maxWait" value="10000"/>   
-        <property name="minEvictableIdleTimeMillis" value="30000"/>   
-        <property name="minIdle" value="10"/>   
+        <property name="timeBetweenEvictionRunsMillis" value="5000"/>   
+        <property name="maxActive" value="100"/>   
+        <property name="initialSize" value="25"/>    
+        <property name="minIdle" value="10"/>     
         <property name="logAbandoned" value="false"/>   
         <property name="removeAbandoned" value="true"/>   
-        <property name="removeAbandonedTimeout" value="60"/> 
+        <property name="removeAbandonedTimeout" value="600"/> 
         <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
     
     </bean>
@@ -176,7 +170,7 @@
    		 p:concurrent="false"/>
    <bean id="dailyCheckInvetoryOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="dailyCheckInvetoryOrder"
-   		 p:cronExpression="0 32 0 * * ?"/>    
+   		 p:cronExpression="0 5 0 * * ?"/>    
     
     <!-- weekly rank batch job -->
    <bean id="weeklyRankBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
@@ -194,7 +188,7 @@
    		 p:concurrent="false"/>
    <bean id="weeklyHotBrandBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="weeklyHotBrandBatchJob"
-   		 p:cronExpression="0 3 0 ? * MON"/> 
+   		 p:cronExpression="0 10 0 ? * MON"/> 
 
     <!-- monthly hot brand batch job-->
     <bean id="monthlyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
@@ -203,7 +197,7 @@
    		 p:concurrent="false"/>
     <bean id="monthlyHotBrandBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="monthlyHotBrandBatchJob"
-   		 p:cronExpression="0 7 0 1 * ?"/> 
+   		 p:cronExpression="0 30 0 1 * ?"/> 
    		 
     <!-- 运行每周报表 ：
          1.每周分析当季货品销售情况-->
@@ -213,7 +207,7 @@
    		 p:concurrent="false"/>
    <bean id="weeklyBatchRptTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="weeklyBatchRptJob"
-   	     p:cronExpression="0 15 0 ? * MON"/> 
+   	     p:cronExpression="0 20 1 ? * MON"/> 
    		 
     <!-- monthly dummy hot brand batch job -->
     <!--<bean id="monthlyDummyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
@@ -226,7 +220,6 @@
    	
    		    		   		   
    <!-- daily dummy sales batch job
-   
    <bean id="dailyDummySalesBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainDailySalesService"
    		 p:targetMethod="runDailyDummyBatch"

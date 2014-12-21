@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.QxbabyConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.report.ChainBatchRptRepositotyDaoImpl;
@@ -44,12 +48,14 @@ import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.QuarterDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.YearDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
-import com.onlineMIS.ORM.entity.chainS.batchRpt.ChainCurrentSeasonSalesAnalysisItem;
-import com.onlineMIS.ORM.entity.chainS.batchRpt.ChainCurrentSeasonSalesAnalysisRpt;
+import com.onlineMIS.ORM.entity.chainS.batchRpt.ChainCurrentSeasonProductAnalysisItem;
+import com.onlineMIS.ORM.entity.chainS.batchRpt.ChainCurrentSeasonProductAnalysisRpt;
+import com.onlineMIS.ORM.entity.chainS.batchRpt.batchRptTemplate.ChainCurrentSeasonProductAnalysisTemplate;
 import com.onlineMIS.ORM.entity.chainS.batchRpt.batchRptTemplate.ChainCurrentSeasonSalesAnalysisTemplate;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
+import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
@@ -110,8 +116,10 @@ public class ChainBatchRptService {
 	 * 运行每周的批量报表程序
 	 * 1. 每周运行当季货品分析报表
 	 */
-	@Transactional
-	public void runWeeklyRptBatch(){
+    @Transactional
+	public Response runWeeklyRptBatch(){
+		Response response = new Response();
+		
 		loggerLocal.infoB(new Date() + " 开始 *周* 当季货品销售分析报表 :  ChainBatchRptService.runWeeklyRptBatch()");
 		
 		QxbabyConf qxbabyConf = qxbabyConfDaoImpl.getConf();
@@ -123,6 +131,7 @@ public class ChainBatchRptService {
 		java.sql.Date endDate = lastWeekDays.get(6);
 		
 		loggerLocal.infoB("当季配置 :" + year.getYear() + " - " + quarter.getQuarter_Name());
+		String message = startDate + "," + year.getYear() + "," + quarter.getQuarter_Name();
 		
 		/**
 		 * 1. 获取当季所有的productBarcode
@@ -131,25 +140,27 @@ public class ChainBatchRptService {
 		DetachedCriteria productCriteria = pbCriteria.createCriteria("product");
 		productCriteria.add(Restrictions.eq("year.year_ID", year.getYear_ID()));
 		productCriteria.add(Restrictions.eq("quarter.quarter_ID", quarter.getQuarter_ID()));
+		//productCriteria.add(Restrictions.isNull("chainStore.chain_id"));
 		List<ProductBarcode> productBarcodes = productBarcodeDaoImpl.getByCritera(pbCriteria, false);
 		loggerLocal.infoB("总计多少当季货品:" + productBarcodes.size());
 		
 //		Set<Integer> productBarcodeIds = new HashSet<Integer>();
 //		Set<String> barcodes = new HashSet<String>();
-		Map<Integer, ChainCurrentSeasonSalesAnalysisItem> rptItemMap = new HashMap<Integer, ChainCurrentSeasonSalesAnalysisItem>();
+		Map<Integer, ChainCurrentSeasonProductAnalysisItem> rptItemMap = new HashMap<Integer, ChainCurrentSeasonProductAnalysisItem>();
 		int numOfBarcodes = 0;
 		for (ProductBarcode pb: productBarcodes){
 			numOfBarcodes++;
 //			productBarcodeIds.add(pb.getId());
 //			barcodes.add(pb.getBarcode());
-			ChainCurrentSeasonSalesAnalysisItem item = new ChainCurrentSeasonSalesAnalysisItem(pb);
+			ChainCurrentSeasonProductAnalysisItem item = new ChainCurrentSeasonProductAnalysisItem(pb);
 			rptItemMap.put(pb.getId(), item);
 		}
 		
 
 		if (numOfBarcodes <= 0){
 			loggerLocal.infoB("无法找到当季条码数据");
-			return;
+			response.setMessage(message + " 无法找到当季条码数据");
+			return response;
 		}
 		
 		/**
@@ -160,10 +171,12 @@ public class ChainBatchRptService {
 		DetachedCriteria productIoCriteria = pbIoCriteria.createCriteria("product");
 		productIoCriteria.add(Restrictions.eq("year.year_ID", year.getYear_ID()));
 		productIoCriteria.add(Restrictions.eq("quarter.quarter_ID", quarter.getQuarter_ID()));
+		//productIoCriteria.add(Restrictions.isNull("chainStore.chain_id"));
 		
 		ProjectionList projectionList = Projections.projectionList();
-		projectionList.add(Projections.property("productBarcode.id"));
+		projectionList.add(Projections.groupProperty("productBarcode.id"));
 		projectionList.add(Projections.min("date"));
+		
 		ioCriteria.setProjection(projectionList);
 		
 		try {
@@ -175,7 +188,7 @@ public class ChainBatchRptService {
 					Integer productId = (Integer)recordResult[0];
 					Timestamp marketDate =  (Timestamp)recordResult[1];
 					
-					ChainCurrentSeasonSalesAnalysisItem item = rptItemMap.get(productId);
+					ChainCurrentSeasonProductAnalysisItem item = rptItemMap.get(productId);
 					if (item != null)
 						item.setMarketDate(new java.sql.Date(marketDate.getTime()));
 				  } 
@@ -201,17 +214,21 @@ public class ChainBatchRptService {
 		/**
 		 * 4. 获取累计采购件数
 		 */
+		loggerLocal.infoB("获取累计采购的日期组");
+		List<List<java.sql.Date>> dateList = calculateAccumulatedDates(startDate, endDate);
+		
 		loggerLocal.infoB("计算累计采购件数");
 		Map<Integer, Integer> purchaseAccumulatedMap = new HashMap<Integer, Integer>();
 		Map<Integer, Integer> inDeliveryAccumulatedMap = new HashMap<Integer, Integer>();		
-		java.sql.Date startDate4Month = new java.sql.Date(Common_util.calcualteDate(Common_util.getToday(), -120).getTime());
-		loggerLocal.infoB("累计日期 : " + startDate4Month);
-		try {
-		    calculatePurchaseMap(startDate4Month, endDate, purchaseAccumulatedMap, inDeliveryAccumulatedMap, year, quarter);
-		} catch (Exception e){
-			loggerLocal.errorB(e);
-			loggerLocal.errorB("获取累计采购件数出错");
-		}	
+        for (List<java.sql.Date> dates : dateList){
+        	loggerLocal.infoB(new Date() + " 获取累计采购件数 : " + dates.get(0) + ", " + dates.get(1));
+			try {
+			    calculatePurchaseMap(dates.get(0), dates.get(1), purchaseAccumulatedMap, inDeliveryAccumulatedMap, year, quarter);
+			} catch (Exception e){
+				loggerLocal.errorB("获取累计采购件数出错 : " + dates.get(0) + ", " + dates.get(1));
+				loggerLocal.errorB(e);
+			}
+        }
 		
 		/**
 		 * 5. 获取周销售件数
@@ -219,10 +236,11 @@ public class ChainBatchRptService {
 		loggerLocal.infoB("计算周销售件数");
 		Map<Integer, Integer> salesWeeklyMap = new HashMap<Integer, Integer>();
 		try {
-		calculateSalesMap(startDate4Month, endDate, salesWeeklyMap, year, quarter);
+			calculateSalesMap(startDate, endDate, salesWeeklyMap, year, quarter);
 		} catch (Exception e){
-			loggerLocal.errorB(e);
 			loggerLocal.errorB("获取周销售出错");
+			loggerLocal.errorB(e);
+			
 		}	
 		
 		/**
@@ -230,12 +248,16 @@ public class ChainBatchRptService {
 		 */
 		loggerLocal.infoB("计算累计销售件数");
 		Map<Integer, Integer> salesAccumulatedMap = new HashMap<Integer, Integer>();
-		try {
-			calculateSalesMap(startDate4Month, endDate, salesAccumulatedMap, year, quarter);
-		} catch (Exception e){
-			loggerLocal.errorB(e);
-			loggerLocal.errorB("获取累计销售件数出错");
-		}	
+        for (List<java.sql.Date> dates : dateList){
+        	loggerLocal.infoB(new Date() + " 获取累计销售件数 : " + dates.get(0) + ", " + dates.get(1));
+			try {
+				calculateSalesMap(dates.get(0), dates.get(1), salesAccumulatedMap, year, quarter);
+			} catch (Exception e){
+				loggerLocal.errorB("获取累计销售件数出错 : " + dates.get(0) + ", " + dates.get(1));
+				loggerLocal.errorB(e);
+				
+			}	
+        }
 		
 		/**
 		 * 7. 获取店铺库存件数
@@ -246,10 +268,12 @@ public class ChainBatchRptService {
 		DetachedCriteria productIoInventoryCriteria = pbIoInventoryCriteria.createCriteria("product");
 		productIoInventoryCriteria.add(Restrictions.eq("year.year_ID", year.getYear_ID()));
 		productIoInventoryCriteria.add(Restrictions.eq("quarter.quarter_ID", quarter.getQuarter_ID()));
+		//productIoInventoryCriteria.add(Restrictions.isNull("chainStore.chain_id"));
 		
 		ProjectionList projectionInventoryList = Projections.projectionList();
-		projectionInventoryList.add(Projections.property("productBarcode.id"));
+		projectionInventoryList.add(Projections.groupProperty("productBarcode.id"));
 		projectionInventoryList.add(Projections.sum("quantity"));
+		
 		ioInventoryCriteria.setProjection(projectionInventoryList);
 		try {
 		     List<Object> inventoryObjects = chainInOutStockDaoImpl.getByCriteriaProjection(ioInventoryCriteria, false);
@@ -260,7 +284,7 @@ public class ChainBatchRptService {
 					Integer productId = (Integer)recordResult[0];
 					Integer inventory =  (Integer)recordResult[1];
 					
-					ChainCurrentSeasonSalesAnalysisItem item = rptItemMap.get(productId);
+					ChainCurrentSeasonProductAnalysisItem item = rptItemMap.get(productId);
 					if (item != null)
 						item.setCurrentInentory(inventory);
 				  } 
@@ -273,18 +297,19 @@ public class ChainBatchRptService {
 		/**
 		 * 8. 计算map的数据
 		 */
-		ChainCurrentSeasonSalesAnalysisRpt rpt = new ChainCurrentSeasonSalesAnalysisRpt(chainStoreDaoImpl.getAllChainStoreObject(), year, quarter, startDate);
+		ChainCurrentSeasonProductAnalysisRpt rpt = new ChainCurrentSeasonProductAnalysisRpt(chainStoreDaoImpl.getAllChainStoreObject(), year, quarter, startDate, endDate);
 		
 		Iterator<Integer> keys = rptItemMap.keySet().iterator();
 		while (keys.hasNext()){
 			int key = keys.next();
-			ChainCurrentSeasonSalesAnalysisItem item = rptItemMap.get(key);
+			ChainCurrentSeasonProductAnalysisItem item = rptItemMap.get(key);
+			try {
 			if (item != null){
 				Integer weeklyPurchase = purchaseWeeklyMap.get(key);
 				if (weeklyPurchase != null)
 					item.setPurchaseWeekly(weeklyPurchase);
 				
-				Integer accumulatedPurchase = purchaseWeeklyMap.get(key);
+				Integer accumulatedPurchase = purchaseAccumulatedMap.get(key);
 				if (accumulatedPurchase != null)
 					item.setPurchaseAccumulated(accumulatedPurchase);
 				
@@ -302,12 +327,17 @@ public class ChainBatchRptService {
 				
 				item.calculateRatio();
 			}
+			} catch (Exception e){
+				loggerLocal.error("错误 :" + e.getMessage() + ", " + key);
+				loggerLocal.errorB(e);
+			}
 		}
 		
-		List<ChainCurrentSeasonSalesAnalysisItem> rptItems = new ArrayList<ChainCurrentSeasonSalesAnalysisItem>(rptItemMap.values());
+		List<ChainCurrentSeasonProductAnalysisItem> rptItems = new ArrayList<ChainCurrentSeasonProductAnalysisItem>(rptItemMap.values());
+		Collections.sort(rptItems, new ChainCurrentSalesAnalysisComparator());
+		
 		rpt.setRptItems(rptItems);
 		
-
 		
 		HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
 		String contextPath= request.getRealPath("/");
@@ -332,7 +362,7 @@ public class ChainBatchRptService {
 		
 	   try {
 		   loggerLocal.infoB("准备zip文件");
-		   ChainCurrentSeasonSalesAnalysisTemplate rptTemplate = new ChainCurrentSeasonSalesAnalysisTemplate(rpt, contextPath + "WEB-INF\\template\\");
+		   ChainCurrentSeasonProductAnalysisTemplate rptTemplate = new ChainCurrentSeasonProductAnalysisTemplate(rpt, contextPath + "WEB-INF\\template\\");
 		   HSSFWorkbook wholeChainWorkbook = rptTemplate.process();
 		   String wholeChainWorkbookName = rpt.getChainStore().getChain_name() + ".xls";
 		   
@@ -351,9 +381,34 @@ public class ChainBatchRptService {
 		   loggerLocal.error("发生严重错误 : ");
 		   loggerLocal.errorB(e);
 	   }
+	   
+		response.setMessage(message);
+		loggerLocal.infoB("------" + startDate + " 报表成功生成----");
+		return response;
 	
 	}
 	
+	private List<List<java.sql.Date>> calculateAccumulatedDates(
+			java.sql.Date startDate, java.sql.Date endDate) {
+		List<List<java.sql.Date>> dateList = new ArrayList<List<java.sql.Date>>();
+		
+		//17 周
+		int totalDatesGroup = 17;
+		for (int i = 0; i < totalDatesGroup; i++){
+			List<java.sql.Date> dates = new ArrayList<java.sql.Date>();
+			
+			java.sql.Date startDate2 = new java.sql.Date(Common_util.calcualteDate(startDate, i *-7).getTime());
+			java.sql.Date endDate2 = new java.sql.Date(Common_util.calcualteDate(endDate, i *-7).getTime());
+			dates.add(startDate2);
+			dates.add(endDate2);
+			
+			System.out.println(i + " , " +startDate2 + " , " + endDate2);
+			dateList.add(dates);
+		}
+		
+		return dateList;
+	}
+
 	private void calculateSalesMap(java.sql.Date startDate, java.sql.Date endDate, Map<Integer, Integer> salesMap,  Year year, Quarter quarter){
 		DetachedCriteria salesCriteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
 		salesCriteria.add(Restrictions.eq("status", ChainStoreSalesOrder.STATUS_COMPLETE));
@@ -430,6 +485,18 @@ public class ChainBatchRptService {
 			}
 		}
 	}
+	
+	class ChainCurrentSalesAnalysisComparator implements Comparator<ChainCurrentSeasonProductAnalysisItem> {
+
+		@Override
+		public int compare(ChainCurrentSeasonProductAnalysisItem o1,
+				ChainCurrentSeasonProductAnalysisItem o2) {
+			return o2.getSalesWeekly() - o1.getSalesWeekly();
+			
+		}
+	}
 }
+
+
 
 

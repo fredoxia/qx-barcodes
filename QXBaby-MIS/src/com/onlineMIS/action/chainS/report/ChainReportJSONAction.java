@@ -45,14 +45,35 @@ public class ChainReportJSONAction extends ChainReportAction {
 	public ChainBatchRptService chainBatchRptService;
 	
 	/**
+	 * 人手去触发上周的当季分析
+	 * @return
+	 */
+	public String triggerCurrentAnalysis(){
+		Response response = new Response();
+		
+    	try {
+    	    response = chainBatchRptService.runWeeklyRptBatch();
+    	} catch (Exception e) {
+			loggerLocal.error(e);
+		}
+		
+		try {
+			jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		return SUCCESS;
+	}
+	
+	/**
 	 * the action to generate the 销售报表 report
 	 * @return
 	 */
 	public String generateSalesReportByHQ(){
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"generateSalesReportByHQ : " + formBean);
-    	
-    	chainBatchRptService.runWeeklyRptBatch();
     	
 		Response response = new Response();
 		try {

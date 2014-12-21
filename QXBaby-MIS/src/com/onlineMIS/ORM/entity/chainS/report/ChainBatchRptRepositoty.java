@@ -15,20 +15,20 @@ public class ChainBatchRptRepositoty implements Serializable {
 	 */
 	public static final int TYPE_WEEKLY_SALES_ANALYSIS_RPT = 1;
 	
-	public static final String REPORITORY_ROOT = "C:\\QXBaby-MIS\\BatchReport";
+	public static final String REPORITORY_ROOT = "D:\\QXBaby-MIS\\BatchReport";
 	
 	/**
 	 * rpt type id
 	 */
 	private int rptId;
 	private Date rptDate;
-	private String rptName;
+	private String rptName = "";
 	/**
 	 * rpt的描述比如 
 	 * 2015-1-2 至 2015-2-1
 	 */
-	private String rptDes;
-	private String rptPath;
+	private String rptDes = "";
+	private String rptPath = "";
 	
 	public String getRptDes() {
 		return rptDes;
@@ -76,7 +76,7 @@ public class ChainBatchRptRepositoty implements Serializable {
 	public String getDownloadRptName(){
 		switch (this.rptId) {
 		case TYPE_WEEKLY_SALES_ANALYSIS_RPT:
-			return "DangJiFenXi" + rptDate + ".zip";
+			return "当季货品销售报表" + rptDate + ".zip";
 		default:
 			return "download.zip";
 		}

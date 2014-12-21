@@ -57,11 +57,11 @@ public class ChainReportJSPAction extends ChainReportAction {
 	}
 
 	public String getExcelFileName() {
-		return excelFileName;
+		   return this.excelFileName;
 	}
 
 	public void setExcelFileName(String excelFileName) {
-		this.excelFileName = excelFileName;
+		this.excelFileName = Common_util.encodeAttachment(excelFileName);
 	}
 
 	/**
