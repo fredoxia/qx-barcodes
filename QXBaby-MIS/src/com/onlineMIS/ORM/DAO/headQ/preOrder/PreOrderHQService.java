@@ -97,6 +97,9 @@ public class PreOrderHQService {
 	public void prepareSearchUI(PreOrderActionFormBean formBean, PreOrderActionUIBean uiBean) {
 		List<CustPreorderIdentity> identityList = preOrderIdentityDaoImpl.getTop(10);
 		
+		if (identityList.size() > 0)
+		    formBean.getOrder().setOrderIdentity(identityList.get(0).getOrderIdentity());
+		
 		uiBean.setIdentities(identityList);
 		
 	}

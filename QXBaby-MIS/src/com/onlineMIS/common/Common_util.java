@@ -416,6 +416,13 @@ public class Common_util {
 		java.sql.Date today = new java.sql.Date(calendar.getTimeInMillis());
 		return today;
 	}
+	
+	public static java.sql.Date getDate(int offSet){
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_MONTH, offSet);
+		java.sql.Date date = new java.sql.Date(calendar.getTimeInMillis());
+		return date;
+	}
 
 	public static List<java.sql.Date> getDateBetween(java.sql.Date startDate,
 			java.sql.Date endDate) {

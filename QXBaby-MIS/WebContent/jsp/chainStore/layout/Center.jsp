@@ -97,36 +97,40 @@ function reloadStatis(){
 			    </div> 
 			   </td>
 			   <td>
-			    <div id="p" class="easyui-panel" title="连锁店周排名"  
-			 			style="width:450px;height:280px;padding:10px;background:#fafafa;"  
+			    <div id="p" class="easyui-panel" title="连锁店排名"  
+			 			style="width:450px;height:280px;padding:5px;background:#fafafa;"  
 	        			data-options="collapsible:false">  
 				        <table style="width: 100%" border="0">	
 				        		<tr class="InnerTableContent">
-									<td colspan="4" height="25"><s:property value="uiBean.chainWMRank.startDate"/> 至 <s:property value="uiBean.chainWMRank.endDate"/></td>
-							 	</tr> 
-							 	<tr class="InnerTableContent">
 									<th>排名</th>
-									<th>连锁店</th>
 									<th>销售量</th>
 									<th>销售额</th>
 							 	</tr>
-							  <s:iterator value="uiBean.chainWMRank.items" status="st" id="rankItem" >	
+				        	    <tr class="InnerTableContent">
+									<th colspan="3" align="left">我的周排名</th>
+							 	</tr>
+				        		<tr class="InnerTableContent">
+									<td colspan="3"><s:property value="uiBean.chainWMRank.startDate"/> 至 <s:property value="uiBean.chainWMRank.endDate"/></td>
+							 	</tr> 
+							 	<tr class="InnerTableContent" align="center">
+									<td><s:property value="uiBean.chainWMRank.rank"/></td>
+									<td><s:property value="uiBean.chainWMRank.saleQ"/></td>
+									<td><s:property value="uiBean.chainWMRank.saleAmt"/></td>
+							 	</tr>							 	
+							 	<tr class="InnerTableContent">
+									<th colspan="3" align="left">我的日排名</th>
+							 	</tr>
+					 	
+							  <s:iterator value="uiBean.myDailyRank" status="st" id="rankItem" >	
+							  	 <tr class="InnerTableContent">
+									<td colspan="3"><s:property value="#rankItem.startDate"/></td>
+							 	</tr> 		
 							 	<tr class="InnerTableContent" align="center">
 									<td><s:property value="#rankItem.rank"/></td>
-									<td><s:property value="#rankItem.chainStore.chain_name"/></td>
 									<td><s:property value="#rankItem.saleQ"/></td>
 									<td><s:property value="#rankItem.saleAmt"/></td>
 							 	</tr>
-							  </s:iterator>
-							 	<tr class="InnerTableContent">
-									<th colspan="4" align="left">我的排名 (在线连锁店 <s:property value="uiBean.myRank.totalRank"/> 家) </th>
-							 	</tr>
-							 	<tr class="InnerTableContent" align="center">
-									<td><s:property value="uiBean.myRank.rank"/></td>
-									<td><s:property value="uiBean.myRank.chainStore.chain_name"/></td>
-									<td><s:property value="uiBean.myRank.saleQ"/></td>
-									<td><s:property value="uiBean.myRank.saleAmt"/></td>
-							 	</tr>							  
+							  </s:iterator>							  
 						</table>
 			    </div> 			   
 			   

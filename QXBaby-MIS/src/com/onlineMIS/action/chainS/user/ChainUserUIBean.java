@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.onlineMIS.ORM.entity.chainS.report.ChainWMRank;
-import com.onlineMIS.ORM.entity.chainS.report.ChainWMRankItem;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
@@ -18,18 +17,19 @@ import com.onlineMIS.ORM.entity.headQ.user.News;
 public class ChainUserUIBean {
 	private ChainUserInfor chainUserInfor;
 	private ChainWMRank chainWMRank;
-	private ChainWMRankItem myRank = new ChainWMRankItem();
+	private List<ChainWMRank> myDailyRank = new ArrayList<ChainWMRank>();
 	private List<ChainUserInfor> chainUserInfors = new ArrayList<ChainUserInfor>();
 	private List<ChainStore> chainStores = new ArrayList<ChainStore>();
 	private List<ChainRoleType> chainRoleTypes = new ArrayList<ChainRoleType>();
     private List<News> news = new ArrayList<News>();
     private String specialMsg = "";
 
-	public ChainWMRankItem getMyRank() {
-		return myRank;
+
+	public List<ChainWMRank> getMyDailyRank() {
+		return myDailyRank;
 	}
-	public void setMyRank(ChainWMRankItem myRank) {
-		this.myRank = myRank;
+	public void setMyDailyRank(List<ChainWMRank> myDailyRank) {
+		this.myDailyRank = myDailyRank;
 	}
 	public ChainWMRank getChainWMRank() {
 		return chainWMRank;

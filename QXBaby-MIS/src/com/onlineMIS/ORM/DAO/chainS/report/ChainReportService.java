@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.sales.ChainDailySalesDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
@@ -77,12 +78,12 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelOne
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWMRank;
-import com.onlineMIS.ORM.entity.chainS.report.ChainWMRankItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWeeklySales;
 import com.onlineMIS.ORM.entity.chainS.report.VIPReportVO;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportTemplate;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesStatisticsReportTemplate;
+import com.onlineMIS.ORM.entity.chainS.sales.ChainDailySales;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.PurchaseOrderTemplate;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
@@ -159,6 +160,10 @@ public class ChainReportService {
 	
 	@Autowired
 	private ChainBatchRptRepositotyDaoImpl chainAutoRptRepositoryDaoImpl;
+	
+	@Autowired
+	private ChainDailySalesDaoImpl chainDailySalesDaoImpl;
+	
 	/**
 	 * to prepare the generate the report UI
 	 * @param uiBean
@@ -1992,87 +1997,78 @@ public class ChainReportService {
 	
 	
 	/**
-	 * 获取每周的前几名的信息然后展示在首页
+	 * 获取登录排名信息
 	 * @return
 	 */
 	@Transactional
-	public Response getWeeklyTop(ChainUserInfor userInfor){
+	public Response getRank(ChainUserInfor userInfor){
 		Response response = new Response();
-		ChainWMRank weeklyRank = new ChainWMRank();
+		
+		if (userInfor.getMyChainStore() == null || userInfor.getMyChainStore().getChain_id() == Common_util.ALL_RECORD){
+			response.setFail("");
+			return response;
+		}
+		
+		int myChainId = userInfor.getMyChainStore().getChain_id();
+		
 		
 		/**
-		 * 获取连锁店前几名
+		 * 我前周排名
 		 */
 		List<java.sql.Date> lastWeekDays = Common_util.getLastWeekDays();
-		DetachedCriteria criteria = DetachedCriteria.forClass(ChainWeeklySales.class);
-		criteria.add(Restrictions.eq("reportDate", lastWeekDays.get(0)));
-		criteria.addOrder(Order.asc("rank"));
-		criteria.add(Restrictions.le("rank", Common_util.WEEK_RANK));
-		
-		List<ChainWeeklySales> weeklySales = chainWeeklySalesDaoImpl.getByCritera(criteria, true);
-		List<ChainWMRankItem> rankItems = new ArrayList<ChainWMRankItem>();
-		
-		for (ChainWeeklySales weeklySale: weeklySales){
-			ChainStore chainStore = weeklySale.getChainStore();
-			chainWeeklySalesDaoImpl.initialize(chainStore);
-			
+		ChainWeeklySales weeklySale = chainWeeklySalesDaoImpl.getWeeklyRankById(lastWeekDays.get(0), myChainId);
+		ChainWMRank weeklyRank = new ChainWMRank();
+		if (weeklySale != null) {
 			int salesQ = weeklySale.getNetSalesQuantity();
 			int salesAmt = (int)weeklySale.getNetSalesAmount();
 			int rank = weeklySale.getRank();
-			
-			ChainWMRankItem rankItem = new ChainWMRankItem();
-			
 			String salesQS = String.valueOf(salesQ);
 			String salesAmtS = String.valueOf(salesAmt);
-			
-			//salesQS = "*" + salesQS.substring(1);
-			salesAmtS = "*" + salesAmtS.substring(1);
-			
-			rankItem.setChainStore(chainStore);
-			rankItem.setRank(rank);
-			rankItem.setSaleQ(salesQS);
-			rankItem.setSaleAmt(salesAmtS);
-			
-			rankItems.add(rankItem);
+	
+			weeklyRank.setRank(rank);
+			weeklyRank.setSaleQ(salesQS);
+			weeklyRank.setSaleAmt(salesAmtS);
+	
+			weeklyRank.setStartDate(lastWeekDays.get(0));
+			weeklyRank.setEndDate(lastWeekDays.get(6));
+			weeklyRank.setWeekly(true);
 		}
-		
-		weeklyRank.setItems(rankItems);
-		weeklyRank.setStartDate(lastWeekDays.get(0));
-		weeklyRank.setEndDate(lastWeekDays.get(6));
 		
 		/**
-		 * 获取我的名次
+		 * 获取我日名次
 		 */
-		ChainWMRankItem myRank = new ChainWMRankItem();
-		if (userInfor.getMyChainStore() != null && userInfor.getMyChainStore().getChain_id() != Common_util.ALL_RECORD){
-			DetachedCriteria criteria2 = DetachedCriteria.forClass(ChainWeeklySales.class);
-			criteria2.add(Restrictions.eq("reportDate", lastWeekDays.get(0)));
-			criteria2.add(Restrictions.eq("chainStore.chain_id", userInfor.getMyChainStore().getChain_id()));
+		java.sql.Date lastDate = Common_util.getDate(-3);
+		DetachedCriteria criteria2 = DetachedCriteria.forClass(ChainDailySales.class);
+		criteria2.add(Restrictions.gt("reportDate", lastDate));
+		criteria2.add(Restrictions.le("reportDate", Common_util.getToday()));
+		criteria2.add(Restrictions.eq("chainStore.chain_id", myChainId));
 			
-			List<ChainWeeklySales> weeklySales2 = chainWeeklySalesDaoImpl.getByCritera(criteria2, true);
-			if (weeklySales2 != null && weeklySales2.size()>0){
-				ChainWeeklySales mySales = weeklySales2.get(0);
-				ChainStore chainStore = mySales.getChainStore();
-				chainWeeklySalesDaoImpl.initialize(chainStore);
-				
-				int salesQ = mySales.getNetSalesQuantity();
-				int salesAmt = (int)mySales.getNetSalesAmount();
-				int rank = mySales.getRank();
+		List<ChainDailySales> dailySales = chainDailySalesDaoImpl.getByCritera(criteria2, true);
+		List<ChainWMRank> dailyRanks = new ArrayList<ChainWMRank>();
+		
+		if (dailySales != null && dailySales.size()>0){
+			for (ChainDailySales dailySales2 : dailySales){
+				ChainWMRank dailyRank = new ChainWMRank();
 
+				int salesQ = dailySales2.getSalesQuantity();
+				int salesAmt = (int)dailySales2.getSalesAmount();
+				int rank = dailySales2.getRank();
+				java.sql.Date date = dailySales2.getReportDate();
+
+				dailyRank.setRank(rank);
+				dailyRank.setSaleQ(String.valueOf(salesQ));
+				dailyRank.setSaleAmt(String.valueOf(salesAmt));
+				dailyRank.setRank(rank);
+				dailyRank.setStartDate(date);
 				
-				myRank.setChainStore(chainStore);
-				myRank.setRank(rank);
-				myRank.setSaleQ(String.valueOf(salesQ));
-				myRank.setSaleAmt(String.valueOf(salesAmt));
-				
+				dailyRanks.add(dailyRank);
 			}
 		}
-		int numOfRank = chainStoreService.getNumOfActiveChainStore();
-		myRank.setTotalRank(numOfRank);
+
 		
 		List<Object> returnValue = new ArrayList<Object>();
 		returnValue.add(weeklyRank);
-		returnValue.add(myRank);
+		returnValue.add(dailyRanks);
 		
 		response.setReturnValue(returnValue);
 		response.setReturnCode(Response.SUCCESS);

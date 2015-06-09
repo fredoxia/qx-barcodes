@@ -11,7 +11,6 @@ import com.onlineMIS.ORM.DAO.headQ.user.NewsService;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforService;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWMRank;
-import com.onlineMIS.ORM.entity.chainS.report.ChainWMRankItem;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.user.News;
 import com.onlineMIS.common.Common_util;
@@ -75,14 +74,14 @@ public class ChainUserJSPAction extends ChainUserAction{
 		//3. 准备每周排名信息
 		Response response = new Response();
 		try {
-		     response = chainReportService.getWeeklyTop(userInfor);
+		     response = chainReportService.getRank(userInfor);
 		     if (response.getReturnCode() == Response.SUCCESS){
 		    	 List<Object> returnValue = (List<Object>)response.getReturnValue();
 		    	 ChainWMRank chainWMRank = (ChainWMRank)returnValue.get(0);
 		    	 uiBean.setChainWMRank(chainWMRank);
 		    	 
-		    	 ChainWMRankItem myRank = (ChainWMRankItem)returnValue.get(1);
-		    	 uiBean.setMyRank(myRank);
+		    	 List<ChainWMRank> myRank = (List<ChainWMRank>)returnValue.get(1);
+		    	 uiBean.setMyDailyRank(myRank);
 		     }
 		} catch (Exception e) {
 			loggerLocal.error(e);
