@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>千禧宝贝管理信息系统  abcd</title>
+<title>千禧宝贝管理信息系统</title>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/qxbaby-common.js"></script>
 <script>
 function pdaLogin(){
