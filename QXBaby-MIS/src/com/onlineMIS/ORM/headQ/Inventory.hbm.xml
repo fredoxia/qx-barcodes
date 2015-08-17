@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.headQ.inventory">
+
+    <class name="InventoryOrderProduct" table="inventory_Order_Product">
+        <id name="ID" column="ID">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="productBarcode" fetch="join" column="product_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" not-null="true" lazy="false"/>
+        <property name="quantity" column="quantity" type="integer"/>
+        <property name="index" column="indexNum" type="integer"/>
+        <property name="salesPrice" column="sales_price" type="double"/>
+        <property name="wholeSalePrice" column="whole_sale_price" type="double"/>
+        <property name="recCost" column="rec_cost" type="double"/>
+        <property name="discount" column="discount" type="double"/>
+        <property name="salePriceSelected" column="sale_price_selected" type="double"/>
+        <many-to-one name="order" column="order_ID" class="com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder" not-null="true" lazy="false"/>
+    </class>
+    
+    <class name="InventoryOrder" table="inventory_Order"  batch-size="15">
+        <id name="order_ID" column="order_ID">
+            <generator class="identity" />
+        </id>
+
+        <property name="comment" column="comment" type="string"/>
+        <property name="order_StartTime" column="order_StartTime" type="timestamp"/>
+        <property name="order_ComplTime" column="order_ComplTime" type="timestamp" />
+        <property name="order_EndTime" column="order_EndTime" type="timestamp"/>
+        <property name="order_Status" column="order_Status" type="integer"/>
+        <property name="order_type" column="order_type" type="integer"/>
+        <property name="client_name" column="client_name" type="string"/>
+        <property name="totalQuantity" column="total_quantity" type="integer"/>
+        <property name="totalRetailPrice" column="total_retail_price" type="double"/>
+        <property name="totalRecCost" column="total_rec_cost" type="double"/>
+        <property name="totalWholePrice" column="total_whole_price" type="double"/>
+        <property name="totalPaid" column="total_paid" type="double"/>
+        <property name="totalDiscount" column="total_discount" type="double"/>    
+        <property name="importTimes" column="import_times" type="integer"/>
+        <property name="preAcctAmt" column="pre_acct_amt" type="double"/> 
+        <property name="postAcctAmt" column="post_acct_amt" type="double"/> 
+        <many-to-one name="pdaScanner" fetch="select" column="pda_scanner" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
+        <many-to-one name="order_Auditor" fetch="select" column="order_Auditor" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
+        <many-to-one name="order_Keeper" fetch="select" column="order_Keeper" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
+        <many-to-one name="order_scanner" fetch="select" column="order_scanner" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
+        <many-to-one name="order_Counter" fetch="select" column="order_Counter" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
+        <set name="product_Set" cascade="all" inverse="true" lazy="true" fetch="subselect" batch-size="10">
+             <key column="order_ID"/>
+             <one-to-many class="com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct"/>
+        </set>
+        <property name="client_id" column="client_id" type="integer"/>
+    </class>
+    
+    <class name="HeadQSalesHistory" table="headQ_sales_history">
+        <composite-id name="id" class="HeadQSalesHistoryId">
+            <key-property name="productId" column="product_ID" type="integer"/>
+            <key-property name="clientId" column="client_ID" type="integer"/>   
+        </composite-id>
+        <property name="recCost" column="rec_cost" type="double"/>
+        <property name="wholePrice" column="whole_price" type="double"/>
+        <property name="salesPrice" column="sales_price" type="double"/>
+        <property name="quantity" column="quantity" type="integer"/>
+        <property name="discount" column="discount" type="double"/>
+        <property name="salePriceSelected" column="sale_price_selected" type="double"/>
+    </class>
+</hibernate-mapping>

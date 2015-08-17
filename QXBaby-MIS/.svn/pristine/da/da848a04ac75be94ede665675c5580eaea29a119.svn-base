@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/aop   
+       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd   
+       http://www.springframework.org/schema/tx    
+       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <!-- set the annotation context -->
+	<context:component-scan base-package="com.onlineMIS" /> 
+
+    <!-- database outside configuration -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="locations">  
+             <list><value>classpath:sysParms/database.properties</value></list>  
+        </property>  
+        <property name="fileEncoding" value="utf-8" />  
+    </bean>  
+	
+            
+	<!-- MySQL DataSource Property -->
+	<bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		<property name="driverClassName" value="${mysql.jdbc.driverClassName}"/>
+		<property name="url" value="${mysql.jdbc.url}"/>
+		<property name="username" value="${mysql.jdbc.username}"/>
+		<property name="password" value="${mysql.jdbc.password}"/>
+        <property name="testWhileIdle" value="true"/> 
+        <property name="testOnBorrow" value="true"/>   
+        <property name="testOnReturn" value="false"/>   
+        <property name="validationInterval" value="30000"/>  
+        <property name="validationQuery" value="SELECT 1"/>   
+        <property name="timeBetweenEvictionRunsMillis" value="30000"/>   
+        <property name="maxActive" value="100"/>   
+        <property name="initialSize" value="25"/>   
+        <property name="maxWait" value="10000"/>   
+        <property name="minEvictableIdleTimeMillis" value="30000"/>   
+        <property name="minIdle" value="20"/>   
+        <property name="logAbandoned" value="false"/>   
+        <property name="removeAbandoned" value="true"/>   
+        <property name="removeAbandonedTimeout" value="60"/> 
+        <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
+    </bean>    
+ 
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	    <property name="dataSource" ref="dataSource"/>
+	    
+	    <property name="mappingResources">
+	     <list>
+	              <value>com/onlineMIS/ORM/headQ/UserInfor.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/headQ/Finance.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/headQ/BarcodeGentor.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/headQ/Inventory.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/headQ/HRManagement.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/chainS/ChainUserInfor.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/chainS/ChainSales.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/chainS/ChainVIP.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/chainS/ChainInventoryFlow.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/chainS/ChainMgmt.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/chainS/ChainReport.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/chainS/ChainManualRpt.hbm.xml</value>
+	     </list>
+        </property>
+	    <property name="hibernateProperties">
+		 <props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+			<prop key="hibernate.show_sql">true</prop>
+			<prop key="hibernate.generate_statistics">true</prop>
+			<prop key="hibernate.connection.release_mode">auto</prop>
+			<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop> 
+            <prop key="hibernate.cache.use_query_cache">true</prop>
+            <prop key="hibernate.cache.use_second_level_cache">true</prop>  
+			<prop key="hibernate.autoReconnect">true</prop>
+			<prop key="hibernate.max_fetch_depth">4</prop>
+			<prop key="hibernate.jdbc.batch_size">20</prop>		
+		 </props>
+		</property>
+   </bean>
+
+    <!-- SQL Server datasource -->
+	<bean id="dataSourceMS" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		<property name="driverClassName" value="${SQLServer.jdbc.driverClassName}"/>
+		<property name="url" value="${SQLServer.jdbc.url}"/>
+		<property name="username" value="${SQLServer.jdbc.username}"/>
+		<property name="password" value="${SQLServer.jdbc.password}"/>
+		<property name="testWhileIdle" value="true"/> 
+        <property name="testOnBorrow" value="true"/>   
+        <property name="testOnReturn" value="false"/>   
+        <property name="validationInterval" value="30000"/>  
+        <property name="validationQuery" value="SELECT 1"/>   
+        <property name="timeBetweenEvictionRunsMillis" value="30000"/>   
+        <property name="maxActive" value="20"/>   
+        <property name="initialSize" value="5"/>   
+        <property name="maxWait" value="10000"/>   
+        <property name="minEvictableIdleTimeMillis" value="30000"/>   
+        <property name="minIdle" value="10"/>   
+        <property name="logAbandoned" value="false"/>   
+        <property name="removeAbandoned" value="true"/>   
+        <property name="removeAbandonedTimeout" value="60"/> 
+        <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
+    
+    </bean>
+    <bean id="sessionFactoryMS" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	    <property name="dataSource" ref="dataSourceMS"/>
+	    <property name="mappingResources">
+	     <list><value>com/onlineMIS/ORM/headQ/SQLServer.hbm.xml</value>
+	           <value>com/onlineMIS/ORM/headQ/SQLServer2.hbm.xml</value>
+	     </list>
+        </property>
+	    <property name="hibernateProperties">
+		 <props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+			<prop key="hibernate.show_sql">true</prop>
+			<prop key="hibernate.generate_statistics">true</prop>
+			<prop key="hibernate.connection.release_mode">auto</prop>
+			<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop> 
+            <prop key="hibernate.cache.use_query_cache">true</prop>
+            <prop key="hibernate.cache.use_second_level_cache">true</prop>  
+			<prop key="hibernate.autoReconnect">true</prop>
+		 </props>
+		</property>
+   </bean>   
+       
+   <!-- transaction management -->
+   <bean id="txManager"  class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+          <property name="sessionFactory">
+              <ref bean="sessionFactory" />
+          </property>
+   </bean>
+   <tx:annotation-driven transaction-manager="txManager"/>
+   
+   <!-- log -->
+   <!--  <bean id="logger" class="com.common.loggerLocal"> 
+   </bean>-->
+   
+   <!-- aop information 
+   <aop:config proxy-target-class="true">
+      <aop:aspect ref="logger">
+      </aop:aspect>
+   </aop:config>-->
+   
+   <!-- the hibernate template for mysql and sqlServer -->
+   <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+         <property name="sessionFactory" ref="sessionFactory"/>  
+   </bean>
+   <bean id="hibernateTemplateMS" class="org.springframework.orm.hibernate3.HibernateTemplate">
+         <property name="sessionFactory" ref="sessionFactoryMS"/>  
+   </bean>
+   <!-- 一些batch job -->
+   <!-- daily sales batch job -->
+   <bean id="dailySalesBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runDailyBatch"
+   		 p:concurrent="false"/>
+   <bean id="dailySalesBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="dailySalesBatchJob"
+   		 p:cronExpression="0 1 0 * * ?"/>
+   		 
+   <!-- daily generate the barcode job --> 
+   <bean id="dailyGenBarcodeJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runDailyGenBarcode"
+   		 p:concurrent="false"/>
+   <bean id="dailyGenBarcodeTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="dailyGenBarcodeJob"
+   		 p:cronExpression="0 1 20 * * ?"/>   		 
+   
+    
+    <!-- weekly rank batch job -->
+   <bean id="weeklyRankBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runWeeklyRank"
+   		 p:concurrent="false"/>
+   <bean id="weeklyRankBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="weeklyRankBatchJob"
+   		 p:cronExpression="0 2 0 ? * MON"/>
+   		 
+    <!-- weekly hot brand batch job-->
+    <bean id="weeklyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runWeeklyHotBrandProduct"
+   		 p:concurrent="false"/>
+   <bean id="weeklyHotBrandBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="weeklyHotBrandBatchJob"
+   		 p:cronExpression="0 3 0 ? * MON"/> 
+
+    <!-- monthly hot brand batch job-->
+    <bean id="monthlyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runMonthlyHotBrandProduct"
+   		 p:concurrent="false"/>
+    <bean id="monthlyHotBrandBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="monthlyHotBrandBatchJob"
+   		 p:cronExpression="0 7 0 1 * ?"/> 
+ 
+    <!-- monthly dummy hot brand batch job -->
+    <!--<bean id="monthlyDummyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runMontlyDummyHotBrandProduct"
+   		 p:concurrent="false"/>
+    <bean id="monthlyDummyHotBrandBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="monthlyDummyHotBrandBatchJob"
+   		 p:cronExpression="0 25 00 2 * ?"/>	-->
+   	
+   		    		   		   
+   <!-- daily dummy sales batch job
+   
+   <bean id="dailyDummySalesBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runDailyDummyBatch"
+   		 p:concurrent="false"/>
+   <bean id="dailyDummySalesBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="dailyDummySalesBatchJob"
+   		 p:cronExpression="0 50 22 27 4 ? 2015"/>--> 
+   		 
+   <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+   		 <property name="triggers">
+   		 	<list>
+   		 		<ref bean="dailySalesBatchTrigger"/>
+   		 		<ref bean="weeklyRankBatchTrigger"/>
+   		 		<ref bean="weeklyHotBrandBatchTrigger"/>
+   		 		<ref bean="monthlyHotBrandBatchTrigger"/>
+   		 		<ref bean="dailyGenBarcodeTrigger"/>
+   		 		<!--<ref bean="monthlyDummyHotBrandBatchTrigger"/>
+   		 		<ref bean="dailyDummySalesBatchTrigger"/>-->
+   		 	</list>
+   		 </property>
+   </bean>   
+
+
+</beans>

@@ -1,0 +1,61 @@
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+      <session-factory>
+          <!-- <property name="connection.username">program</property>
+          <property name="connection.url">jdbc:sqlserver://localhost:1433;DatabaseName=QXBABY20130305</property>
+          
+          <property name="dialect">
+              org.hibernate.dialect.SQLServerDialect 
+          </property>
+          <property name="connection.password">vj7683c6</property>
+          <property name="connection.driver_class">
+              com.microsoft.sqlserver.jdbc.SQLServerDriver
+          </property>
+          <property name="hibernate.c3p0.acquireIncrement">2</property>
+		  <property name="hibernate.c3p0.idleConnectionTestPeriod">120</property>
+		  <property name="hibernate.c3p0.maxIdleTime">180</property>
+		  <property name="hibernate.c3p0.maxPoolSize">50</property>
+		  <property name="hibernate.c3p0.minPoolSize">1</property>
+		  <property name="hibernate.c3p0.maxStatements">100</property>
+          <property name="hibernate.cache.use_query_cache">false</property>
+          <property name="hibernate.cache.use_second_level_cache">false</property> 
+          <property name="show_sql">true</property>
+          <mapping resource="com/onlineMIS/ORM/headQ/SQLServer.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/headQ/SQLServer2.hbm.xml" />
+                    <property name="connection.url">jdbc:mysql://localhost:3306/qxbabydb?useUnicode=true&amp;characterEncoding=UTF-8</property>-->
+          
+          <property name="connection.username">root</property>
+          <property name="connection.url">jdbc:mysql://localhost:3306/qxbabydb?useUnicode=true&amp;characterEncoding=UTF-8</property>
+    
+          <property name="dialect">
+              org.hibernate.dialect.MySQLDialect
+          </property>
+          <property name="connection.password">vj7683c6</property>
+          <property name="connection.driver_class">
+              com.mysql.jdbc.Driver
+          </property>
+          <property name="hibernate.c3p0.acquireIncrement">2</property>
+		  <property name="hibernate.c3p0.idleConnectionTestPeriod">120</property>
+			<property name="hibernate.c3p0.maxIdleTime">180</property>
+			<property name="hibernate.c3p0.maxPoolSize">50</property>
+			<property name="hibernate.c3p0.minPoolSize">1</property>
+			<property name="hibernate.c3p0.maxStatements">100</property>
+            <property name="hibernate.cache.use_query_cache">false</property>
+            <property name="hibernate.cache.use_second_level_cache">false</property> 
+          <property name="show_sql">true</property>
+          
+          <mapping resource="com/onlineMIS/ORM/chainS/ChainInventorySample.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/chainS/ChainVIP.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/chainS/ChainInventoryFlow.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/chainS/ChainUserInfor.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/chainS/ChainSales.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/chainS/ChainMgmt.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/headQ/Inventory.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/headQ/BarcodeGentor.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/headQ/UserInfor.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/headQ/HRManagement.hbm.xml" />
+          <mapping resource="com/onlineMIS/ORM/headQ/Finance.hbm.xml" />
+         <mapping resource="com/onlineMIS/ORM/chainS/ChainReport.hbm.xml" />
+         <mapping resource="com/onlineMIS/ORM/chainS/ChainManualRpt.hbm.xml" />
+      </session-factory>
+  </hibernate-configuration>

@@ -1,0 +1,5 @@
+department id	  	department name       		
+01					会计
+02					销售
+03					物流
+04					连锁

@@ -1,0 +1,24 @@
+function id	  	Description       		action
+1				条形码基础资料管理	  	    barCodeDataMaintain.action
+2  				 新建条形码		  		productJSPAction!preCreateProduct
+3 				查询条形码	          	productJSPAction!preSearch
+
+10				员工信息更新               		userJSP!preEdit
+11				绩效考核配置管理
+12				新建员工绩效考核管理
+13				管理所有员工绩效考核管理
+14				管理自己评价员工绩效考核管理
+15				查看员工考核月报表
+
+21				仓库单据录入				inventoryOrder!create
+22				仓库草稿单据修改			inventoryOrder!search?order.order_Status=9
+23				仓库完成单据修改			inventoryOrder!search?order.order_Status=1
+24				查看会计进行中单据		    inventoryOrder!search?order.order_Status=2
+25				搜索单据					inventoryOrder!preSearch
+26				删除单据					inventoryOrder!deleteOrder
+27				单据导入精算				exportInventoryOrToJinSuan!exportToJinSuan
+
+31				销售报表					chainSales!preReport
+
+90				用户权限管理				userJSP!preEditFunctionality
+91				系统日志查看				userJSP!retrieveLog

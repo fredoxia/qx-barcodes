@@ -1,0 +1,13 @@
+#--------------------------------------
+# This mapping file is to mapping the 
+# default chain system function 
+#--------------------------------------
+login:chainUserJSON!loginService,chainUserJSON!login,chainUserJSP!logoff,chainUserJSP!getNews,chainUserJSON!ownerLogin,chainUserJSON!destoryOwnerLogin
+editMyAcct:chainUserJSP!preEditMyAcct,chainUserJSP!editMyAcct
+common:chainMgmtJSP!listChainStore,chainMgmtJSP!listBrands,chainMgmtJSON!changeChainStore,chainSalesJSPAction!preGetProduct,chainSalesJSONAction!checkProductInfor
+InventoryTrace: inventoryFlowJSPAction!checkInvenTrace,inventoryFlowJSONAction!getInventoryTraceInfor,inventoryFlowJSPAction!openInvenTracePage,
+chainInventoryCheck: inventoryFlowJSPAction!preCheckChainInven,inventoryFlowJSONAction!checkChainInventory
+salesAnalysisReport: chainReportJSPAction!preSalesAnalysisReport,chainReportJSON!generateSalesAnalysisReport
+dailyManualRpt:chainDailyManualRptJSPAction!preCreateManualRpt,chainDailyManualRptJSPAction!createNewManualRpt,chainDailyManualRptJSON!saveChainDailyManualRpt
+vipReport:chainReportJSPAction!preVIPConsumpReport,chainReportJSON!generateVIPConsumpReport
+vipMgmt:chainVIPJSONAction!searchSpecialVIPs,chainVIPJSPAction!preSearchSpecialVIPs

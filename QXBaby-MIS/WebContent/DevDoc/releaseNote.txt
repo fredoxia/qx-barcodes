@@ -1,0 +1,170 @@
+Note when do the deployment to other server:
+1. Check the URL of the SQLServer and MySQL, especially the sqlserver database name
+2. check whether the profile "program" exists in the sqlserver
+3. Check whether the server's Tomcat port number is open (control panel -> fire wall -> exception)
+
+
+Release Date: 2012-07-21
+Release Summary: 1. add the function to delete the order for admin
+
+Release Date: 2012-07-22
+Release Summary: 1. add the function to sort the products or not
+                 2. add indexNum column in the inventory_order_product table with default 0
+   
+Release Date: 2012-07-23              
+Release Prepare: 1. add the user's jinsuanID in the database. it is used to correlated with the jinsuan system
+ 				 2. change the search function end date,
+ 				 
+Release Date: 2012-08-04              
+Release Prepare: 1. backup the whole DB. 
+                 1. add the customer_id in the customer_db table; change customer_db to customer
+                 2. add the customer_id in the inventory_order table
+                 3. update the customer_id in the customer table
+                    mysql> use qxbabydb;
+					mysql> update inventory_order i set customer_id = (select customer_id from customer_db c where i.customer_Name=c.name);
+				 4. delete the columns customer_are and customer_name in the inventory_order table
+Release Date : 2012-08-13
+Release Summary: 1. Add the sales price display in the create order part
+
+Release Date: 2012-09-15
+Release Summary: 1. Change the Inventory Order (Customer_id -> client_id)
+                 2. Add the client_name
+                 
+Release Date: 2012-10-03
+Release Summary: 1. Add the Evaluation part tables      
+                 2. add the product conf table
+                 3. change user table, add resign column   
+                 
+Release Date: 2013-1-1
+Release Summary: 1. Change the JSP and filter to fit for the chain store information No15 
+                 2. add the chain_user_infor， news, chain_store, chain_sales, headQ_sales_history table -   
+                 3. add the order_type, client_name, total_quantity, total_retail_price, total_rec_cost, total_whole_price, import_time in the inventory_order -
+                 4. add the whole_sale_price, rec_cost,sales_price in the inventory_order_product-
+                    add product_ID in inventory_order_product
+                    update inventory_order_product i, product p set i.product_ID = p.product_ID where i.barcode = p.barcode;
+                    delete the barcode column from inventory_order_product
+                 5. add the whole_sale_price, rec_cost, year_ID, quarter_ID, brand_ID, category_ID, area_ID in the product -
+                    add the product_ID as int
+                    - use the sql to update the information
+                      update product p, product_sequence s set p.year_ID = s.year_ID, p.quarter_ID = s.quarter_ID,p.brand_ID = s.brand_ID,p.category_ID = s.category_ID, p.area_ID = s.area_ID where p.sequence_ID = s.sequence_ID;
+                    delete product_sequence table and product_sequence_id, sequence number in product
+                 6. change the inventory_order, inventory_order_product, area, year, quarter, brand, category, from increment to identity, and change db to auto_increment and change database too
+                 7. all the total_sales_price and total_whole_sales price are using the data in the inventory_order_product instead of product information 
+                 7. change the field COLLATE utf8_unicode_ci to utf8_general_ci 
+
+Release Date: 2012-3-4
+Release Summary: 1. Set the default CHAIN ADMIN to user_id =1, and chain store = NULL  
+                 2. Set the index for some unique data like ChainStoreUser.userName, userInfor.userName  
+                 3. set the index for the manager_id index for the manager_employee_relationship
+                 4. add the DB tables:
+                    - chain_inven_flow_order
+                    - chain_inven_flow_order_product     
+                 3. add the sale_price_factory and discount in the product table  
+                 4. add the discount,sale_price_selected in the InventoryOrderProduct and headq_sales_history table 
+                 
+Release Date: 2012-3-7
+Release summary: 1. add the total_paid, total_discount to inventory_order   
+				 2. add the InventoryOrderIdFK in the Inventory_Order_Product's Foreign key
+
+Release Date: 2013-3-15
+Release summary
+       Database: 1. add tables (chain_vip_cards, chain_vip_types, finance_bill_hq)   
+                 2. Change table Chain_sales_order, add the column "vip_card_no"  
+                 3. add the year and month to the create inventory UI  
+                 
+Release Date: 2013-4-4
+Release summary
+        DB     : 1. drop table chain_customer_group
+                 2. drop chain_sales_order's column customer_group_id
+                 3. alter chain_sales_order_product, add the type column
+                 4. alter chain_sales_order, add columns (total_quantity_r,total_amount_r,net_amount_r)
+                 5. alter chain_sales_order_product add index for chain_sales_order_id_index
+                 6. alter chain_store, add column (status)
+
+Release Date: 2013-6-6
+Release Summary
+        DB     : 1. add table chain_user_functionality
+                 2. add table chain_role_type
+                 3. add the table chain_in_out_stock
+                 4. add the client_id_index for the Chain_store
+                 5. change chain_sales_order table, order_date -> date type
+                    add order_create_date column
+                 6. add the total_inventory_Q for the chain_inven_flow_order
+                 7. add chain_finance_trace table
+                 8. add create_date to finance_bill_hq table
+                 9. delete the color_id and size_id column in product table
+                 10. create color and size table. change Product.product_ID to int from bigInt
+                 11. delete the serial_number index from the table
+                 12. make the order_keeper, order_Counter as null in the inventory_order table
+                 
+Release Date: 2013 July 01
+Release Summary
+        DB	: 1. Add column VIP Score in  chain_sales_order
+              2. Add table chain_initial_stock, 
+              3. Add table chain_acct_flow 
+              4. Add pre_acct_amt and post_acct_amt to inventory_order and finance_bill_hq         
+              5. Add initial_acct_amt in the chain_store table   
+              
+Release Date: 2013 July18
+Release Summary
+        DB	: 1. Add print template information in the chain_store table
+        
+                      
+Release Date: 2013 Aug05 (headq)
+Release Summary
+        DB	: 1. check the inventory_order, finance_bill search criteria, add time index
+              2. add the PDA_Scanner to inventory_order table
+              
+Release Date: 2013 Sep 30
+Release Summary
+        DB	: 1. change user_functionality, userinfor, id to identity
+        
+                      
+Release Date: 2013 Oct 11
+Release Summary
+        DB	: 1. add chain_store_group_element, chain_store_group
+        	  2. add to_chain_store_id to the chain_inven_flow_order
+        	  
+Release Date 2013 Oct14
+Release Summary
+		DB	: 1. add the invoice_discount column to finance_bill table
+		
+Release Date 2013 Nov20
+Release Summary
+		DB	: 1. add the status to the chain store
+		
+Release Date 2014 Mar
+Release Summary
+		DB	: 1. add the vip_score_cash_ratio in the chain_store_conf
+		
+Release Date July 14
+Release Summary
+		DB	: 1. add priceIncrement to ChainStore
+		      2. add table chain_price_increment
+		      
+Release Date Apr 15
+Release Summary
+		DB	: 1. add chain_id, to brand, product, product_barcode    
+		      2. add allow_add_barcode to chain_store  
+		      
+Release Date May 10
+Release Summary
+		DB	: 1. add id to the  chain_vip_cards, as pk
+		      2. add vip_card_id to the chain_vip_score
+		      3. add vip_card_id to the chain_sales_order
+		      4. add the vip_card_no index to the chain_vip_card	
+		      
+Release Date May 11
+Release Summary
+		DB	: 1. add chain_sales_order, chain_daily_sales columns	
+		         qx_quantity, qx_amount, qx_cost, my_quantity, my_amount, my_cost   
+		         
+Release Date 8 13
+Release Summary
+		DB	: 1. add chain_weekly_sales columns	
+		         qx_quantity, qx_amount,  my_quantity, my_amount, 	
+		         
+Release Date 
+Release Summary
+		DB	: 1. add table chain_vip_prepaid_flow
+		         add column chain_prepaid_amount of chain_sales_order	         	                  

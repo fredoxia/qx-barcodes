@@ -1,0 +1,22 @@
+
+/* css for data grid*/ 
+.dataTablegrid { 
+	border-color: rgb(247, 243, 247);
+	border-style: solid;
+} 
+.dataTablegrid caption { }
+
+/* css for OEC form page*/
+.row_focus {
+	background: #B0FFB0;
+	border: 1px solid #00cc33;
+}
+/* css or table row effect */
+tr.alt td {
+	background: rgb(255, 250, 208);;
+}
+
+tr.over td {
+	background: #bcd4ec;
+}
+

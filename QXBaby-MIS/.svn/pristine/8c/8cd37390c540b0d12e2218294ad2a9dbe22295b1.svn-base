@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.headQ.HR">
+    <class name="EvaluationItem" table="evaluation_item">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="item_name" column="item_name" type="string"/>
+        <property name="item_desp_1" column="item_desp_1" type="string"/>
+        <property name="item_desp_2" column="item_desp_2" type="string"/>
+        <property name="item_desp_3" column="item_desp_3" type="string"/>
+        <property name="item_desp_4" column="item_desp_4" type="string"/>
+    </class>
+    <class name="Evaluation" table="evaluation">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="year" column="year" type="integer"/>
+        <property name="month" column="month" type="integer"/>
+        <property name="description" column="description" type="string"/>
+        <property name="evaluation_type" column="evaluation_type" type="string"/>
+        <set name="evaluationItem_set" cascade="save-update" table="evaluation_mapping" lazy="true" fetch="subselect">
+             <key column="evaluation_id"/>
+             <many-to-many class="com.onlineMIS.ORM.entity.headQ.HR.EvaluationItem" column="evaluation_item_id"/>
+        </set>
+    </class>
+    <class name="PeopleEvalItemMark" table="People_eval_item_mark">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="item_mark" column="item_mark" type="double"/>
+        <property name="comment" column="comment" type="string"/>
+        <many-to-one name="peopleEvalMark" fetch="join" column="people_eval_mark_id" class="com.onlineMIS.ORM.entity.headQ.HR.PeopleEvalMark" not-null="true"/>
+        <many-to-one name="evaluationItem" fetch="join" column="eval_item_id" class="com.onlineMIS.ORM.entity.headQ.HR.EvaluationItem" lazy="false"/> 
+    </class>
+    <class name="PeopleEvalMark" table="people_eval_mark">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="mark" column="mark" type="double"/>
+        <property name="comment" column="comment" type="string"/>
+        <property name="createDate" column="create_date" type="timestamp"/>
+        <many-to-one name="evaluater"  fetch="join" column="evaluater_id" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false"/>
+        <many-to-one name="peopleEvaluation" fetch="join" column="people_evaluation_id" class="com.onlineMIS.ORM.entity.headQ.HR.PeopleEvaluation" lazy="false"/>
+        <set name="peopleEvalItemMark_set" cascade="all-delete-orphan" inverse="true" lazy="true"  fetch="subselect">
+             <key column="people_eval_mark_id"/>
+             <one-to-many class="com.onlineMIS.ORM.entity.headQ.HR.PeopleEvalItemMark"/>
+        </set>
+    </class>
+    <class name="PeopleEvaluation" table="people_evaluation">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="mark" column="mark" type="double"/>
+        <property name="evaluationYear" column="evaluation_year" type="integer"/>
+        <property name="evaluationMonth" column="evaluation_month" type="integer"/>
+        <property name="status" column="status" type="integer"/>         
+        <many-to-one name="evaluatee"  fetch="join" column="evaluatee_id" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false"/>
+        <many-to-one name="evaluation"  fetch="join" column="evaluation_id" class="com.onlineMIS.ORM.entity.headQ.HR.Evaluation" lazy="false"/>
+        <set name="peopleEvalMark_set" cascade="all-delete-orphan" inverse="true"  fetch="subselect">
+             <key column="people_evaluation_id"/>
+             <one-to-many class="com.onlineMIS.ORM.entity.headQ.HR.PeopleEvalMark"/>
+        </set>
+    </class>
+    <class name="EvaluationCtl" table="evaluation_ctl">
+        <composite-id>
+            <key-property name="year" column="year" type="integer"/>
+            <key-property name="month" column="month" type="integer"/>   
+        </composite-id>
+        <property name="status" column="status" type="integer"/>
+    </class>
+    <class name="MagerEmployeeRelationship" table="manager_employee_relationship">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="manager_id" column="manager_id" type="integer"/>
+        <property name="employee_id" column="employee_id" type="integer"/>   
+    </class>    
+</hibernate-mapping>

@@ -1,0 +1,6 @@
+java.util.Date=com.onlineMIS.converter.DateConverter
+java.sql.Date=com.onlineMIS.converter.DateSQLConverter
+java.lang.Double=com.onlineMIS.converter.DoubleConverter
+double=com.onlineMIS.converter.DoubleConverter
+int=com.onlineMIS.converter.IntegerConverter
+

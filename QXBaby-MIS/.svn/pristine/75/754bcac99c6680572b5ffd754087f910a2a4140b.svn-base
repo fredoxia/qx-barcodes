@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.chainS.manualRpt">
+    
+      <class name="ChainDailyManualRpt" table="chain_daily_manual_report">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="creator" fetch="select" column="rpt_creator_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor" not-null="true"/>
+        <many-to-one name="chainStore" fetch="select" column="chain_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="true"/>
+		<property name="rptDate" column="rpt_date" type="date"/>
+        <property name="weekday" column="weekday" type="string"/>
+        <property name="weather" column="weather" type="string"/>
+        <property name="temperature" column="temperature" type="double"/>
+        <property name="shouldAttend" column="should_attend" type="integer"/>
+        <property name="actualAttend" column="actual_attend" type="integer"/>
+        <property name="monthlyTarget" column="monthly_target" type="double"/>
+		<property name="accumulateMonthlyTarget" column="accumulate_monthly_target" type="double"/>
+        <property name="dailyTarget" column="daily_target" type="double"/>
+		<property name="actualDailyTarget" column="actual_daily_target" type="double"/>
+        <property name="sameDayLastWeekSales" column="same_day_last_week_sales" type="double"/>
+        
+        <property name="yestordayGoodPoint" column="yestorday_good_point" type="string"/>
+		<property name="yestordayWeakPoint" column="yestorday_weak_point" type="string"/>		
+		<property name="yestordayEmergency" column="yestorday_emergency" type="string"/>	
+		<property name="todayTarget" column="today_target" type="string"/>
+		<property name="mainProductPromotion" column="main_product_promotion" type="string"/>
+		<property name="operationTarget" column="operation_target" type="string"/>
+		<list name="analysisItems" cascade="all-delete-orphan" inverse="true" lazy="true" fetch="subselect" batch-size="15">
+             <key column="rpt_id"/>
+             <list-index column="rowIndex"/>
+             <one-to-many class="ChainDailyManualReportAnalysisItem"/>
+        </list >
+		<list  name="salesItems"  cascade="all" inverse="true" lazy="true" fetch="subselect" batch-size="15">
+             <key column="rpt_id"/>
+             <list-index column="rowIndex"/>
+             <one-to-many class="ChainDailyManualReportSalesItem"/>
+        </list >        
+      </class>  
+      
+      <class name="ChainDailyManualReportAnalysisItem" table="chain_daily_manual_report_analysis_item">
+        <id name="rptAnalysisItemId" column="rpt_analysis_item_id">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="chainDailyManualRpt" column="rpt_id" class="ChainDailyManualRpt" not-null="true"/>
+
+        <property name="salerName" column="saler_name" type="string"/>
+        <property name="monthlyAccumulate" column="monthly_accumulate" type="double"/>
+        <property name="rank" column="rank" type="int"/>
+        <property name="salesTarget" column="sales_target" type="double"/>
+        <property name="salesActual" column="sales_actual" type="double"/>
+        <property name="salesPercentage" column="sales_percentage" type="double"/>
+        <property name="relatedSalesTarget" column="related_sales_target" type="double"/>
+        <property name="relatedSalesActual" column="related_sales_actual" type="double"/>
+		<property name="amountPerSalesTarget" column="amount_per_sales_target" type="double"/>
+        <property name="amountPerSalesActual" column="amount_per_sales_actual" type="double"/>
+		<property name="vipIncreaseTarget" column="vip_increase_target" type="double"/>
+        <property name="vipIncreaseActual" column="vip_increase_actual" type="double"/>
+        <property name="vipIncreasePercentage" column="vip_increase_percentage" type="double"/>
+		<property name="vipSalesTarget" column="vip_sales_target" type="double"/>		
+		<property name="vipSalesActual" column="vip_sales_actual" type="double"/>	
+		<property name="vipSalesPercentage" column="vip_sales_percentage" type="double"/>
+		<property name="rowIndex" column="row_index" type="integer"/>
+      </class>  
+      
+      <class name="ChainDailyManualReportSalesItem" table="chain_daily_manual_report_sales_item">
+        <id name="rptSalesItemId" column="rpt_sales_item_id">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="chainDailyManualRpt" column="rpt_id" class="ChainDailyManualRpt" not-null="true"/>
+        <property name="rowIndex" column="row_index" type="integer"/>
+        <property name="brand" column="brand" type="string"/>
+        <property name="product" column="product" type="string"/>
+        <property name="salesQ" column="sales_q" type="double"/>
+        <property name="inventoryQ" column="inventory_q" type="double"/>
+      </class> 
+      
+      <class name="ChainDailyManualRptConf" table="chain_daily_manual_report_conf">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="overDayLock" column="over_day_lock" type="integer"/>
+      </class> 
+  
+</hibernate-mapping>

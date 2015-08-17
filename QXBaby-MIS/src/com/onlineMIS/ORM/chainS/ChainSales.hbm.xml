@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.chainS.sales">
+    <class name="ChainStoreSalesOrderProduct" table="chain_sales_order_product">
+
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="index" column="index_num" type="integer"/>
+        <many-to-one name="chainSalesOrder" fetch="join" column="chain_sales_order_id" class="ChainStoreSalesOrder" not-null="true"/>
+        <many-to-one name="productBarcode" fetch="join" column="product_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" not-null="true" lazy="false"/>
+        <property name="memo" column="memo" type="string"/>
+        <property name="retailPrice" column="retail_price" type="double"/>
+        <property name="costPrice" column="cost_price" type="double"/>
+        <property name="discountRate" column="discount_rate" type="double"/>
+        <property name="quantity" column="quantity" type="integer"/>
+        <property name="type" column="type" type="integer"/>
+        <property name="normalSale" column="normal_sale" type="integer"/>
+     </class>
+    
+     <class name="ChainStoreSalesOrder" table="chain_sales_order">
+
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="chainStore" fetch="join" column="chain_store_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="true"/>
+        <many-to-one name="saler" fetch="join" column="chain_saler_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor" not-null="true"/>
+        <property name="accountTypeId" column="account_type_id" type="integer"/>
+        <property name="orderDate" column="order_date" type="date"/>
+        <property name="orderCreateDate" column="order_create_date" type="timestamp"/>
+        <many-to-one name="creator" fetch="join" column="order_creator" class="com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor" not-null="true"/>
+        <property name="memo" column="memo" type="string"/>
+        <property name="cashAmount" column="cash_amount" type="double"/>
+        <property name="vipScore" column="vip_score" type="double"/>
+        <property name="extralVipScore" column="extral_vip_score" type="double"/>
+        <property name="cardAmount" column="card_amount" type="double"/>
+        <property name="discountAmount" column="discount_amount" type="double"/>
+        <property name="netAmount" column="net_amount" type="double"/>
+        <property name="netAmountR" column="net_amount_r" type="double"/>
+        <property name="status" column="status" type="integer"/>
+        <property name="type" column="order_type" type="integer"/>
+        <property name="totalAmount" column="total_amount" type="double"/>
+        <property name="totalCost" column="total_cost" type="double"/>
+        <property name="totalCostF" column="total_cost_free" type="double"/>
+        <many-to-one name="vipCard" column="vip_card_id" not-null="false" class="com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard" lazy="false"/>
+        <property name="coupon" column="coupon" type="double"/>
+        <property name="returnAmount" column="return_amount" type="double"/>
+        <property name="totalQuantity" column="total_quantity" type="integer"/>
+        <property name="totalQuantityR" column="total_quantity_r" type="integer"/>
+        <property name="totalQuantityF" column="total_quantity_f" type="integer"/>
+        <property name="totalAmountR" column="total_amount_r" type="double"/>
+        <property name="totalQuantityA" column="total_quantity_a" type="integer"/>
+        <property name="netAmountA" column="net_amount_a" type="double"/>
+        <property name="qxQuantity" column="qx_quantity" type="integer"/>
+        <property name="qxAmount" column="qx_amount" type="double"/>
+        <property name="qxCost" column="qx_cost" type="double"/>
+        <property name="myQuantity" column="my_quantity" type="integer"/>
+        <property name="myAmount" column="my_amount" type="double"/>
+        <property name="myCost" column="my_cost" type="double"/>
+        <property name="chainPrepaidAmt" column="chain_prepaid_amount" type="double"/>
+        <set name="productSet" cascade="all-delete-orphan" inverse="true" lazy="true" fetch="subselect">
+             <key column="chain_sales_order_id"/>
+             <one-to-many class="ChainStoreSalesOrderProduct"/>
+        </set>
+      </class>  
+      
+     <class name="ChainDailySales" table="chain_daily_sales">
+        <cache usage="read-write" region="qxbaby"/>
+             
+        <composite-id>
+            <key-many-to-one name="chainStore" column="chain_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore"/>
+            <key-property name="reportDate" column="report_date" type="date"/>  
+        </composite-id>
+        <property name="salesQuantity" column="sales_quantity" type="integer"/>
+        <property name="returnQuantity" column="return_quantity" type="integer"/>
+        <property name="netSalesQuantity" column="net_sales_quantity" type="integer"/>
+        <property name="freeQuantity" column="free_quantity" type="integer"/>
+        <property name="salesAmount" column="sales_amount" type="double"/>
+        <property name="returnAmount" column="return_amount" type="double"/>
+        <property name="netSalesAmount" column="net_sales_amount" type="double"/>
+        <property name="netCost" column="net_cost" type="double"/>
+        <property name="netProfit" column="net_profit" type="double"/>
+        <property name="freeCost" column="free_cost" type="double"/>
+        <property name="discountAmount" column="discount_amount" type="double"/>
+        <property name="coupon" column="coupon" type="double"/>
+        <property name="vipScoreCash" column="vip_score_cash" type="double"/>
+        <property name="card" column="card" type="double"/>
+        <property name="cash" column="cash" type="double"/>
+        <property name="createDate" column="create_date" type="timestamp"/>
+        <property name="qxQuantity" column="qx_quantity" type="integer"/>
+        <property name="qxAmount" column="qx_amount" type="double"/>
+        <property name="qxCost" column="qx_cost" type="double"/>
+        <property name="myQuantity" column="my_quantity" type="integer"/>
+        <property name="myAmount" column="my_amount" type="double"/>
+        <property name="myCost" column="my_cost" type="double"/>
+        <property name="rank" column="rank" type="integer"/>
+      </class>   
+        
+      <class name="ChainDailySalesImpact" table="chain_daily_sales_impact">
+        <composite-id>
+            <key-many-to-one name="chainStore" column="chain_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore"/>
+            <key-property name="reportDate" column="report_date" type="date"/>  
+        </composite-id>
+        <property name="orderId" column="order_id" type="integer"/>
+        <property name="createDate" column="create_date" type="timestamp"/>
+        <property name="failDate" column="fail_date" type="timestamp" not-null="false"/>
+      </class>  
+
+      <class name="ChainCouponConsumeHis" table="chain_coupon_consum_his">
+        <id name="couponNum" column="coupon_num" type="integer">
+            <generator class="assigned" />
+        </id>
+        <property name="date" column="date" type="timestamp"/>
+        <property name="used" column="used" type="integer"/>
+      </class>
+    
+       
+</hibernate-mapping>

@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+    <constant name="struts.custom.i18n.resources" value="message"/>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.multipart.saveDir" value="C:/qxbabyCache/" />
+    <constant name="struts.multipart.maxSize" value="100000000"/> 
+    <!-- super package -->
+    <package name="super-package" extends="struts-default">
+       <interceptors>
+	   <interceptor-stack name="myInteceptors">
+				<interceptor-ref name="defaultStack" />	
+				<interceptor-ref name="exception">
+					<param name="logEnabled">true</param>
+					<param name="logLevel">info</param>             
+				</interceptor-ref>
+		</interceptor-stack>
+		</interceptors>
+		
+		<default-interceptor-ref name="myInteceptors" />
+		
+		<global-results>
+		    <result name="error">/jsp/common/error.jsp</result>
+		    <result name="operationError">/jsp/common/operationError.jsp</result>
+	        <result name="exception">/jsp/common/exception.jsp</result>
+	        <result name="unauthorizedRequest">/jsp/common/unauthorizedAccess.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+		    <exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>
+		</global-exception-mappings>
+    </package>
+
+    <!--The namespace /action is the headquarter actions-->
+    <package name="headQJSPPackage" extends="super-package" namespace="/action">
+        <action name="login" class="com.onlineMIS.action.headQ.user.LoginAction">
+            <result name="myTasks">/jsp/headQ/MyTasks.jsp</result>
+            <result name="error">/indexHeadQ.jsp</result>
+            <result name="pdaLoginSuccess" type="redirect">/jsp/headQ/PDA/PDACreateOrder.jsp</result>
+            <result name="pdaLoginError">/indexHeadQPDA.jsp</result>
+            <result name="input">/indexHeadQ.jsp</result>
+            <result name="adminLogin" type="chain">
+        		<param name="actionName">userJSP</param>
+                <param name="namespace">/action</param>
+                <param name="method">swithToChain</param>
+        	</result>
+        </action>
+        <action name="userJSP" class="com.onlineMIS.action.headQ.user.UserJSPAction">
+            <result name="success">/jsp/headQ/user/UserInfor.jsp</result>
+            <result name="login">/indexHeadQ.jsp</result>
+            <result name="pdaLogin">/indexHeadQPDA.jsp</result>
+            <result name="preEdit"  type="redirect">action/userJSP!preEdit</result>
+            <result name="EditFunctionality">/jsp/headQ/user/EditUserFunctionality.jsp</result>
+            <result name="chainStore" type="redirect">/actionChain/chainUserJSP!getNews</result>
+            <result name="EditMyAcct">/jsp/headQ/user/EditMyAcct.jsp</result>
+            <result name="viewLog">/jsp/headQ/user/SystemLogs.jsp</result>
+            <result name="login4Chain">/index4Chain.jsp</result>
+
+            <result type="stream" name="logReport">  
+                 <param name="contentType">  
+                     application/octet-stream;charset=UTF-8 
+                </param>  
+                <param name="inputName">logStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${fileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result>  
+        </action>
+
+        <action name="productJSPAction" class="com.onlineMIS.action.headQ.barCodeGentor.ProductJSPAction">
+             <result name="success">/jsp/headQ/barcodeGentor/UpdateProduct.jsp</result>
+              <result name="search">/jsp/headQ/barcodeGentor/SearchBarcode.jsp</result>
+              <result name="create">/jsp/headQ/barcodeGentor/BarcodeGentor.jsp</result>
+              <result name="update">/jsp/headQ/common/updateSuccess.jsp?location=close</result>
+              <result name="delete">/jsp/headQ/common/updateSuccess.jsp?location=close</result>
+              <result name="productInfoInput">/jsp/headQ/barcodeGentor/UpdateProduct.jsp</result>
+              <result name="ViewProduct">/jsp/headQ/barcodeGentor/ViewProduct.jsp</result>
+              <result name="BrandList">/jsp/headQ/barcodeGentor/BrandList.jsp</result>
+              <result name="ColorList">/jsp/headQ/barcodeGentor/ColorList.jsp</result>
+              <result type="stream" name="report">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+               </result>  
+               <result name="ProductCodeSearchProducts">/jsp/headQ/barcodeGentor/SearchByProductCodeList.jsp</result>
+        </action>
+        
+        <action name="basicData" class="com.onlineMIS.action.headQ.barCodeGentor.BasicDataJSPAction">
+            <result name="preMaintain">/jsp/headQ/barcodeGentor/MaintainBarcodeData.jsp</result>
+            <result name="brand">/jsp/headQ/barcodeGentor/updateBasicData/UpdateBrand.jsp</result>
+            <result name="category">/jsp/headQ/barcodeGentor/updateBasicData/UpdateCategory.jsp</result>
+            <result name="color">/jsp/headQ/barcodeGentor/updateBasicData/UpdateColor.jsp</result>
+            <result name="size">/jsp/headQ/barcodeGentor/updateBasicData/UpdateSize.jsp</result>
+            <result name="updateSuccess">/jsp/headQ/common/updateSuccess.jsp?location=close</result>
+            
+            <result name="listYear">/jsp/headQ/barcodeGentor/updateBasicData/ListYear.jsp</result>
+            <result name="listQuarter">/jsp/headQ/barcodeGentor/updateBasicData/ListQuarter.jsp</result>
+            <result name="listBrand">/jsp/headQ/barcodeGentor/updateBasicData/ListBrand.jsp</result>
+            <result name="listCategory">/jsp/headQ/barcodeGentor/updateBasicData/ListCategory.jsp</result>
+            <result name="listColor">/jsp/headQ/barcodeGentor/updateBasicData/ListColor.jsp</result>
+            <result name="listProductUnit">/jsp/headQ/barcodeGentor/updateBasicData/ListProductUnit.jsp</result>
+            <result name="listNumPerHand">/jsp/headQ/barcodeGentor/updateBasicData/ListNumPerHand.jsp</result>
+            
+            <result name="updateYear">/jsp/headQ/barcodeGentor/updateBasicData/UpdateYear.jsp</result>
+            <result name="updateQuarter">/jsp/headQ/barcodeGentor/updateBasicData/UpdateQuarter.jsp</result>
+            <result name="updateBrand">/jsp/headQ/barcodeGentor/updateBasicData/UpdateBrand.jsp</result>
+            <result name="updateCategory">/jsp/headQ/barcodeGentor/updateBasicData/UpdateCategory.jsp</result>
+            <result name="updateProductUnit">/jsp/headQ/barcodeGentor/updateBasicData/UpdateProductUnit.jsp</result>
+            <result name="updateNumPerHand">/jsp/headQ/barcodeGentor/updateBasicData/UpdateNumPerHand.jsp</result>
+        </action>
+       
+        
+        <!-- inventory part --> 
+        <action name="inventoryOrder" class="com.onlineMIS.action.headQ.inventory.InventoryOrderJSPAction">  
+            <result name="newOrder">/jsp/headQ/inventory/EditInventorySalesOrder.jsp</result>
+            <result name="success" type="redirect">/jsp/headQ/common/updateSuccess.jsp?location=/action/inventoryOrder!create</result>
+            <result name="success2" type="redirect">/jsp/headQ/common/updateSuccess.jsp?location=/action/inventoryOrder!createReturnOrder</result>
+            <result name="search">/jsp/headQ/inventory/SearchInventoryOrder.jsp</result>
+            <result name="SearchSuccess">/jsp/headQ/inventory/SearchResultOfInventoryOrder.jsp</result>
+            <result name="retrieveSuccess">/jsp/headQ/inventory/DisplayInventorySalesOrder.jsp</result>
+            <result name="preview">/jsp/headQ/inventory/EditInventorySalesOrder.jsp</result>
+            <result name="inventoryComplete" type="redirect">/jsp/headQ/common/updateSuccess.jsp?location=/action/inventoryOrder!preSearch?formBean.order.order_Status=1</result>
+            <result name="input" type="redirect">/jsp/headQ/inventory/EditInventorySalesOrder.jsp</result>
+            <result name="edit">/jsp/headQ/inventory/EditInventorySalesOrder.jsp</result> 
+            <result name="successToSearch" type="redirect">/jsp/headQ/common/updateSuccess.jsp?location=/action/inventoryOrder!preSearch</result>
+            <result name="preUpload">/jsp/headQ/inventory/UploadFile.jsp</result>
+            <result name="pdaDraftList">/jsp/headQ/PDA/PDADrafts.jsp</result>
+            <result name="pdaOrder">/jsp/headQ/PDA/PDACreateOrder.jsp</result>
+            <!-- sales return -->
+            <result name="returnSuccess" type="redirect">/jsp/headQ/common/updateSuccess.jsp?location=/action/inventoryOrder!createReturnOrder</result>
+        </action> 
+        
+        <action name="exportInventoryOrToExcel" class="com.onlineMIS.action.headQ.inventory.ExportInventoryOrderAction">  
+
+            <result type="stream" name="success">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result>  
+         </action> 
+         
+        <action name="exportInventoryOrToJinSuan" class="com.onlineMIS.action.headQ.inventory.InventoryOrderJSPAction">
+            <result name="successToSearch">/jsp/headQ/common/updateSuccess.jsp?location=/action/inventoryOrder!create</result>
+            <result name="successToSearch2">/jsp/headQ/common/updateSuccess.jsp?location=/action/inventoryOrder!createReturnOrder</result>
+            <result name="input">/jsp/headQ/inventory/DisplayInventorySalesOrder.jsp</result>
+        </action> 
+        <action name="basicInforJSP" class="com.onlineMIS.action.headQ.inventory.BasicInforJSPAction">
+            <result name="EditCustomer">/jsp/headQ/inventory/EditCustomer.jsp</result>
+        </action> 
+        
+        <!-- chain sales part -->
+        <action name="chainSales" class="com.onlineMIS.action.headQ.chain.ChainSalesAction">
+            <result name="preSalesReport">/jsp/headQ/chain/PreSalesReport.jsp</result>
+            <result name="chainSalesReport">/jsp/headQ/chain/ChainSalesReport.jsp</result>
+            <result type="stream" name="exportExcel">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result>  
+        </action> 
+        
+        <!-- the HR Management JSP Action -->
+        <action name="hrEvalJSP" class="com.onlineMIS.action.headQ.HR.HREvalJSPAction">
+            <result name="EvalMgmtNew">/jsp/headQ/HR/HREvalMgmtPre.jsp</result>
+            <result name="EvalConf">/jsp/headQ/HR/HREvalConf.jsp</result>
+            <result name="EvalMgmtCreate">/jsp/headQ/HR/HREvalMgmtCreate.jsp</result>
+            <result name="EvalMgmtSearch">/jsp/headQ/HR/HREvalMgmtSearch.jsp</result>
+            <result name="EvalSummaryPersonalSearch">/jsp/headQ/HR/HREvalSummaryPersonalSearch.jsp</result>
+            <result name="EvalMgmtPersonalSearch">/jsp/headQ/HR/HREvalSummaryMgmtSearch.jsp</result>
+            <result name="PeopleEvalMarkView">/jsp/headQ/HR/HRPeopleEvalMarkView.jsp</result>
+            <result name="PeopleEvalView">/jsp/headQ/HR/HRPeopleEvalView.jsp</result>
+            <result name="input">/jsp/headQ/HR/HREvalConf.jsp</result>
+            <result name="EvalMgmtCreateSuccess">/jsp/headQ/common/updateSuccess.jsp?location=/action/hrEvalJSP!preEvaluationMgmtNew</result>
+            
+        </action>  
+  
+        
+        <!-- the finance action -->
+        <action name="financeHQJSP" class="com.onlineMIS.action.headQ.finance.FinanceJSPAction">
+            <result name="EditFinanceBill">/jsp/headQ/finance/EditFinanceBill.jsp</result>
+            <result name="ViewFinanceBill">/jsp/headQ/finance/ViewFinanceBill.jsp</result>
+            <result name="preSearchFinanceBill">/jsp/headQ/finance/SearchFinanceBill.jsp</result>   
+            <result name="preSearchAcctFlow">/jsp/headQ/finance/SearchAcctFlowHQ.jsp</result>  
+                
+        </action>  
+        
+        <!-- the chain Management JSP Action -->
+        <action name="chainSMgmtJSP" class="com.onlineMIS.action.chainS.chainMgmt.ChainMgmtJSPAction">
+            <result name="editChainStoreInfor">/jsp/headQ/chain/EditChainInfor.jsp</result>
+            <result name="editChainStoreGroup">/jsp/headQ/chain/EditChainGroup.jsp</result>
+            <result name="listChainStoresHQ">/jsp/headQ/chain/ListChainStores.jsp</result> 
+            <result name="editChainInitialStock">/jsp/headQ/chain/EditChainInitialStock.jsp</result>
+            <result name="uploadInitialStock">/jsp/chainStore/inventoryFlow/UploadFile.jsp</result>
+            <result name="listChainPriceIncre">/jsp/headQ/chain/ListChainPriceIncrement.jsp</result>
+            <result name="editChainPriceIncre">/jsp/headQ/chain/EditChainPriceIncrement.jsp</result>
+            
+        </action>                
+          
+    </package>
+    
+    <package name="headQJSONPackage" extends="json-default" namespace="/action">
+
+        <action name="productJSONAction" class="com.onlineMIS.action.headQ.barCodeGentor.ProductJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>
+        <action name="userJSON" class="com.onlineMIS.action.headQ.user.UserJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>
+        <action name="loginJSON" class="com.onlineMIS.action.headQ.user.LoginAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>
+        <action name="basicInforJSON" class="com.onlineMIS.action.headQ.inventory.BasicInforJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action> 
+        <action name="hrEvalJSON" class="com.onlineMIS.action.headQ.HR.HREvalJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action> 
+        <action name="inventoryOrderJSON" class="com.onlineMIS.action.headQ.inventory.InventoryOrderJSONAction"> 
+            <result type="json" name="successful">
+                <param name="root">
+                    jsonObject
+                </param>
+            </result> 
+        </action> 
+        <action name="inventoryOrderUpload" class="com.onlineMIS.action.headQ.inventory.InventoryOrderUploadFileAction"> 
+            <result type="json" name="success">
+                <param name="contentType">
+                    text/html
+                </param>
+            </result>
+        </action>         
+       
+        <action name="financeHQJSON" class="com.onlineMIS.action.headQ.finance.FinanceJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>  
+        
+        <action name="chainSMgmtJSON" class="com.onlineMIS.action.chainS.chainMgmt.ChainMgmtJSONAction">
+            <result type="json" name="successful">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>  
+        <action name="inventoryFlowJSONAction" class="com.onlineMIS.action.chainS.inventoryFlow.ChainInventoryFlowJSONAction">
+            <result type="json" name="successful">
+                 <param name="root">jsonObject</param>
+            </result>
+            <result type="json" name="success">
+                <param name="contentType">
+                    text/html
+                </param>
+            </result>
+        </action> 
+         <action name="basicDataJSON" class="com.onlineMIS.action.headQ.barCodeGentor.BasicDataJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>
+    </package>
+
+
+
+   <!-- the namespace /actionChain is the action for the chain store -->
+   <package name="chainSJSPPackage" extends="super-package" namespace="/actionChain">
+       <global-results>
+	       <result name="ChainUserInforList">/jsp/chainStore/user/ChainUserList.jsp</result>
+	       <result name="login_chain">/indexChainS.jsp</result>
+	   </global-results>
+
+       
+       <action name="chainUserJSP" class="com.onlineMIS.action.chainS.user.ChainUserJSPAction">
+            <result name="error">/indexChainS.jsp</result>
+            <result name="loginSuccess" type="redirect">chainUserJSP!getNews</result>
+            <result name="ChainUserInforWindow">/jsp/chainStore/user/UpdateChainUser.jsp</result>
+            <result name="updateSuccess">/jsp/headQ/common/SuccessWithUpdate.jsp?location=close</result>
+            <result name="BoardNews">/jsp/chainStore/chainBoard.jsp</result> 
+            <result name="headqInterface" type="redirect">/jsp/headQ/MyTasks.jsp</result> 
+            <result name="editChainUserFunction">/jsp/chainStore/user/EditChainUserFunctionality.jsp</result> 
+            <result name="editMyAcct">/jsp/chainStore/user/UpdateMyAcct.jsp</result> 
+            <result name="successClose">/jsp/headQ/common/updateSuccess.jsp?location=close</result>
+       </action>
+       
+       <action name="purchaseAction" class="com.onlineMIS.action.chainS.sales.PurchaseJSPAction">
+            <result name="SearchPurchase">/jsp/chainStore/sales/SearchPurchaseOrder.jsp</result>
+            <result name="PurchaseOrderDetail">/jsp/chainStore/sales/PurchaseOrderDetail.jsp</result>
+            <result type="stream" name="excelObject">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result>  
+        </action> 
+        <action name="chainSalesJSPAction" class="com.onlineMIS.action.chainS.sales.ChainSalesJSPAction">
+            <result name="SalesSearchProducts">/jsp/chainStore/sales/SearchByProductCodeList.jsp</result>
+            <result name="SalesSearchProducts2">/jsp/chainStore/sales/SearchByProductCodeList2.jsp</result>
+            <result name="SalesSearchProducts3">/jsp/chainStore/sales/SearchByProductCodeList3.jsp</result>
+            <result name="SalesOrderSearch">/jsp/chainStore/sales/SearchSalesOrder.jsp</result>
+            <result name="ViewSales">/jsp/chainStore/sales/ViewChainStoreSales.jsp</result>
+            <result name="EditChainSalesOrder">/jsp/chainStore/sales/EditChainStoreSales.jsp</result>
+            <result name="ViewProduct">/jsp/chainStore/include/ViewProductInfo.jsp</result>
+            <result name="checkProductInfor">/jsp/chainStore/sales/ChainCheckProductInfor.jsp</result>           
+        </action> 
+        <action name="inventoryFlowJSPAction" class="com.onlineMIS.action.chainS.inventoryFlow.ChainInventoryFlowJSPAction">
+            <result name="input">/jsp/common/error.jsp</result>
+            <result name="editInventoryTransferOrder">/jsp/chainStore/inventoryFlow/ChainInvenTransferOrder.jsp</result>
+            <result name="editFlowOrder">/jsp/chainStore/inventoryFlow/ChainInvenflowOrder.jsp</result>
+            <result name="editInventoryOrder">/jsp/chainStore/inventoryFlow/ChainInvenOrder.jsp</result>
+            <result name="displayFlowOrder">/jsp/chainStore/inventoryFlow/DisplayChainInvenflowOrder.jsp</result>
+            <result name="displayInventoryReport">/jsp/chainStore/inventoryFlow/DisplayChainInventoryOrderReport.jsp</result>
+            <result name="displayInventoryTransferOrder">/jsp/chainStore/inventoryFlow/DisplayChainInventoryTransferOrder.jsp</result>
+            <result name="searchOrder">/jsp/chainStore/inventoryFlow/SearchInvenFlowOrder.jsp</result>
+            <result name="preUpload">/jsp/chainStore/inventoryFlow/UploadFile.jsp</result>
+            <result name="checkInventoryTrace">/jsp/chainStore/inventoryFlow/ChainInvenTrace.jsp</result>
+            <result name="OpenCheckInventoryTracePage">/jsp/chainStore/inventoryFlow/ChainInvenTracePage.jsp</result>
+            <result name="checkChainInven">/jsp/chainStore/inventoryFlow/CheckChainInven.jsp</result>
+            <result type="stream" name="download">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">formBean.fileStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${formBean.fileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result>  
+            <result name="preGetCurrentInventory">/jsp/chainStore/inventoryFlow/CurrentInventoryChainList.jsp</result>
+            <result name="levelOneCurInventory">/jsp/chainStore/inventoryFlow/ChainCurrentInventoryLevelOne.jsp</result>
+            <result name="levelTwoCurInventory">/jsp/chainStore/inventoryFlow/ChainCurrentInventoryLevelTwo.jsp</result>
+            <result name="levelThreeCurInventory">/jsp/chainStore/inventoryFlow/ChainCurrentInventoryLevelThree.jsp</result>
+            <result name="levelFourCurInventory">/jsp/chainStore/inventoryFlow/ChainCurrentInventoryLevelFour.jsp</result>
+        </action>
+        <action name="chainVIPJSPAction" class="com.onlineMIS.action.chainS.vip.ChainVIPJSPAction">
+            <result name="ChainSearchSpecialVIPs">/jsp/chainStore/vip/ChainSearchSpecialVIPs.jsp</result>
+            <result name="ChainVIPTypeList">/jsp/chainStore/vip/ChainVIPTypeResult.jsp</result>
+            <result name="EditVIPType">/jsp/chainStore/vip/EditChainVIPType.jsp</result>
+            <result name="ChainVIPCardList">/jsp/chainStore/vip/ChainVIPCardResult.jsp</result>
+            <result name="EditVIPCard">/jsp/chainStore/vip/EditChainVIPCard.jsp</result>
+            <result name="UploadVIPs">/jsp/chainStore/vip/ChainVIPCardInforUpload.jsp</result>
+            <result name="OpenVIPConsumptionHisPage">/jsp/chainStore/vip/ChainVIPComsumpHisDiv.jsp</result>
+            
+            <result type="stream" name="successful">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result> 
+            <result name="upgradeVIP">/jsp/chainStore/vip/ChainVIPUpgrade.jsp</result>
+            <result name="updateVIPScore">/jsp/chainStore/vip/ChainVIPScoreUpdate.jsp</result>
+                   
+        </action>  
+                <!-- the finance action -->
+        <action name="financeChainJSP" class="com.onlineMIS.action.chainS.finance.FinanceChainJSPAction">
+            <result name="ViewHQFinanceBill">/jsp/chainStore/finance/ViewHQFinanceBill.jsp</result>
+            <result name="preSearchHQFinanceBill">/jsp/chainStore/finance/SearchHQFinanceBill.jsp</result>
+            <result name="preSearchAcctFlow">/jsp/chainStore/finance/SearchAcctFlow.jsp</result>
+                   
+        </action> 
+                
+        <!-- the chain Management JSP Action -->
+        <action name="chainMgmtJSP" class="com.onlineMIS.action.chainS.chainMgmt.ChainMgmtJSPAction">
+            <result name="editChainStoreInfor">/jsp/chainStore/chainMgmt/EditChainInfor.jsp</result>
+            <result name="editChainStoreConf">/jsp/chainStore/chainMgmt/EditChainConf.jsp</result>  
+            <result name="listChainStores">/jsp/chainStore/chainMgmt/ListChainStores.jsp</result> 
+            <result name="listBrands">/jsp/chainStore/chainMgmt/ListBrands.jsp</result>     
+            <result name="searchChainSalesPrice">/jsp/chainStore/chainMgmt/ChainSearchSalesPrice.jsp</result>
+            <result name="editChainSalesPrice">/jsp/chainStore/chainMgmt/ChainEditSalesPrice.jsp</result>        
+        </action>   
+         <action name="productJSPAction" class="com.onlineMIS.action.headQ.barCodeGentor.ProductJSPAction">
+              <result name="BrandList">/jsp/headQ/barcodeGentor/BrandList.jsp</result>
+        </action>
+         <action name="chainReportJSPAction" class="com.onlineMIS.action.chainS.report.ChainReportJSPAction">
+            <result name="PreReport">/jsp/chainStore/report/PreGenerateReport.jsp</result>
+            <result name="PreSalesReportHQ">/jsp/chainStore/report/HQGenerateSalesReport.jsp</result>
+            <result name="PreSalesReport">/jsp/chainStore/report/PreGenerateSalesReport.jsp</result>
+            <result name="PreSalesStatisticReport">/jsp/chainStore/report/PreSalesStatisticReport.jsp</result>
+
+            <result name="PreSalesAnalysisReport">/jsp/chainStore/report/GenerateSalesAnalysisReport.jsp</result>
+            
+            
+            <result name="PreAllInOneReport">/jsp/chainStore/report/PreAllInOneReport.jsp</result>
+            <result name="AllInOneReportLevelOne">/jsp/chainStore/report/AllInOneReportLevelOne.jsp</result> 
+            <result name="AllInOneReportLevelTwo">/jsp/chainStore/report/AllInOneReportLevelTwo.jsp</result> 
+            <result name="AllInOneReportLevelThree">/jsp/chainStore/report/AllInOneReportLevelThree.jsp</result> 
+            <result name="AllInOneReportLevelFour">/jsp/chainStore/report/AllInOneReportLevelFour.jsp</result> 
+                          
+            <result name="salesStatisticReportLevelOne">/jsp/chainStore/report/SalesStatisticReportLevelOne.jsp</result> 
+			<result name="salesStatisticReportLevelTwo">/jsp/chainStore/report/SalesStatisticReportLevelTwo.jsp</result>  
+            <result name="salesStatisticReportLevelFour">/jsp/chainStore/report/SalesStatisticReportLevelFour.jsp</result>  
+            <result name="salesStatisticReportLevelThree">/jsp/chainStore/report/SalesStatisticReportLevelThree.jsp</result> 
+             
+            <result name="PrePurchaseStatisticReport">/jsp/chainStore/report/PrePurchaseStatisticReport.jsp</result>
+            <result name="PurchaseStatisticReportLevelOne">/jsp/chainStore/report/PurchaseStatisticReportLevelOne.jsp</result> 
+			<result name="PurchaseStatisticReportLevelTwo">/jsp/chainStore/report/PurchaseStatisticReportLevelTwo.jsp</result>  
+            <result name="PurchaseStatisticReportLevelFour">/jsp/chainStore/report/PurchaseStatisticReportLevelFour.jsp</result>  
+            <result name="PurchaseStatisticReportLevelThree">/jsp/chainStore/report/PurchaseStatisticReportLevelThree.jsp</result> 
+
+            <result type="stream" name="report">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+               </result>  
+            
+            <result name="PreSalesReportBySaler">/jsp/chainStore/report/GenerateSalesReportBySaler.jsp</result>
+            
+        </action>         
+        <action name="chainDailySalesAction" class="com.onlineMIS.action.chainS.charts.ChainDailySalesChartJSPAction">
+				<result name="preGenChart">/jsp/chainStore/charts/GenChainDailySalesChart.jsp</result>
+				<result name="preGenWeeklyHotBrand">/jsp/chainStore/charts/GenChainWeeklyHotBrand.jsp</result>
+				<result name="preGenMonthlyHotBrand">/jsp/chainStore/charts/GenChainMonthlyHotBrand.jsp</result>
+				<result name="genHotProducts">/jsp/chainStore/charts/GenChainWeeklyHotProducts.jsp</result>
+				
+				<result name="genMonthlyHotProducts">/jsp/chainStore/charts/GenChainMonthlyHotProducts.jsp</result>
+	     </action>
+        <action name="chainDailyManualRptJSPAction" class="com.onlineMIS.action.chainS.manualRpt.ChainDailyManualRptJSPAction">
+				<result name="preCreateManualRpt">/jsp/chainStore/manualRpt/PreCreateManualRpt.jsp</result>
+				<result name="createManualRpt">/jsp/chainStore/manualRpt/CreateManualRpt.jsp</result>
+	     </action>	    
+    </package>
+    
+    
+     <package name="chainSJSONPackage" extends="json-default" namespace="/actionChain">
+     
+        <action name="chainUserJSON" class="com.onlineMIS.action.chainS.user.ChainUserJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>  
+        <action name="chainSalesJSONAction" class="com.onlineMIS.action.chainS.sales.ChainSalesJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action> 
+        <action name="inventoryFlowJSONAction" class="com.onlineMIS.action.chainS.inventoryFlow.ChainInventoryFlowJSONAction">
+            <result type="json" name="successful">
+                 <param name="root">jsonObject</param>
+            </result>
+            <result type="json" name="success">
+                <param name="contentType">
+                    text/html
+                </param>
+            </result>
+        </action> 
+        <action name="chainVIPJSONAction" class="com.onlineMIS.action.chainS.vip.ChainVIPJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>  
+        <action name="purchaseJSONAction" class="com.onlineMIS.action.chainS.sales.PurchaseJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action> 
+        <action name="financeChainJSON" class="com.onlineMIS.action.chainS.finance.FinanceChainJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>  
+        <action name="chainMgmtJSON" class="com.onlineMIS.action.chainS.chainMgmt.ChainMgmtJSONAction">
+            <result type="json" name="successful">
+                 <param name="root">jsonObject</param>
+            </result>
+            <result type="json">
+                 <param name="root">jsonArray</param>
+            </result>
+        </action>    
+        <action name="chainReportJSON" class="com.onlineMIS.action.chainS.report.ChainReportJSONAction">
+            <result type="json" name="successful">
+                 <param name="root">jsonArray</param>
+            </result>
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action> 
+        <action name="chainDailySalesJSON" class="com.onlineMIS.action.chainS.charts.ChainDailySalesChartJSONAction">
+            <result type="json">
+                 <param name="root">jsonArray</param>
+            </result>
+            <result type="json" name="successful">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>  
+        <action name="chainDailyManualRptJSON" class="com.onlineMIS.action.chainS.manualRpt.ChainDailyManualRptJSONAction">
+            <result type="json">
+                 <param name="root">jsonArray</param>
+            </result>
+            <result type="json" name="successful">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>             
+     </package>
+     
+     <!-- package for the Head4Chain -->
+      <package name="head4ChainJSPPackage" extends="super-package" namespace="/action4Chain">
+         <action name="barcodeGenJSP" class="com.onlineMIS.action.headQ4Chain.barcodeGentor.BarcodeGenJSPAction">
+                <result name="BrandList">/jsp/headQ/barcodeGentor/BrandList.jsp</result>
+                <result name="main">/jsp/headQ4Chain/Main.jsp</result>
+				<result name="barcodeGen">/jsp/headQ4Chain/barcodeGentor/BarcodeGentor.jsp</result>
+				<result name="ColorList">/jsp/headQ/barcodeGentor/ColorList.jsp</result>
+				<result name="updateProduct">/jsp/headQ4Chain/barcodeGentor/UpdateProduct.jsp</result>
+                <result name="barcodeSearch">/jsp/headQ4Chain/barcodeGentor/SearchBarcode.jsp</result>
+                <result type="stream" name="report">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">excelStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${excelFileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+               </result> 
+               <result name="updateProductSuccess">/jsp/headQ/common/updateSuccess.jsp?location=close</result>
+               <result name="preMaintain">/jsp/headQ4Chain/barcodeGentor/MaintainBasicData.jsp</result>
+               <result name="listBrand">/jsp/headQ4Chain/barcodeGentor/updateBasicData/ListBrand.jsp</result>
+               <result name="updateBrand">/jsp/headQ4Chain/barcodeGentor/updateBasicData/UpdateBrand.jsp</result>
+               
+	     </action>	
+      </package>
+      
+      <package name="head4ChainJSONPackage" extends="json-default" namespace="/action4Chain">
+          <action name="barcodeGenJSON" class="com.onlineMIS.action.headQ4Chain.barcodeGentor.BarcodeGenJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+	     </action>	
+      </package>
+
+</struts>
+
+

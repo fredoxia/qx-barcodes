@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.chainS.chainMgmt">
+      <class name="ChainInitialStock" table="chain_initial_stock">
+        <composite-id name="id" class="ChainInitialStockId">
+            <key-property name="barcode" column="product_barcode" type="string"/>
+            <key-property name="clientId" column="client_id" type="integer"/>  
+        </composite-id>
+        <many-to-one name="productBarcode" column="productBarcodeId" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" lazy="false"/>
+        <property name="cost" column="cost" type="double"/>
+        <property name="costTotal" column="cost_total" type="double"/>
+        <property name="salePrice" column="sale_price" type="double"/>
+        <property name="salePriceTotal" column="sale_price_total" type="double"/>
+        <property name="quantity" column="quantity" type="integer"/>
+        <property name="date" column="date" type="timestamp"/>
+      </class>
+      
+      <class name="ChainStoreConf" table="chain_store_conf">
+        <cache usage="read-write" region="qxbaby"/>
+        <id name="chainId" column="chain_id">
+            <generator class="assigned" />
+        </id>
+        <property name="printCopy" column="print_copy" type="integer"/>
+        <property name="minDiscountRate" column="min_discount_rate" type="double"/>
+        <property name="discountAmtType" column="discount_amount_type" type="integer"/>
+        <property name="lowThanCostAlert" column="low_than_cost_alert" type="integer"/>
+        <property name="defaultDiscount" column="default_discount" type="double"/>
+        <property name="vipScoreCashRatio" column="vip_score_cash_ratio" type="double"/>       
+        <property name="printTemplate" column="print_template" type="integer"/> 
+        <property name="address" column="address" type="string"/> 
+        <property name="defaultVipScoreMultiple" column="default_vip_score_multiple" type="integer"/> 
+      </class>
+      
+      <class name="ChainStoreGroupElement" table="chain_store_group_element">
+        <cache usage="read-write" region="qxbaby"/>
+    
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="chainId" column="chain_id" type="integer"/>
+        <many-to-one name="chainGroup" column="group_id" class="ChainStoreGroup" not-null="true" lazy="false"/>
+    </class>
+    
+    <class name="ChainStoreGroup" table="chain_store_group">
+        <cache usage="read-write" region="qxbaby"/>
+    
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="groupName" column="group_name" type="string"/>
+        <set name="chainStoreGroupElementSet" cascade="all" inverse="true" lazy="true" fetch="subselect">
+             <cache usage="read-write" region="qxbaby"/>
+             <key column="group_id"/>
+             <one-to-many class="ChainStoreGroupElement"/>
+        </set>
+     </class>
+     
+     <class name="ChainSalesPrice" table="chain_sales_price">
+        <cache usage="read-write" region="qxbaby"/>
+        <composite-id name="id" class="ChainSalesPriceId">
+        	<key-property name="chainId" column="chain_id" type="integer"/> 
+            <key-property name="barcode" column="product_barcode" type="string"/> 
+        </composite-id>
+        <many-to-one name="pb" column="product_id" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" lazy="false"/>
+        <property name="chainSalesPrice" column="chain_sales_price" type="double"/>
+        <property name="lastUpdtDate" column="last_updt_date" type="timestamp"/>
+      </class>
+      
+      <class name="ChainPriceIncrement" table="chain_price_increment">
+        <cache usage="read-write" region="qxbaby"/>
+    
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="incrementType" column="increment_type" type="integer"/>
+        <property name="increment" column="increment" type="double"/>
+		<property name="description" column="description" type="string"/>
+     </class>
+</hibernate-mapping>

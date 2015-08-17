@@ -1,0 +1,12 @@
+format.evalMark={0,number,0.0}
+format.price ={0,number,0.00}
+format.totalPrice ={0,number,0.0}
+format.quantity ={0,number,0}
+userName.required = User Name can't be empty
+password.required = Password can't be empty
+login.fail = Fail to login system
+brand_Name.required = Brand name is required
+category_Name.required = Category is required
+brand_Code.outOfRange = Brand code is out of range
+category_Code.outOfRange = Category code is out of range
+inventory.customerName.required = Customer Name is required

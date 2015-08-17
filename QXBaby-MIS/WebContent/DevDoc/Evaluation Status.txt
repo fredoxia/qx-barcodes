@@ -1,0 +1,10 @@
+- Evaluation table status
+Status id	  	Description 
+0               已经关闭   
+1				操作正常
+
+- people evaluation status
+Status id	  	Description 
+0               未创建   
+1				操作正常 		
+        	

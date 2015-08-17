@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.headQ.finance">
+
+    <class name="FinanceBill" table="finance_bill_hq">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="creatorHq" fetch="join" column="creator_hq" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false"/>
+        <many-to-one name="chainStore" fetch="join" column="chain_store_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" lazy="false"/>
+        <property name="invoiceTotal" column="invoice_total" type="double"/>
+        <property name="invoiceDiscount" column="invoice_discount" type="double"/>
+        <property name="status" column="status" type="integer"/>
+        <property name="billDate" column="bill_date" type="date"/>
+        <property name="createDate" column="create_date" type="timestamp"/>
+        <property name="type" column="bill_type" type="integer"/>
+        <property name="comment" column="comment" type="string"/>
+        <property name="preAcctAmt" column="pre_acct_amt" type="double"/> 
+        <property name="postAcctAmt" column="post_acct_amt" type="double"/> 
+        <set name="financeBillItemSet" cascade="all-delete-orphan" inverse="true" lazy="true" fetch="subselect" batch-size="10">
+             <cache usage="read-write" region="qxbaby"/>
+             <key column="bill_id"/>
+             <one-to-many class="FinanceBillItem"/>
+        </set>
+    </class>
+    <class name="FinanceBillItem" table="finance_bill_hq_item">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="financeCategory" fetch="join" column="category_id" class="FinanceCategory" lazy="false"/>
+        <many-to-one name="financeBill" fetch="join" column="bill_id" class="FinanceBill" not-null="true"/>
+        <property name="total" column="total" type="double"/>
+        <property name="comment" column="comment" type="string"/>
+        <property name="index" column="index_num" type="integer"/>
+    </class>
+    
+    <class name="FinanceCategory" table="finance_category">
+        <cache usage="read-write" region="qxbaby"/>
+    
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="type" column="item_type" type="integer"/>
+        <property name="itemName" column="item_name" type="string"/>
+    </class>
+    
+    <class name="ChainFinanceTrace" table="chain_finance_trace">
+        <composite-id>
+            <key-property name="chainId" column="chain_id" type="integer"/>
+            <key-property name="categoryId" column="category_id" type="integer"/>  
+            <key-property name="billId" column="bill_id" type="string"/>   
+        </composite-id>
+        <property name="amount" column="amount" type="double"/>
+        <property name="date" column="date" type="timestamp"/>
+    </class>
+    
+   <class name="ChainAcctFlow" table="chain_acct_flow">
+        <cache usage="read-write" region="qxbaby"/>
+    
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="chainId" column="chain_id" type="integer"/>
+        <property name="acctAmt" column="acct_amt" type="double"/>
+        <property name="date" column="date" type="timestamp"/>
+        <property name="comment" column="comment" type="string"/>
+    </class>
+</hibernate-mapping>

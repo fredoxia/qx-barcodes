@@ -1,0 +1,11 @@
+Status id	  	Description   
+<inventory sales order> 
+1				仓库完成扫描   		
+2				会计	进行中 	
+3  				会计完成录入		  		
+4 				完成审核	   (未开发)
+9				仓库草稿     
+
+<chain sales order>
+1				草稿单据  
+9				完成单据     	

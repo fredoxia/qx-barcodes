@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.chainS.inventoryFlow">
+    
+      <class name="ChainInOutStockCopy" table="chain_in_out_stock_copy">
+        <cache usage="read-write" region="qxbaby"/>
+        <composite-id>
+            <key-property name="barcode" column="product_barcode" type="string"/>
+            <key-property name="clientId" column="client_id" type="integer"/>  
+            <key-property name="orderId" column="order_id" type="string"/>
+            <key-property name="type" column="type" type="integer"/>  
+        </composite-id>
+        <many-to-one name="productBarcode" column="productBarcodeId" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode"/>
+        <property name="cost" column="cost" type="double"/>
+        <property name="costTotal" column="cost_total" type="double"/>
+        <property name="salePrice" column="sale_price" type="double"/>
+        <property name="salePriceTotal" column="sale_price_total" type="double"/>
+        <property name="chainSalePriceTotal" column="chain_sale_price_total" type="double"/>
+        <property name="quantity" column="quantity" type="integer"/>
+        <property name="date" column="date" type="timestamp"/>
+      </class>
+
+</hibernate-mapping>

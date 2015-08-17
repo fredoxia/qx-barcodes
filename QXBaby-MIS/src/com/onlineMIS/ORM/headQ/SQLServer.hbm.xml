@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.headQ.SQLServer">
+    <class name="CheckedIdx" table="CheckIDX" schema="dbo">
+        <id name="id" column="ID">
+            <generator class="identity" />
+        </id>
+        <property name="checkMan" column="Checkman" type="integer"/>
+        <property name="billID" column="BillID" type="integer"/>
+        <property name="checkDate" column="Checkdate" type="timestamp"/>
+        <property name="guid" column="GUID" type="string"/>
+    </class>
+    
+     <class name="Billdraftidx" table="billdraftidx" schema="dbo">   
+		<id  name="billid" column="billid">
+		     <generator class="identity" />
+		</id>
+		<property  name="billdate" column="billdate" type="timestamp"/>
+		<property  name="billnumber" column="billnumber" type="string"/>
+		<property  name="billtype" column="billtype" type="integer"/>
+		<property  name="a_id" column="a_id" type="integer"/>
+		<property  name="c_id" column="c_id" type="integer"/>
+		<property  name="e_id" column="e_id" type="integer"/>
+		<property  name="sout_id" column="sout_id" type="integer"/>
+		<property  name="sin_id" column="sin_id" type="integer"/>
+		<property  name="auditman" column="auditman" type="integer"/>
+		<property  name="inputman" column="inputman" type="integer"/>
+		<property  name="ysmoney" column="ysmoney" type="double"/>
+		<property  name="ssmoney" column="ssmoney" type="double"/>
+		<property  name="quantity" column="quantity" type="double"/>
+		<property  name="taxrate" column="taxrate" type="double"/>
+		<property  name="period" column="period" type="integer"/>
+		<property  name="billstates" column="billstates" type="string"/>
+		<property  name="order_id" column="order_id" type="integer"/>
+		<property  name="department_id" column="department_id" type="integer"/>
+		<property  name="posid" column="posid" type="integer"/>
+		<property  name="region_id" column="region_id" type="integer"/>
+		<property  name="auditdate" column="auditdate" type="string"/>
+		<property  name="skdate" column="skdate" type="string"/>
+		<property  name="jsye" column="jsye" type="double"/>
+		<property  name="jsflag" column="jsflag" type="string"/>
+		<property  name="note" column="note" type="string"/>
+		<property  name="summary" column="summary" type="string"/>
+		<property  name="invoice" column="invoice" type="integer"/>
+		<property  name="transcount" column="transcount" type="integer"/>
+		<property  name="lasttranstime" column="lasttranstime" type="timestamp"/>
+		<property  name="GUID" column="GUID" type="string"/>
+		<property  name="InvoiceTotal" column="InvoiceTotal" type="double"/>
+		<property  name="InvoiceNO" column="InvoiceNO" type="string"/>
+		<property  name="BusinessType" column="BusinessType" type="integer"/>
+		<property  name="y_id" column="y_id" type="integer"/>
+		<property  name="CurAuditLevel" column="CurAuditLevel" type="integer"/>
+		<property  name="PRINTCOUNT" column="PRINTCOUNT" type="integer"/>
+		<property  name="PRINTTIME" column="PRINTTIME" type="timestamp"/>
+		<property  name="PRINTCOMMENT" column="PRINTCOMMENT" type="string"/>
+		<property  name="CanChangeMoney" column="CanChangeMoney" type="double"/>
+		<property  name="SizeClassID" column="SizeClassID" type="integer"/>
+		<property  name="TranFlag" column="TranFlag" type="integer"/>
+		<property  name="C_ARAPTOTAL" column="C_ARAPTOTAL" type="double"/>
+		<property  name="MarketPeriod" column="MarketPeriod" type="integer"/>
+		<property  name="sBackGuid" column="sBackGuid" type="string"/>
+		<property  name="MarketCaseId" column="MarketCaseId" type="integer"/>
+		<property  name="jsInvoiceTotal" column="jsInvoiceTotal" type="double"/>
+		<property  name="BillDatetime" column="BillDatetime" type="timestamp"/>
+		<property  name="MarketRate" column="MarketRate" type="double"/>
+		<property  name="VIPCardID" column="VIPCardID" type="integer"/>
+    </class>
+ 
+      <class name="Salemanagebilldrf" table="salemanagebilldrf" schema="dbo">      
+		 <id  name="smb_id" column="smb_id">
+				     <generator class="identity" />
+		 </id>
+		 <property  name="bill_id" column="bill_id"  type="integer"/>
+		 <property  name="p_id" column="p_id"  type="integer"/>
+		 <property  name="batchno" column="batchno"  type="string"/>
+		 <property  name="quantity" column="quantity"  type="integer"/>
+		 <property  name="costprice" column="costprice"  type="double"/>
+		 <property  name="saleprice" column="saleprice"  type="double"/>
+		 <property  name="discount" column="discount"  type="double"/>
+		 <property  name="discountprice" column="discountprice"  type="double"/>
+		 <property  name="totalmoney" column="totalmoney"  type="double"/>
+		 <property  name="taxprice" column="taxprice"  type="double"/>
+		 <property  name="taxtotal" column="taxtotal"  type="double"/>
+		 <property  name="taxmoney" column="taxmoney"  type="double"/>
+		 <property  name="retailprice" column="retailprice"  type="double"/>
+		 <property  name="retailtotal" column="retailtotal"  type="double"/>
+		 <property  name="makedate" column="makedate"  type="timestamp"/>
+		 <property  name="validdate" column="validdate"  type="timestamp"/>
+		 <property  name="qualitystatus" column="qualitystatus"  type="string"/>
+		 <property  name="price_id" column="price_id"  type="integer"/>
+		 <property  name="ss_id" column="ss_id"  type="integer"/>
+		 <property  name="sd_id" column="sd_id"  type="integer"/>
+		 <property  name="location_id" column="location_id"  type="integer"/>
+		 <property  name="supplier_id" column="supplier_id"  type="integer"/>
+		 <property  name="commissionflag" column="commissionflag"  type="integer"/>
+		 <property  name="comment" column="comment"  type="string"/>
+		 <property  name="unitid" column="unitid"  type="integer"/>
+		 <property  name="taxrate" column="taxrate"  type="double"/>
+		 <property  name="order_id" column="order_id"  type="integer"/>
+		 <property  name="total" column="total"  type="double"/>
+		 <property  name="iotag" column="iotag"  type="integer"/>
+		 <property  name="InvoiceTotal" column="InvoiceTotal"  type="double"/>
+		 <property  name="thqty" column="thqty"  type="double"/>
+		 <property  name="newprice" column="newprice"  type="double"/>
+		 <property  name="orgbillid" column="orgbillid"  type="integer"/>
+		 <property  name="SizeID" column="SizeID"  type="integer"/>
+		 <property  name="ColorID" column="ColorID"  type="integer"/>
+		 <property  name="Status" column="Status"  type="integer"/>
+		 <property  name="invoice" column="invoice"  type="integer"/>
+		 <property  name="invoiceno" column="invoiceno"  type="string"/>
+		 <property  name="JSPRICE" column="JSPRICE"  type="double"/>
+		 <property  name="groupid" column="groupid"  type="integer"/>
+		 <property  name="DraftRowID" column="DraftRowID"  type="integer"/>
+		 <property  name="AOID" column="AOID"  type="integer"/>
+		 <property  name="BusinessType" column="BusinessType"  type="integer"/>
+		 <property  name="RowTag" column="RowTag"  type="integer"/>
+		 <property  name="RowGuid" column="RowGuid"  type="string"/>
+		 <property  name="PriceType" column="PriceType"  type="string"/>
+       </class>
+   <class name="ProductsMS" table="products" schema="dbo">
+        <id name="productID" column="Product_ID">
+            <generator class="identity" />
+        </id>
+        <property name="serial_number" column="serial_number" type="string"/>
+        <property name="productCode" column="name" type="string"/>
+        <property name="deleted" column="deleted" type="integer"/>
+        <property name="unit_id" column="unit1_id" type="integer"/>
+        <property name="discount" column="Discount" type="double"/>
+        <one-to-one name="price" class="com.onlineMIS.ORM.entity.headQ.SQLServer.PriceMS" lazy="false" cascade="all"/>
+        <property name="sizeGroupId" column="SizeGroupID" type="integer"/>
+        <property name="colorGroupId" column="ColorGroupID" type="integer"/>
+    </class>
+    
+    <class name="PriceMS" table="price" schema="dbo">
+        <id name="productID" column="p_id">
+            <generator class="foreign">
+                <param name="property">product</param>
+            </generator>
+        </id>
+        <property name="retailprice" column="retailprice" type="double"/>
+        <property name="recprice" column="recprice" type="double"/>
+        <property name="price1" column="price1" type="double"/>
+        <property name="glprice" column="glprice" type="double"/>
+        <one-to-one name="product" class="com.onlineMIS.ORM.entity.headQ.SQLServer.ProductsMS"/>
+    </class> 
+     <class name="BillidxMS" table="billidx" schema="dbo">
+        <id name="billid" column="billid">
+           <generator class="identity"/>
+        </id>
+        <property  name="billdate" column="billdate"  type="timestamp"/>
+        <property name="billnumber" column="billnumber" type="string"/>
+        <property name="a_id" column="a_id" type="integer"/>
+        <property name="c_id" column="c_id" type="integer"/>
+        <property name="billtype" column="billtype" type="integer"/>
+        <property  name="ysmoney" column="ysmoney" type="double"/>
+		<property  name="ssmoney" column="ssmoney" type="double"/>
+		<property  name="quantity" column="quantity" type="double"/>
+		<property  name="jsye" column="jsye" type="double"/>
+		<property  name="jsflag" column="jsflag" type="string"/>
+		<property  name="note" column="note" type="string"/>
+		<property  name="c_araptotal" column="C_ARAPTOTAL" type="double"/>
+		<set name="financeBill_Set" cascade="all-delete-orphan" inverse="true" >
+             <key column="bill_id"/>
+             <one-to-many class="com.onlineMIS.ORM.entity.headQ.SQLServer.FinanceBillMS"/>
+        </set>
+    </class>  
+    <class name="ClientsMS" table="clients" schema="dbo">
+        <id name="client_id" column="client_id">
+           <generator class="identity"/>
+        </id>   
+        <property name="deleted" column="deleted" type="boolean"/> 
+        <property name="name" column="name" type="string"/>
+        <property name="pinyin" column="pinyin" type="string"/>
+        <property name="region_id" column="region_id" type="integer"/>
+    </class>
+    <class name="RegionMS" table="Region" schema="dbo">
+         <id name="regionID" column="region_ID" >
+           <generator class="identity"/>
+        </id>  
+        <property name="name" column="name" type="string"/>
+        <property name="deleted" column="deleted" type="boolean"/> 
+    </class>
+    <class name="SaleHistory" table="salepricehis" schema="dbo">
+        <composite-id>
+             <key-many-to-one name="client" column="c_id" class="com.onlineMIS.ORM.entity.headQ.SQLServer.ClientsMS" lazy="false"/>           
+             <key-many-to-one name="product" column="p_id" class="com.onlineMIS.ORM.entity.headQ.SQLServer.ProductsMS" lazy="false"/>  
+             <key-property name="unit_id" column="unit_id" type="integer"></key-property>       
+        </composite-id>
+        <property name="salePrice" column="SalePrice" type="double"/>
+        <property name="quantity" column="quantity" type="double"/>
+        <property name="discount" column="DISCOUNT" type="double"/>
+    </class>
+
+    <class name="FinanceBillMS" table="financebill" schema="dbo">
+        <id name="smb_id" column="smb_id">
+           <generator class="identity"/>
+        </id>   
+        <property name="a_id" column="a_id" type="integer"/>
+        <property name="c_id" column="c_id" type="integer"/>
+        <property name="jftotal" column="jftotal" type="double"/>
+        <many-to-one name="billidxMS" column="bill_id" class="com.onlineMIS.ORM.entity.headQ.SQLServer.BillidxMS" not-null="true" lazy="false"/>
+    </class>
+</hibernate-mapping>

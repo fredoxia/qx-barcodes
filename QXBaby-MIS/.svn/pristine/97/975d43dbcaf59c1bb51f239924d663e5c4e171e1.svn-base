@@ -1,0 +1,26 @@
+Head Quarter:
+1. Default Action
+   - login, relogin, Search Own Evaluation,
+   
+2. Sales Display
+   - Search Barcode, Export Product information,  Search Order, Display Order, Sales Report
+   
+3. Sales Edit
+   - Create Inventory Order, Edit Inventory Draft Order, Edit barcode source data
+   
+4. HR Evaluater
+   - Create Evaluation, Search Evaluation, View the evaluation made by self, View the under's monthly reports
+   
+5. HR Admin
+   - Evaluation conf,
+   
+6. System Admin
+   - User access right setting
+   - retrieve log
+   
+Chain
+1. Super Admin from HeadQ
+2. Chain manager from HeadQ
+3. Chain Owner
+4. Chain Store Lead
+5. Chain Staff
