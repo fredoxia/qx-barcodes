@@ -6,8 +6,13 @@ import java.util.Date;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 
 public class ChainVIPPreaidFlow implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1032080404175097695L;
 	private int id;
 	private int chainId;
+	private ChainVIPCard vipCard; 
 	private UserInfor operator;
 	private int status;
 	private char operationType;
@@ -26,6 +31,14 @@ public class ChainVIPPreaidFlow implements Serializable{
 	}
 	public void setChainId(int chainStoreId) {
 		this.chainId = chainStoreId;
+	}
+	
+	
+	public ChainVIPCard getVipCard() {
+		return vipCard;
+	}
+	public void setVipCard(ChainVIPCard vipCard) {
+		this.vipCard = vipCard;
 	}
 	public UserInfor getOperator() {
 		return operator;

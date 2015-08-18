@@ -62,6 +62,7 @@
             <generator class="identity" />
         </id>
         <property name="chainId" column="chain_id" type="integer"/>
+        <many-to-one name="vipCard" column="vip_card_id" not-null="false" class="com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard" lazy="false"/>
         <many-to-one name="operator" fetch="join" column="operator_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor" not-null="true"/>
         <property name="status" column="account_type_id" type="integer"/>
         <property name="operationType" column="operation_type" type="string"/>
