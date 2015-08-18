@@ -38,7 +38,7 @@ function changeChainStore(chainId){
 		      </td>
 		    </tr>
 		    <tr class="InnerTableContent">
-		      <td>VIP信息</td>
+		      <td>VIP卡号</td>
 		      <td colspan="2">
 		      	<%@include file="SearchVIPCard.jsp"%>
 		      </td>

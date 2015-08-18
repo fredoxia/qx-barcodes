@@ -883,6 +883,23 @@ public class ChainVIPService {
 		
 	}
 
+	public Response getVIPCardVIPPrepaid(String vipCardNo, ChainStore chainStore) {
+		Response response = new Response();
+		
+		ChainVIPCard vipCard = getVIPCardByCardNo(vipCardNo);
+		if (vipCard == null){
+			response.setFail("错误 : VIP卡  " + vipCardNo + " 不存在");
+		} else if (vipCard.getStatus() != ChainVIPCard.STATUS_GOOD) {
+			response.setFail("错误:此vip卡已经处于停用/挂失状态，请确认后，修改vip卡状态.");
+		} else if (vipCard.getIssueChainStore().getChain_id() != chainStore.getChain_id()){
+			response.setFail("错误:此vip卡的发卡连锁店不是当前连锁店.充值仅限于属于当前连锁店的客户.");
+		} else {
+			response.setReturnValue(vipCard);
+		}
+		
+		return response;
+	}
+
 
 
 

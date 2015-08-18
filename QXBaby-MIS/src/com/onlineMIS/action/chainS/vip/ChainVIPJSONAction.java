@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
@@ -225,4 +226,37 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		
 		return SUCCESS;
 	}
+	
+	/**
+	 * 在预付中
+	 * @return
+	 */
+	public String getVIPCardVIPPrepaid(){
+	 	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"getVIPCardVIPPrepaid");
+    	
+		String vipCardNo = formBean.getVipCard().getVipCardNo();
+		Response response = chainVIPService.getVIPCardVIPPrepaid(vipCardNo,formBean.getChainStore());
+	
+	    
+	    jsonMap.put("response", response);
+
+		
+		//to excludes the set and list inforamtion
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.setExcludes( new String[]{"issueChainStore"} );
+		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
+		try{
+			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
+//			   System.out.println(jsonObject.toString());
+			} catch (Exception e){
+				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"getVIPCard");
+				loggerLocal.error(e);
+			}
+		
+		
+		return SUCCESS;
+	}
+
 }
