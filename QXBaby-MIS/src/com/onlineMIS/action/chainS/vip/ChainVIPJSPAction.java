@@ -430,7 +430,7 @@ public class ChainVIPJSPAction extends ChainVIPAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
 		loggerLocal.info(userInfor.getName() + " : chainVipJSPAction - preDepositVIPPrepaid");
 
-		chainVIPService.prepareDepositVIPPrepaidUI(formBean, userInfor);
+		chainVIPService.prepareDepositVIPPrepaidUI(formBean, uiBean, userInfor);
 		
 		return "depositVIPPrepaid";
 	}

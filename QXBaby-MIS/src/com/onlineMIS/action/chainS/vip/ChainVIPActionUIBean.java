@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPCardImpl;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
@@ -28,9 +29,18 @@ public class ChainVIPActionUIBean {
     
     private List<ChainVIPScore> vipConumps = new ArrayList<ChainVIPScore>();
     private ChainVIPScore vipConsumpFooter = new ChainVIPScore();
+    private ChainStoreConf chainStoreConf = new ChainStoreConf();
     public int good;
 
     
+	public ChainStoreConf getChainStoreConf() {
+		return chainStoreConf;
+	}
+
+	public void setChainStoreConf(ChainStoreConf chainStoreConf) {
+		this.chainStoreConf = chainStoreConf;
+	}
+
 	public List<ChainVIPScore> getVipConumps() {
 		return vipConumps;
 	}

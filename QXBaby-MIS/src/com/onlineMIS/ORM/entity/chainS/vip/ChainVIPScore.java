@@ -29,6 +29,7 @@ public class ChainVIPScore implements Serializable {
 	public final static String TYPE_SALE = "s";
 	public final static String TYPE_UPGRADE = "u";
 	public final static String TYPE_MANUAL_ADJUST = "m";
+	public final static String TYPE_DEPOSIT = "d";
 	
 	public ChainVIPScore(){
 		
@@ -67,7 +68,9 @@ public class ChainVIPScore implements Serializable {
 			return "VIP升级";
 		else if (type.equalsIgnoreCase(TYPE_MANUAL_ADJUST))
 			return "手动积分调整";	
-		else 
+		else if (type.equalsIgnoreCase(TYPE_DEPOSIT))
+			return "预存金";
+		else
 			return "";
 	}
 

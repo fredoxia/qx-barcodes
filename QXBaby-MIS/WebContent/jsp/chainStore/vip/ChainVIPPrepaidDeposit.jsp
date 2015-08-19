@@ -14,7 +14,43 @@ $(document).ready(function(){
 });
 
 function deposit(){
+    var chainId = $("#chainId").val();
+    if (chainId == "" || chainId == 0){
+		alert("连锁店是必选项");
+		return ;
+	}
+    
+    var vipId = $("#vipCardIdHidden").val();
+    if (vipId == "" || vipId == 0){
+		alert("VIP卡是必选项");
+		$("#vipCardNo").focus();
+		return ;
+	}
 	
+    var depositType = $("#depositType").val();
+	if (depositType == ""){
+		alert("现金/刷卡必须正确选择，否则帐目将无法正确");
+		return ;
+	}
+	
+    var amount = $("#amount").val();
+	if (amount == "" || amount == 0){
+		alert("充值金额 必须大于0");
+		return ;
+	}
+		
+	var params = $("#vipPrepaidDepositForm").serialize();
+	$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!saveVIPPrepaidDeposit",params, backProcessDepositPrepaid,"json");
+}
+
+function backProcessDepositPrepaid(data){
+    var response = data.response;
+    if (response.returnCode == SUCCESS){
+       alert(response.message);
+       document.vipPrepaidDepositForm.action = "actionChain/chainVIPJSPAction!preDepositVIPPrepaid";
+	   document.vipPrepaidDepositForm.submit();
+    } else 
+       alert("操作失败:" + response.message);
 }
 
 function changeChainStore(chainId){
@@ -22,6 +58,8 @@ function changeChainStore(chainId){
 </script>
 </head>
 <body>
+   <s:hidden name="uiBean.chainStoreConf.printCopy" id="printCopy"/>
+   <s:hidden name="uiBean.chainStoreConf.address" id="address"/>
    <s:form action="" method="POST"  name="vipPrepaidDepositForm" id="vipPrepaidDepositForm" theme="simple"> 
 	<table width="95%" align="center"  class="OuterTable">
 	    <tr><td>
@@ -32,17 +70,35 @@ function changeChainStore(chainId){
 	           	- 充值前请确认vip信息,确保预存金充值给正确的vip卡号</td>
 	        </tr>
 		    <tr class="InnerTableContent">
-		      <td>连锁店</td>
+		      <td>连锁店 *</td>
 		      <td colspan="2">
 		      	<%@ include file="../include/SearchChainStore.jsp"%>
 		      </td>
 		    </tr>
 		    <tr class="InnerTableContent">
-		      <td>VIP卡号</td>
+		      <td>VIP卡号 *</td>
 		      <td colspan="2">
 		      	<%@include file="SearchVIPCard.jsp"%>
 		      </td>
 		    </tr>
+		    <tr class="InnerTableContent">
+		      <td>现金/刷卡 *</td>
+		      <td colspan="2">
+		      	<s:select id="depositType" name="formBean.vipPrepaid.depositType"  list="#{'C':'现金','D':'刷卡'}" listKey="key" listValue="value" headerKey="" headerValue="------" />
+		      </td>
+		    </tr>		    
+		    <tr class="InnerTableContent">
+		      <td>充值金额 *</td>
+		      <td colspan="2">
+		      	<s:textfield name="formBean.vipPrepaid.amount" id="amount" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:50,min:0,max:2000"/>
+		      </td>
+		    </tr>		
+		    <tr class="InnerTableContent">
+		      <td>备注</td>
+		      <td colspan="2">
+		      	<s:textfield name="formBean.vipPrepaid.comment" size="30" maxlength="20"/>
+		      </td>
+		    </tr>			        
 		    <tr class="InnerTableContent">
 		      <td width="7%" height="30">
 		      </td>
@@ -55,5 +111,11 @@ function changeChainStore(chainId){
 	   </td></tr>
 	 </table>
 	 </s:form>
+	 <object  classid="clsid:AF33188F-6656-4549-99A6-E394F0CE4EA4"       
+         codebase="<%=request.getContextPath()%>/conf_files/sc_setup.exe"     
+         id="pazu"       
+         name="pazu" >       
+    <param  name="License"  value="8F34B771723DCC171F931EA900F9967E"/>     
+</object>
 </body>
 </html>

@@ -9,8 +9,8 @@
 				           </tr>
 					       <tr class="PBAOuterTableTitale">
 					         <td width="30"></td>
-					         <td width="95">额外积分</td>
-					         <td width="93"><s:textfield name="formBean.chainSalesOrder.extralVipScore" id="extralVipScore" size="14" disabled="true" title="当vip购买一些额外饰品,需要积分时"/></td>
+					         <td width="95">预存金</td>
+					         <td width="93"><s:textfield name="formBean.chainSalesOrder.chainPrepaidAmt" id="chainPrepaidAmt" size="14" disabled="true"  onkeyup="changeCashCardAmountValue();" title="当vip使用预付金付款时"/></td>
 					         <td width="70">优惠金额</td>
 					         <td width="93"><s:textfield name="formBean.chainSalesOrder.discountAmount" id="discountAmount" size="14" onkeyup="changeDiscountCoupon();"/></td>
 					         <td width="110">代金券</td>

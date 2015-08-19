@@ -39,7 +39,9 @@ $(document).ready(function(){
 	$("#cashAmount").focus(function(){
 		  $("#cashAmount").select();
 	});
-	
+	$("#chainPrepaidAmt").focus(function(){
+		  $("#chainPrepaidAmt").select();
+	});	
 });
 /**
  * actions

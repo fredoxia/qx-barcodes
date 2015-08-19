@@ -34,14 +34,19 @@ import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroup;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroupElement;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelTwoInventoryItem;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCardDownloadTemplate;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCardInforTemplate;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.action.chainS.vip.ChainVIPActionFormBean;
 import com.onlineMIS.action.chainS.vip.ChainVIPActionUIBean;
 import com.onlineMIS.common.Common_util;
@@ -65,6 +70,8 @@ public class ChainVIPService {
 	private ChainStoreGroupDaoImpl chainStoreGroupDaoImpl;
 	@Autowired
 	private ChainStoreConfDaoImpl chainStoreConfDaoImpl;
+	@Autowired
+	private ChainVIPPrepaidImpl chainVIPPrepaidImpl;
 	
 	/**
 	 * function to get all chain vip types
@@ -381,6 +388,7 @@ public class ChainVIPService {
 		ChainVIPCard vipCard = chainVIPCardImpl.get(vipCardId, true);
 		List<Double> results = null;
 		if (vipCard != null ){
+			//1. 积分和现金
 			double initialScore = vipCard.getInitialScore();
 			double accumulateScore = chainVIPScoreImpl.getVIPScoreSum(vipCardId);
 			
@@ -390,13 +398,38 @@ public class ChainVIPService {
 				vipScoreCashRatio = chainStoreConf.getVipScoreCashRatio();
 			
 			double avaibleCash = (initialScore + accumulateScore) * vipScoreCashRatio;
+			
+			//2. 预付款
+			double totalVipPrepaid = getAcumulateVipPrepaid(vipCard);
 	
 			results = new ArrayList<Double>();
 			results.add(initialScore + accumulateScore);
 			results.add(avaibleCash);
+			results.add(totalVipPrepaid);
 		} 
 		
 		return results;
+	}
+
+	public double getAcumulateVipPrepaid(ChainVIPCard vipCard) {
+		double totalPrepaid = 0;
+		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPreaidFlow c WHERE c.vipCard.id = ?";
+	    Object[] values = new Object[]{vipCard.getId()};
+	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
+	    
+	    if (prepaid != null && prepaid.size() > 0)
+		  for (Object object: prepaid){
+			  Object[] object2 = (Object[])object;
+			  String operationType = object2[0].toString();
+			  double amount = Common_util.getDouble(object2[1]);
+
+			  if (operationType.equalsIgnoreCase(ChainVIPPreaidFlow.OPERATION_TYPE_CONSUMP))
+				  totalPrepaid -= amount;
+			  else if (operationType.equalsIgnoreCase(ChainVIPPreaidFlow.OPERATION_TYPE_DEPOSIT))
+				  totalPrepaid += amount;
+		   }
+	    
+		return totalPrepaid;
 	}
 
 	/**
@@ -874,15 +907,29 @@ public class ChainVIPService {
 		return response;
 	}
 
-	public void prepareDepositVIPPrepaidUI(ChainVIPActionFormBean formBean,
+	public void prepareDepositVIPPrepaidUI(ChainVIPActionFormBean formBean, ChainVIPActionUIBean uiBean,
 			ChainUserInfor userInfor) {
+		formBean.setVipPrepaid(null);
+		formBean.setVipCard(null);
+		formBean.setChainStore(null);
 		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
 			ChainStore chainStore = chainStoreDaoImpl.get(userInfor.getMyChainStore().getChain_id(), true);
 			formBean.setChainStore(chainStore);
 		}
 		
+		if (formBean.getChainStore().getChain_id() > 0){
+		   ChainStoreConf chainStoreConf = chainStoreConfDaoImpl.getChainStoreConfByChainId(formBean.getChainStore().getChain_id());
+		   uiBean.setChainStoreConf(chainStoreConf);
+		}
+		
 	}
 
+	/**
+	 * 在vip预付款页面获取vip卡信息
+	 * @param vipCardNo
+	 * @param chainStore
+	 * @return
+	 */
 	public Response getVIPCardVIPPrepaid(String vipCardNo, ChainStore chainStore) {
 		Response response = new Response();
 		
@@ -890,12 +937,53 @@ public class ChainVIPService {
 		if (vipCard == null){
 			response.setFail("错误 : VIP卡  " + vipCardNo + " 不存在");
 		} else if (vipCard.getStatus() != ChainVIPCard.STATUS_GOOD) {
-			response.setFail("错误:此vip卡已经处于停用/挂失状态，请确认后，修改vip卡状态.");
+			response.setFail("错误: 此vip卡已经处于停用/挂失状态，请修改vip卡状态之后,再充值");
 		} else if (vipCard.getIssueChainStore().getChain_id() != chainStore.getChain_id()){
-			response.setFail("错误:此vip卡的发卡连锁店不是当前连锁店.充值仅限于属于当前连锁店的客户.");
+			response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店.充值仅限于当前连锁店的客户.");
 		} else {
 			response.setReturnValue(vipCard);
 		}
+		
+		return response;
+	}
+
+	/**
+	 * 保存vip预付款
+	 * @param chainStore
+	 * @param vipCard
+	 * @param vipPrepaid
+	 * @return
+	 */
+	public Response saveVIPPrepaidDeposit(ChainStore chainStore, ChainVIPCard vipCard,
+			ChainVIPPreaidFlow vipPrepaid, ChainUserInfor operator) {
+		Response response = new Response();
+		
+		vipCard = getVIPCardByCardId(vipCard.getId());
+		double amount = vipPrepaid.getAmount();
+		
+		if (amount <= 0) {
+			response.setFail("错误 : 充值金额必须大于0");
+		} else if (vipCard == null){
+			response.setFail("错误 : VIP卡  " + vipCard.getVipCardNo() + " 不存在");
+		} else if (vipCard.getStatus() != ChainVIPCard.STATUS_GOOD) {
+			response.setFail("错误: 此vip卡已经处于停用/挂失状态，请修改vip卡状态之后,再充值");
+		} else if (vipCard.getIssueChainStore().getChain_id() != chainStore.getChain_id()){
+			response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店.充值仅限于当前连锁店的客户.");
+		} else {
+			//1. 第一步保存 prepaid
+			vipPrepaid.setChainId(chainStore.getChain_id());
+			vipPrepaid.setDate(Common_util.getToday());
+			vipPrepaid.setOperationType(ChainVIPPreaidFlow.OPERATION_TYPE_DEPOSIT);
+			vipPrepaid.setOperator(operator);
+			vipPrepaid.setVipCard(vipCard);
+			chainVIPPrepaidImpl.save(vipPrepaid, true);
+			
+			//2. 第二步保存到vip score
+            chainVIPScoreImpl.saveCascadingVIPPrepaid(vipPrepaid);
+            
+            response.setMessage("成功为VIP " + vipCard.getVipCardNo() + " 充值");
+		}
+		
 		
 		return response;
 	}

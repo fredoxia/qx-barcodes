@@ -3,6 +3,7 @@ package com.onlineMIS.ORM.entity.chainS.vip;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 
 public class ChainVIPPreaidFlow implements Serializable{
@@ -10,15 +11,27 @@ public class ChainVIPPreaidFlow implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1032080404175097695L;
+	public static final String OPERATION_TYPE_DEPOSIT = "D";
+	public static final String OPERATION_TYPE_CONSUMP = "C";
+	public static final String DEPOSIT_TYPE_CASH = "C";
+	public static final String DEPOSIT_TYPE_CARD = "D";
 	private int id;
 	private int chainId;
 	private ChainVIPCard vipCard; 
-	private UserInfor operator;
+	private ChainUserInfor operator;
 	private int status;
-	private char operationType;
-	private char depositType;
+	/**
+	 * D:存钱
+	 * C:消费
+	 */
+	private String operationType = "";
+	/**
+	 * C:现金
+	 * D:刷卡
+	 */
+	private String depositType = "";
 	private double amount;
-	private String comment;
+	private String comment = "";
 	private Date date;
 	public int getId() {
 		return id;
@@ -40,10 +53,10 @@ public class ChainVIPPreaidFlow implements Serializable{
 	public void setVipCard(ChainVIPCard vipCard) {
 		this.vipCard = vipCard;
 	}
-	public UserInfor getOperator() {
+	public ChainUserInfor getOperator() {
 		return operator;
 	}
-	public void setOperator(UserInfor operator) {
+	public void setOperator(ChainUserInfor operator) {
 		this.operator = operator;
 	}
 	public int getStatus() {
@@ -52,16 +65,16 @@ public class ChainVIPPreaidFlow implements Serializable{
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	public char getOperationType() {
+	public String getOperationType() {
 		return operationType;
 	}
-	public void setOperationType(char operationType) {
+	public void setOperationType(String operationType) {
 		this.operationType = operationType;
 	}
-	public char getDepositType() {
+	public String getDepositType() {
 		return depositType;
 	}
-	public void setDepositType(char depositType) {
+	public void setDepositType(String depositType) {
 		this.depositType = depositType;
 	}
 	public double getAmount() {

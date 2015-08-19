@@ -31,15 +31,17 @@ function checkVIPCardBackProcess(data){
     		
     		$("#vipDiscount").attr("value",vipCard.vipType.discountRate);
     		$("#vipScore").removeAttr("disabled");
-    		$("#extralVipScore").removeAttr("disabled");
+    		$("#chainPrepaidAmt").removeAttr("disabled");
     		$("#refreshBt").removeAttr("disabled");
 
     		$("#maxVipCash").attr("value",data.totalCash);
-    		$("#vipInfo").html(vipCard.customerName + " " + vipCard.vipType.vipTypeName + " 可换现金 ： " + (data.totalCash).toFixed(2));
+    		$("#maxVipPrepaid").attr("value",data.totalVipPrepaid);
+    		$("#vipInfo").html(vipCard.customerName + " " + vipCard.vipType.vipTypeName + " 积分可换现金 :" + (data.totalCash).toFixed(2) + " 剩余预存金 :" + (data.totalVipPrepaid).toFixed(2));
     		var msg = "VIP 卡主 : " + vipCard.customerName + "\n"+
     				  "卡种类 : " + vipCard.vipType.vipTypeName + "\n" + 
     				  "累计积分 : " + (data.totalScore).toFixed(2) + "\n" + 
-    		          "可换现金 : " + (data.totalCash).toFixed(2);
+    		          "积分可换现金 : " + (data.totalCash).toFixed(2)+ "\n" + 
+    		          "剩余预存金 : " + (data.totalVipPrepaid).toFixed(2);
     		alert(msg);
        }
        $("#barcode" + index).focus();
@@ -60,8 +62,8 @@ function clearVIPCard(){
 	$("#vipScore").attr("value", 0);
 	$("#vipScore").attr("disabled","true");
 
-	$("#extralVipScore").attr("value", 0);
-	$("#extralVipScore").attr("disabled","true");
+	$("#chainPrepaidAmt").attr("value", 0);
+	$("#chainPrepaidAmt").attr("disabled","true");
 	
 	$("#refreshBt").attr("disabled","true");
 	
@@ -86,6 +88,7 @@ function refreshDiscount(){
 </script>
 		VIP卡号: <s:hidden name="formBean.chainSalesOrder.vipCard.id" id="vipCardIdHidden"/>
 		        <s:hidden name="formBean.maxVipCash" id="maxVipCash"/>
+		        <s:hidden name="formBean.maxVipPrepaid" id="maxVipPrepaid"/>
 			    <s:textfield name="formBean.vipCardNo" id="vipCardNo" size="18"/><input type="button" id="checkVIPBt" value="输入" onclick="checkVIPCard();"/><input id="clearVIPBt" type="button" value="修改" onclick="clearVIPCard();" disabled/>&nbsp;&nbsp;&nbsp;&nbsp;
 		VIP折扣：<s:textfield id="vipDiscount" name="formBean.discount" disabled="true" size="3"  style="color:black;font-weight:bold"/>
 		<input type="button" id="refreshBt" onclick="refreshDiscount()" disabled value="刷新折扣" title="先开单，再报VIP的按钮"/>

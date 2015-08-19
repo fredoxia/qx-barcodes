@@ -258,11 +258,12 @@ function printAcctFooter(){
 	var cardAmount = $("#cardAmount").val();
 	var cashAmount = $("#cashAmount").val();
 	var returnAmount = $("#returnAmount").val();
+	var vipPrepaid = $("#chainPrepaidAmt").val();
 	
 	pazu.TPrinter.printToDefaultPrinter("优惠 : " + discount + " , " + "代金券 : " + coupon);
 	pazu.TPrinter.printToDefaultPrinter("应收 : " + amountAfterDC  + " , " + "积分换现金 : " + vipScore );
 	pazu.TPrinter.printToDefaultPrinter("刷卡 : " + cardAmount + " , " + "现金 : " + cashAmount);
-	pazu.TPrinter.printToDefaultPrinter("找零 : " + returnAmount);
+	pazu.TPrinter.printToDefaultPrinter("预存金消费 : " + vipPrepaid + " , " + "找零 : " + returnAmount);
 }
 
 /**
@@ -273,6 +274,7 @@ function printFooter(vipInfor){
     if (vipInfor.vipCardNo != undefined) {
     	pazu.TPrinter.printToDefaultPrinter("VIP : " + vipInfor.vipCardNo + " " + vipInfor.customerName);
     	pazu.TPrinter.printToDefaultPrinter("当前积分 : " + vipInfor.accumulatedScore);
+    	pazu.TPrinter.printToDefaultPrinter("剩余预存金 : " + vipInfor.accumulateVipPrepaid);
     }
     
 //	var salesName = $("#chainSaler").find("option:selected").text();

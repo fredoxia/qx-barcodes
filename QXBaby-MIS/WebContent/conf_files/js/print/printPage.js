@@ -186,11 +186,12 @@ function printAcctFooter(order){
 	var cardAmount =  order.cardAmount ;
 	var cashAmount =  order.cashAmount ;
 	var returnAmount =  order.returnAmount ;
+	var vipPrepaid = order.chainPrepaidAmt ;
 	
 	pazu.TPrinter.printToDefaultPrinter("优惠 : " + discount + " , " + "代金券 : " + coupon);
 	pazu.TPrinter.printToDefaultPrinter("应收 : " + amountAfterDC  + " , " + "积分换现金 : " + vipScore );
 	pazu.TPrinter.printToDefaultPrinter("刷卡 : " + cardAmount + " , " + "现金 : " + cashAmount);
-	pazu.TPrinter.printToDefaultPrinter("找零 : " + returnAmount);
+	pazu.TPrinter.printToDefaultPrinter("预存金消费 : " + vipPrepaid + " , " + "找零 : " + returnAmount);
 }
 
 /**

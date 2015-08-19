@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
 import com.onlineMIS.common.Common_util;
 
@@ -121,5 +122,22 @@ public class ChainVIPScoreImpl extends BaseDAO<ChainVIPScore> {
 			}
 			
 			return vipCardMap;
+		}
+
+		/**
+		 * 如果是预存就要记录
+		 * @param vipPrepaid
+		 */
+		public void saveCascadingVIPPrepaid(ChainVIPPreaidFlow vipPrepaid) {
+			ChainVIPScore vipScore = new ChainVIPScore();
+			vipScore.setChainId(vipPrepaid.getChainId());
+			vipScore.setComment(vipPrepaid.getComment());
+			vipScore.setDate(vipPrepaid.getDate());
+			vipScore.setOrderId(vipPrepaid.getId());
+			vipScore.setVipCardId(vipPrepaid.getVipCard().getId());
+			vipScore.setVipCardNo(vipPrepaid.getVipCard().getVipCardNo());
+			vipScore.setType(ChainVIPScore.TYPE_DEPOSIT);
+			save(vipScore, true);
+			
 		}
 }

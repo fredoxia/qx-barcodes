@@ -178,7 +178,7 @@ public class ChainStoreSalesService {
                 formBean.setVipCardNo(validatedCard.getVipCardNo());
 //                formBean.setMaxVipCash();
                 formBean.setDiscount(validatedCard.getVipType().getDiscountRate());
-                uiBean.setMsg(validatedCard.getCustomerName() + " " + validatedCard.getVipType().getVipTypeName() + " " + Common_util.formatDouble(result.get(1), Common_util.df));
+                uiBean.setMsg(validatedCard.getCustomerName() + " " + validatedCard.getVipType().getVipTypeName() + " " + Common_util.formatDouble(result.get(1), Common_util.df) + " " + Common_util.formatDouble(result.get(2), Common_util.df));
 			} 
 		}
 	}
@@ -530,8 +530,11 @@ public class ChainStoreSalesService {
 		    	  ChainVIPCard vipCard2 = chainVIPCardImpl.get(vipCard.getId(), true);
 		    	  
 		    	  double couponSum =  chainVIPScoreImpl.getVIPScoreSum(vipCard.getId());
+		    	  
+		    	  double accumulateVipPrepaid = chainVIPService.getAcumulateVipPrepaid(vipCard);
 		    	  vipCard.setCustomerName(vipCard2.getCustomerName());
 		    	  vipCard.setAccumulatedScore(couponSum + vipCard2.getInitialScore());
+		    	  vipCard.setAccumulateVipPrepaid(accumulateVipPrepaid);
 		    	  response.setReturnValue(vipCard);
 		      }
 	    }
@@ -678,17 +681,34 @@ public class ChainStoreSalesService {
 			
 			List<Double> results = chainVIPService.getVIPCardTotalScore(vipCard.getId()) ;
 			double totalCoupon = results.get(1);
+			double totalVipPrepaid = results.get(2);
 			
-			if (salesOrder.getVipScore()!= 0 && salesOrder.getVipScore() > totalCoupon)
+			//vip会员只能在开户连锁店使用vip卡
+			if (salesOrder.getChainPrepaidAmt() > 0) {
+				if (vipCard.getIssueChainStore().getChain_id() != salesOrder.getChainStore().getChain_id()){
+					response.setQuickValue(Response.ERROR, "预存金  只能在VIP卡的开户连锁店使用");
+					return ;
+				}
+			} else if (salesOrder.getChainPrepaidAmt() < 0){
+				response.setQuickValue(Response.ERROR, "预存金  必须为大于或者等于0");
+				return ;
+			}
+			if (salesOrder.getChainPrepaidAmt()!= 0 && salesOrder.getChainPrepaidAmt() > totalVipPrepaid){
+				response.setQuickValue(Response.ERROR, "超过此VIP卡剩余预存金: " + totalVipPrepaid);
+				return ;
+			}
+			
+			if (salesOrder.getVipScore()!= 0 && salesOrder.getVipScore() > totalCoupon){
 				response.setQuickValue(Response.ERROR, "超过此VIP卡最多可换现金 : " + totalCoupon);
-			if (salesOrder.getVipScore() < 0)
+				return ;
+			}else if (salesOrder.getVipScore() < 0) {
 				response.setQuickValue(Response.ERROR, "积分换现金  必须为大于或者等于0");
+				return ;
+			}
 		} else {
 			if (salesOrder.getVipScore() != 0)
 				response.setQuickValue(Response.ERROR, "没有VIP卡，请清空 积分换现金 项目");
 		}
-
-		
 	}
 
 	/**

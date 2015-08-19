@@ -52,12 +52,13 @@ public class ChainVIPCard implements Serializable {
     private String statusS;
     private String genderS;
     /**
-     * the two are used for the the VIP Card
+     * the three are used for the the VIP Card
      * 1. accumulated score
      * 2. consumed score
      */
     private double accumulatedScore;
     private double consumedScore;
+    private double accumulateVipPrepaid;
     
     /**
      * 生日day和month
@@ -238,6 +239,12 @@ public class ChainVIPCard implements Serializable {
 	}
 	public void setIssueChainStore(ChainStore issueChainStore) {
 		this.issueChainStore = issueChainStore;
+	}
+	public double getAccumulateVipPrepaid() {
+		return accumulateVipPrepaid;
+	}
+	public void setAccumulateVipPrepaid(double accumulateVipPrepaid) {
+		this.accumulateVipPrepaid = accumulateVipPrepaid;
 	}
   
     

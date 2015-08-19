@@ -27,16 +27,12 @@ function checkVIPCardBackProcess(data){
 	    } else {
 	       $("#vipCardNo").attr("disabled", "true");
 	       $("#clearVIPBt").removeAttr("disabled");
-	    	$("#checkVIPBt").attr("disabled","true");
-	    	$("#vipCardIdHidden").attr("value", vipCard.id);
+	       $("#checkVIPBt").attr("disabled","true");
+	       $("#vipCardIdHidden").attr("value", vipCard.id);
 	
-	    	$("#maxVipCash").attr("value",data.totalCash);
-	    	$("#vipInfo").html(vipCard.customerName + " " + vipCard.vipType.vipTypeName + " 可换现金 ： " + (data.totalCash).toFixed(2));
-	    	var msg = "VIP 卡主 : " + vipCard.customerName + "\n"+
-	    				  "卡种类 : " + vipCard.vipType.vipTypeName + "\n" + 
-	    				  "累计积分 : " + (data.totalScore).toFixed(2) + "\n" + 
-	    		          "可换现金 : " + (data.totalCash).toFixed(2);
-	    	alert(msg);
+	       $("#maxVipCash").attr("value",data.totalCash);
+	       $("#vipInfo").html("姓名:" + vipCard.customerName + " 电话:" + vipCard.telephone + " VIP类型:" + vipCard.vipType.vipTypeName);
+	       alert("冲值前请确认VIP信息,正确");
 	    }
     }
 }

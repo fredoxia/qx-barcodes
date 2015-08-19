@@ -116,6 +116,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		    List<Double> results = chainVIPService.getVIPCardTotalScore(vipCard.getId());
 		    jsonMap.put("totalScore", results.get(0));
 	        jsonMap.put("totalCash", results.get(1));
+	        jsonMap.put("totalVipPrepaid", results.get(2));
 		}
 	    
 	    jsonMap.put("vipCard", vipCard);
@@ -257,6 +258,31 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		
 		
 		return SUCCESS;
+	}
+	
+	public String saveVIPPrepaidDeposit(){
+	 	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"saveVIPPrepaid");
+    	
+    	Response response = new Response();
+    	try {
+    	    response = chainVIPService.saveVIPPrepaidDeposit(formBean.getChainStore(), formBean.getVipCard(), formBean.getVipPrepaid(), userInfor);
+    	} catch (Exception e){
+    		response.setFail("错误: " + e.getMessage());
+    		loggerLocal.error(e);
+    	}
+    	jsonMap.put("response", response);
+		try{
+			   jsonObject = JSONObject.fromObject(jsonMap);
+//			   System.out.println(jsonObject.toString());
+			} catch (Exception e){
+				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"saveVIPPrepaid");
+				loggerLocal.error(e);
+			}
+		
+		
+		return SUCCESS;
+    	
 	}
 
 }

@@ -2,15 +2,18 @@ package com.onlineMIS.action.chainS.vip;
 
 import java.io.File;
 import java.sql.Date;
+
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 
 public class ChainVIPActionFormBean {
 	private Pager pager = new Pager();
 	private ChainVIPType vipType = new ChainVIPType();
 	private ChainVIPCard vipCard = new ChainVIPCard();
+	private ChainVIPPreaidFlow vipPrepaid = new ChainVIPPreaidFlow();
 	private int selectedCardId;
 	private ChainStore chainStore = new ChainStore();
 	
@@ -37,6 +40,14 @@ public class ChainVIPActionFormBean {
     private int vipScore;
     private String comment;
     
+
+	public ChainVIPPreaidFlow getVipPrepaid() {
+		return vipPrepaid;
+	}
+
+	public void setVipPrepaid(ChainVIPPreaidFlow vipPrepaid) {
+		this.vipPrepaid = vipPrepaid;
+	}
 
 	public String getComment() {
 		return comment;

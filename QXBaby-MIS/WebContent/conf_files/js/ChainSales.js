@@ -308,6 +308,7 @@ function changeDiscountCoupon(){
 	var coupon = $("#coupon").val(); 
 	var netAmount = $("#netAmount").val(); 
 	var netAmountR = $("#netAmountR").val();
+
 	
 	if (netAmount == undefined)
 		   netAmount = 0;
@@ -323,6 +324,7 @@ function changeDiscountCoupon(){
 
 	changeCashCardAmountValue();
 }
+
 
 /**
  * change the discount amount or coupon
@@ -393,9 +395,10 @@ function changeCashCardAmountValue(){
 	var card = $("#cardAmount").val();
 	var vipScore = $("#vipScore").val();
 	var amountAfterDC = $("#amountAfterDC").val(); 
+	var vipPrepaid = $("#chainPrepaidAmt").val();
 
-	if ((card != 0 && card != "") || (cash!=0 && cash!="") ||  (vipScore!=0 && vipScore!="") ){
-        var returnValue = cash - (amountAfterDC - card - vipScore);	
+	if ((card != 0 && card != "") || (cash!=0 && cash!="") ||  (vipScore!=0 && vipScore!="") ||  (vipPrepaid!=0 && vipPrepaid!="") ){
+        var returnValue = cash - (amountAfterDC - card - vipScore - vipPrepaid);	
 	    $("#returnAmount").attr("value", (returnValue).toFixed(P_NUMBER));
 	} else 
 		$("#returnAmount").attr("value", 0.0);
@@ -645,8 +648,8 @@ function validateDraftSalesForm(){
 			if (isNaN($("#vipScore").val())){
 				error += "积分抵换现金 必须是数字!\n";
 			}	
-			if (isNaN($("#extralVipScore").val())){
-				error += "额外积分 必须是数字!\n";
+			if (isNaN($("#chainPrepaidAmt").val())){
+				error += "预付款 必须是数字!\n";
 			}	
 			
 			var hasChar_q = false;
@@ -760,23 +763,27 @@ function validateSalesOrder(orderType){
 	var vipScore = $("#vipScore").val();
 	var cash = $("#cashAmount").val(); 
 	var card = $("#cardAmount").val();
+	var vipPrepaid = $("#chainPrepaidAmt").val();
 	var amountAfterDC = $("#amountAfterDC").val(); 
 	var returnAmount = (parseFloat($("#returnAmount").val())).toFixed(P_NUMBER);
 
-	var returnValue = (cash - (amountAfterDC - card - vipScore)).toFixed(P_NUMBER);
+	var returnValue = (cash - (amountAfterDC - card - vipScore - vipPrepaid)).toFixed(P_NUMBER);
 	
 	if (amountAfterDC >= 0){
 		if (returnAmount != returnValue || returnAmount < 0){
 			alert("请检查你的收款金额，刷卡金额和找零金额，你应该收现金");
 			return false;
-		} else if (cash < 0 || card < 0 || returnAmount < 0){
+		} else if (cash < 0 || card < 0 || vipPrepaid <0 || returnAmount < 0){
     		if (cash < 0)
     			$("#cashAmount").select();
     		else if (card < 0)
     			$("#cardAmount").select();
+    		else if (vipPrepaid < 0)
+    			$("#chainPrepaidAmt").select();
+    		
 			alert("请检查你的收款金额，刷卡金额和找零金额，你应该收现金");
 			return false;
-		} else if (cash > 15000 || card > 15000 || returnAmount > 15000){
+		} else if (cash > 15000 || card > 15000  || returnAmount > 15000){
 			alert("现金/刷卡 不是一个正常的收银数字(超过15000),请检查");
 			return false;
 		}
