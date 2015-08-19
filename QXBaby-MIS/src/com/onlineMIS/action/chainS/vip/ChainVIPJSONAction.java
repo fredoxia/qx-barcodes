@@ -272,8 +272,15 @@ public class ChainVIPJSONAction extends ChainVIPAction {
     		loggerLocal.error(e);
     	}
     	jsonMap.put("response", response);
+    	
+    	JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.setExcludes( new String[]{"issueChainStore"} );
+		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
+		
+		
 		try{
-			   jsonObject = JSONObject.fromObject(jsonMap);
+			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
 //			   System.out.println(jsonObject.toString());
 			} catch (Exception e){
 				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"saveVIPPrepaid");

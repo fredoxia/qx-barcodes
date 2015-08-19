@@ -32,7 +32,21 @@ public class ChainVIPPreaidFlow implements Serializable{
 	private String depositType = "";
 	private double amount;
 	private String comment = "";
-	private Date date;
+	private java.sql.Date date;
+	private Date createDate;
+	
+	/**
+	 * 页面展示用
+	 */
+	private double accumulateVipPrepaid = 0;
+	
+	
+	public double getAccumulateVipPrepaid() {
+		return accumulateVipPrepaid;
+	}
+	public void setAccumulateVipPrepaid(double accumulateVipPrepaid) {
+		this.accumulateVipPrepaid = accumulateVipPrepaid;
+	}
 	public int getId() {
 		return id;
 	}
@@ -92,8 +106,14 @@ public class ChainVIPPreaidFlow implements Serializable{
 	public Date getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	public void setDate(java.sql.Date date) {
 		this.date = date;
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 	
 	

@@ -972,6 +972,7 @@ public class ChainVIPService {
 		} else {
 			//1. 第一步保存 prepaid
 			vipPrepaid.setChainId(chainStore.getChain_id());
+			vipPrepaid.setCreateDate(Common_util.getToday());
 			vipPrepaid.setDate(Common_util.getToday());
 			vipPrepaid.setOperationType(ChainVIPPreaidFlow.OPERATION_TYPE_DEPOSIT);
 			vipPrepaid.setOperator(operator);
@@ -981,7 +982,14 @@ public class ChainVIPService {
 			//2. 第二步保存到vip score
             chainVIPScoreImpl.saveCascadingVIPPrepaid(vipPrepaid);
             
-            response.setMessage("成功为VIP " + vipCard.getVipCardNo() + " 充值");
+            //3. 获取vip总的剩余预存款
+            double accumulateVipPrepaid = getAcumulateVipPrepaid(vipCard);
+            vipPrepaid.setAccumulateVipPrepaid(accumulateVipPrepaid);
+            
+            response.setReturnValue(vipPrepaid);
+            String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值\n";
+            msg += "剩余预存款 :" + accumulateVipPrepaid + "元";
+            response.setMessage(msg);
 		}
 		
 		

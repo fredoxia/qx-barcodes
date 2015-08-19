@@ -12,7 +12,7 @@
 					       <tr class="InnerTableContent">
 					         <td width="30" height="25"><br/>           </td>
 					         <td width="98"><strong>预存金</strong></td>
-					         <td width="88"><s:property value="formBean.chainSalesOrder.chainPrepaidAmt"/></td>
+					         <td width="88"><s:property value="uiBean.chainSalesOrder.chainPrepaidAmt"/></td>
 					         <td width="90"><strong>优惠金额</strong></td>
 					         <td width="93"><s:property value="uiBean.chainSalesOrder.discountAmount"/></td>
 					         <td width="60"><strong>代金券</strong></td>

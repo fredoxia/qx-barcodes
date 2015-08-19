@@ -70,5 +70,7 @@
         <property name="amount" column="amount" type="double"/>
         <property name="comment" column="comment" type="string"/>
         <property name="date" column="date" type="date"/>
+        <property name="createDate" column="create_date" type="date"/>
+        
        </class>       
 </hibernate-mapping>

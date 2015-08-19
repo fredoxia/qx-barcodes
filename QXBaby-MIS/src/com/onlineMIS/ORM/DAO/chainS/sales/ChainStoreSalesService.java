@@ -31,6 +31,7 @@ import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPCardImpl;
+import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPPrepaidImpl;
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPScoreImpl;
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPService;
 import com.onlineMIS.ORM.DAO.headQ.SQLServer.SaleHistoryDAOImpl;
@@ -55,6 +56,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.SaleHistory;
@@ -130,6 +132,8 @@ public class ChainStoreSalesService {
 	
 	@Autowired
 	private ProductDaoImpl productDaoImpl;
+	@Autowired
+	private ChainVIPPrepaidImpl chainVIPPrepaidImpl;
 
 	/**
 	 * this function is to prepare the UI Bean of the Chain sales order
@@ -735,6 +739,7 @@ public class ChainStoreSalesService {
 				isCancel = true;
 
 			int offset = isCancel ? -1 : 1;
+			int offsetPrepaid = isCancel ? 1 : -1;
 			
 			/**
 			 * 1.2. to calculate the coupon
@@ -800,6 +805,25 @@ public class ChainStoreSalesService {
 				ChainVIPScore vipScoreObj2 = new ChainVIPScore(chainId, vipCard.getId(),ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue2), Common_util.getDecimalDouble(vipCoupon));
 				
 				chainVIPScoreImpl.save(vipScoreObj2, false);
+			}
+			
+			/**
+			 * 3.0 计算vip的预存款
+			 */
+			double vipPrepaidAmt = salesOrder.getChainPrepaidAmt();
+			if (vipPrepaidAmt != 0){
+				ChainVIPPreaidFlow vipPrepaid = new ChainVIPPreaidFlow();
+                if (isCancel)
+				    vipPrepaid.setComment("红冲单据" + salesOrder.getId());
+                vipPrepaid.setOperationType(ChainVIPPreaidFlow.OPERATION_TYPE_CONSUMP);
+				vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
+				vipPrepaid.setChainId(chainStore.getChain_id());
+				vipPrepaid.setDate(salesOrder.getOrderDate());
+				vipPrepaid.setCreateDate(Common_util.getToday());
+				ChainUserInfor operator = salesOrder.getSaler();
+				vipPrepaid.setOperator(operator);
+				vipPrepaid.setVipCard(vipCard);
+				chainVIPPrepaidImpl.save(vipPrepaid, true);
 			}
 			
 		}
