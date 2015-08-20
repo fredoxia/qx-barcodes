@@ -56,7 +56,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
-import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.SaleHistory;
@@ -817,10 +817,10 @@ public class ChainStoreSalesService {
 			 */
 			double vipPrepaidAmt = salesOrder.getChainPrepaidAmt();
 			if (vipPrepaidAmt != 0){
-				ChainVIPPreaidFlow vipPrepaid = new ChainVIPPreaidFlow();
+				ChainVIPPrepaidFlow vipPrepaid = new ChainVIPPrepaidFlow();
                 if (isCancel)
 				    vipPrepaid.setComment("红冲单据" + salesOrder.getId());
-                vipPrepaid.setOperationType(ChainVIPPreaidFlow.OPERATION_TYPE_CONSUMP);
+                vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP);
 				vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
 				vipPrepaid.setChainStore(chainStore);
 				vipPrepaid.setDate(salesOrder.getOrderDate());

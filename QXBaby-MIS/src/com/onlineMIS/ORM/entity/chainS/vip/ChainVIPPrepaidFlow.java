@@ -7,7 +7,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 
-public class ChainVIPPreaidFlow implements Serializable{
+public class ChainVIPPrepaidFlow implements Serializable{
 	/**
 	 * 
 	 */

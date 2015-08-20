@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
-import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
 import com.onlineMIS.common.Common_util;
 
@@ -128,10 +128,15 @@ public class ChainVIPScoreImpl extends BaseDAO<ChainVIPScore> {
 		 * 如果是预存就要记录
 		 * @param vipPrepaid
 		 */
-		public void saveCascadingVIPPrepaid(ChainVIPPreaidFlow vipPrepaid) {
+		public void saveCascadingVIPPrepaid(ChainVIPPrepaidFlow vipPrepaid) {
 			ChainVIPScore vipScore = new ChainVIPScore();
 			vipScore.setChainId(vipPrepaid.getChainStore().getChain_id());
-			vipScore.setComment("预存 " + vipPrepaid.getComment());
+			String additionalComment = "";
+			if (vipPrepaid.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD))
+				additionalComment = "预存刷卡 ";
+			else if (vipPrepaid.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH))
+				additionalComment = "预存现金 ";
+			vipScore.setComment(additionalComment + vipPrepaid.getComment());
 			vipScore.setDate(vipPrepaid.getCreateDate());
 			vipScore.setOrderId(vipPrepaid.getId());
 			vipScore.setSalesValue(vipPrepaid.getAmount());

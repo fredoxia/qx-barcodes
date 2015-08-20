@@ -6,14 +6,14 @@ import java.sql.Date;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
-import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 
 public class ChainVIPActionFormBean {
 	private Pager pager = new Pager();
 	private ChainVIPType vipType = new ChainVIPType();
 	private ChainVIPCard vipCard = new ChainVIPCard();
-	private ChainVIPPreaidFlow vipPrepaid = new ChainVIPPreaidFlow();
+	private ChainVIPPrepaidFlow vipPrepaid = new ChainVIPPrepaidFlow();
 	private int selectedCardId;
 	private ChainStore chainStore = new ChainStore();
 	private boolean canEditOrderDate = false;
@@ -50,11 +50,11 @@ public class ChainVIPActionFormBean {
 		this.canEditOrderDate = canEditOrderDate;
 	}
 
-	public ChainVIPPreaidFlow getVipPrepaid() {
+	public ChainVIPPrepaidFlow getVipPrepaid() {
 		return vipPrepaid;
 	}
 
-	public void setVipPrepaid(ChainVIPPreaidFlow vipPrepaid) {
+	public void setVipPrepaid(ChainVIPPrepaidFlow vipPrepaid) {
 		this.vipPrepaid = vipPrepaid;
 	}
 

@@ -49,11 +49,11 @@ function backProcessDepositPrepaid(data){
        alert(response.message);
        
        var prepaid = response.returnValue;
-       alert(prepaid.chainStore.chain_name);
-       alert(prepaid.amount);
-       alert(prepaid.depositType);
-       alert(prepaid.accumulateVipPrepaid);
-       alert(prepaid.operator.name);
+       try {
+	        printSalesOrder(prepaid);
+       } catch (e){
+			alert("小票打印出现问题 ,请联系总部管理员");
+       }
 
        document.vipPrepaidDepositForm.action = "actionChain/chainVIPJSPAction!preDepositVIPPrepaid";
 	   document.vipPrepaidDepositForm.submit();
@@ -89,7 +89,7 @@ function changeChainStore(chainId){
 		      	<s:if test="formBean.canEditOrderDate">
 						<s:textfield id="orderDate" name="formBean.vipPrepaid.date" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
 				</s:if><s:else>
-						<s:textfield id="orderDate" readonly="true" name="formBean.vipPrepaid.ate" size="8"/>
+						<s:textfield id="orderDate" readonly="true" name="formBean.vipPrepaid.date" size="8"/>
 				</s:else>
 		      </td>
 		    </tr>		    				                         

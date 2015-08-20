@@ -42,7 +42,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCardDownloadTemplate;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCardInforTemplate;
-import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPreaidFlow;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlow;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
@@ -414,24 +414,28 @@ public class ChainVIPService {
 
 	public double getAcumulateVipPrepaid(ChainVIPCard vipCard) {
 		double totalPrepaid = 0;
-		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPreaidFlow c WHERE c.vipCard.id = ?";
+		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.vipCard.id = ?";
 	    Object[] values = new Object[]{vipCard.getId()};
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
 	    if (prepaid != null && prepaid.size() > 0)
 		  for (Object object: prepaid){
 			  Object[] object2 = (Object[])object;
+			  if (object2[0] == null || object2[1] == null)
+				  continue;
 			  String operationType = object2[0].toString();
 			  double amount = Common_util.getDouble(object2[1]);
 
-			  if (operationType.equalsIgnoreCase(ChainVIPPreaidFlow.OPERATION_TYPE_CONSUMP))
+			  if (operationType.equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP))
 				  totalPrepaid -= amount;
-			  else if (operationType.equalsIgnoreCase(ChainVIPPreaidFlow.OPERATION_TYPE_DEPOSIT))
+			  else if (operationType.equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT))
 				  totalPrepaid += amount;
 		   }
 	    
 		return totalPrepaid;
 	}
+	
+	
 
 	/**
 	 * to change the vip card status
@@ -964,7 +968,7 @@ public class ChainVIPService {
 	 * @return
 	 */
 	public Response saveVIPPrepaidDeposit(ChainStore chainStore, ChainVIPCard vipCard,
-			ChainVIPPreaidFlow vipPrepaid, ChainUserInfor operator) {
+			ChainVIPPrepaidFlow vipPrepaid, ChainUserInfor operator) {
 		Response response = new Response();
 		
 		vipCard = getVIPCardByCardId(vipCard.getId());
@@ -984,7 +988,7 @@ public class ChainVIPService {
 			vipPrepaid.setChainStore(chainStore);
 			vipPrepaid.setCreateDate(new java.util.Date());
 			vipPrepaid.setDate(Common_util.getToday());
-			vipPrepaid.setOperationType(ChainVIPPreaidFlow.OPERATION_TYPE_DEPOSIT);
+			vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT);
 			vipPrepaid.setOperator(operator);
 			vipPrepaid.setVipCard(vipCard);
 			chainVIPPrepaidImpl.save(vipPrepaid, true);

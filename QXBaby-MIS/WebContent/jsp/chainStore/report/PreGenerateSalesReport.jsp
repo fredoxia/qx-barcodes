@@ -78,7 +78,10 @@ function generateReportBackProcess2(data){
 		var startDate = $("#startDate").combo("getValue");
 		var endDate = $("#endDate").combo("getValue");
 		pazu.TPrinter.printToDefaultPrinter(startDate + " 至 " + endDate);
-
+		var date = new Date();
+	    var footer = "打印日期 : " + formatDate(date,"YYYY-MM-DD hh:mm:ss"); 
+		pazu.TPrinter.printToDefaultPrinter(footer);
+		
 		//打印销售人员
 		var salerId = $("#chainSaler").val();
 		if (salerId != -1){
@@ -176,9 +179,9 @@ function showSalesReport(report){
 			   "<td>其他货品<br/>净销售量</td>"+
 			   "<td>其他货品<br/>净销售额</td>"+
 			   "<td>其他货品<br/>销售成本</td>"+
-			   "<td></td>"+
-			   "<td></td>"+
-			   "<td></td>"+
+			   "<td></td>"+ 
+			   "<td>预存现金</td>"+
+			   "<td>预存刷卡</td>"+
 			   "<td></td>"+
 			   "</tr>").appendTo("#reportTable");
 			
@@ -191,7 +194,7 @@ function showSalesReport(report){
 	          report.myQuantity +"</td><td>"+
 	          (report.myAmount).toFixed(2) +"</td><td>"+
 	          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')">(report.myCost).toFixed(2) </s:if><s:else>"-"</s:else> +"</td><td>"+
-	          "</td><td></td><td></td></tr>").appendTo("#reportTable");    
+	          "</td><td>"+ (report.vipPrepaidDepositCash).toFixed(2)+"</td><td>"+(report.vipPrepaidDepositCard).toFixed(2)+"</td></tr>").appendTo("#reportTable");    
 }
 </script>
 </head>

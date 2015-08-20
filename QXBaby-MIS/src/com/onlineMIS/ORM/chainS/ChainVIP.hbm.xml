@@ -56,7 +56,7 @@
         <property name="date" column="date" type="date"/>
         <property name="comment" column="comment" type="string"/>
     </class>    
-    <class name="ChainVIPPreaidFlow" table="chain_vip_prepaid_flow">
+    <class name="ChainVIPPrepaidFlow" table="chain_vip_prepaid_flow">
 
         <id name="id" column="id">
             <generator class="identity" />

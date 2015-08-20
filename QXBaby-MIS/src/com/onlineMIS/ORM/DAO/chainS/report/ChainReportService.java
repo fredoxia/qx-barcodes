@@ -37,6 +37,7 @@ import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPCardImpl;
+import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPPrepaidImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl;
@@ -82,6 +83,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlow;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
@@ -146,6 +148,9 @@ public class ChainReportService {
 	@Autowired
 	private ChainVIPCardImpl chainVIPCardImpl;
 	
+	@Autowired
+	private ChainVIPPrepaidImpl chainVIPPrepaidImpl;
+	
 	/**
 	 * to prepare the generate the report UI
 	 * @param uiBean
@@ -198,8 +203,8 @@ public class ChainReportService {
 		 *      2   ： 求销售的总数
 		 */
 		if (reportType == ChainReport.TYPE_SALES_REPORT){
-			Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
-			ChainSalesReport salesReport = generateSalesTotal(chainId, salerId, value_sale);
+			
+			ChainSalesReport salesReport = generateSalesTotal(chainId, salerId, startDate, endDate);
 			response.setReturnValue(salesReport);
 			response.setAction(1);
 		} else if (reportType == ChainReport.TYPE_PURCHASE_REPORT){
@@ -318,10 +323,11 @@ public class ChainReportService {
 	 * @param endDate
 	 * @return
 	 */
-	private ChainSalesReport generateSalesTotal(int chainId, int salerId, Object[] value_sale){
+	private ChainSalesReport generateSalesTotal(int chainId, int salerId, Date startDate, Date endDate){
 		/**1. to get the information from the sales order and exchange order
 		 * 收入, 销售额， 销售总量，退货额，退货总量,,
 		 */
+		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
 		String chainCriteria = "";
 		if (chainId == Common_util.ALL_RECORD)
 			chainCriteria = " chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID;
@@ -367,6 +373,25 @@ public class ChainReportService {
 		//3。 计算
 		double vipPrepaidDepositCash = 0;
 		double vipPrepaidDepositCard = 0;
+
+		String hql = "SELECT c.depositType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.chainStore.chain_id =? AND c.date BETWEEN ? AND ?";
+	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT, chainId,startDate, endDate };
+	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
+	    
+	    if (prepaid != null && prepaid.size() > 0)
+		  for (Object object: prepaid){
+			  Object[] object2 = (Object[])object;
+			  if (object2[0] == null || object2[1] == null)
+				  continue;
+			  String depositType = object2[0].toString();
+			  double amount = Common_util.getDouble(object2[1]);
+
+			  if (depositType.equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD))
+				  vipPrepaidDepositCard += amount;
+			  else if (depositType.equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH))
+				  vipPrepaidDepositCash += amount;
+		   }
+
 		
 		ChainStore chainStore = new ChainStore();
 		chainStore.setChain_id(chainId);
@@ -413,7 +438,7 @@ public class ChainReportService {
 		 * 1. 获取total
 		 */
 		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
-		ChainSalesReport totalReport = generateSalesTotal(chainId, salerId, value_sale);
+		ChainSalesReport totalReport = generateSalesTotal(chainId, salerId, startDate, endDate);
 		
 		/**
 		 * 2. 实现分页,如果是搜索所有连锁店
@@ -3035,8 +3060,8 @@ public class ChainReportService {
 		/**
 		 * 1. 获取total
 		 */
-		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
-		ChainSalesReport totalReport = generateSalesTotal(chainId, Common_util.ALL_RECORD, value_sale);
+		
+		ChainSalesReport totalReport = generateSalesTotal(chainId, Common_util.ALL_RECORD, startDate, endDate);
 		if (!ChainUserInforService.isMgmtFromHQ(loginUser) && loginUser.getRoleType().getChainRoleTypeId() != ChainRoleType.CHAIN_OWNER){
 			totalReport.setFreeCostSum(0);
 			totalReport.setNetProfit(0);
@@ -3046,6 +3071,7 @@ public class ChainReportService {
 		/**
 		 * 2. 实现分页,如果是搜索所有连锁店
 		 */
+		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
 		int total = 0;
 		if (page != null && rowPerPage != null)
 			total = calculateSaleReportBySalerCount(chainId, value_sale);

@@ -1,4 +1,8 @@
-
+var pageMargin,maxLength;
+var dfPrinter;
+var space = "   ";
+var fontSizeHead = 11;
+var fontSize = 10;
 function printSalesOrder(prepaid){
 
 	dfPrinter=pazu.TPrinter.getDefaultPrinter();
@@ -9,8 +13,10 @@ function printSalesOrder(prepaid){
 		//alert(dfPrinter.TextWidth(space) + "," + dfPrinter.ScaleWidth);
 		pageMargin=dfPrinter.TextWidth("   ");        
 		maxLength = dfPrinter.ScaleWidth; 
-
-		printOut(prepaid);
+		var printCopy = $("#printCopy").val();
+		for (var i = 0; i < printCopy; i++){
+		    printOut(prepaid);
+		}
 	}
 }
 
@@ -22,8 +28,6 @@ function printOut(prepaid){
 	//print sales
 	printContent(prepaid);
 
-	//print acct footer
-	printAcctFooter(prepaid);
 	
     //print footer
 	printFooter(prepaid);

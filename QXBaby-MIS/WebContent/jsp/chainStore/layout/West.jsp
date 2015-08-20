@@ -8,10 +8,10 @@ $(function() {
 				if (node.attributes && node.attributes.url) {
 					var url;
 					url = node.attributes.url;
-	/*				parent.$.messager.progress({
+					parent.$.messager.progress({
 								title : '提示',
 								text : '数据处理中，请稍后....'
-							});*/
+							});
 
      				addTab({
 						url : url,
@@ -157,7 +157,7 @@ $(function() {
 						<li data-options="iconCls:'icon-medal_gold_2',attributes:{url:'chainReportJSPAction!preVIPConsumpReport'}">VIP 消费报表</li>
 						<li data-options="iconCls:'icon-medal_gold_2',attributes:{url:'chainVIPJSPAction!preSearchSpecialVIPs'}">VIP 生日查找</li>
 						<li data-options="iconCls:'icon-medal_gold_2',attributes:{url:'chainVIPJSPAction!preDepositVIPPrepaid'}">VIP 预存金充值</li>
-						<li data-options="iconCls:'icon-medal_gold_2',attributes:{url:'chainVIPJSPAction!preSearchVIPPrepaid'}">VIP 预存金流水</li>
+						
 
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainVIPJSPAction!preUploadVIPs')">
 							<li data-options="iconCls:'icon-medal_gold_2',attributes:{url:'chainVIPJSPAction!preUploadVIPs'}">批量上传VIP卡</li>
