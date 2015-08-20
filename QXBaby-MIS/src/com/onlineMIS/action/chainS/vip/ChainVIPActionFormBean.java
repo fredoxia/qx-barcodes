@@ -16,6 +16,7 @@ public class ChainVIPActionFormBean {
 	private ChainVIPPreaidFlow vipPrepaid = new ChainVIPPreaidFlow();
 	private int selectedCardId;
 	private ChainStore chainStore = new ChainStore();
+	private boolean canEditOrderDate = false;
 	
     //file upload
     private File vips = null;
@@ -40,6 +41,14 @@ public class ChainVIPActionFormBean {
     private int vipScore;
     private String comment;
     
+
+	public boolean getCanEditOrderDate() {
+		return canEditOrderDate;
+	}
+
+	public void setCanEditOrderDate(boolean canEditOrderDate) {
+		this.canEditOrderDate = canEditOrderDate;
+	}
 
 	public ChainVIPPreaidFlow getVipPrepaid() {
 		return vipPrepaid;

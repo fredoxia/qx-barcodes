@@ -61,7 +61,7 @@
         <id name="id" column="id">
             <generator class="identity" />
         </id>
-        <property name="chainId" column="chain_id" type="integer"/>
+        <many-to-one name="chainStore" column="chain_id" fetch="join" lazy="false" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore"/>
         <many-to-one name="vipCard" column="vip_card_id" not-null="false" class="com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard" lazy="false"/>
         <many-to-one name="operator" fetch="join" column="operator_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor" not-null="true"/>
         <property name="status" column="status" type="integer"/>
@@ -70,7 +70,7 @@
         <property name="amount" column="amount" type="double"/>
         <property name="comment" column="comment" type="string"/>
         <property name="date" column="date" type="date"/>
-        <property name="createDate" column="create_date" type="date"/>
+        <property name="createDate" column="create_date" type="timestamp"/>
         
        </class>       
 </hibernate-mapping>

@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/print/printPrepaid.js"></script>
 <script>
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
@@ -47,6 +47,14 @@ function backProcessDepositPrepaid(data){
     var response = data.response;
     if (response.returnCode == SUCCESS){
        alert(response.message);
+       
+       var prepaid = response.returnValue;
+       alert(prepaid.chainStore.chain_name);
+       alert(prepaid.amount);
+       alert(prepaid.depositType);
+       alert(prepaid.accumulateVipPrepaid);
+       alert(prepaid.operator.name);
+
        document.vipPrepaidDepositForm.action = "actionChain/chainVIPJSPAction!preDepositVIPPrepaid";
 	   document.vipPrepaidDepositForm.submit();
     } else 
@@ -75,6 +83,16 @@ function changeChainStore(chainId){
 		      	<%@ include file="../include/SearchChainStore.jsp"%>
 		      </td>
 		    </tr>
+		    <tr class="InnerTableContent">
+		      <td>单据日期*</td>
+		      <td colspan="2">
+		      	<s:if test="formBean.canEditOrderDate">
+						<s:textfield id="orderDate" name="formBean.vipPrepaid.date" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
+				</s:if><s:else>
+						<s:textfield id="orderDate" readonly="true" name="formBean.vipPrepaid.ate" size="8"/>
+				</s:else>
+		      </td>
+		    </tr>		    				                         
 		    <tr class="InnerTableContent">
 		      <td>VIP卡号 *</td>
 		      <td colspan="2">

@@ -144,7 +144,7 @@ function showSalesReport(report){
 		       "<td height='20'>销售折扣<br/>&nbsp;</td>"+
 			   "<td>代金券总额<br/>&nbsp;</td>"+
 			   "<td>VIP积分换现金<br/>&nbsp;</td>"+
-			   "<td></td>"+
+			   "<td>预存款消费<br/>&nbsp;</td>"+
 			   "<td>&nbsp;</td>"+
 			   "<td>刷卡总额<br/>&nbsp;</td>"+
 			   "<td>现金总额<br/>&nbsp;</td>"+
@@ -159,7 +159,7 @@ function showSalesReport(report){
     		  (report.salesDiscountAmtSum).toFixed(2)  +"</td><td>"+
 	          (report.couponSum).toFixed(2) +"</td><td>"+
 	          (report.vipScoreSum).toFixed(2) +"</td><td>"+
-	          "</td><td>"+
+	          (report.vipPrepaidAmt).toFixed(1) +"</td><td>"+
 	          "&nbsp;</td><td>"+
 	          (report.cardAmtSum).toFixed(2) +"</td><td>"+
 	          (report.cashNetSum).toFixed(2) +"</td><td></td><td>"+

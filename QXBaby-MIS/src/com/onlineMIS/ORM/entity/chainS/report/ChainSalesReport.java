@@ -28,6 +28,15 @@ public class ChainSalesReport extends ChainReport{
     private double cardAmtSum = 0;
     private double cashNetSum = 0;
     private double vipScoreSum = 0;
+    /**
+     * 消费的预存款
+     */
+    private double vipPrepaidAmt = 0;
+    /**
+     * 预存款，现金+刷卡
+     */
+    private double vipPrepaidDepositCash = 0;
+    private double vipPrepaidDepositCard = 0;
     private ChainUserInfor user = null;
 	/**
 	 * 千禧货品数量
@@ -72,8 +81,8 @@ public class ChainSalesReport extends ChainReport{
     public ChainSalesReport(int type, int saleQuantitySum, int returnQuantitySum,
 			int freeQantitySum, double salesAmtSum, double salesDiscountAmtSum, double returnAmtSum,
 			double netSaleCostSum, double freeCostSum, double discountSum,
-			double couponSum, double cardAmtSum, double cashNetSum, double vipScoreSum, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost,int vipSaleQ,double vipSaleAmt, ChainStore chainStore, ChainUserInfor user) {
-    	this(type, saleQuantitySum, returnQuantitySum, freeQantitySum, salesAmtSum, salesDiscountAmtSum, returnAmtSum, netSaleCostSum, freeCostSum, discountSum, couponSum, cardAmtSum, cashNetSum, vipScoreSum, qxQ, qxAmount, qxCost,  myQ,  myAmount, myCost, vipSaleQ, vipSaleAmt, chainStore);
+			double couponSum, double cardAmtSum, double cashNetSum, double vipScoreSum, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost,int vipSaleQ,double vipSaleAmt, double vipPrepaidAmt, double vipPrepaidDepositCash, double vipPrepaidDepositCard, ChainStore chainStore, ChainUserInfor user) {
+    	this(type, saleQuantitySum, returnQuantitySum, freeQantitySum, salesAmtSum, salesDiscountAmtSum, returnAmtSum, netSaleCostSum, freeCostSum, discountSum, couponSum, cardAmtSum, cashNetSum, vipScoreSum, qxQ, qxAmount, qxCost,  myQ,  myAmount, myCost, vipSaleQ, vipSaleAmt,vipPrepaidAmt, vipPrepaidDepositCash, vipPrepaidDepositCard, chainStore);
     	this.user = user;
     }
     
@@ -81,15 +90,15 @@ public class ChainSalesReport extends ChainReport{
     public ChainSalesReport(int type, int saleQuantitySum, int returnQuantitySum,
 			int freeQantitySum, double salesAmtSum, double salesDiscountAmtSum, double returnAmtSum,
 			double netSaleCostSum, double freeCostSum, double discountSum,
-			double couponSum, double cardAmtSum, double cashNetSum, double vipScoreSum, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost,int vipSaleQ,double vipSaleAmt, ChainStore chainStore) {
-    	this(type, saleQuantitySum, returnQuantitySum, freeQantitySum, salesAmtSum,salesDiscountAmtSum, returnAmtSum, netSaleCostSum, freeCostSum, discountSum, couponSum, cardAmtSum, cashNetSum, vipScoreSum, qxQ, qxAmount, qxCost,  myQ, myAmount, myCost, vipSaleQ, vipSaleAmt);
+			double couponSum, double cardAmtSum, double cashNetSum, double vipScoreSum, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost,int vipSaleQ,double vipSaleAmt, double vipPrepaidAmt, double vipPrepaidDepositCash, double vipPrepaidDepositCard, ChainStore chainStore) {
+    	this(type, saleQuantitySum, returnQuantitySum, freeQantitySum, salesAmtSum,salesDiscountAmtSum, returnAmtSum, netSaleCostSum, freeCostSum, discountSum, couponSum, cardAmtSum, cashNetSum, vipScoreSum, qxQ, qxAmount, qxCost,  myQ, myAmount, myCost, vipSaleQ, vipSaleAmt,vipPrepaidAmt,vipPrepaidDepositCash, vipPrepaidDepositCard);
     	this.chainStore = chainStore;
     }
     
 	public ChainSalesReport(int type, int saleQuantitySum, int returnQuantitySum,
 			int freeQantitySum, double salesAmtSum, double salesDiscountAmtSum, double returnAmtSum,
 			double netSaleCostSum, double freeCostSum, double discountSum,
-			double couponSum, double cardAmtSum, double cashNetSum, double vipScoreSum, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost,int vipSaleQ,double vipSaleAmt) {
+			double couponSum, double cardAmtSum, double cashNetSum, double vipScoreSum, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost,int vipSaleQ,double vipSaleAmt, double vipPrepaidAmt, double vipPrepaidDepositCash, double vipPrepaidDepositCard) {
 		super();
 		this.type = type;
 		this.saleQuantitySum = saleQuantitySum;
@@ -119,6 +128,9 @@ public class ChainSalesReport extends ChainReport{
 		this.vipSaleQ = vipSaleQ;
 		if (netAmtSum > 0)
 			this.vipPercentage = vipSaleAmt / netAmtSum * 100;
+		this.vipPrepaidAmt = vipPrepaidAmt;
+		this.vipPrepaidDepositCash = vipPrepaidDepositCash;
+		this.vipPrepaidDepositCard = vipPrepaidDepositCard;
 	}
 
 	
@@ -337,6 +349,30 @@ public class ChainSalesReport extends ChainReport{
 
 	public void setMyCost(double myCost) {
 		this.myCost = myCost;
+	}
+
+	public double getVipPrepaidAmt() {
+		return vipPrepaidAmt;
+	}
+
+	public void setVipPrepaidAmt(double vipPrepaidAmt) {
+		this.vipPrepaidAmt = vipPrepaidAmt;
+	}
+
+	public double getVipPrepaidDepositCash() {
+		return vipPrepaidDepositCash;
+	}
+
+	public void setVipPrepaidDepositCash(double vipPrepaidDepositCash) {
+		this.vipPrepaidDepositCash = vipPrepaidDepositCash;
+	}
+
+	public double getVipPrepaidDepositCard() {
+		return vipPrepaidDepositCard;
+	}
+
+	public void setVipPrepaidDepositCard(double vipPrepaidDepositCard) {
+		this.vipPrepaidDepositCard = vipPrepaidDepositCard;
 	}
 
 }

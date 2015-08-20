@@ -8,10 +8,10 @@ $(function() {
 				if (node.attributes && node.attributes.url) {
 					var url;
 					url = node.attributes.url;
-					parent.$.messager.progress({
+	/*				parent.$.messager.progress({
 								title : '提示',
 								text : '数据处理中，请稍后....'
-							});
+							});*/
 
      				addTab({
 						url : url,

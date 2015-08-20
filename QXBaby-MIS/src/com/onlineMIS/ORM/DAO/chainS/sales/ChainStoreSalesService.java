@@ -354,8 +354,8 @@ public class ChainStoreSalesService {
 	        	//2.0 update the stock table 
 	        	updateChainInOutStock(salesOrder, ChainStoreSalesOrder.STATUS_CANCEL);
 	        	
-	        	//3.0 update the vip
-	        	updateVipScore(salesOrder, ChainStoreSalesOrder.STATUS_CANCEL);
+	        	//3.0 update the vip积分和预付款
+	        	updateVipScorePrepaid(salesOrder, ChainStoreSalesOrder.STATUS_CANCEL);
 	        	
 	        	//4.0 查看是否会印象batch
 	        	checkDailySalesImpact(salesOrder);
@@ -497,10 +497,11 @@ public class ChainStoreSalesService {
 					
 					//6. - update the stock table
 					//   - update the vip score
+					//   - 以及预付款
 					if (statusNew== ChainStoreSalesOrder.STATUS_COMPLETE || statusNew == ChainStoreSalesOrder.STATUS_CANCEL){
 					    updateChainInOutStock(salesOrder, statusNew);
 					    
-					    updateVipScore(salesOrder, statusNew);
+					    updateVipScorePrepaid(salesOrder, statusNew);
 					}
 					
 					//7. 检查是否对日销售数据有印象
@@ -508,6 +509,7 @@ public class ChainStoreSalesService {
 					checkDailySalesImpact(salesOrder);
 					
 					//8. 如果是过账还需要检查是否需要返回vip的积分
+
 					checkVIPCoupon(salesOrder, response, statusNew);
 
 					
@@ -720,7 +722,7 @@ public class ChainStoreSalesService {
 	 * @param salesOrder
 	 * @param statusNew
 	 */
-    private void updateVipScore(ChainStoreSalesOrder salesOrder, int statusNew) {
+    private void updateVipScorePrepaid(ChainStoreSalesOrder salesOrder, int statusNew) {
     	ChainStore chainStore = salesOrder.getChainStore();
     	
 		ChainVIPCard vipCard = salesOrder.getVipCard();
@@ -778,7 +780,10 @@ public class ChainStoreSalesService {
 			}
 			
 			int orderId = salesOrder.getId();
-			ChainVIPScore vipScoreObj = new ChainVIPScore(chainId,vipCard.getId(), ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue), Common_util.getDecimalDouble(coupon * multiple), comment);
+			String commentScore = comment;
+			if (salesOrder.getChainPrepaidAmt() != 0)
+				commentScore = "预付款消费" + Common_util.roundDouble(salesOrder.getChainPrepaidAmt(),0);
+			ChainVIPScore vipScoreObj = new ChainVIPScore(chainId,vipCard.getId(), ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue), Common_util.getDecimalDouble(coupon * multiple), commentScore);
 			chainVIPScoreImpl.save(vipScoreObj, false);
 			
 			/**
@@ -817,7 +822,7 @@ public class ChainStoreSalesService {
 				    vipPrepaid.setComment("红冲单据" + salesOrder.getId());
                 vipPrepaid.setOperationType(ChainVIPPreaidFlow.OPERATION_TYPE_CONSUMP);
 				vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
-				vipPrepaid.setChainId(chainStore.getChain_id());
+				vipPrepaid.setChainStore(chainStore);
 				vipPrepaid.setDate(salesOrder.getOrderDate());
 				vipPrepaid.setCreateDate(Common_util.getToday());
 				ChainUserInfor operator = salesOrder.getSaler();

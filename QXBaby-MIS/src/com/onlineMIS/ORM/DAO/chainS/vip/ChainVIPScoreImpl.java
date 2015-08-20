@@ -130,10 +130,11 @@ public class ChainVIPScoreImpl extends BaseDAO<ChainVIPScore> {
 		 */
 		public void saveCascadingVIPPrepaid(ChainVIPPreaidFlow vipPrepaid) {
 			ChainVIPScore vipScore = new ChainVIPScore();
-			vipScore.setChainId(vipPrepaid.getChainId());
-			vipScore.setComment(vipPrepaid.getComment());
-			vipScore.setDate(vipPrepaid.getDate());
+			vipScore.setChainId(vipPrepaid.getChainStore().getChain_id());
+			vipScore.setComment("预存 " + vipPrepaid.getComment());
+			vipScore.setDate(vipPrepaid.getCreateDate());
 			vipScore.setOrderId(vipPrepaid.getId());
+			vipScore.setSalesValue(vipPrepaid.getAmount());
 			vipScore.setVipCardId(vipPrepaid.getVipCard().getId());
 			vipScore.setVipCardNo(vipPrepaid.getVipCard().getVipCardNo());
 			vipScore.setType(ChainVIPScore.TYPE_DEPOSIT);

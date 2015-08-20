@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 
 public class ChainVIPPreaidFlow implements Serializable{
 	/**
@@ -16,7 +17,8 @@ public class ChainVIPPreaidFlow implements Serializable{
 	public static final String DEPOSIT_TYPE_CASH = "C";
 	public static final String DEPOSIT_TYPE_CARD = "D";
 	private int id;
-	private int chainId;
+
+	private ChainStore chainStore;
 	private ChainVIPCard vipCard; 
 	private ChainUserInfor operator;
 	private int status;
@@ -53,14 +55,13 @@ public class ChainVIPPreaidFlow implements Serializable{
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getChainId() {
-		return chainId;
+
+	public ChainStore getChainStore() {
+		return chainStore;
 	}
-	public void setChainId(int chainStoreId) {
-		this.chainId = chainStoreId;
+	public void setChainStore(ChainStore chainStore) {
+		this.chainStore = chainStore;
 	}
-	
-	
 	public ChainVIPCard getVipCard() {
 		return vipCard;
 	}
@@ -114,6 +115,13 @@ public class ChainVIPPreaidFlow implements Serializable{
 	}
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+	public void clearData() {
+		this.setAmount(0);
+		this.setDate(null);
+		this.setComment("");
+		this.setDepositType("");
+		this.setOperationType("");
 	}
 	
 	

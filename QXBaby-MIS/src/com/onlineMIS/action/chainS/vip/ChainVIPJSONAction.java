@@ -274,7 +274,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
     	jsonMap.put("response", response);
     	
     	JsonConfig jsonConfig = new JsonConfig();
-		jsonConfig.setExcludes( new String[]{"issueChainStore"} );
+		jsonConfig.setExcludes( new String[]{"issueChainStore","priceIncrement"} );
 		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
 		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
 		

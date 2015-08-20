@@ -21,6 +21,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -909,17 +910,25 @@ public class ChainVIPService {
 
 	public void prepareDepositVIPPrepaidUI(ChainVIPActionFormBean formBean, ChainVIPActionUIBean uiBean,
 			ChainUserInfor userInfor) {
-		formBean.setVipPrepaid(null);
+		formBean.getVipPrepaid().clearData();
 		formBean.setVipCard(null);
-		formBean.setChainStore(null);
+
 		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
 			ChainStore chainStore = chainStoreDaoImpl.get(userInfor.getMyChainStore().getChain_id(), true);
 			formBean.setChainStore(chainStore);
-		}
+			ChainStoreConf chainStoreConf = chainStoreConfDaoImpl.getChainStoreConfByChainId(formBean.getChainStore().getChain_id());
+			uiBean.setChainStoreConf(chainStoreConf);
+		} else 
+			formBean.setChainStore(null);
+
 		
-		if (formBean.getChainStore().getChain_id() > 0){
-		   ChainStoreConf chainStoreConf = chainStoreConfDaoImpl.getChainStoreConfByChainId(formBean.getChainStore().getChain_id());
-		   uiBean.setChainStoreConf(chainStoreConf);
+		//the particular parameter
+		ChainRoleType roleType = userInfor.getRoleType();
+		formBean.getVipPrepaid().setDate(Common_util.getToday());
+		if (ChainUserInforService.isMgmtFromHQ(userInfor) || roleType.isOwner())
+			formBean.setCanEditOrderDate(true);
+		else {
+			formBean.setCanEditOrderDate(false);
 		}
 		
 	}
@@ -971,8 +980,9 @@ public class ChainVIPService {
 			response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店.充值仅限于当前连锁店的客户.");
 		} else {
 			//1. 第一步保存 prepaid
-			vipPrepaid.setChainId(chainStore.getChain_id());
-			vipPrepaid.setCreateDate(Common_util.getToday());
+			chainStore = chainStoreDaoImpl.get(chainStore.getChain_id(), true);
+			vipPrepaid.setChainStore(chainStore);
+			vipPrepaid.setCreateDate(new java.util.Date());
 			vipPrepaid.setDate(Common_util.getToday());
 			vipPrepaid.setOperationType(ChainVIPPreaidFlow.OPERATION_TYPE_DEPOSIT);
 			vipPrepaid.setOperator(operator);
@@ -987,9 +997,10 @@ public class ChainVIPService {
             vipPrepaid.setAccumulateVipPrepaid(accumulateVipPrepaid);
             
             response.setReturnValue(vipPrepaid);
-            String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值\n";
+            String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值" + Common_util.roundDouble(vipPrepaid.getAmount(), 0) +"元 \n";
             msg += "剩余预存款 :" + accumulateVipPrepaid + "元";
             response.setMessage(msg);
+            
 		}
 		
 		
