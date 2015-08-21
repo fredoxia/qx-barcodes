@@ -308,7 +308,9 @@ function changeDiscountCoupon(){
 	var coupon = $("#coupon").val(); 
 	var netAmount = $("#netAmount").val(); 
 	var netAmountR = $("#netAmountR").val();
-
+	var vipPrepaid = $("#chainPrepaidAmt").val();
+	var vipScore = $("#vipScore").val();
+	
 	
 	if (netAmount == undefined)
 		   netAmount = 0;
@@ -318,7 +320,7 @@ function changeDiscountCoupon(){
 		
 	var amountAfterDC = 0;
 	
-	amountAfterDC = netAmount - coupon - discount - netAmountR;	
+	amountAfterDC = netAmount - coupon - discount - netAmountR - vipPrepaid - vipScore;	
 	
 	$("#amountAfterDC").attr("value", (amountAfterDC).toFixed(P_NUMBER));
 
@@ -336,6 +338,7 @@ function checkDiscountType(){
 	var coupon = $("#coupon").val(); 
 	var netAmount = $("#netAmount").val(); 
 	var netAmountR = $("#netAmountR").val();
+	var vipPrepaid = $("#chainPrepaidAmt").val();
 	
 	if (netAmount == undefined)
 		   netAmount = 0;
@@ -348,7 +351,7 @@ function checkDiscountType(){
 	var discountType = $("#discountAmtType").val();
 	if (discountType == DIS_DOWN){
 		var floor = amountAfterDC;
-		amountAfterDC = netAmount - coupon - netAmountR;
+		amountAfterDC = netAmount - coupon - netAmountR -vipPrepaid;
 		if (amountAfterDC > 0)
 		   floor = Math.floor(amountAfterDC);
 		else if (amountAfterDC <0)
@@ -359,7 +362,7 @@ function checkDiscountType(){
 		$("#discountAmount").attr("value", discount);
 	} else if (discountType == DIS_ROUND){
 		var round = amountAfterDC;
-		amountAfterDC = netAmount - coupon - netAmountR;	
+		amountAfterDC = netAmount - coupon - netAmountR -vipPrepaid;	
 		round = Math.round(amountAfterDC);
 		discount = (amountAfterDC - round).toFixed(P_NUMBER);
 
@@ -367,7 +370,7 @@ function checkDiscountType(){
 		
 	} else if (discountType == DIS_UP){
 		var ceil = amountAfterDC;
-		amountAfterDC = netAmount - coupon - netAmountR;
+		amountAfterDC = netAmount - coupon - netAmountR - vipPrepaid;
 		if (amountAfterDC > 0)
 			ceil = Math.ceil(amountAfterDC);
 		else if (amountAfterDC <0)
@@ -378,7 +381,7 @@ function checkDiscountType(){
 		$("#discountAmount").attr("value", discount);
 	}
 	
-	amountAfterDC = netAmount - coupon - discount - netAmountR;	
+	amountAfterDC = netAmount - coupon - discount - netAmountR - vipPrepaid;	
 	
 	$("#amountAfterDC").attr("value", (amountAfterDC).toFixed(P_NUMBER));
 
@@ -393,12 +396,12 @@ function checkDiscountType(){
 function changeCashCardAmountValue(){
 	var cash = $("#cashAmount").val(); 
 	var card = $("#cardAmount").val();
-	var vipScore = $("#vipScore").val();
-	var amountAfterDC = $("#amountAfterDC").val(); 
-	var vipPrepaid = $("#chainPrepaidAmt").val();
 
-	if ((card != 0 && card != "") || (cash!=0 && cash!="") ||  (vipScore!=0 && vipScore!="") ||  (vipPrepaid!=0 && vipPrepaid!="") ){
-        var returnValue = cash - (amountAfterDC - card - vipScore - vipPrepaid);	
+	var amountAfterDC = $("#amountAfterDC").val(); 
+
+
+	if ((card != 0 && card != "") || (cash!=0 && cash!="")   ){
+        var returnValue = cash - (amountAfterDC - card );	
 	    $("#returnAmount").attr("value", (returnValue).toFixed(P_NUMBER));
 	} else 
 		$("#returnAmount").attr("value", 0.0);
@@ -760,26 +763,24 @@ function validateDraftSalesForm(){
 
 function validateSalesOrder(orderType){
 //	calculateTotal();
-	var vipScore = $("#vipScore").val();
+
 	var cash = $("#cashAmount").val(); 
 	var card = $("#cardAmount").val();
-	var vipPrepaid = $("#chainPrepaidAmt").val();
+	
 	var amountAfterDC = $("#amountAfterDC").val(); 
 	var returnAmount = (parseFloat($("#returnAmount").val())).toFixed(P_NUMBER);
 
-	var returnValue = (cash - (amountAfterDC - card - vipScore - vipPrepaid)).toFixed(P_NUMBER);
+	var returnValue = (cash - (amountAfterDC - card)).toFixed(P_NUMBER);
 	
 	if (amountAfterDC >= 0){
 		if (returnAmount != returnValue || returnAmount < 0){
 			alert("请检查你的收款金额，刷卡金额和找零金额，你应该收现金");
 			return false;
-		} else if (cash < 0 || card < 0 || vipPrepaid <0 || returnAmount < 0){
+		} else if (cash < 0 || card < 0  || returnAmount < 0){
     		if (cash < 0)
     			$("#cashAmount").select();
     		else if (card < 0)
     			$("#cardAmount").select();
-    		else if (vipPrepaid < 0)
-    			$("#chainPrepaidAmt").select();
     		
 			alert("请检查你的收款金额，刷卡金额和找零金额，你应该收现金");
 			return false;

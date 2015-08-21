@@ -182,7 +182,7 @@ public class ChainStoreSalesService {
                 formBean.setVipCardNo(validatedCard.getVipCardNo());
 //                formBean.setMaxVipCash();
                 formBean.setDiscount(validatedCard.getVipType().getDiscountRate());
-                uiBean.setMsg(validatedCard.getCustomerName() + " " + validatedCard.getVipType().getVipTypeName() + " " + Common_util.formatDouble(result.get(1), Common_util.df) + " " + Common_util.formatDouble(result.get(2), Common_util.df));
+                uiBean.setMsg(validatedCard.getCustomerName() + " " + validatedCard.getVipType().getVipTypeName() + "  积分可换现金 :" + Common_util.formatDouble(result.get(1), Common_util.df) + " 剩余预存金 :" + Common_util.formatDouble(result.get(2), Common_util.df));
 			} 
 		}
 	}

@@ -10,7 +10,7 @@
 					       <tr class="PBAOuterTableTitale">
 					         <td width="30"></td>
 					         <td width="95">预存金</td>
-					         <td width="93"><s:textfield name="formBean.chainSalesOrder.chainPrepaidAmt" id="chainPrepaidAmt" size="14" disabled="true"  onkeyup="changeCashCardAmountValue();" title="当vip使用预付金付款时"/></td>
+					         <td width="93"><s:textfield name="formBean.chainSalesOrder.chainPrepaidAmt" id="chainPrepaidAmt" size="14" disabled="true"  onkeyup="changeDiscountCoupon();" title="当vip使用预付金付款时"/></td>
 					         <td width="70">优惠金额</td>
 					         <td width="93"><s:textfield name="formBean.chainSalesOrder.discountAmount" id="discountAmount" size="14" onkeyup="changeDiscountCoupon();"/></td>
 					         <td width="110">代金券</td>
@@ -22,7 +22,7 @@
 						   <tr class="PBAOuterTableTitale">
 					         <td> </td>
 					         <td>积分抵现金(元)</td>
-					         <td><s:textfield name="formBean.chainSalesOrder.vipScore" id="vipScore" size="14" onkeyup="changeCashCardAmountValue();" disabled="true"/></td>
+					         <td><s:textfield name="formBean.chainSalesOrder.vipScore" id="vipScore" size="14" onkeyup="changeDiscountCoupon();" disabled="true"/></td>
 					         <td>刷卡</td>
 					         <td><s:textfield name="formBean.chainSalesOrder.cardAmount" id="cardAmount" size="14"   onkeyup="changeCashCardAmountValue();"/></td>
 					         <td>收现金+/付现金-</td>

@@ -18,7 +18,7 @@
 					         <td width="60"><strong>代金券</strong></td>
 					         <td width="84"><s:property value="uiBean.chainSalesOrder.coupon"/></td>
 					         <td width="44"><strong>应收</strong></td>
-					         <td width="86"><s:text name="format.price"><s:param value="uiBean.chainSalesOrder.netAmount - uiBean.chainSalesOrder.discountAmount - uiBean.chainSalesOrder.coupon -uiBean.chainSalesOrder.netAmountR"/></s:text></td>
+					         <td width="86"><s:text name="format.price"><s:param value="uiBean.chainSalesOrder.netAmount - uiBean.chainSalesOrder.discountAmount - uiBean.chainSalesOrder.coupon -uiBean.chainSalesOrder.netAmountR -uiBean.chainSalesOrder.chainPrepaidAmt -uiBean.chainSalesOrder.vipScore"/></s:text></td>
 					         <td width="40">&nbsp;</td>
 					         <td width="290">&nbsp;</td>
 					         <td>&nbsp;</td>

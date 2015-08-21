@@ -52,5 +52,5 @@ function clearVIPCard(){
 
 </script>
 		<s:hidden name="formBean.vipCard.id" id="vipCardIdHidden"/>
-		<s:textfield name="formBean.vipCardNo" id="vipCardNo" size="18"/><input type="button" id="checkVIPBt" value="输入" onclick="checkVIPCard();"/><input id="clearVIPBt" type="button" value="修改" onclick="clearVIPCard();" disabled/>&nbsp;&nbsp;&nbsp;&nbsp;
+		<s:textfield name="formBean.vipCardNo" id="vipCardNo" size="18"/><input type="button" id="checkVIPBt" value="查找" onclick="checkVIPCard();"/><input id="clearVIPBt" type="button" value="修改" onclick="clearVIPCard();" disabled/>&nbsp;&nbsp;&nbsp;&nbsp;
 		<span id="vipInfo"></span>
