@@ -139,6 +139,8 @@ public class ChainVIPJSPAction extends ChainVIPAction {
     	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"viewAllVIPCards");
     	
+    	formBean.getVipCard().setIssueChainStore(userInfor.getMyChainStore());
+    	
     	//1. prepare the ui bean for the search part
 		chainVIPService.prepareSearchVIPCardUI(uiBean, userInfor);
 		

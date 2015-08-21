@@ -273,7 +273,7 @@ public class ChainVIPService {
 	 * @param userInfor
 	 */
 	@Transactional
-	public void prepareSearchVIPCardUI(ChainVIPActionUIBean uiBean,
+	public void prepareSearchVIPCardUI( ChainVIPActionUIBean uiBean,
 			ChainUserInfor userInfor) {
 		//prepare the dummy all record chain store
 		List<ChainStore> chainStores = new ArrayList<ChainStore>();
@@ -288,6 +288,7 @@ public class ChainVIPService {
 		} else {
 			int myChainId = userInfor.getMyChainStore().getChain_id();
 			chainStores = chainStoreGroupDaoImpl.getChainGroupStoreList(myChainId, userInfor, Common_util.CHAIN_ACCESS_LEVEL_3);
+			
 		}
 		uiBean.setChainStores(chainStores);		
 		uiBean.good =9999;
