@@ -204,6 +204,7 @@ public class ChainStoreService {
 	public Response getChainStoreList(ChainUserInfor userInfor, Pager pager,int accessLevel, int indicator) {
 		Response response = new Response();
 		List<ChainStore> chainStores = new ArrayList<ChainStore>(); 
+
 		
 		if (ChainUserInforService.isMgmtFromHQ(userInfor)){
 			boolean cache = false;

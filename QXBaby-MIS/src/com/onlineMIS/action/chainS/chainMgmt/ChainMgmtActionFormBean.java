@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
+
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainInitialStock;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
@@ -16,6 +17,7 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.action.chainS.vo.ChainProductBarcodeVO;
+import com.onlineMIS.common.Common_util;
 
 public class ChainMgmtActionFormBean {
 	private ChainStore chainStore = new ChainStore();
@@ -44,6 +46,7 @@ public class ChainMgmtActionFormBean {
     
     //分页的参数
     private Pager pager = new Pager();
+    private int accessLevel = Common_util.CHAIN_ACCESS_LEVEL_2;
     
     //搜索
     private String needUpdtDate = "";
@@ -56,6 +59,12 @@ public class ChainMgmtActionFormBean {
 	private ChainPriceIncrement priceIncrement;
 
 	
+	public int getAccessLevel() {
+		return accessLevel;
+	}
+	public void setAccessLevel(int accessLevel) {
+		this.accessLevel = accessLevel;
+	}
 	public int getIndicator() {
 		return indicator;
 	}

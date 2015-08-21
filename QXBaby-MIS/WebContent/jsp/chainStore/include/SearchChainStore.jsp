@@ -9,7 +9,11 @@
 	 var indicator = $("#indicator").val();
 	 if (indicator != undefined)
 		 param = "formBean.indicator=" + indicator;
-	 
+
+	 var accessLevel = $("#accessLevel").val();
+	 if (accessLevel != undefined)
+		 param = "formBean.accessLevel=" + accessLevel;
+		 	 
 	 var url = "chainMgmtJSP!listChainStore" + "?" + param;
 	 window.open(url,'新窗口','height=400, width=400, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, status=no');  
 }

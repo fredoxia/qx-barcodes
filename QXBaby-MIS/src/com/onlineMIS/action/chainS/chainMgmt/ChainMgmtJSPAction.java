@@ -89,7 +89,8 @@ public class ChainMgmtJSPAction extends ChainMgmtAction {
 		Response response = new Response();
 		
 		try {
-		     response = chainStoreService.getChainStoreList(userInfor, formBean.getPager(), Common_util.CHAIN_ACCESS_LEVEL_2,formBean.getIndicator());
+
+		     response = chainStoreService.getChainStoreList(userInfor, formBean.getPager(), formBean.getAccessLevel(),formBean.getIndicator());
 		} catch (Exception e) {
 			loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"listChainStore");
 			loggerLocal.error(e);
