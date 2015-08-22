@@ -36,6 +36,9 @@ import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroup;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroupElement;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelTwoInventoryItem;
+import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
+import com.onlineMIS.ORM.entity.chainS.report.ChainSalesReport;
+import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
@@ -43,6 +46,7 @@ import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCardDownloadTemplate;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCardInforTemplate;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlow;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlowUI;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPScore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
@@ -1012,7 +1016,71 @@ public class ChainVIPService {
 		return response;
 	}
 
+	/**
+	 * 搜索vip预付款
+	 * @param chainId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+    public Response searchVIPPrepaidFlow(int chainId,Date startDate, Date endDate, Integer page, Integer rowPerPage, String sortName, String sortOrder){
+    	Map saleReport = new HashMap();
+    	Response response = new Response();
+		
+    	java.util.Date startDate2 = Common_util.formStartDate(startDate);
+		java.util.Date endDate2 = Common_util.formEndDate(endDate);
+		
+		/**
+		 * 1. 获取total
+		 */
+		Object[] value_sale = new Object[]{startDate, endDate};
+		String criteriaTotal = "";
+		if (chainId == Common_util.ALL_RECORD)
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE date BETWEEN ? AND ? GROUP BY operationType, depositType";
+		else 
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND date BETWEEN ? AND ? GROUP BY operationType, depositType";
+		
+		
+		/**
+		 * 2. 实现分页,如果是搜索所有连锁店
+		 */
+		int total = 0;
+		if (page != null && rowPerPage != null){
+			//2.1 计算pager
+			String criteria = "";
+			if (chainId == Common_util.ALL_RECORD)
+				criteria = " FROM ChainVIPPrepaidFlow WHERE date BETWEEN ? AND ? ";
+			else 
+				criteria = "FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND date BETWEEN ? AND ?";
 
+			String criteria2 = "SELECT COUNT(id) " + criteria;
+			
+			total = chainVIPPrepaidImpl.executeHQLCount(criteria2, value_sale, true);
+		}
+		
+		/**
+		 * 获取数据列表
+		 */
+		List<ChainVIPPrepaidFlowUI> rptUIElements = new ArrayList<ChainVIPPrepaidFlowUI>();
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainVIPPrepaidFlow.class);
+		criteria.add(Restrictions.between("date", startDate2, endDate2));
+		if (chainId != Common_util.ALL_RECORD){
+			criteria.add(Restrictions.eq("chainStore.chain_id", chainId));
+		}
+		List<ChainVIPPrepaidFlow> rptElements = chainVIPPrepaidImpl.getByCritera(criteria, Common_util.getFirstRecord(page, rowPerPage), rowPerPage, true);
+		for (ChainVIPPrepaidFlow ele : rptElements){
+			ChainVIPPrepaidFlowUI uiEle = new ChainVIPPrepaidFlowUI(ele);
+			rptUIElements.add(uiEle);
+		}
+
+//		saleReport.put("footer", footer);
+		saleReport.put("rows", rptUIElements);
+		saleReport.put("total", total);
+		
+		response.setReturnValue(saleReport);
+		
+		return response;
+    }
 
 
 }
