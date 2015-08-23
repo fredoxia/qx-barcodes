@@ -88,9 +88,9 @@ function changeChainStore(chainId){
 		      <td>单据日期*</td>
 		      <td colspan="2">
 		      	<s:if test="formBean.canEditOrderDate">
-						<s:textfield id="orderDate" name="formBean.vipPrepaid.date" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
+						<s:textfield id="orderDate" name="formBean.vipPrepaid.dateD" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
 				</s:if><s:else>
-						<s:textfield id="orderDate" readonly="true" name="formBean.vipPrepaid.date" size="8"/>
+						<s:textfield id="orderDate" readonly="true" name="formBean.vipPrepaid.dateD" size="8"/>
 				</s:else>
 		      </td>
 		    </tr>		    				                         

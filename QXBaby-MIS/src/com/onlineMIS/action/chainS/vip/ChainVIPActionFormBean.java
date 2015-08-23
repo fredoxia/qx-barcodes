@@ -23,8 +23,8 @@ public class ChainVIPActionFormBean {
     private String vipsContentType;
     private String vipsFileName;
     
-    private Date startDate;
-    private Date endDate;
+    private Date startDate = new Date(new java.util.Date().getTime());
+    private Date endDate = new Date(new java.util.Date().getTime());
    
     /**
      * 搜索时的search type

@@ -13,23 +13,34 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	
 	public ChainVIPPrepaidFlowUI(ChainVIPPrepaidFlow c){
 		BeanUtils.copyProperties(c, this);
-		String amount = String.valueOf(Common_util.roundDouble(this.getAmount(), 1));
+		String amount = String.valueOf(Common_util.roundDouble(Math.abs(this.getAmount()), 1));
 		if (this.getOperationType().equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP)){
-			prepaidType = "预存金消费";
+			prepaidType = "消费-预存金";
 			consump = amount;
 		} else if (this.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD)){
-			depositCard = "充值-刷卡";
-			consump = amount;
+			prepaidType = "充值";
+			depositCard = amount;
 		} else if (this.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH)){
-			prepaidType = "充值-现金";
+			prepaidType = "充值";
 			depositCash = amount;
 		}
+		dateUI = Common_util.dateFormat.format(c.getDateD());
+
 	}
 
 	private String prepaidType = "";
 	private String depositCash = "-";
 	private String depositCard = "-";
 	private String consump = "-";
+	private String dateUI = "";
+	
+	
+	public String getDateUI() {
+		return dateUI;
+	}
+	public void setDateUI(String dateUI) {
+		this.dateUI = dateUI;
+	}
 	public String getPrepaidType() {
 		return prepaidType;
 	}

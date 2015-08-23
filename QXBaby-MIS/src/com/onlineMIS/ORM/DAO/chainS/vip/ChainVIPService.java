@@ -933,7 +933,7 @@ public class ChainVIPService {
 		
 		//the particular parameter
 		ChainRoleType roleType = userInfor.getRoleType();
-		formBean.getVipPrepaid().setDate(Common_util.getToday());
+		formBean.getVipPrepaid().setDateD(Common_util.getToday());
 		if (ChainUserInforService.isMgmtFromHQ(userInfor) || roleType.isOwner())
 			formBean.setCanEditOrderDate(true);
 		else {
@@ -992,7 +992,7 @@ public class ChainVIPService {
 			chainStore = chainStoreDaoImpl.get(chainStore.getChain_id(), true);
 			vipPrepaid.setChainStore(chainStore);
 			vipPrepaid.setCreateDate(new java.util.Date());
-			vipPrepaid.setDate(Common_util.getToday());
+			vipPrepaid.setDateD(Common_util.getToday());
 			vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT);
 			vipPrepaid.setOperator(operator);
 			vipPrepaid.setVipCard(vipCard);
@@ -1023,12 +1023,13 @@ public class ChainVIPService {
 	 * @param endDate
 	 * @return
 	 */
-    public Response searchVIPPrepaidFlow(int chainId,Date startDate, Date endDate, Integer page, Integer rowPerPage, String sortName, String sortOrder){
+    public Response searchVIPPrepaidFlow(int chainId,java.util.Date startDate, java.util.Date endDate, Integer page, Integer rowPerPage, String sortName, String sortOrder){
     	Map saleReport = new HashMap();
     	Response response = new Response();
 		
     	java.util.Date startDate2 = Common_util.formStartDate(startDate);
 		java.util.Date endDate2 = Common_util.formEndDate(endDate);
+		List<ChainVIPPrepaidFlowUI> rptUIElements = new ArrayList<ChainVIPPrepaidFlowUI>();
 		
 		/**
 		 * 1. 获取total
@@ -1036,9 +1037,9 @@ public class ChainVIPService {
 		Object[] value_sale = new Object[]{startDate, endDate};
 		String criteriaTotal = "";
 		if (chainId == Common_util.ALL_RECORD)
-			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE date BETWEEN ? AND ? GROUP BY operationType, depositType";
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
 		else 
-			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND date BETWEEN ? AND ? GROUP BY operationType, depositType";
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
 		
 		
 		/**
@@ -1049,28 +1050,31 @@ public class ChainVIPService {
 			//2.1 计算pager
 			String criteria = "";
 			if (chainId == Common_util.ALL_RECORD)
-				criteria = " FROM ChainVIPPrepaidFlow WHERE date BETWEEN ? AND ? ";
+				criteria = " FROM ChainVIPPrepaidFlow WHERE dateD BETWEEN ? AND ? ";
 			else 
-				criteria = "FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND date BETWEEN ? AND ?";
+				criteria = "FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND dateD BETWEEN ? AND ?";
 
 			String criteria2 = "SELECT COUNT(id) " + criteria;
 			
 			total = chainVIPPrepaidImpl.executeHQLCount(criteria2, value_sale, true);
 		}
 		
-		/**
-		 * 获取数据列表
-		 */
-		List<ChainVIPPrepaidFlowUI> rptUIElements = new ArrayList<ChainVIPPrepaidFlowUI>();
-		DetachedCriteria criteria = DetachedCriteria.forClass(ChainVIPPrepaidFlow.class);
-		criteria.add(Restrictions.between("date", startDate2, endDate2));
-		if (chainId != Common_util.ALL_RECORD){
-			criteria.add(Restrictions.eq("chainStore.chain_id", chainId));
-		}
-		List<ChainVIPPrepaidFlow> rptElements = chainVIPPrepaidImpl.getByCritera(criteria, Common_util.getFirstRecord(page, rowPerPage), rowPerPage, true);
-		for (ChainVIPPrepaidFlow ele : rptElements){
-			ChainVIPPrepaidFlowUI uiEle = new ChainVIPPrepaidFlowUI(ele);
-			rptUIElements.add(uiEle);
+		if (total > 0){
+			/**
+			 * 获取数据列表
+			 */
+			DetachedCriteria criteria = DetachedCriteria.forClass(ChainVIPPrepaidFlow.class);
+			criteria.add(Restrictions.between("dateD", startDate2, endDate2));
+			if (chainId != Common_util.ALL_RECORD){
+				criteria.add(Restrictions.eq("chainStore.chain_id", chainId));
+			}
+			criteria.addOrder(Order.asc("chainStore.chain_id"));
+			criteria.addOrder(Order.asc("dateD"));
+			List<ChainVIPPrepaidFlow> rptElements = chainVIPPrepaidImpl.getByCritera(criteria, Common_util.getFirstRecord(page, rowPerPage), rowPerPage, true);
+			for (ChainVIPPrepaidFlow ele : rptElements){
+				ChainVIPPrepaidFlowUI uiEle = new ChainVIPPrepaidFlowUI(ele);
+				rptUIElements.add(uiEle);
+			}
 		}
 
 //		saleReport.put("footer", footer);
@@ -1081,6 +1085,19 @@ public class ChainVIPService {
 		
 		return response;
     }
+
+	public void prepareSearchVIPPrepaidUI(ChainVIPActionFormBean formBean,
+			ChainVIPActionUIBean uiBean, ChainUserInfor userInfor) {
+		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
+			int chainId = userInfor.getMyChainStore().getChain_id();
+			ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
+			formBean.setChainStore(chainStore);
+		} else {
+			ChainStore allChainStore = ChainStoreDaoImpl.getAllChainStoreObject();
+			formBean.setChainStore(allChainStore);
+		}
+		
+	}
 
 
 }

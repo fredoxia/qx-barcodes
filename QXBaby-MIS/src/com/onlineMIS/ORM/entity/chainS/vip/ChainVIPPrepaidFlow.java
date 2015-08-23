@@ -34,7 +34,7 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	private String depositType = "";
 	private double amount;
 	private String comment = "";
-	private java.sql.Date date;
+	private java.sql.Date dateD;
 	private Date createDate;
 	
 	/**
@@ -104,11 +104,11 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public Date getDate() {
-		return date;
+	public Date getDateD() {
+		return dateD;
 	}
-	public void setDate(java.sql.Date date) {
-		this.date = date;
+	public void setDateD(java.sql.Date date) {
+		this.dateD = date;
 	}
 	public Date getCreateDate() {
 		return createDate;
@@ -118,7 +118,7 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	}
 	public void clearData() {
 		this.setAmount(0);
-		this.setDate(null);
+		this.setDateD(null);
 		this.setComment("");
 		this.setDepositType("");
 		this.setOperationType("");

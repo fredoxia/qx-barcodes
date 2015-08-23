@@ -382,7 +382,8 @@
             </result> 
             <result name="upgradeVIP">/jsp/chainStore/vip/ChainVIPUpgrade.jsp</result>
             <result name="updateVIPScore">/jsp/chainStore/vip/ChainVIPScoreUpdate.jsp</result>
-            <result name="depositVIPPrepaid">/jsp/chainStore/vip/ChainVIPPrepaidDeposit.jsp</result>     
+            <result name="depositVIPPrepaid">/jsp/chainStore/vip/ChainVIPPrepaidDeposit.jsp</result> 
+            <result name="searchVIPPrepaid">/jsp/chainStore/vip/SearchVIPPrepaidFlows.jsp</result>    
         </action>  
                 <!-- the finance action -->
         <action name="financeChainJSP" class="com.onlineMIS.action.chainS.finance.FinanceChainJSPAction">
@@ -483,6 +484,9 @@
             </result>
         </action> 
         <action name="chainVIPJSONAction" class="com.onlineMIS.action.chainS.vip.ChainVIPJSONAction">
+            <result type="json" name="successful">
+                 <param name="root">jsonArray</param>
+            </result>
             <result type="json">
                  <param name="root">jsonObject</param>
             </result>

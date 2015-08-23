@@ -3,6 +3,7 @@ package com.onlineMIS.action.chainS.vip;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
@@ -229,7 +230,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 	}
 	
 	/**
-	 * 在预付中
+	 * 在预付中 获取vip card 信息
 	 * @return
 	 */
 	public String getVIPCardVIPPrepaid(){
@@ -289,7 +290,37 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		
 		
 		return SUCCESS;
+	}
+	
+	public String searchVIPPrepaidFlow(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"searchVIPPrepaidFlow : " + formBean);
     	
+		Response response = new Response();
+		try {
+		    response = chainVIPService.searchVIPPrepaidFlow(formBean.getChainStore().getChain_id(), formBean.getStartDate(), formBean.getEndDate(), this.getPage(), this.getRows(), "", "");
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		if (response.getReturnCode() == Response.SUCCESS){
+	    	JsonConfig jsonConfig = new JsonConfig();
+			jsonConfig.setExcludes( new String[]{"issueChainStore","priceIncrement","roleType"} );
+			jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
+			jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
+			
+			
+			jsonMap = (Map)response.getReturnValue();
+			try {
+		       jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
+			} catch (Exception e ){
+				e.printStackTrace();
+			}
+		    
+		}
+		
+		return SUCCESS;
 	}
 
 }

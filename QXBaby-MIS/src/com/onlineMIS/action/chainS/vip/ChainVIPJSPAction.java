@@ -436,4 +436,17 @@ public class ChainVIPJSPAction extends ChainVIPAction {
 		
 		return "depositVIPPrepaid";
 	}
+	
+	/**
+	 * 搜索 vip的预存金
+	 * @return
+	 */
+	public String preSearchVIPPrepaid(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.info(userInfor.getName() + " : chainVipJSPAction - preSearchVIPPrepaid");
+
+		chainVIPService.prepareSearchVIPPrepaidUI(formBean, uiBean, userInfor);
+		
+		return "searchVIPPrepaid";
+	}
 }
