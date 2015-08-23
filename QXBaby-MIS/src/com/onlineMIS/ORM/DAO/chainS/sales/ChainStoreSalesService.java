@@ -823,7 +823,7 @@ public class ChainStoreSalesService {
                 vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP);
 				vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
 				vipPrepaid.setChainStore(chainStore);
-				vipPrepaid.setDate(salesOrder.getOrderDate());
+				vipPrepaid.setDateD(salesOrder.getOrderDate());
 				vipPrepaid.setCreateDate(Common_util.getToday());
 				ChainUserInfor operator = salesOrder.getSaler();
 				vipPrepaid.setOperator(operator);
