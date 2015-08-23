@@ -69,7 +69,7 @@ function genSalesReport(){
 			<table width="100%" border="0">
 			    <tr class="InnerTableContent">
 			      <td width="45" height="25">&nbsp;</td>
-			      <td width="76"><strong>过账日期</strong></td>
+			      <td width="76"><strong>单据日期</strong></td>
 			      <td width="284" colspan="3">
 			        <s:textfield id="startDate" name="formBean.startDate" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
 			        &nbsp;至&nbsp;
