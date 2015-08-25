@@ -1040,7 +1040,9 @@ public class ChainVIPService {
 			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
 		else 
 			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
-		
+		Object[] totalObject =  (Object[])chainVIPPrepaidImpl.executeHQLSelect(criteriaTotal, value_sale,null, false).get(0);
+		ChainVIPPrepaidFlowUI totalPrepaid = new ChainVIPPrepaidFlowUI();
+		processTotalPrepaid(totalObject, totalPrepaid);
 		
 		/**
 		 * 2. 实现分页,如果是搜索所有连锁店
@@ -1085,6 +1087,22 @@ public class ChainVIPService {
 		
 		return response;
     }
+
+	private void processTotalPrepaid(Object[] totalObject,
+			ChainVIPPrepaidFlowUI totalPrepaid) {
+		ChainStore emptyStore = new ChainStore();
+		emptyStore.setChain_name("合计");
+		totalPrepaid.setChainStore(emptyStore);
+		
+		totalPrepaid.setDepositCard("0");
+		totalPrepaid.setDepositCash("0");
+		totalPrepaid.setConsump("0");
+		
+		if (totalObject != null){
+
+		}
+		
+	}
 
 	public void prepareSearchVIPPrepaidUI(ChainVIPActionFormBean formBean,
 			ChainVIPActionUIBean uiBean, ChainUserInfor userInfor) {

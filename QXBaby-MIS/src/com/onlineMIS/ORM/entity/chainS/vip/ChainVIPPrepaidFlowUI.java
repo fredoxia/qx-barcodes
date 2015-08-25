@@ -11,6 +11,10 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	 */
 	private static final long serialVersionUID = 2449311953108767978L;
 	
+	public ChainVIPPrepaidFlowUI(){
+		
+	}
+	
 	public ChainVIPPrepaidFlowUI(ChainVIPPrepaidFlow c){
 		BeanUtils.copyProperties(c, this);
 		String amount = String.valueOf(Common_util.roundDouble(Math.abs(this.getAmount()), 1));

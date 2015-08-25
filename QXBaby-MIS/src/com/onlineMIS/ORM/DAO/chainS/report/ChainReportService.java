@@ -374,7 +374,7 @@ public class ChainReportService {
 		double vipPrepaidDepositCash = 0;
 		double vipPrepaidDepositCard = 0;
 
-		String hql = "SELECT c.depositType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.chainStore.chain_id =? AND c.dateD BETWEEN ? AND ?";
+		String hql = "SELECT c.depositType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.chainStore.chain_id =? AND c.dateD BETWEEN ? AND ? GROUP BY c.depositType";
 	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT, chainId,startDate, endDate };
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
