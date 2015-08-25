@@ -1040,9 +1040,11 @@ public class ChainVIPService {
 			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
 		else 
 			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
-		Object[] totalObject =  (Object[])chainVIPPrepaidImpl.executeHQLSelect(criteriaTotal, value_sale,null, false).get(0);
+		List<Object> totalObject =  (List<Object>)chainVIPPrepaidImpl.executeHQLSelect(criteriaTotal, value_sale,null, false);
 		ChainVIPPrepaidFlowUI totalPrepaid = new ChainVIPPrepaidFlowUI();
 		processTotalPrepaid(totalObject, totalPrepaid);
+		List<ChainVIPPrepaidFlowUI> footer = new ArrayList<ChainVIPPrepaidFlowUI>();
+		footer.add(totalPrepaid);
 		
 		/**
 		 * 2. 实现分页,如果是搜索所有连锁店
@@ -1079,7 +1081,7 @@ public class ChainVIPService {
 			}
 		}
 
-//		saleReport.put("footer", footer);
+		saleReport.put("footer", footer);
 		saleReport.put("rows", rptUIElements);
 		saleReport.put("total", total);
 		
@@ -1088,7 +1090,7 @@ public class ChainVIPService {
 		return response;
     }
 
-	private void processTotalPrepaid(Object[] totalObject,
+	private void processTotalPrepaid(List<Object> totalObject,
 			ChainVIPPrepaidFlowUI totalPrepaid) {
 		ChainStore emptyStore = new ChainStore();
 		emptyStore.setChain_name("合计");
@@ -1098,8 +1100,25 @@ public class ChainVIPService {
 		totalPrepaid.setDepositCash("0");
 		totalPrepaid.setConsump("0");
 		
-		if (totalObject != null){
 
+		if (totalObject != null){
+			  for (Object object: totalObject){
+				    Object[] object2 = (Object[])object;
+					String opType = Common_util.getString(object2[0]);
+					String deType = Common_util.getString(object2[1]);
+					double amt = Common_util.getDouble(object2[2]);
+					if (opType == null && deType == null)
+						continue;
+					if (ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP.equalsIgnoreCase(opType))
+						totalPrepaid.setConsump(String.valueOf(Common_util.roundDouble(Math.abs(amt), 1)));
+					else if (ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT.equalsIgnoreCase(opType)){
+						if (ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH.equalsIgnoreCase(deType)){
+							totalPrepaid.setDepositCash(String.valueOf(Common_util.roundDouble(Math.abs(amt), 1)));
+						} else if (ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD.equalsIgnoreCase(deType)){
+							totalPrepaid.setDepositCard(String.valueOf(Common_util.roundDouble(Math.abs(amt), 1)));
+						} 
+					}
+			  }
 		}
 		
 	}

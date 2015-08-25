@@ -338,6 +338,14 @@ public class Common_util {
 		}
 	}
 	
+	public static String getString(Object object){
+		if (object == null)
+		    return null;
+		else {
+			return object.toString().trim();
+		}
+	}
+	
 	/**
 	 * function to get the pinyin code's first combination
 	 * etc: 我是中国人 -> wszgr
