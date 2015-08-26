@@ -36,7 +36,7 @@ $(document).ready(function(){
 		rownumbers:true,
 		nowrap : false,
 		columns : [ [
-					{field:'chainName', width:100,title:'连锁店',fixed:true,
+					{field:'chainName', width:80,title:'连锁店',fixed:true,
 						formatter: function (value, row, index){
 							return row.chainStore.chain_name;
 						}},
@@ -81,10 +81,7 @@ $(document).ready(function(){
 						formatter: function (value, row, index){
 							return (row.qxCost).toFixed(0);
 						}},							
-					{field:'freeCostSum', width:57,title:'赠品成本',
-						formatter: function (value, row, index){
-							return (row.freeCostSum).toFixed(0);
-						}},
+
 					{field:'discountSum', width:50,title:'优惠',
 							formatter: function (value, row, index){
 								return (row.discountSum).toFixed(1);
@@ -93,10 +90,18 @@ $(document).ready(function(){
 						formatter: function (value, row, index){
 							return (row.netProfit).toFixed(0);
 						}},
+					{field:'vipPrepaidDeposit', width:57,title:'预付金额',
+						formatter: function (value, row, index){
+							return (row.vipPrepaidDepositCash + row.vipPrepaidDepositCard).toFixed(0);
+						}},	
+					{field:'vipPrepaidAmt', width:57,title:'预存款消费',
+						formatter: function (value, row, index){
+							return (row.vipPrepaidAmt).toFixed(0);
+						}},	
 					{field:'salesDiscountAmtSum', width:50,title:'销售折扣',
 						formatter: function (value, row, index){
 							return (row.salesDiscountAmtSum).toFixed(0);
-						}},
+						}},											
 					{field:'couponSum', width:35,title:'代金券',
 						formatter: function (value, row, index){
 							return (row.couponSum).toFixed(0);
