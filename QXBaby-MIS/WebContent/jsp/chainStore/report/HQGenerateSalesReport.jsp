@@ -90,7 +90,7 @@ $(document).ready(function(){
 						formatter: function (value, row, index){
 							return (row.netProfit).toFixed(0);
 						}},
-					{field:'vipPrepaidDeposit', width:57,title:'预付金额',
+					{field:'vipPrepaidDeposit', width:57,title:'预存金额',
 						formatter: function (value, row, index){
 							return (row.vipPrepaidDepositCash + row.vipPrepaidDepositCard).toFixed(0);
 						}},	
