@@ -329,13 +329,20 @@ public class ChainReportService {
 		 */
 		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
 		String chainCriteria = "";
-		if (chainId == Common_util.ALL_RECORD)
+		String chainCriteriaPrepaid = "";
+		if (chainId == Common_util.ALL_RECORD) {
 			chainCriteria = " chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID;
-		else 
+			chainCriteriaPrepaid = " c.chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID;
+		} else {
 			chainCriteria = " chainStore.chain_id = " + chainId;
+			chainCriteriaPrepaid = " c.chainStore.chain_id = " + chainId;
+		}
 		
-		if (salerId != Common_util.ALL_RECORD)
+		
+		if (salerId != Common_util.ALL_RECORD){
 			chainCriteria += " AND saler.user_id = " + salerId;
+			chainCriteriaPrepaid += " AND c.operator.user_id = " + salerId;
+		}
 
 		String hql_sale = "select sum(totalQuantity), sum(netAmount),  sum(totalQuantityR), " +
 				"sum(netAmountR), sum(totalCost), sum(totalQuantityF) ,sum(totalCostF), sum(discountAmount), " +
@@ -374,8 +381,8 @@ public class ChainReportService {
 		double vipPrepaidDepositCash = 0;
 		double vipPrepaidDepositCard = 0;
 
-		String hql = "SELECT c.depositType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.chainStore.chain_id =? AND c.dateD BETWEEN ? AND ? GROUP BY c.depositType";
-	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT, chainId,startDate, endDate };
+		String hql = "SELECT c.depositType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.depositType";
+	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT,startDate, endDate };
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
 	    if (prepaid != null && prepaid.size() > 0)

@@ -66,7 +66,10 @@ $(document).ready(function(){
 						}},
 					{field:'qxAmount', width:70,title:'千禧净销售',sortable:true,order:'desc',
 						formatter: function (value, row, index){
-							return (row.qxAmount).toFixed(0) + "  (" + ((row.qxAmount / row.netAmtSum * 100).toFixed(0)) + "%)" ;
+						    var percentage = "-";
+						    if (row.netAmtSum  != 0)
+							    percentage =  (row.qxAmount).toFixed(0) + "  (" + ((row.qxAmount / row.netAmtSum * 100).toFixed(0)) + "%)" ;
+							return percentage;
 						}},	
 					{field:'receiveAmtSum', width:58,title:'刷卡+现金',sortable:true,order:'desc',
 							formatter: function (value, row, index){
