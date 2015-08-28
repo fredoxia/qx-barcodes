@@ -97,7 +97,7 @@ $(document).ready(function(){
 						formatter: function (value, row, index){
 							return (row.vipPrepaidDepositCash + row.vipPrepaidDepositCard).toFixed(0);
 						}},	
-					{field:'vipPrepaidAmt', width:57,title:'预存款消费',
+					{field:'vipPrepaidAmt', width:57,title:'预存消费',
 						formatter: function (value, row, index){
 							return (row.vipPrepaidAmt).toFixed(0);
 						}},	
