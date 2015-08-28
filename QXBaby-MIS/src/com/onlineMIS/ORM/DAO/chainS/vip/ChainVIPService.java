@@ -1037,7 +1037,7 @@ public class ChainVIPService {
 		Object[] value_sale = new Object[]{startDate, endDate};
 		String criteriaTotal = "";
 		if (chainId == Common_util.ALL_RECORD)
-			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE  chainStore.chain_id <> "+ ChainStore.CHAIN_ID_TEST_ID +" AND dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
 		else 
 			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
 		List<Object> totalObject =  (List<Object>)chainVIPPrepaidImpl.executeHQLSelect(criteriaTotal, value_sale,null, false);

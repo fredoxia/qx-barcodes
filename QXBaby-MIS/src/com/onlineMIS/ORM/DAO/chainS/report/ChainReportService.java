@@ -457,6 +457,7 @@ public class ChainReportService {
 		/**
 		 * 获取数据列表
 		 */
+		List<Integer> chainIdList = new ArrayList<Integer>(); 
 		List<ChainSalesReport> reports = new ArrayList<ChainSalesReport>();
 		String criteria = "";
 		if (chainId == Common_util.ALL_RECORD)
@@ -495,6 +496,8 @@ public class ChainReportService {
 			double cashAmt2 = Common_util.getDouble(sales3[10]);
 			double vipScoreAmt2 = Common_util.getDouble(sales3[11]);
 			int chainStoreId =  Common_util.getInt(sales3[12]);
+			chainIdList.add(chainStoreId);
+			
 			double totalSalesDiscountAmt2 = Common_util.getDouble(sales3[13]);
 			int qxQuantity = Common_util.getInt(sales3[14]);
 			double qxAmount = Common_util.getDouble(sales3[15]);
@@ -511,6 +514,40 @@ public class ChainReportService {
 					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost, 0, 0,vipPrepaidAmt,0,0,store);
 			reports.add(chainReport2);
 		}
+		
+		//4. 将prepaid deposit 计算出来
+		Map<Integer, Double> prepaidMap = new HashMap<Integer, Double>();
+		String chainCriteriaPrepaid = "c.chainStore.chain_id IN (";
+		for (int i = 0; i < chainIdList.size(); i++){
+			if (i == chainIdList.size() -1)
+				chainCriteriaPrepaid += chainIdList.get(i) + ")";
+			else 
+				chainCriteriaPrepaid += chainIdList.get(i) + ",";
+		}
+		String hql = "SELECT c.chainStore.chain_id, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.chainStore.chain_id";
+	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT,startDate, endDate };
+	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
+	    
+	    if (prepaid != null && prepaid.size() > 0)
+		  for (Object object: prepaid){
+			  Object[] object2 = (Object[])object;
+			  if (object2[0] == null || object2[1] == null)
+				  continue;
+			  int chainIdPrepaid = Common_util.getInt(object2[0]);
+			  Double amount = Common_util.getDouble(object2[1]);
+
+			  prepaidMap.put(chainIdPrepaid, amount);
+		   }
+	    
+	    //5. 把预付金放进去
+	    for (ChainSalesReport rpt : reports){
+	    	int chainIdRpt = rpt.getChainStore().getChain_id();
+	    	Double prepaidAmt = prepaidMap.get(chainIdRpt);
+	    	if (prepaidAmt == null)
+	    		rpt.setVipPrepaidDepositCash(0);
+	    	else
+	    		rpt.setVipPrepaidDepositCash(prepaidAmt);
+	    }
 
 		List<ChainSalesReport> footer = new ArrayList<ChainSalesReport>();
 		footer.add(totalReport);
