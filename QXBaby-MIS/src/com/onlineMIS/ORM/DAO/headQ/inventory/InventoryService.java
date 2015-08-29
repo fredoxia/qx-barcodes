@@ -1603,4 +1603,29 @@ public class InventoryService {
 		return data;
 	}
 
+	/**
+	 * 更新order 的 comment
+	 * @param order
+	 * @return
+	 */
+	public Response updateOrderComment(InventoryOrder order) {
+	       Response response = new Response();
+			
+	       if (order!= null && order.getOrder_ID() != 0){
+				String hql_order = "UPDATE InventoryOrder i set i.comment = ? where order_ID = ?";
+				Object[] values = {order.getComment(),order.getOrder_ID()};
+				try {
+				   inventoryOrderDAOImpl.executeHQLUpdateDelete(hql_order, values, true);
+				   response.setSuccess("成功更新备注");
+				} catch (Exception e){
+				   response.setFail(e.getMessage());
+				}
+				
+	        } else {
+	        	response.setQuickValue(Response.FAIL, "无法找到当前订单号");
+	        }
+	        
+	        return response;
+	}
+
 }

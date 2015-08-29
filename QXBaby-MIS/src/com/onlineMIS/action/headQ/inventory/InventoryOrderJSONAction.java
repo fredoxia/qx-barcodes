@@ -244,6 +244,26 @@ public class InventoryOrderJSONAction extends InventoryOrderAction {
 		return "successful";
 	}
 	
+	public String updateOrderComment(){
+		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		
+		String uuid = Common_util.getUUID();
+		String log = logInventory("search", "-", "-", uuid);
+		loggerLocal.info(log);
+		
+		Response response = inventoryService.updateOrderComment(formBean.getOrder());
+		try{
+			   jsonObject = JSONObject.fromObject(response);
+			   //System.out.println(jsonObject.toString());
+		   } catch (Exception e){
+				loggerLocal.error(e);
+			}
+		
+		loggerLocal.infoR(log);
+		
+		return "successful";
+	}
+	
 	private String logInventory(String action, Object clientId, Object orderId, String uuid){
 		return super.logInventory(this.getClass().getSimpleName() , action, clientId, orderId, uuid);		
 	}

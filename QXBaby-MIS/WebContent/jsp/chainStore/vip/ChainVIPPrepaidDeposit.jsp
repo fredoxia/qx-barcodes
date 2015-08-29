@@ -41,9 +41,14 @@ function deposit(){
 		
 	var params = $("#vipPrepaidDepositForm").serialize();
 	$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!saveVIPPrepaidDeposit",params, backProcessDepositPrepaid,"json");
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 }
 
 function backProcessDepositPrepaid(data){
+	$.messager.progress('close'); 
     var response = data.response;
     if (response.returnCode == SUCCESS){
        alert(response.message);

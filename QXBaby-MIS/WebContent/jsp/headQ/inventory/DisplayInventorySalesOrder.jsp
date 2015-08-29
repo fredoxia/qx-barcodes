@@ -48,6 +48,19 @@ function cancelOrder(){
 	    document.inventoryOrderForm.submit();	
 	}	
 }
+function updateOrderComment(){
+    var url = "<%=request.getContextPath()%>/action/inventoryOrderJSON!updateOrderComment";
+    var params=$("#inventoryOrderForm").serialize();  
+    $.post(url,params, updateOrderCommentBackProcess,"json");	
+}
+function updateOrderCommentBackProcess(data){
+	var returnValue = data.returnCode;
+	if (returnValue == SUCCESS)
+		alert(data.message);
+	else 
+		alert("错误 : " + data.message);
+}
+
 function copyOrder(){
 	var info = "你确定复制此单据?";
 	if (confirm(info)){	
@@ -57,7 +70,7 @@ function copyOrder(){
 	}	
 }
 function copyOrderBackProcess(data){
-	var response = data.response;
+    var response = data.response;
 	var returnCode = response.returnCode;
 	if (returnCode != SUCCESS)
 		alert("复制单据失败 ： " + response.message);
@@ -205,8 +218,8 @@ $(document).ready(function(){
 	  </tr>
 	  <tr height="10" class="InnerTableContent" >
 	  	     <td align="center">备注</td>
-			 <td colspan="4"><s:property value="formBean.order.comment"/></td>			 					 				 					 		
-			 <td>&nbsp;</td>
+			 <td colspan="4"><textarea name="formBean.order.comment" id="comment" rows="1" cols="80"><s:property value="formBean.order.comment"/></textarea></td>			 					 				 					 		
+			 <td><input type="button" value="修改备注" onclick="updateOrderComment();"/></td>
 			 <td>&nbsp;</td>	
 	  </tr>
 	  <tr height="10">
