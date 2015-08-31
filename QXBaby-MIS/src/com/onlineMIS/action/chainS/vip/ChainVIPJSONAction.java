@@ -298,7 +298,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
     	
 		Response response = new Response();
 		try {
-		    response = chainVIPService.searchVIPPrepaidFlow(formBean.getChainStore().getChain_id(), formBean.getStartDate(), formBean.getEndDate(), this.getPage(), this.getRows(), "", "");
+		    response = chainVIPService.searchVIPPrepaidFlow(formBean.getChainStore().getChain_id(), formBean.getStartDate(), formBean.getEndDate(), formBean.getVipPrepaid().getStatus(), this.getPage(), this.getRows(), "", "");
 		} catch (Exception e) {
 			loggerLocal.error(e);
 			response.setReturnCode(Response.FAIL);

@@ -29,6 +29,11 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 			depositCash = amount;
 		}
 		dateUI = Common_util.dateFormat.format(c.getDateD());
+		
+		if (this.getStatus() == ChainVIPPrepaidFlow.STATUS_SUCCESS)
+			statusS = "完成";
+		else if  (this.getStatus() == ChainVIPPrepaidFlow.STATUS_CANCEL)
+		    statusS = "红冲";
 
 	}
 
@@ -37,6 +42,7 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	private String depositCard = "-";
 	private String consump = "-";
 	private String dateUI = "";
+	private String statusS = "";
 	
 	
 	public String getDateUI() {
@@ -69,6 +75,12 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	public void setConsump(String consump) {
 		this.consump = consump;
 	}
-	
+
+	public String getStatusS() {
+		return statusS;
+	}
+	public void setStatusS(String statusS) {
+		this.statusS = statusS;
+	}
 	
 }

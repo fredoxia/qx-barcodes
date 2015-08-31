@@ -117,7 +117,7 @@ public class ChainSalesReport extends ChainReport{
 		this.netQuantitySum = saleQuantitySum - returnQuantitySum;
 		this.netAmtSum = salesAmtSum - returnAmtSum;
 		this.netProfit = salesAmtSum - returnAmtSum - netSaleCostSum - freeCostSum - discountSum;
-		this.receiveAmtSum = cardAmtSum + cashNetSum;
+		this.receiveAmtSum = cardAmtSum + cashNetSum + vipPrepaidAmt;
 		this.qxQuantity = qxQ;
 		this.qxAmount = qxAmount;
 		this.qxCost = qxCost;

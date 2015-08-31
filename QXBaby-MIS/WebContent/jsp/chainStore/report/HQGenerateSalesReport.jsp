@@ -71,10 +71,14 @@ $(document).ready(function(){
 							    percentage =  (row.qxAmount).toFixed(0) + "  (" + ((row.qxAmount / row.netAmtSum * 100).toFixed(0)) + "%)" ;
 							return percentage;
 						}},	
-					{field:'receiveAmtSum', width:58,title:'刷卡+现金',sortable:true,order:'desc',
+					{field:'receiveAmtSum', width:58,title:'净收入',sortable:true,order:'desc',
 							formatter: function (value, row, index){
 								return (row.receiveAmtSum).toFixed(0);
-						}},							
+						}},	
+					{field:'vipPrepaidAmt', width:57,title:'预存消费',
+						formatter: function (value, row, index){
+							return (row.vipPrepaidAmt).toFixed(0);
+						}},													
 					{field:'netSaleCostSum', width:65,title:'总净售成本',
 						formatter: function (value, row, index){
 							return (row.netSaleCostSum).toFixed(0);
@@ -96,10 +100,6 @@ $(document).ready(function(){
 					{field:'vipPrepaidDeposit', width:57,title:'预存金额',
 						formatter: function (value, row, index){
 							return (row.vipPrepaidDepositCash + row.vipPrepaidDepositCard).toFixed(0);
-						}},	
-					{field:'vipPrepaidAmt', width:57,title:'预存消费',
-						formatter: function (value, row, index){
-							return (row.vipPrepaidAmt).toFixed(0);
 						}},	
 					{field:'salesDiscountAmtSum', width:50,title:'销售折扣',
 						formatter: function (value, row, index){

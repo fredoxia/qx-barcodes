@@ -22,6 +22,12 @@ $(document).ready(function(){
 		pagination : true,
 		pageSize : 15,
 		pageList : [ 15, 30],
+		rowStyler: function(index,row){
+			var style = "";
+			if (row.status == 1)
+				style += 'color:red;';
+			return style;
+		},
 		border : false,
 		checkOnSelect : false,
 		selectOnCheck : false,
@@ -45,6 +51,7 @@ $(document).ready(function(){
 							return row.vipCard.customerName;
 						}},						
 					{field:'dateUI', width:40,title:'单据日期'},
+					{field:'statusS', width:45,title:'状态'},
 					{field:'prepaidType', width:45,title:'交易类别'},
 					{field:'depositCash', width:45,title:'现金 预存金额'},
 					{field:'depositCard', width:45,title:'刷卡 预存金额'},
@@ -64,7 +71,7 @@ function genSalesReport(){
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',border:false" style="height: 115px;">
+		<div data-options="region:'north',border:false" style="height: 120px;">
 		   <s:form id="preGenReportForm" name="preGenReportForm" action="" theme="simple" method="POST">  
 			<table width="100%" border="0">
 			    <tr class="InnerTableContent">
@@ -76,6 +83,13 @@ function genSalesReport(){
 			        <s:textfield id="endDate" name="formBean.endDate" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
 			      </td>
 			    </tr>
+			    <tr class="InnerTableContent">
+			      <td width="45" height="25">&nbsp;</td>
+			      <td width="76"><strong>单据状态</strong></td>
+			      <td width="284" colspan="3">
+			        <s:select id="status" name="formBean.vipPrepaid.status"  list="#{0:'完成',1:'红冲'}" listKey="key" listValue="value"  headerKey="-1" headerValue="--所有状态--" />
+			      </td>
+			    </tr>			    
 				<tr class="InnerTableContent">
 			      <td height="30">&nbsp;</td>
 			      <td><strong>连锁店</strong></td>

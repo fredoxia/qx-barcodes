@@ -12,6 +12,8 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1032080404175097695L;
+	public static final int STATUS_SUCCESS = 0;
+	public static final int STATUS_CANCEL = 1;
 	public static final String OPERATION_TYPE_DEPOSIT = "D";
 	public static final String OPERATION_TYPE_CONSUMP = "C";
 	public static final String DEPOSIT_TYPE_CASH = "C";
@@ -123,6 +125,7 @@ public class ChainVIPPrepaidFlow implements Serializable{
 		this.setDepositType("");
 		this.setOperationType("");
 	}
+
 	
 	
 }

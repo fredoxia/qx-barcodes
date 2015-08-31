@@ -419,8 +419,8 @@ public class ChainVIPService {
 
 	public double getAcumulateVipPrepaid(ChainVIPCard vipCard) {
 		double totalPrepaid = 0;
-		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.vipCard.id = ?";
-	    Object[] values = new Object[]{vipCard.getId()};
+		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.vipCard.id = ? and c.status=?";
+	    Object[] values = new Object[]{vipCard.getId(), ChainVIPPrepaidFlow.STATUS_SUCCESS};
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
 	    if (prepaid != null && prepaid.size() > 0)
@@ -966,12 +966,13 @@ public class ChainVIPService {
 	}
 
 	/**
-	 * 保存vip预付款
+	 * 保存vip预付款到完成状态
 	 * @param chainStore
 	 * @param vipCard
 	 * @param vipPrepaid
 	 * @return
 	 */
+	@Transactional
 	public Response saveVIPPrepaidDeposit(ChainStore chainStore, ChainVIPCard vipCard,
 			ChainVIPPrepaidFlow vipPrepaid, ChainUserInfor operator) {
 		Response response = new Response();
@@ -996,6 +997,7 @@ public class ChainVIPService {
 			vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT);
 			vipPrepaid.setOperator(operator);
 			vipPrepaid.setVipCard(vipCard);
+			vipPrepaid.setStatus(ChainVIPPrepaidFlow.STATUS_SUCCESS);
 			chainVIPPrepaidImpl.save(vipPrepaid, true);
 			
 			//2. 第二步保存到vip score
@@ -1008,14 +1010,49 @@ public class ChainVIPService {
             response.setReturnValue(vipPrepaid);
             String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值" + Common_util.roundDouble(vipPrepaid.getAmount(), 0) +"元 \n";
             msg += "剩余预存款 :" + accumulateVipPrepaid + "元";
-            response.setMessage(msg);
-            
+            response.setMessage(msg);   
 		}
-		
-		
 		return response;
 	}
 
+	/**
+	 * cancelvip预付款到红冲状态
+	 * @param chainStore
+	 * @param vipCard
+	 * @param vipPrepaid
+	 * @return
+	 */
+	@Transactional
+	public Response cancelVIPPrepaidDeposit(ChainStore chainStore, ChainVIPCard vipCard,
+			int vipPrepaidId, ChainUserInfor operator) {
+		Response response = new Response();
+		
+		vipCard = getVIPCardByCardId(vipCard.getId());
+		
+		if (vipCard.getIssueChainStore().getChain_id() != operator.getMyChainStore().getChain_id()){
+			response.setFail("错误: 此vip卡的发卡连锁店不是当前操作员的连锁店.此操作仅限于当前连锁店的人员.");
+//		} else if (!operator.getRoleType().isOwner()){
+//			response.setFail("错误: 只有连锁店经营者有权限红冲预付款单据.");
+		} else {
+			//1. 第一步保存 prepaid
+			ChainVIPPrepaidFlow vipPrepaid = chainVIPPrepaidImpl.get(vipPrepaidId, true);
+			vipPrepaid.setStatus(ChainVIPPrepaidFlow.STATUS_CANCEL);
+			chainVIPPrepaidImpl.update(vipPrepaid, true);
+			
+			//2. 第二步保存到vip score
+            chainVIPScoreImpl.saveCascadingVIPPrepaid(vipPrepaid);
+            
+            //3. 获取vip总的剩余预存款
+            double accumulateVipPrepaid = getAcumulateVipPrepaid(vipCard);
+            vipPrepaid.setAccumulateVipPrepaid(accumulateVipPrepaid);
+            
+            response.setReturnValue(vipPrepaid);
+            String msg = "成功为VIP " + vipCard.getVipCardNo() + " 红冲预付款";
+            msg += "剩余预存款 :" + accumulateVipPrepaid + "元";
+            response.setMessage(msg);   
+		}
+		return response;
+	}
 	/**
 	 * 搜索vip预付款
 	 * @param chainId
@@ -1023,7 +1060,7 @@ public class ChainVIPService {
 	 * @param endDate
 	 * @return
 	 */
-    public Response searchVIPPrepaidFlow(int chainId,java.util.Date startDate, java.util.Date endDate, Integer page, Integer rowPerPage, String sortName, String sortOrder){
+    public Response searchVIPPrepaidFlow(int chainId,java.util.Date startDate, java.util.Date endDate, int status, Integer page, Integer rowPerPage, String sortName, String sortOrder){
     	Map saleReport = new HashMap();
     	Response response = new Response();
 		
@@ -1034,12 +1071,21 @@ public class ChainVIPService {
 		/**
 		 * 1. 获取total
 		 */
-		Object[] value_sale = new Object[]{startDate, endDate};
+		Object[] value_sale = null ;
+		String whereCriteria = "";
+		if (status != Common_util.ALL_RECORD){
+			whereCriteria = " dateD BETWEEN ? AND ? AND status = ? ";
+			value_sale = new Object[]{startDate, endDate, status};
+		} else {
+			whereCriteria = " dateD BETWEEN ? AND ? ";
+			value_sale = new Object[]{startDate, endDate};
+        }
+		
 		String criteriaTotal = "";
 		if (chainId == Common_util.ALL_RECORD)
-			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE  chainStore.chain_id <> "+ ChainStore.CHAIN_ID_TEST_ID +" AND dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE  chainStore.chain_id <> "+  ChainStore.CHAIN_ID_TEST_ID + " AND "  + whereCriteria +" GROUP BY operationType, depositType";
 		else 
-			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND dateD BETWEEN ? AND ? GROUP BY operationType, depositType";
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +  " AND " +whereCriteria +" GROUP BY operationType, depositType";
 		List<Object> totalObject =  (List<Object>)chainVIPPrepaidImpl.executeHQLSelect(criteriaTotal, value_sale,null, false);
 		ChainVIPPrepaidFlowUI totalPrepaid = new ChainVIPPrepaidFlowUI();
 		processTotalPrepaid(totalObject, totalPrepaid);
@@ -1054,9 +1100,9 @@ public class ChainVIPService {
 			//2.1 计算pager
 			String criteria = "";
 			if (chainId == Common_util.ALL_RECORD)
-				criteria = " FROM ChainVIPPrepaidFlow WHERE dateD BETWEEN ? AND ? ";
+				criteria = " FROM ChainVIPPrepaidFlow WHERE " + whereCriteria;
 			else 
-				criteria = "FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND dateD BETWEEN ? AND ?";
+				criteria = "FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +" AND " + whereCriteria;
 
 			String criteria2 = "SELECT COUNT(id) " + criteria;
 			
@@ -1072,8 +1118,14 @@ public class ChainVIPService {
 			if (chainId != Common_util.ALL_RECORD){
 				criteria.add(Restrictions.eq("chainStore.chain_id", chainId));
 			}
+			
+			if (status != Common_util.ALL_RECORD){
+				criteria.add(Restrictions.eq("status", status));
+			}
+			
 			criteria.addOrder(Order.asc("chainStore.chain_id"));
 			criteria.addOrder(Order.asc("dateD"));
+					
 			List<ChainVIPPrepaidFlow> rptElements = chainVIPPrepaidImpl.getByCritera(criteria, Common_util.getFirstRecord(page, rowPerPage), rowPerPage, true);
 			for (ChainVIPPrepaidFlow ele : rptElements){
 				ChainVIPPrepaidFlowUI uiEle = new ChainVIPPrepaidFlowUI(ele);
@@ -1133,6 +1185,8 @@ public class ChainVIPService {
 			ChainStore allChainStore = ChainStoreDaoImpl.getAllChainStoreObject();
 			formBean.setChainStore(allChainStore);
 		}
+		
+		formBean.getVipPrepaid().setStatus(Common_util.ALL_RECORD);
 		
 	}
 
