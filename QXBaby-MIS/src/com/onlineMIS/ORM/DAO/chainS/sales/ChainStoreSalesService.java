@@ -780,7 +780,9 @@ public class ChainStoreSalesService {
 			}
 			
 			int orderId = salesOrder.getId();
-			String commentScore = comment;
+			String commentScore = "";
+			if (isCancel)
+				commentScore = "红冲 ";
 			if (salesOrder.getChainPrepaidAmt() != 0)
 				commentScore = "预付款消费" + Common_util.roundDouble(salesOrder.getChainPrepaidAmt(),0);
 			ChainVIPScore vipScoreObj = new ChainVIPScore(chainId,vipCard.getId(), ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue), Common_util.getDecimalDouble(coupon * multiple), commentScore);
@@ -817,18 +819,27 @@ public class ChainStoreSalesService {
 			 */
 			double vipPrepaidAmt = salesOrder.getChainPrepaidAmt();
 			if (vipPrepaidAmt != 0){
-				ChainVIPPrepaidFlow vipPrepaid = new ChainVIPPrepaidFlow();
-                if (isCancel)
-				    vipPrepaid.setComment("红冲单据" + salesOrder.getId());
-                vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP);
-				vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
-				vipPrepaid.setChainStore(chainStore);
-				vipPrepaid.setDateD(salesOrder.getOrderDate());
-				vipPrepaid.setCreateDate(Common_util.getToday());
-				ChainUserInfor operator = salesOrder.getSaler();
-				vipPrepaid.setOperator(operator);
-				vipPrepaid.setVipCard(vipCard);
-				chainVIPPrepaidImpl.save(vipPrepaid, true);
+				
+//					DetachedCriteria criteria = DetachedCriteria.forClass(ChainVIPPrepaidFlow.class);
+//					criteria.add(Restrictions.eq("chainStore.chain_id", chainId));
+//					criteria.add(Restrictions.eq("", value))
+//					
+//				} else {
+					ChainVIPPrepaidFlow vipPrepaid = new ChainVIPPrepaidFlow();
+					if (isCancel)
+						vipPrepaid.setComment("红冲单据" + salesOrder.getId());
+					else
+	                   vipPrepaid.setComment("单据" + salesOrder.getId());
+	                vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP);
+					vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
+					vipPrepaid.setChainStore(chainStore);
+					vipPrepaid.setDateD(salesOrder.getOrderDate());
+					vipPrepaid.setCreateDate(Common_util.getToday());
+					ChainUserInfor operator = salesOrder.getSaler();
+					vipPrepaid.setOperator(operator);
+					vipPrepaid.setVipCard(vipCard);
+					chainVIPPrepaidImpl.save(vipPrepaid, true);
+
 			}
 			
 		}

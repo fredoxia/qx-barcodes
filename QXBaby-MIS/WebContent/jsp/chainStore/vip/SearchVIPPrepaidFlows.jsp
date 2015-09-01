@@ -9,6 +9,20 @@
 <%@ include file="../../common/Style.jsp"%>
 <script>
 var baseurl = "<%=request.getContextPath()%>";
+function cancelPrepaid(id, rowIndex){
+	$('#dataGrid').datagrid('selectRow',rowIndex);
+	if (confirm("你确认红冲当前预付款?")){
+		var params = "formBean.vipPrepaid.id="+id;
+		$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!cancelVIPPrepaid",params, backProcessCancelPrepaid,"json");
+		
+	}
+}
+function backProcessCancelPrepaid(data){
+	if (data.returnCode == SUCCESS)
+		genSalesReport();
+	alert(data.message);
+}
+
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 	
@@ -57,7 +71,20 @@ $(document).ready(function(){
 					{field:'depositCard', width:45,title:'刷卡 预存金额'},
 					{field:'consump', width:50,title:'消费 预存金额'},
 					{field:'createDate', width:60,title:'操作时间'},
-					{field:'comment', width:50,title:'备注'}
+					{field:'comment', width:50,title:'备注'},
+					{					
+						field : 'action',
+						title : '红冲预存金充值',
+						width : 70,
+						formatter : function(value, row, index) {
+							var str = '';
+							if (row.status == 0 && row.id != 0 && row.operationType == 'D'){
+								str += $.formatString('<a href="#" onclick="cancelPrepaid(\'{0}\',\'{1}\');"><img border="0" src="{2}" title="红冲"/></a>', row.id,index,'<%=request.getContextPath()%>/conf_files/easyUI/themes/icons/text_1.png');
+							}
+							
+							return str;
+						}
+					}
 			     ]]
 	});
 });
@@ -71,7 +98,7 @@ function genSalesReport(){
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',border:false" style="height: 120px;">
+		<div data-options="region:'north',border:false" style="height: 125px;">
 		   <s:form id="preGenReportForm" name="preGenReportForm" action="" theme="simple" method="POST">  
 			<table width="100%" border="0">
 			    <tr class="InnerTableContent">

@@ -419,7 +419,7 @@ public class ChainVIPService {
 
 	public double getAcumulateVipPrepaid(ChainVIPCard vipCard) {
 		double totalPrepaid = 0;
-		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.vipCard.id = ? and c.status=?";
+		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.vipCard.id = ? and c.status=? GROUP BY c.operationType";
 	    Object[] values = new Object[]{vipCard.getId(), ChainVIPPrepaidFlow.STATUS_SUCCESS};
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
@@ -432,7 +432,7 @@ public class ChainVIPService {
 			  double amount = Common_util.getDouble(object2[1]);
 
 			  if (operationType.equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP))
-				  totalPrepaid -= amount;
+				  totalPrepaid += amount;
 			  else if (operationType.equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT))
 				  totalPrepaid += amount;
 		   }
@@ -792,7 +792,7 @@ public class ChainVIPService {
 			int totalRecord = Common_util.getProjectionSingleValue(chainVIPScoreImpl.getByCriteriaProjection(criteria, true));
 			
 			DetachedCriteria criteria2 = buildVipConsumptionHisCriteria(chain_id, vipCard, startDate, endDate);
-			
+			criteria2.addOrder(Order.asc("id"));
 			chainVIPScores = chainVIPScoreImpl.getByCritera(criteria2, Common_util.getFirstRecord(page, rows), rows, true);
 			
 			//saleReport.put("footer", footer);
@@ -802,7 +802,7 @@ public class ChainVIPService {
 			saleReport.put("total", totalRecord);
 		} else {
 			DetachedCriteria criteria = buildVipConsumptionHisCriteria(chain_id, vipCard, startDate, endDate);
-
+			criteria.addOrder(Order.asc("id"));
 			chainVIPScores = chainVIPScoreImpl.getByCritera(criteria, true);
 			
 			for (ChainVIPScore score : chainVIPScores)
@@ -1023,35 +1023,50 @@ public class ChainVIPService {
 	 * @return
 	 */
 	@Transactional
-	public Response cancelVIPPrepaidDeposit(ChainStore chainStore, ChainVIPCard vipCard,
-			int vipPrepaidId, ChainUserInfor operator) {
+	public Response cancelVIPPrepaidDeposit(int vipPrepaidId, ChainUserInfor operator) {
 		Response response = new Response();
 		
-		vipCard = getVIPCardByCardId(vipCard.getId());
 		
-		if (vipCard.getIssueChainStore().getChain_id() != operator.getMyChainStore().getChain_id()){
+		ChainVIPPrepaidFlow vipPrepaid = chainVIPPrepaidImpl.get(vipPrepaidId, true);
+		ChainVIPCard vipCard = vipPrepaid.getVipCard();
+		
+		if (vipPrepaid.getStatus() != ChainVIPPrepaidFlow.STATUS_SUCCESS){
+			response.setFail("错误: 当前预付款单据状态无法红冲.");
+		} else if (!ChainUserInforService.isMgmtFromHQ(operator) && vipCard.getIssueChainStore().getChain_id() != operator.getMyChainStore().getChain_id()){
 			response.setFail("错误: 此vip卡的发卡连锁店不是当前操作员的连锁店.此操作仅限于当前连锁店的人员.");
 //		} else if (!operator.getRoleType().isOwner()){
 //			response.setFail("错误: 只有连锁店经营者有权限红冲预付款单据.");
+		} else if (!vipPrepaid.getOperationType().equalsIgnoreCase(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT)){
+			response.setFail("错误: 预存金消费 不能在此处红冲");
+		} else if (!validatePrepaidOverDay(vipPrepaid, operator) ){
+			response.setFail("错误: 当前账号不能红冲历史单据，请使用经营者账号或者联系管理员");		
 		} else {
 			//1. 第一步保存 prepaid
-			ChainVIPPrepaidFlow vipPrepaid = chainVIPPrepaidImpl.get(vipPrepaidId, true);
+			
 			vipPrepaid.setStatus(ChainVIPPrepaidFlow.STATUS_CANCEL);
 			chainVIPPrepaidImpl.update(vipPrepaid, true);
 			
 			//2. 第二步保存到vip score
             chainVIPScoreImpl.saveCascadingVIPPrepaid(vipPrepaid);
-            
-            //3. 获取vip总的剩余预存款
-            double accumulateVipPrepaid = getAcumulateVipPrepaid(vipCard);
-            vipPrepaid.setAccumulateVipPrepaid(accumulateVipPrepaid);
-            
-            response.setReturnValue(vipPrepaid);
+
             String msg = "成功为VIP " + vipCard.getVipCardNo() + " 红冲预付款";
-            msg += "剩余预存款 :" + accumulateVipPrepaid + "元";
+
             response.setMessage(msg);   
 		}
 		return response;
+	}
+	
+	private boolean validatePrepaidOverDay(ChainVIPPrepaidFlow vipPrepaid, ChainUserInfor userInfor) {
+
+		Date  today = Common_util.getToday();
+		
+		java.sql.Date orderDate = vipPrepaid.getDateD();
+		if (Common_util.isBefore(today, orderDate)){
+			if (!ChainUserInforService.isMgmtFromHQ(userInfor) && userInfor.getRoleType().getChainRoleTypeId() != ChainRoleType.CHAIN_OWNER){
+				return false;
+			}	
+		}
+		return true;
 	}
 	/**
 	 * 搜索vip预付款
@@ -1162,12 +1177,12 @@ public class ChainVIPService {
 					if (opType == null && deType == null)
 						continue;
 					if (ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP.equalsIgnoreCase(opType))
-						totalPrepaid.setConsump(String.valueOf(Common_util.roundDouble(Math.abs(amt), 1)));
+						totalPrepaid.setConsump(String.valueOf(Common_util.roundDouble(amt, 1)));
 					else if (ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT.equalsIgnoreCase(opType)){
 						if (ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH.equalsIgnoreCase(deType)){
-							totalPrepaid.setDepositCash(String.valueOf(Common_util.roundDouble(Math.abs(amt), 1)));
+							totalPrepaid.setDepositCash(String.valueOf(Common_util.roundDouble(amt, 1)));
 						} else if (ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD.equalsIgnoreCase(deType)){
-							totalPrepaid.setDepositCard(String.valueOf(Common_util.roundDouble(Math.abs(amt), 1)));
+							totalPrepaid.setDepositCard(String.valueOf(Common_util.roundDouble(amt, 1)));
 						} 
 					}
 			  }

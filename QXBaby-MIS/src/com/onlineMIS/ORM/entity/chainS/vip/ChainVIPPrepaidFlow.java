@@ -106,7 +106,7 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public Date getDateD() {
+	public java.sql.Date getDateD() {
 		return dateD;
 	}
 	public void setDateD(java.sql.Date date) {

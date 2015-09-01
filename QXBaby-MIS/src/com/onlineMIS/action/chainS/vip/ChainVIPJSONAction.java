@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.struts2.components.FormButton;
+
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
@@ -321,6 +323,32 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		}
 		
 		return SUCCESS;
+	}
+	
+	/**
+	 * 红冲VIP预付金 
+	 * @return
+	 */
+	public String cancelVIPPrepaid(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"cancelVIPPrepaid : " + formBean);
+    	
+		Response response = new Response();
+		try {
+		    response = chainVIPService.cancelVIPPrepaidDeposit(formBean.getVipPrepaid().getId(), userInfor);
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		try {
+		       jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e ){
+				e.printStackTrace();
+		}
+
+		
+		return SUCCESS;	
 	}
 
 }
