@@ -182,7 +182,7 @@ function showSalesReport(report){
 			   "<td></td>"+ 
 			   "<td>预存现金</td>"+
 			   "<td>预存刷卡</td>"+
-			   "<td></td>"+
+			   "<td>累计剩余预存款</td>"+
 			   "</tr>").appendTo("#reportTable");
 			
     $("<tr class='InnerTableContent'><td>"+
@@ -194,7 +194,7 @@ function showSalesReport(report){
 	          report.myQuantity +"</td><td>"+
 	          (report.myAmount).toFixed(2) +"</td><td>"+
 	          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')">(report.myCost).toFixed(2) </s:if><s:else>"-"</s:else> +"</td><td>"+
-	          "</td><td>"+ (report.vipPrepaidDepositCash).toFixed(2)+"</td><td>"+(report.vipPrepaidDepositCard).toFixed(2)+"</td></tr>").appendTo("#reportTable");    
+	          "</td><td>"+ (report.vipPrepaidDepositCash).toFixed(2)+"</td><td>"+(report.vipPrepaidDepositCard).toFixed(2)+"</td><td>"+(report.vipPrepaidAccumulate).toFixed(2)+"</td></tr>").appendTo("#reportTable");    
 }
 </script>
 </head>

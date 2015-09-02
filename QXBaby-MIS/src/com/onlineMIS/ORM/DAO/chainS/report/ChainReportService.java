@@ -204,7 +204,7 @@ public class ChainReportService {
 		 */
 		if (reportType == ChainReport.TYPE_SALES_REPORT){
 			
-			ChainSalesReport salesReport = generateSalesTotal(chainId, salerId, startDate, endDate);
+			ChainSalesReport salesReport = generateSalesTotal(chainId, salerId, startDate, endDate, false);
 			response.setReturnValue(salesReport);
 			response.setAction(1);
 		} else if (reportType == ChainReport.TYPE_PURCHASE_REPORT){
@@ -323,7 +323,7 @@ public class ChainReportService {
 	 * @param endDate
 	 * @return
 	 */
-	private ChainSalesReport generateSalesTotal(int chainId, int salerId, Date startDate, Date endDate){
+	private ChainSalesReport generateSalesTotal(int chainId, int salerId, Date startDate, Date endDate, boolean skipTotalPrepaid){
 		/**1. to get the information from the sales order and exchange order
 		 * 收入, 销售额， 销售总量，退货额，退货总量,,
 		 */
@@ -377,12 +377,12 @@ public class ChainReportService {
 		int vipQ = Common_util.getInt(salesVip[0]);
 		double vipAmt = Common_util.getDouble(salesVip[1]);
 		
-		//3。 计算
+		//3。 计算 vip prepaid desposit
 		double vipPrepaidDepositCash = 0;
 		double vipPrepaidDepositCard = 0;
 
-		String hql = "SELECT c.depositType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.depositType";
-	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT,startDate, endDate };
+		String hql = "SELECT c.depositType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.status="+ ChainVIPPrepaidFlow.STATUS_SUCCESS +" AND "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.depositType";
+	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT, startDate, endDate };
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
 	    if (prepaid != null && prepaid.size() > 0)
@@ -398,13 +398,23 @@ public class ChainReportService {
 			  else if (depositType.equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH))
 				  vipPrepaidDepositCash += amount;
 		   }
+	    
+	    //4. 计算累计还有多少预存款
+	    double prepaidTotal = 0;
+	    if (!skipTotalPrepaid){
+	    	String hqlPreaidSum = "SELECT sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.status="+ ChainVIPPrepaidFlow.STATUS_SUCCESS + " AND " + chainCriteriaPrepaid;
+	    	List<Object> prepaidTotalObj = chainVIPPrepaidImpl.executeHQLSelect(hqlPreaidSum, null, null, true);
+			for (Object record : prepaidTotalObj){
+				prepaidTotal = Common_util.getDouble(record);
+			}
+	    }
 
 		
 		ChainStore chainStore = new ChainStore();
 		chainStore.setChain_id(chainId);
 		ChainSalesReport chainReport = new ChainSalesReport(ChainReport.TYPE_SALES_REPORT, totalQ, totalQR,
 				totalQF, netAmt,totalSalesDiscountAmt, netAmtR,totalCost, totalCostF, discountAmt,
-				coupon, cardAmt, cashAmt, vipScoreAmt, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,vipQ, vipAmt,vipPrepaidAmt,vipPrepaidDepositCash, vipPrepaidDepositCard);
+				coupon, cardAmt, cashAmt, vipScoreAmt, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,vipQ, vipAmt,vipPrepaidAmt,vipPrepaidDepositCash, vipPrepaidDepositCard,prepaidTotal);
 		chainReport.setChainStore(chainStore);
 		
 		return chainReport;
@@ -445,7 +455,7 @@ public class ChainReportService {
 		 * 1. 获取total
 		 */
 		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
-		ChainSalesReport totalReport = generateSalesTotal(chainId, salerId, startDate, endDate);
+		ChainSalesReport totalReport = generateSalesTotal(chainId, salerId, startDate, endDate, true);
 		
 		/**
 		 * 2. 实现分页,如果是搜索所有连锁店
@@ -511,7 +521,7 @@ public class ChainReportService {
 			
 			ChainSalesReport chainReport2 = new ChainSalesReport(ChainReport.TYPE_SALES_REPORT, totalQ2, totalQR2,
 					totalQF2, netAmt2,totalSalesDiscountAmt2, netAmtR2,totalCost2, totalCostF2, discountAmt2,
-					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost, 0, 0,vipPrepaidAmt,0,0,store);
+					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost, 0, 0,vipPrepaidAmt,0,0,0,store);
 			reports.add(chainReport2);
 		}
 		
@@ -3105,7 +3115,7 @@ public class ChainReportService {
 		 * 1. 获取total
 		 */
 		
-		ChainSalesReport totalReport = generateSalesTotal(chainId, Common_util.ALL_RECORD, startDate, endDate);
+		ChainSalesReport totalReport = generateSalesTotal(chainId, Common_util.ALL_RECORD, startDate, endDate, true);
 		if (!ChainUserInforService.isMgmtFromHQ(loginUser) && loginUser.getRoleType().getChainRoleTypeId() != ChainRoleType.CHAIN_OWNER){
 			totalReport.setFreeCostSum(0);
 			totalReport.setNetProfit(0);
@@ -3176,7 +3186,7 @@ public class ChainReportService {
 			
 			ChainSalesReport chainReport2 = new ChainSalesReport(ChainReport.TYPE_SALES_REPORT, totalQ2, totalQR2,
 					totalQF2, netAmt2,totalSalesDiscountAmt2, netAmtR2,totalCost2, totalCostF2, discountAmt2,
-					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,0 ,0,vipPrepaidAmt,0,0, store,user);
+					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,0 ,0,vipPrepaidAmt,0,0,0, store,user);
 			
 			if (!ChainUserInforService.isMgmtFromHQ(loginUser) && loginUser.getRoleType().getChainRoleTypeId() != ChainRoleType.CHAIN_OWNER){
 				chainReport2.setFreeCostSum(0);
