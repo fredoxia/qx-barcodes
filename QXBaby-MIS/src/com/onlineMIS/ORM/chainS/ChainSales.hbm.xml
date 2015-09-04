@@ -58,6 +58,7 @@
         <property name="myAmount" column="my_amount" type="double"/>
         <property name="myCost" column="my_cost" type="double"/>
         <property name="chainPrepaidAmt" column="chain_prepaid_amount" type="double"/>
+        <property name="vipPrepaidOrderId" column="vip_prepaid_order_id" type="integer"/>
         <set name="productSet" cascade="all-delete-orphan" inverse="true" lazy="true" fetch="subselect">
              <key column="chain_sales_order_id"/>
              <one-to-many class="ChainStoreSalesOrderProduct"/>

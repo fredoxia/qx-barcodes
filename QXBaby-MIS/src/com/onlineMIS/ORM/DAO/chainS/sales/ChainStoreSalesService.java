@@ -784,7 +784,7 @@ public class ChainStoreSalesService {
 			if (isCancel)
 				commentScore = "红冲 ";
 			if (salesOrder.getChainPrepaidAmt() != 0)
-				commentScore = "预付款消费" + Common_util.roundDouble(salesOrder.getChainPrepaidAmt(),0);
+				commentScore += "预付款消费" + Common_util.roundDouble(salesOrder.getChainPrepaidAmt(),0);
 			ChainVIPScore vipScoreObj = new ChainVIPScore(chainId,vipCard.getId(), ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue), Common_util.getDecimalDouble(coupon * multiple), commentScore);
 			chainVIPScoreImpl.save(vipScoreObj, false);
 			
@@ -819,17 +819,22 @@ public class ChainStoreSalesService {
 			 */
 			double vipPrepaidAmt = salesOrder.getChainPrepaidAmt();
 			if (vipPrepaidAmt != 0){
+				if (isCancel){
+					int vipPrepaidOrderId = salesOrder.getVipPrepaidOrderId();
+					if (vipPrepaidOrderId > 0){
+						ChainVIPPrepaidFlow vipPrepaid = chainVIPPrepaidImpl.get(vipPrepaidOrderId, true);
+						if (vipPrepaid != null){
+							vipPrepaid.setStatus(ChainVIPPrepaidFlow.STATUS_CANCEL);
+							chainVIPPrepaidImpl.update(vipPrepaid, true);
+						} else 
+							loggerLocal.error("错误 : 单据" + salesOrder.getId() + " 的预付款无法找到对应单子，" + vipPrepaidAmt + "," + vipPrepaidOrderId);
+					} else 
+						loggerLocal.error("错误 : 单据" + salesOrder.getId() + " 的预付款无法找到对应单子，" + vipPrepaidAmt + "," + vipPrepaidOrderId);
+				} else {
 				
-//					DetachedCriteria criteria = DetachedCriteria.forClass(ChainVIPPrepaidFlow.class);
-//					criteria.add(Restrictions.eq("chainStore.chain_id", chainId));
-//					criteria.add(Restrictions.eq("", value))
-//					
-//				} else {
+				
 					ChainVIPPrepaidFlow vipPrepaid = new ChainVIPPrepaidFlow();
-					if (isCancel)
-						vipPrepaid.setComment("红冲单据" + salesOrder.getId());
-					else
-	                   vipPrepaid.setComment("单据" + salesOrder.getId());
+					vipPrepaid.setComment("单据" + salesOrder.getId());
 	                vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP);
 					vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
 					vipPrepaid.setChainStore(chainStore);
@@ -839,6 +844,10 @@ public class ChainStoreSalesService {
 					vipPrepaid.setOperator(operator);
 					vipPrepaid.setVipCard(vipCard);
 					chainVIPPrepaidImpl.save(vipPrepaid, true);
+					
+					salesOrder.setVipPrepaidOrderId(vipPrepaid.getId());
+					chainStoreSalesOrderDaoImpl.update(salesOrder, true);
+				}
 
 			}
 			

@@ -48,6 +48,10 @@ public class ChainStoreSalesOrder extends BaseOrder {
 	 */
 	private double chainPrepaidAmt;
 	/**
+	 * 使用预付金的那张单子
+	 */
+	private int vipPrepaidOrderId;
+	/**
 	 * 优惠金额
 	 */
 	private double discountAmount;
@@ -406,6 +410,13 @@ public class ChainStoreSalesOrder extends BaseOrder {
 	}
 	public void setChainPrepaidAmt(double chainPrepaidAmt) {
 		this.chainPrepaidAmt = chainPrepaidAmt;
+	}
+	
+	public int getVipPrepaidOrderId() {
+		return vipPrepaidOrderId;
+	}
+	public void setVipPrepaidOrderId(int vipPrepaidOrderId) {
+		this.vipPrepaidOrderId = vipPrepaidOrderId;
 	}
 	/**
      * 1. to build the index for each order product

@@ -33,17 +33,20 @@ public class ChainVIPCardDownloadTemplate extends ExcelTemplate{
 	private final int address_column = 10;
 	private final int comment_column = 9;
 	private final int vipScore_column = 11;
-	private final int last_consump_date = 12;
+	private final int last_consump_date = 13;
+	private final int prepaid_accumulated = 12;
 	
 	private List<ChainVIPCard> vipCards;
 	private Map<Integer, List<Double>> vipScoreMap ;
 	private Map<Integer, Date> vipLastConsumpMap;
+	Map<Integer, Double> vipPrepaidAccumulated;
 	
-	public ChainVIPCardDownloadTemplate(List<ChainVIPCard> vipCards,Map<Integer, List<Double>> scoreMap,Map<Integer, Date> vipLastConsumpMap, String templateWorkbookPath) throws IOException{
+	public ChainVIPCardDownloadTemplate(List<ChainVIPCard> vipCards,Map<Integer, List<Double>> scoreMap,Map<Integer, Date> vipLastConsumpMap, Map<Integer, Double> vipPrepaidAccumulated,String templateWorkbookPath) throws IOException{
 		super(templateWorkbookPath);		
 		this.vipCards = vipCards;	
 		this.vipScoreMap = scoreMap;
 		this.vipLastConsumpMap = vipLastConsumpMap;
+		this.vipPrepaidAccumulated = vipPrepaidAccumulated;
 	}
 	
 	public HSSFWorkbook process(){
@@ -78,6 +81,12 @@ public class ChainVIPCardDownloadTemplate extends ExcelTemplate{
 				if (lastDate != null){
 					row.createCell(last_consump_date).setCellValue(Common_util.dateFormat.format(lastDate));
 				}
+				
+				Double prepaidAccumulated = vipPrepaidAccumulated.get(vipCard.getId());
+				if (prepaidAccumulated != null)
+					row.createCell(prepaid_accumulated).setCellValue(prepaidAccumulated);
+				else 
+					row.createCell(prepaid_accumulated).setCellValue(0);
 			}
 		}
 		return templateWorkbook;

@@ -506,11 +506,13 @@ public class ChainVIPService {
 	 * to decorate the vip card information such as 
 	 * 1. 积分
 	 * 2. 最后消费日期
+	 * 3. 剩余预存款
 	 * @param vipCards
 	 */
 	private void decorateVIPCard(List<ChainVIPCard> vipCards){
 		Map<Integer, List<Double>> sumValueMap = chainVIPScoreImpl.getVIPCardScore(vipCards);
 		Map<Integer, Date> vipLastConsumpMap = chainVIPScoreImpl.getVIPCardLastConsump(vipCards);
+		Map<Integer, Double> vipPrepaidAccumulatedMap = chainVIPPrepaidImpl.getVIPPrepaidAccumulateMap(vipCards);
 		Date today = Common_util.getToday();
 		
 		for (ChainVIPCard vipCard : vipCards){
@@ -528,6 +530,10 @@ public class ChainVIPService {
 				if (Common_util.getDateInterval(today, lastConsumpDate) > 180 )
 					vipCard.setStatusConsump(ChainVIPCard.STATUS_CONSUMP_MORE_180);
 			}
+			
+			Double prepaidAccumulate = vipPrepaidAccumulatedMap.get(vipCardId);
+			if (prepaidAccumulate != null)
+				vipCard.setAccumulateVipPrepaid(prepaidAccumulate);
 		}
 
 	}
@@ -682,15 +688,21 @@ public class ChainVIPService {
 		 */
 		Map<Integer, Date> vipLastConsumpMap = new HashMap<Integer, Date>();
 		
+		/**
+		 * 4. 下载预存款余额
+		 */
+		Map<Integer, Double> vipPrepaidAccumulated = new HashMap<Integer, Double>();
+		
 		if (vipCards.size() < 10000){
 			vipScoreMap = chainVIPScoreImpl.getVIPCardScore(vipCards);
 			vipLastConsumpMap = chainVIPScoreImpl.getVIPCardLastConsump(vipCards);
+			vipPrepaidAccumulated = chainVIPPrepaidImpl.getVIPPrepaidAccumulateMap(vipCards);
 		}
 		
 		ByteArrayInputStream byteArrayInputStream;   
 		try {     
 			HSSFWorkbook wb = null;   
-	        ChainVIPCardDownloadTemplate chainVIPCardDownloadTemplate = new ChainVIPCardDownloadTemplate(vipCards, vipScoreMap,vipLastConsumpMap,templatePath);
+	        ChainVIPCardDownloadTemplate chainVIPCardDownloadTemplate = new ChainVIPCardDownloadTemplate(vipCards, vipScoreMap,vipLastConsumpMap,vipPrepaidAccumulated,templatePath);
 	        wb = chainVIPCardDownloadTemplate.process();
 	
 			ByteArrayOutputStream os = new ByteArrayOutputStream();   

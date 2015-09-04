@@ -166,13 +166,13 @@ function updateVIPScoreDialog(){
 					    <th width="60">类型</th>
 					    <th width="36">状态</th>
 					    <th width="98">发卡连锁店</th>
-					    <th width="80">发卡日期</th>
 					    <th width="80">最近消费日期</th>
 					    <th width="86">卡持有者</th>
 					    <th width="80">卡主生日</th>
 					    <th width="35">性别</th>
 					    <th width="76">电话</th>
 					    <th width="70">当前积分</th>
+					    <th width="80">剩余预存款</th>
 					    <th>备注</th>
 					  </tr>
 				      <s:iterator value="uiBean.chainVIPCards" status="st" id="vipCard" >
@@ -185,7 +185,6 @@ function updateVIPScoreDialog(){
 						      <td <s:if test="#vipCard.status != 1">style='color:red'</s:if>>
 						          <s:property value="#vipCard.statusS"/></td>
 						      <td><s:property value="#vipCard.issueChainStore.chain_name"/></td>
-						      <td><s:date name="#vipCard.cardIssueDate"  format="yyyy-MM-dd"/></td>
 						      <td <s:if test="#vipCard.statusConsump == 1"> style="color:red" </s:if>><s:date name="#vipCard.lastConsumpDate" format="yyyy-MM-dd"/></td>
 						      <td><s:property value="#vipCard.customerName"/></td>
 						      <td><s:date name="#vipCard.customerBirthday" format="yyyy-MM-dd"/></td>
@@ -193,6 +192,9 @@ function updateVIPScoreDialog(){
 						      <td><s:property value="#vipCard.telephone"/></td>
 						      <td><s:text name="format.price">  
 						             <s:param value="#vipCard.accumulatedScore - #vipCard.consumedScore"/>
+						          </s:text></td>
+						      <td><s:text name="format.price">  
+						             <s:param value="#vipCard.accumulateVipPrepaid"/>
 						          </s:text></td>
 						      <td><s:property value="#vipCard.comment"/></td>
 						    </tr>
