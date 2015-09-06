@@ -3,12 +3,14 @@ package com.onlineMIS.ORM.DAO.headQ.finance;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+
 import com.onlineMIS.ORM.DAO.BaseDAO;
 import com.onlineMIS.ORM.entity.headQ.finance.ChainFinanceTrace;
 
 @Repository
 public class ChainFinanceTraceImpl extends BaseDAO<ChainFinanceTrace> {
-	
+
+
 	public double getSumOfFinanceCategory(int categoryId, int chainId){
 		Object[] values = new Object[]{chainId, categoryId};
 		
@@ -22,4 +24,6 @@ public class ChainFinanceTraceImpl extends BaseDAO<ChainFinanceTrace> {
 		} else 
 			return 0;
 	}
+
+
 }

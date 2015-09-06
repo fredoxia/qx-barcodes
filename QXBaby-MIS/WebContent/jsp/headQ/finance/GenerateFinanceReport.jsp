@@ -8,15 +8,55 @@
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 
-<script src="<%=request.getContextPath()%>/conf_files/js/highChart/highcharts.js"></script>
-<script src="<%=request.getContextPath()%>/conf_files/js/highChart/modules/exporting.js"></script>
-
 <script>
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 });
+function generateReport(){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
+
+    var params=$("#preGenReportForm").serialize();  
+    var url = "financeHQJSON!generateFinanceReport";
+
+    $.post(url,params, generateReportBackProcess,"json");	
+}
+
+function generateReportBackProcess(data){
+    $('#reportTable tr').each(function () {                
+        $(this).remove();
+    });
+    
+	var report = data.report;
+
+	if (report != undefined){
+		showFinanceReport(report);
+	}
+
+	$("#report").show();
+	$.messager.progress('close'); 
+}
 
 
+function showFinanceReport(report){
+	$("<tr class='PBAInnerTableTitale'>"+
+       "<td height='20' width='200'>账目名称</td>"+
+	   "<td>净付</td>"+
+	   "</tr>").appendTo("#reportTable");
+	
+	var items = report.reportItems;
+	
+	for (var i = 0; i < items.length; i++){
+      $("<tr class='InnerTableContent'><td>"+
+    		items[i].category.itemName +"</td><td>"+
+	          (items[i].amount).toFixed(2) +"</td></tr>").appendTo("#reportTable");
+	}
+}
+function changeChainStore(chainId){
+
+}
 </script>
 </head>
 <body>
@@ -31,16 +71,16 @@ $(document).ready(function(){
 					      <td width="45" height="35">&nbsp;</td>
 					      <td width="76"><strong>开始截止日期</strong></td>
 					      <td width="284" colspan="2">
-					        <s:textfield id="startDate" name="formBean.startDate" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
-					        &nbsp;至&nbsp;
-					        <s:textfield id="endDate" name="formBean.endDate" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>
-					      </td>
+			      	 			<s:textfield id="startDate" name="formBean.searchStartTime" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>			      
+			      					&nbsp; 至&nbsp;
+			         			<s:textfield id="endDate" name="formBean.searchEndTime" cssClass="easyui-datebox"  data-options="width:100,editable:false"/>	
+				  		  </td>
 					      <td></td>
 					    </tr>
 						<tr class="InnerTableContent">
 					      <td height="35">&nbsp;</td>
 					      <td><strong>连锁店</strong></td>
-					      <td><s:select id="chainStore" name="formBean.chainStore.chain_id"  list="uiBean.chainStores" listKey="chain_id" listValue="chain_name"/>	      </td>
+					      <td><%@ include file="../include/SearchChainStore.jsp"%></td>
 					      <td></td>
 					      <td></td>
 					    </tr>

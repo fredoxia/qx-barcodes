@@ -127,6 +127,8 @@ public class InventoryOrder implements Serializable {
     private double totalPaid;
     private double totalDiscount;
     private int importTimes;
+    private int totalQuantityA;
+    private double totalWholePriceA;
 
 	public UserInfor getPdaScanner() {
 		return pdaScanner;
@@ -350,6 +352,19 @@ public class InventoryOrder implements Serializable {
 	}
 	public void setTotalDiscount(double totalDiscount) {
 		this.totalDiscount = totalDiscount;
+	}
+	
+	public int getTotalQuantityA() {
+		return totalQuantityA;
+	}
+	public void setTotalQuantityA(int totalQuantityA) {
+		this.totalQuantityA = totalQuantityA;
+	}
+	public double getTotalWholePriceA() {
+		return totalWholePriceA;
+	}
+	public void setTotalWholePriceA(double totalWholePriceA) {
+		this.totalWholePriceA = totalWholePriceA;
 	}
 	public void putListToSet(){
 		if (product_List != null)

@@ -199,7 +199,8 @@
             <result name="ViewFinanceBill">/jsp/headQ/finance/ViewFinanceBill.jsp</result>
             <result name="preSearchFinanceBill">/jsp/headQ/finance/SearchFinanceBill.jsp</result>   
             <result name="preSearchAcctFlow">/jsp/headQ/finance/SearchAcctFlowHQ.jsp</result>  
-                
+            <result name="preFinanceRpt">/jsp/headQ/finance/GenerateFinanceReport.jsp</result>  
+                    
         </action>  
         
         <!-- the chain Management JSP Action -->

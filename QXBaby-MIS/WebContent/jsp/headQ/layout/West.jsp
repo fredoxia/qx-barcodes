@@ -70,14 +70,14 @@ $(function() {
 			    </li>
 			    </s:if>
 			    
-			    <s:if test="#session.LOGIN_USER.containFunction('chainSales!preSalesReport') || #session.LOGIN_USER.containFunction('financeHQJSP!preCreateFHQ') || #session.LOGIN_USER.containFunction('financeHQJSP!preSearchFHQ')">
+			    <s:if test="#session.LOGIN_USER.containFunction('financeHQJSP!preCreateFHQ') || #session.LOGIN_USER.containFunction('financeHQJSP!preSearchFHQ')">
 			  	<li  data-options="iconCls:'icon-money_yen',state:'open',border:false">
 			  	    <span>业务管理</span>
 			  		<ul style="width: 150%">
-			    		<s:if test="#session.LOGIN_USER.containFunction('chainSales!preSalesReport')"><li data-options="iconCls:'icon-money_yen',attributes:{url:'chainSales!preSalesReport'}">销售报表 </li></s:if>
 			    		<s:if test="#session.LOGIN_USER.containFunction('financeHQJSP!preCreateFHQ')"><li data-options="iconCls:'icon-money_yen',attributes:{url:'financeHQJSP!preCreateFHQ'}">创建财务单据</li></s:if>
 			    		<s:if test="#session.LOGIN_USER.containFunction('financeHQJSP!preSearchFHQ')"><li data-options="iconCls:'icon-money_yen',attributes:{url:'financeHQJSP!preSearchFHQ'}">查询财务单据 </li></s:if>
 			    		<s:if test="#session.LOGIN_USER.containFunction('financeHQJSP!preSearchAcctFlow')"><li data-options="iconCls:'icon-money_yen',attributes:{url:'financeHQJSP!preSearchAcctFlow'}">查询连锁店往来账户</li></s:if>
+			    		<s:if test="#session.LOGIN_USER.containFunction('financeHQJSP!preFinanceRpt')"><li data-options="iconCls:'icon-money_yen',attributes:{url:'financeHQJSP!preFinanceRpt'}">连锁店财务报表</li></s:if>
 			    	</ul>
 			    </li>
 			    </s:if>

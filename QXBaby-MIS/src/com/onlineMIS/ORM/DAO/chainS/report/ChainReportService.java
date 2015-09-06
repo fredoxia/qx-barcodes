@@ -228,7 +228,7 @@ public class ChainReportService {
 	 * @param endDate
 	 * @return
 	 */
-	private ChainReport generateFinanceReport(int chainId, Date startDate,
+	public ChainReport generateFinanceReport(int chainId, Date startDate,
 			Date endDate) {
 		Object[] values = new Object[]{chainId, startDate, endDate};
 		String hql = "select categoryId, sum(amount) from ChainFinanceTrace where chainId =? and date between ? and ? group by categoryId";

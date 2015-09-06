@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.headQ.finance.FinanceService;
+import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBill;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBillItem;
@@ -187,6 +188,31 @@ public class FinanceJSONAction extends FinanceAction {
 			} catch (Exception e){
 				loggerLocal.error(e);
 			}
+		
+		return SUCCESS;
+	}
+	
+	/**
+	 * the action to generate the finance report
+	 * @return
+	 */
+	public String generateFinanceReport(){
+		Response response = new Response();
+		try {
+			ChainReport chainReport = chainReportService.generateFinanceReport(formBean.getChainStore().getChain_id(), formBean.getSearchStartTime(), formBean.getSearchEndTime());
+		    response.setReturnValue(chainReport);
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		try{
+			jsonMap.put("report", response.getReturnValue());
+
+			jsonObject = JSONObject.fromObject(jsonMap);
+		} catch (Exception e){
+
+			loggerLocal.error(e);
+		}
 		
 		return SUCCESS;
 	}

@@ -149,5 +149,18 @@ public class FinanceJSPAction extends FinanceAction {
 
 		return "preSearchAcctFlow";
 	}
+	
+	/**
+	 * 搜索帐户流
+	 * @return
+	 */
+	public String preFinanceRpt(){
+    	UserInfor userInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+    	loggerLocal.info(userInfor.getUser_name() + "," + this.getClass().getName() + "." + "preFinanceRpt");
+    	
+		//financeService.prepareSearchAcctFlowUI(uiBean,formBean, userInfor);
+
+		return "preFinanceRpt";
+	}	
 
 }
