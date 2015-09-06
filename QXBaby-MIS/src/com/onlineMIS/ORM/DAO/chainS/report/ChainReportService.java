@@ -534,7 +534,7 @@ public class ChainReportService {
 			else 
 				chainCriteriaPrepaid += chainIdList.get(i) + ",";
 		}
-		String hql = "SELECT c.chainStore.chain_id, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.chainStore.chain_id";
+		String hql = "SELECT c.chainStore.chain_id, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.status = "+ ChainVIPPrepaidFlow.STATUS_SUCCESS+" AND "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.chainStore.chain_id";
 	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT,startDate, endDate };
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
