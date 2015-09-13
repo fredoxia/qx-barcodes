@@ -38,27 +38,16 @@ function backProcessEditChainStore(data){
 			alert("更新失败");
     }
 }
-
-
-/**
- * to check the duplication of the user name
- */
-function checkUserName(){
-	var userName = $("#user_name").val();
-	var userId = $("#chainUser").val();
-	if (userName != ""){
-		var params="formBean.chainUserInfor.user_name=" + userName +"&formBean.chainUserInfor.user_id=" + userId;
-		$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!checkUserName",params, backProcessCheckUserName,"json");
+function deleteChainStore(){
+	if (confirm("连锁店需要删除?")){
+		var params="formBean.chainStore.chain_id=" + chainStoreId;
+		$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!deleteChainStore",params, backProcessDeleteChainStore,"json");
 	}
 }
-function backProcessCheckUserName(data){
-	var error =  data.error;
-
-	if (error != undefined && error == true){
-		var userName = data.userName;
-		alert("用户名: " + userName + " 已经使用.请另外使用");
-	}
+function backProcessDeleteChainStore(data){
+	
 }
+
 
 function getChainStore(){
 	var chainStoreId = $("#chainStoreId").val();
@@ -218,7 +207,7 @@ function validateChainStore(){
 	    <tr class="InnerTableContent">
 	      <td height="25"></td>
 	      <td colspan="2"><s:if test="#session.LOGIN_USER.containFunction('chainSMgmtJSON!saveChainStore')"><input type="button" value="添加/更新连锁店" onclick="editChainStore();"/></s:if></td>
-	      <td>&nbsp;</td>
+	      <td><s:if test="#session.LOGIN_USER.containFunction('chainSMgmtJSON!deleteChainStore')"><input type="button" value="删除连锁店" onclick="deleteChainStore();"/></s:if></td>
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>

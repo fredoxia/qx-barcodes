@@ -91,8 +91,8 @@ function exportOrderToExcel(){
 						          <td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:property value="#orderProduct.discount"/></s:if><s:else>-</s:else></td>
 							      <td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:property value="#orderProduct.wholeSalePrice"/></s:if><s:else>-</s:else></td>
 							      <td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#orderProduct.wholeSalePrice * #orderProduct.quantity"/></s:text></s:if><s:else>-</s:else></td>
-							      <td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:property value="#orderProduct.productBarcode.product.salesPrice"/></s:if><s:else>-</s:else></td>
-							      <td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#orderProduct.productBarcode.product.salesPrice * #orderProduct.quantity"/></s:text></s:if><s:else>-</s:else></td>
+							      <td><s:property value="#orderProduct.productBarcode.product.salesPrice"/></td>
+							      <td><s:text name="format.price"><s:param value="#orderProduct.productBarcode.product.salesPrice * #orderProduct.quantity"/></s:text></td>
 							    </tr>
 					       </s:iterator>	  
 					       <tr class="PBAOuterTableTitale" align="center">	      
@@ -110,7 +110,7 @@ function exportOrderToExcel(){
 						      <td></td>
 						      <td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:property value="uiBean.order.totalWholePrice"/></s:if><s:else>-</s:else></td>
 						      <td></td>
-						      <td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:property value="uiBean.order.totalRetailPrice"/></s:if><s:else>-</s:else></td>
+						      <td><s:property value="uiBean.order.totalRetailPrice"/></td>
 							</tr>
 						</table>
 			      </td>

@@ -15,6 +15,7 @@ public class ChainStore implements Serializable {
 	public static final int STATUS_DISABLED = 1;
 	public static final int STATUS_NOT_ACTIVE = 2;
 	public static final int STATUS_ACTIVE = 0;
+	public static final int STATUS_DELETE = -1;
 	
 	public static final int HEADQ_MGMT_ID = 0;
 	public static final int CLIENT_ID_TEST_ID = 99999;
