@@ -69,7 +69,10 @@ function draftOrderBKProcess(data){
 }
 
 function postSalesOrder(){
-	if (validateDraftSalesForm() && validateSalesOrder(SALES_ORDER)){
+	$("#submitBt").attr("disabled", true);
+	var isValidDraf = validateDraftSalesForm();
+	var isValidSalesOrder = validateSalesOrder(SALES_ORDER);
+	if (isValidDraf && isValidSalesOrder){
 		  $.messager.progress({
 			title : '提示',
 			text : '单据过账中，打印小票....'
@@ -85,6 +88,7 @@ function postSalesOrder(){
 	            error: function(XMLHttpRequest, textStatus, errorThrown){    
 	            	alert("提交单据发生异常,请重新提交");
 	            	$.messager.progress('close'); 
+	            	$("#submitBt").removeAttr("disabled");
 	            }, 
 	            success: function(result) { 
 	            	//alert(result);
@@ -92,6 +96,8 @@ function postSalesOrder(){
 	            }
 				});
 		   //$.post("<%=request.getContextPath()%>/actionChain/chainSalesJSONAction!postSalesOrder",params, postOrderBKProcess,"json");
+	} else {
+		$("#submitBt").removeAttr("disabled");
 	}
 }
 
@@ -116,6 +122,7 @@ function postOrderBKProcess(data){
 	} else {
 		$.messager.progress('close'); 
         alert(returnMsg);
+        $("#submitBt").removeAttr("disabled");
     }
 }
 

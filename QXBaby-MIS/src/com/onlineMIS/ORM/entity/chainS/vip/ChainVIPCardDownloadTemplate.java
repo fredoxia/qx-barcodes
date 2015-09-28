@@ -22,19 +22,20 @@ public class ChainVIPCardDownloadTemplate extends ExcelTemplate{
 	private final int data_row = 1;
 	
 	private final int cardNo_column= 0;
-	private final int issueChainStore_column= 1;
-	private final int issueDate_column = 2;
-	private final int expireDate_column = 3;
-	private final int status_column = 4;
-	private final int custNm_column= 5;
-	private final int gender_column= 6;
-	private final int telephone_column= 7;
-	private final int birthday_column= 8;
-	private final int address_column = 10;
-	private final int comment_column = 9;
-	private final int vipScore_column = 11;
-	private final int last_consump_date = 13;
-	private final int prepaid_accumulated = 12;
+	private final int cardTye_column = 1;
+	private final int issueChainStore_column= 2;
+	private final int issueDate_column = 3;
+	private final int expireDate_column = 4;
+	private final int status_column = 5;
+	private final int custNm_column= 6;
+	private final int gender_column= 7;
+	private final int telephone_column= 8;
+	private final int birthday_column= 9;
+	private final int address_column = 11;
+	private final int comment_column = 10;
+	private final int vipScore_column = 12;
+	private final int last_consump_date = 14;
+	private final int prepaid_accumulated = 13;
 	
 	private List<ChainVIPCard> vipCards;
 	private Map<Integer, List<Double>> vipScoreMap ;
@@ -59,6 +60,7 @@ public class ChainVIPCardDownloadTemplate extends ExcelTemplate{
 				Row row = sheet.createRow(data_row + i);
 				
 				row.createCell(cardNo_column).setCellValue(vipCard.getVipCardNo());
+				row.createCell(cardTye_column).setCellValue(vipCard.getVipType().getVipTypeName());
 				row.createCell(issueChainStore_column).setCellValue(vipCard.getIssueChainStore().getChain_name());
 				row.createCell(issueDate_column).setCellValue(Common_util.dateFormat.format(vipCard.getCardIssueDate()));
 				row.createCell(expireDate_column).setCellValue(Common_util.dateFormat.format(vipCard.getCardExpireDate()));
