@@ -32,12 +32,23 @@ public class ChainStoreConf implements Serializable {
 	private String address = "";
 	private int defaultVipScoreMultiple = 1;
 	private int hideDiscountPrint = 0;
+	private int allow_my_prepaid_cross_store = 0;
 	
 	public ChainStoreConf(){
 		
 	}
 
 	
+	public int getAllow_my_prepaid_cross_store() {
+		return allow_my_prepaid_cross_store;
+	}
+
+
+	public void setAllow_my_prepaid_cross_store(int allow_my_prepaid_cross_store) {
+		this.allow_my_prepaid_cross_store = allow_my_prepaid_cross_store;
+	}
+
+
 	public int getHideDiscountPrint() {
 		return hideDiscountPrint;
 	}
