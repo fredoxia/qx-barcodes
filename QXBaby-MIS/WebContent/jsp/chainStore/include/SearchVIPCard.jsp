@@ -65,6 +65,8 @@ function clearVIPCard(){
 	$("#chainPrepaidAmt").attr("value", 0);
 	$("#chainPrepaidAmt").attr("disabled","true");
 	
+	changeDiscountCoupon();
+	
 	$("#refreshBt").attr("disabled","true");
 	
 	$("#barcode" + index).focus();

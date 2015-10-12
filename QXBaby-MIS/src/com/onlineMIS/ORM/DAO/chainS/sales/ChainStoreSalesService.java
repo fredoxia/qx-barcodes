@@ -25,6 +25,7 @@ import com.onlineMIS.ORM.DAO.chainS.ChainUtility;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainInitialStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainSalesPriceDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreConfDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreGroupDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
@@ -134,6 +135,8 @@ public class ChainStoreSalesService {
 	private ProductDaoImpl productDaoImpl;
 	@Autowired
 	private ChainVIPPrepaidImpl chainVIPPrepaidImpl;
+	@Autowired
+	private ChainStoreGroupDaoImpl chainStoreGroupDaoImpl;
 
 	/**
 	 * this function is to prepare the UI Bean of the Chain sales order
@@ -230,7 +233,7 @@ public class ChainStoreSalesService {
 	}
 
 	/**
-	 * the function to get the products by barcode
+	 * 销售时候通过条码获取数据
 	 * @param barcode
 	 * @return
 	 */
@@ -672,6 +675,7 @@ public class ChainStoreSalesService {
 
 	/**
 	 * to validate the chain sales order
+	 * 1. 如果没有配置可以跨连锁店过账，不能跨连锁店过账
 	 * @param salesOrder
 	 * @return
 	 */
@@ -689,11 +693,24 @@ public class ChainStoreSalesService {
 			double totalCoupon = results.get(1);
 			double totalVipPrepaid = results.get(2);
 			
-			//vip会员只能在开户连锁店使用vip卡
+			//检查 vip卡的开卡 连锁店 是否和当前过账连锁店一致
+			//如果不一致，检查是否已经设置了可以在关联连锁店过账。如果没有设置，报错
+			//如果设置了，检查是否是关联连锁店，如果不是关联连锁店，报错
 			if (salesOrder.getChainPrepaidAmt() > 0) {
-				if (vipCard.getIssueChainStore().getChain_id() != salesOrder.getChainStore().getChain_id()){
-					response.setQuickValue(Response.ERROR, "预存金  只能在VIP卡的开户连锁店使用");
-					return ;
+				int chainId_sale = salesOrder.getChainStore().getChain_id();
+				int chainId_vip = vipCard.getIssueChainStore().getChain_id();
+				ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId_sale);
+				if (chainId_sale != chainId_vip){
+					if (conf != null && conf.getAllowMyPrepaidCrossStore() == ChainStoreConf.ALLOW_MY_PREPAID_CROSS){
+						Set<Integer> chainStoreAssociated = chainStoreGroupDaoImpl.getChainGroupStoreIdList(chainId_vip, null, Common_util.CHAIN_ACCESS_LEVEL_3);
+						if (!chainStoreAssociated.contains(chainId_sale)){
+							response.setQuickValue(Response.ERROR, "预存金  只能在VIP卡的开户连锁店/关联连锁店中使用");
+							return ;
+						}	
+					} else {
+						response.setQuickValue(Response.ERROR, "预存金  只能在VIP卡的开户连锁店/关联连锁店中使用");
+						return ;
+					}
 				}
 			} else if (salesOrder.getChainPrepaidAmt() < 0){
 				response.setQuickValue(Response.ERROR, "预存金  必须为大于或者等于0");
@@ -819,6 +836,9 @@ public class ChainStoreSalesService {
 			 */
 			double vipPrepaidAmt = salesOrder.getChainPrepaidAmt();
 			if (vipPrepaidAmt != 0){
+//				int chainId_sale = salesOrder.getChainStore().getChain_id();
+//				int chainId_vip = vipCard.getIssueChainStore().getChain_id();
+				
 				if (isCancel){
 					int vipPrepaidOrderId = salesOrder.getVipPrepaidOrderId();
 					if (vipPrepaidOrderId > 0){
@@ -831,13 +851,15 @@ public class ChainStoreSalesService {
 					} else 
 						loggerLocal.error("错误 : 单据" + salesOrder.getId() + " 的预付款无法找到对应单子，" + vipPrepaidAmt + "," + vipPrepaidOrderId);
 				} else {
-				
-				
 					ChainVIPPrepaidFlow vipPrepaid = new ChainVIPPrepaidFlow();
-					vipPrepaid.setComment("单据" + salesOrder.getId());
+					String commentHeader = "";
+					if (chainStore.getChain_id() != vipCard.getIssueChainStore().getChain_id())
+						commentHeader = chainStore.getChain_name();
+
+					vipPrepaid.setComment(commentHeader + " 单据 :" + salesOrder.getId());
 	                vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP);
 					vipPrepaid.setAmount(vipPrepaidAmt * offsetPrepaid);
-					vipPrepaid.setChainStore(chainStore);
+					vipPrepaid.setChainStore(vipCard.getIssueChainStore());
 					vipPrepaid.setDateD(salesOrder.getOrderDate());
 					vipPrepaid.setCreateDate(Common_util.getToday());
 					ChainUserInfor operator = salesOrder.getSaler();

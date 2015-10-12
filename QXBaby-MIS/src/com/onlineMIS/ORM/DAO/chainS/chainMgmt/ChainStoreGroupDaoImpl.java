@@ -1,6 +1,7 @@
 package com.onlineMIS.ORM.DAO.chainS.chainMgmt;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -65,5 +66,31 @@ public class ChainStoreGroupDaoImpl extends BaseDAO<ChainStoreGroup> {
 			chainStores.add(chainStore);
 
 		return chainStores;
+	}
+
+	public Set<Integer> getChainGroupStoreIdList(int myChainId,
+			ChainUserInfor loginUser,  int accessLevel) {
+		Set<Integer> chainStoreIds = new HashSet<Integer>();
+		
+		ChainStoreGroup chainGroup = null;
+		
+		if (accessLevel == Common_util.CHAIN_ACCESS_LEVEL_3 || (accessLevel == Common_util.CHAIN_ACCESS_LEVEL_2  && loginUser.getRoleType().getChainRoleTypeId() == ChainRoleType.CHAIN_OWNER)){
+			chainGroup = this.getChainStoreBelongGroup(myChainId);
+		}
+		
+		if (chainGroup != null){
+			this.initialize(chainGroup.getChainStoreGroupElementSet());
+			Set<ChainStoreGroupElement> chainGroupElements = chainGroup.getChainStoreGroupElementSet();
+			if (chainGroupElements != null){
+				for (ChainStoreGroupElement ele : chainGroupElements){
+					int chainId = ele.getChainId();
+					chainStoreIds.add(chainId);
+				}
+			}
+		} 
+
+		chainStoreIds.add(myChainId);
+		
+		return chainStoreIds;
 	}
 }

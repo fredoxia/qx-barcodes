@@ -140,6 +140,11 @@ function printChainSalesOrder(){
 		    	pazu.TPrinter.printToDefaultPrinter(tempstr2);  
 	        }
 		}
+	  	
+	  	dfPrinter.FontSize=fontSizeHead;
+	  	var netAmt = $("#netAmount").val();
+	  	pazu.TPrinter.printToDefaultPrinter("售出总计: " + totalQ + " " + netAmt);
+	  	
 	}
 } 
 
@@ -186,7 +191,10 @@ function printChainReturnOrder(){
 	        	pazu.TPrinter.printToDefaultPrinter(tempstr2);  	            
 	        }
 		}
+
+	  	dfPrinter.FontSize=fontSizeHead;
 	    
+	  	pazu.TPrinter.printToDefaultPrinter("退货总计: " + totalQ + " " + $("#netAmountR").val());
 	}
 }
 
@@ -225,6 +233,10 @@ function printChainFreeOrder(){
 	        	pazu.TPrinter.printToDefaultPrinter(tempstr2);  	      
 	        }
 		}
+
+	  	dfPrinter.FontSize=fontSizeHead;
+	    
+	  	pazu.TPrinter.printToDefaultPrinter("赠品总计: " + totalQ );
 	}
 }
 

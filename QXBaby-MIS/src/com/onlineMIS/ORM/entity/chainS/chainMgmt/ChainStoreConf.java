@@ -20,6 +20,9 @@ public class ChainStoreConf implements Serializable {
 	public static final int LOW_COST_ALERT = 1;
 	//低于成本不报警
 	public static final int LOW_COST_NO_ALERT = 2;
+	
+	//允许我的连锁店的预存款跨自己连锁店过账
+	public static final int ALLOW_MY_PREPAID_CROSS = 1;
 
 	private int chainId;
 	private int printCopy = 1;
@@ -32,20 +35,21 @@ public class ChainStoreConf implements Serializable {
 	private String address = "";
 	private int defaultVipScoreMultiple = 1;
 	private int hideDiscountPrint = 0;
-	private int allow_my_prepaid_cross_store = 0;
+	//允许我店铺使用 其他连锁店的预存金
+	private int allowMyPrepaidCrossStore = 0;
 	
 	public ChainStoreConf(){
 		
 	}
 
 	
-	public int getAllow_my_prepaid_cross_store() {
-		return allow_my_prepaid_cross_store;
+	public int getAllowMyPrepaidCrossStore() {
+		return allowMyPrepaidCrossStore;
 	}
 
 
-	public void setAllow_my_prepaid_cross_store(int allow_my_prepaid_cross_store) {
-		this.allow_my_prepaid_cross_store = allow_my_prepaid_cross_store;
+	public void setAllowMyPrepaidCrossStore(int allow_my_prepaid_cross_store) {
+		this.allowMyPrepaidCrossStore = allow_my_prepaid_cross_store;
 	}
 
 

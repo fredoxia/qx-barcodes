@@ -8,10 +8,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=8" />
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSales.js?v=8.22"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSales.js?v=10.12"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSalesKeys.js?v=8.4"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/HtmlTable.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/print/print.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/print/print.js?v=10.12"></script>
 
 <script>
 var baseurl = "<%=request.getContextPath()%>";
@@ -111,6 +111,7 @@ function postOrderBKProcess(data){
 	if (returnCode == SUCCESS){
         //print the pos bill
         try {
+        	
 	        printSalesOrder(returnValue);
         } catch (e){
 			alert("小票打印出现问题 ,请联系总部管理员");
