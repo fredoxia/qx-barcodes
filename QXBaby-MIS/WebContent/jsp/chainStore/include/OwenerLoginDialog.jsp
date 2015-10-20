@@ -9,7 +9,7 @@ $(document).ready(function(){
 	}
 });
 function confirmLogin(){
-	var chainId = $("#chainStore").val();
+	var chainId = $("#chainId").val();
 	if (validateLoginForm()){
 	    var params = $("#authorizeForm").serialize(); 
 	    params += "&formBean.chainUserInfor.myChainStore.chain_id =" + chainId;

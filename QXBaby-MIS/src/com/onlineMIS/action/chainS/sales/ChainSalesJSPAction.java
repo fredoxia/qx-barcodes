@@ -240,15 +240,15 @@ public class ChainSalesJSPAction extends ChainSalesAction {
 					salesOrder.setOrderDate(Common_util.getToday());
 					formBean.setChainSalesOrder(salesOrder);
 		
-					//2.1.1set the vip information
-					ChainVIPCard vipCard = salesOrder.getVipCard();
-					if (vipCard != null && vipCard.getId() != 0){
-						double discount = vipCard.getVipType().getDiscountRate();
-						
-						formBean.setDiscount(discount);
-//						formBean.setVipCardNo(cardNo);
-					}
-					
+					//2.1.1 set the vip information
+//					ChainVIPCard vipCard = salesOrder.getVipCard();
+//					if (vipCard != null && vipCard.getId() != 0){
+//						double discount = vipCard.getVipType().getDiscountRate();
+//						
+//						formBean.setDiscount(discount);
+//						formBean.setVipCardNo(vipCard.getVipCardNo());
+//					}
+
 					if (order_type == ChainStoreSalesOrder.SALES)
 				       return "EditChainSalesOrder";
 					else
