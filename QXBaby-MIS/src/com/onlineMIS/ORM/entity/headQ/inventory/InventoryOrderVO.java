@@ -1,6 +1,8 @@
 package com.onlineMIS.ORM.entity.headQ.inventory;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class InventoryOrderVO {
 	private int id;
@@ -12,12 +14,30 @@ public class InventoryOrderVO {
 	private String keeperName = "";
 	private int totalQ ;
 	private double totalWholeSales;
+	private double totalRetailSales;
 	private String comment = "";
 	private int status;
 	private String process = "";
 	private String orderType = "";
 	private int orderTypeI ;
 	private boolean isAuthorizedToEdit;
+	
+	
+	private int chainStatusIndicator = 0;
+	private String chainStatusS = "";
+	private String chainConfirmComment = "";
+	private Date chainConfirmDate;
+	private String orderTypeC ="";
+	private static Map<Integer, String> chainConfirmMap = new HashMap<Integer, String>();
+	static {
+		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_CONFIRM, "清点确认");
+		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM, "未收货");
+		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT, "配货错误");
+	}
+	
+	public InventoryOrderVO(){
+		
+	}
 	
 	public InventoryOrderVO(InventoryOrder i){
 		this.setId(i.getOrder_ID());
@@ -34,10 +54,72 @@ public class InventoryOrderVO {
 		this.setComment(i.getComment());
 		this.setProcess(i.getOrder_Status_s());
 		this.setOrderType(i.getOrder_type_ws());
+		this.setOrderTypeC(i.getOrder_type_chain());
 		this.setStatus(i.getOrder_Status());
 		this.setOrderTypeI(i.getOrder_type());
+		this.setChainStatusIndicator(i.getChainConfirmStatus());
+		this.setChainConfirmComment(i.getChainConfirmComment());
+		this.calculateChainStatusS(i.getChainConfirmStatus());
+		this.setTotalRetailSales(i.getTotalRetailPrice());
+		this.setChainConfirmDate(i.getChainConfirmDate());
 	}
 	
+	private void calculateChainStatusS(int chainConfirmStatus) {
+		String confirmStatusS = chainConfirmMap.get(chainConfirmStatus);
+		if (confirmStatusS == null)
+		    setChainStatusS("系统错误");
+		else 
+			setChainStatusS(confirmStatusS);
+	}
+
+	public Date getChainConfirmDate() {
+		return chainConfirmDate;
+	}
+
+	public void setChainConfirmDate(Date chainConfirmDate) {
+		this.chainConfirmDate = chainConfirmDate;
+	}
+
+	public double getTotalRetailSales() {
+		return totalRetailSales;
+	}
+
+	public void setTotalRetailSales(double totalRetailSales) {
+		this.totalRetailSales = totalRetailSales;
+	}
+
+	public String getOrderTypeC() {
+		return orderTypeC;
+	}
+
+	public void setOrderTypeC(String orderTypeC) {
+		this.orderTypeC = orderTypeC;
+	}
+
+	public String getChainConfirmComment() {
+		return chainConfirmComment;
+	}
+
+	public void setChainConfirmComment(String chainConfirmComment) {
+		this.chainConfirmComment = chainConfirmComment;
+	}
+
+	public int getChainStatusIndicator() {
+		return chainStatusIndicator;
+	}
+
+	public void setChainStatusIndicator(int chainStatusIndicator) {
+		this.chainStatusIndicator = chainStatusIndicator;
+	}
+
+	public String getChainStatusS() {
+		return chainStatusS;
+	}
+
+	public void setChainStatusS(String chainStatusS) {
+		this.chainStatusS = chainStatusS;
+	}
+
 	public int getOrderTypeI() {
 		return orderTypeI;
 	}
@@ -136,6 +218,10 @@ public class InventoryOrderVO {
 
 	public void setIsAuthorizedToEdit(boolean isAuthorizedToEdit) {
 		this.isAuthorizedToEdit = isAuthorizedToEdit;
+	}
+
+	public static Map<Integer, String> getChainConfirmMap() {
+		return chainConfirmMap;
 	}
 
 	

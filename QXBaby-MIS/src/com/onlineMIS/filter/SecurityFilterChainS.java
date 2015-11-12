@@ -40,7 +40,7 @@ public class SecurityFilterChainS implements Filter {
 			    String requestURL = req.getRequestURI();
 			    String requestFunction = requestURL.substring(requestURL.lastIndexOf("/"));
 			    
-                if (requestFunction.equalsIgnoreCase("/chainUserJSON!loginService") || requestFunction.equalsIgnoreCase("/chainUserJSON!login") || requestFunction.equalsIgnoreCase("/chainUserJSP!logoff"))
+                if (requestFunction.equalsIgnoreCase("/purchaseJSONAction!chainInventoryService") ||requestFunction.equalsIgnoreCase("/chainUserJSON!loginService") || requestFunction.equalsIgnoreCase("/chainUserJSON!login") || requestFunction.equalsIgnoreCase("/chainUserJSP!logoff"))
 			    	chain.doFilter(request, response);
 			    else{
 		            res.sendRedirect(req.getContextPath() + "/indexChainS.jsp");

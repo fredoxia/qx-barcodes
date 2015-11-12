@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -36,6 +37,7 @@ import com.onlineMIS.ORM.entity.headQ.HR.PeopleEvaluation;
 import com.onlineMIS.ORM.entity.headQ.user.UserFunctionality;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.HttpUtil;
 import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.filter.SystemFunctionHeadQMapping;
 import com.onlineMIS.filter.SystemParm;
@@ -381,42 +383,23 @@ public class UserInforService {
 			return response;
 		} 
 		
-		StringBuffer temp = new StringBuffer();
-		 try {
-		        String url = SystemParm.getParm("SYSTEM_LOGIN_SERVICE") ;
-		        HttpURLConnection uc = (HttpURLConnection)new URL(url).
-		                               openConnection();
-		        uc.setConnectTimeout(10000);
-		        uc.setDoOutput(true);
-		        uc.setRequestMethod("GET");
-		        uc.setUseCaches(false);
-		        DataOutputStream out = new DataOutputStream(uc.getOutputStream());
-		
-		        // 要传的参数
-		        String s = URLEncoder.encode("formBean.chainUserInfor.user_name", "UTF-8") + "=" +
-		                   URLEncoder.encode(userName, "UTF-8");
-		        s += "&" + URLEncoder.encode("formBean.chainUserInfor.password", "UTF-8") + "=" +
-		                URLEncoder.encode(password, "UTF-8");
-		        
-		        out.writeBytes(s);
-		        out.flush();
-		        out.close();
-		        InputStream in = new BufferedInputStream(uc.getInputStream());
-		        Reader rd = new InputStreamReader(in, "UTF-8");
-		        int c = 0;
-		        while ((c = rd.read()) != -1) {
-		            temp.append((char) c);
-		        }
-		        System.out.println(temp.toString());
-		        in.close();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-				response.setQuickValue(Response.FAIL, "登陆失败 : " + e.getMessage());
-				return response;
-	        }
-		
-		 try {
-			JSONObject jsonObject = JSONObject.fromObject(temp.toString());
+		String url = SystemParm.getParm("SYSTEM_LOGIN_SERVICE") ;
+        // 要传的参数
+        String s = null;
+        String result = null;
+        try {
+			s= URLEncoder.encode("formBean.chainUserInfor.user_name", "UTF-8") + "=" +
+			           URLEncoder.encode(userName, "UTF-8");
+	        s += "&" + URLEncoder.encode("formBean.chainUserInfor.password", "UTF-8") + "=" +
+	                URLEncoder.encode(password, "UTF-8");
+	        result = HttpUtil.callRemoteService(url, s);
+		} catch (Exception e) {
+			response.setQuickValue(Response.FAIL, "登陆失败 : " + e.getMessage());
+			return response;
+		}				
+
+		try {
+			JSONObject jsonObject = JSONObject.fromObject(result);
 
 			Response loginResponse = (Response)JSONObject.toBean(jsonObject, Response.class);
 			if (loginResponse.getReturnCode() == Response.SUCCESS){

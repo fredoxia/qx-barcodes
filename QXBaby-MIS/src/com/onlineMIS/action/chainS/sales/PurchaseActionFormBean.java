@@ -4,8 +4,9 @@ import java.sql.Date;
 
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
+import com.onlineMIS.action.chainS.ChainActionFormBaseBean;
 
-public class PurchaseActionFormBean {
+public class PurchaseActionFormBean extends ChainActionFormBaseBean{
 	/**
 	 * the two variables for the search start time and end time
 	 */

@@ -41,14 +41,17 @@ function searchOrdersBackProcess(data){
 	    		bg = "style='<%=Common_util.EVEN_ROW_BG_STYLE%>'";
 	    		
 	        if (orders[i] != "")  
-		          $("<tr class='InnerTableContent'" + bg +" align='center'><td>"+
-				          orders[i].order_ID+"</td><td>"+
-				          orders[i].order_EndTime+"</td><td>"+
-				          orders[i].order_type_chain+"</td><td>"+
-				          orders[i].totalQuantity+"</td><td>"+
-				          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')">orders[i].totalWholePrice</s:if><s:else>"-"</s:else>+"</td><td>"+
-				          orders[i].totalRetailPrice+"</td><td>"+
-				          orders[i].comment+"</td><td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!getPurchase')"><a href='#' onclick = 'getPurchaseDetail(" + orders[i].order_ID+ ")'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orders");
+		          $("<tr class='InnerTableContent'" + bg +" align='center' height='28'><td>"+
+				          orders[i].id+"</td><td>"+
+				          orders[i].startTime+"</td><td>"+
+				          orders[i].orderTypeC+"</td><td>"+
+				          orders[i].totalQ+"</td><td>"+
+				          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')">orders[i].totalWholeSales</s:if><s:else>"-"</s:else>+"</td><td>"+
+				          orders[i].totalRetailSales+"</td><td>"+
+				          orders[i].comment+"</td><td>"+
+				          orders[i].chainStatusS+"</td><td>"+
+				          orders[i].chainConfirmComment+"</td><td>"+
+				          "<s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!getPurchase')"><a href='#' onclick = 'getPurchaseDetail(" + orders[i].id+ ")'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orders");
 	    }
 	    renderPaginationBar(pager.currentPage, pager.totalPage);
 	    
@@ -121,15 +124,17 @@ function searchOrdersBackProcess(data){
 					         <!-- table to display the draft order information -->
 					         <div id="ordersDiv" style="display: none">
 				             <!-- table to display the staff information -->
-								 <table width="90%" border="0" id="org_table">
+								 <table width="100%" border="0" id="org_table">
 								    <tr class="PBAInnerTableTitale">
 								      <th width="40" height="32">编号</th>
 								      <th width="120">单据日期</th>
 								      <th width="102">单据种类</th>
-								      <th width="83">数量</th>
-								      <th width="100">成本金额</th>
-								      <th width="100">零售金额</th>
-								      <th width="140">备注</th>
+								      <th width="60">数量</th>
+								      <th width="80">成本金额</th>
+								      <th width="80">零售金额</th>
+								      <th width="140">总部备注</th>
+								      <th width="60">收货状态</th>
+								      <th width="100">收货备注</th>								      
 								      <th width="60">&nbsp;</th>
 								    </tr>
 								    <tbody id="orders">

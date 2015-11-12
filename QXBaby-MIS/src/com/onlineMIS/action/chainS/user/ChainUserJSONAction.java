@@ -93,7 +93,7 @@ public class ChainUserJSONAction extends ChainUserAction {
 		jsonConfig.setExcludes( new String[]{"chainUserFunctionalities"} );
 		try{
 			   jsonObject = JSONObject.fromObject(response, jsonConfig);
-			   loggerLocal.info(jsonObject.toString());
+//			   loggerLocal.info(jsonObject.toString());
 			} catch (Exception e){
 				loggerLocal.error(e);
 			}

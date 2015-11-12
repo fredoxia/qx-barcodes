@@ -53,7 +53,7 @@ public class PurchaseJSPAction extends PurchaseAction {
 
 	
 	/**
-	 * after search the orders, the user click the button to retrieve the detail information of order
+	 * 获取采购单的详细信息
 	 * @return
 	 */
 	public String getPurchase(){
@@ -67,8 +67,8 @@ public class PurchaseJSPAction extends PurchaseAction {
 		if (order == null)
 			addActionError("无法获得采购单据，请重新查询");
 		else{
-			uiBean.setOrder(order);
-			uiBean.setOrder_type(Common_util.getOrderTypeClient(order.getOrder_type()));
+			purchaseService.prepareFormUIBean(formBean, uiBean, order);
+
 		}
 		
 		return "PurchaseOrderDetail";

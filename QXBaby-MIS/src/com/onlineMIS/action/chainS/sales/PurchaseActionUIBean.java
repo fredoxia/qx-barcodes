@@ -14,7 +14,17 @@ public class PurchaseActionUIBean {
 	private ChainStore chainStore = new ChainStore();
 	private List<ChainStore> chainStores = new ArrayList<ChainStore>();
 	private List<InventoryOrder> orders = new ArrayList<InventoryOrder>();
+	private Map<Integer, String> chainConfirmList = new HashMap<Integer, String>();
 	
+	
+	public Map<Integer, String> getChainConfirmList() {
+		return chainConfirmList;
+	}
+
+	public void setChainConfirmList(Map<Integer, String> chainConfirmList) {
+		this.chainConfirmList = chainConfirmList;
+	}
+
 	public ChainStore getChainStore() {
 		return chainStore;
 	}

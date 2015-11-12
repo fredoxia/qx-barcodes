@@ -41,6 +41,13 @@ public class InventoryOrder implements Serializable {
 	public static final int TYPE_SALES_ORDER_W = 0;
 	public static final int TYPE_SALES_RETURN_ORDER_W = 1;
 	
+	//连锁店未确认
+	public static final int STATUS_CHAIN_NOT_CONFIRM = 0;
+	//连锁店确认
+	public static final int STATUS_CHAIN_CONFIRM = 1;
+	//单据产品问题
+	public static final int STATUS_CHAIN_PRODUCT_INCORRECT = 2;
+	
 	/**
 	 * maps to store the types of order
 	 */
@@ -129,7 +136,16 @@ public class InventoryOrder implements Serializable {
     private int importTimes;
     private int totalQuantityA;
     private double totalWholePriceA;
+    private int chainConfirmStatus;
+    private String chainConfirmComment;
+    private Date chainConfirmDate;
 
+	public Date getChainConfirmDate() {
+		return chainConfirmDate;
+	}
+	public void setChainConfirmDate(Date chainConfirmDate) {
+		this.chainConfirmDate = chainConfirmDate;
+	}
 	public UserInfor getPdaScanner() {
 		return pdaScanner;
 	}
@@ -365,6 +381,20 @@ public class InventoryOrder implements Serializable {
 	}
 	public void setTotalWholePriceA(double totalWholePriceA) {
 		this.totalWholePriceA = totalWholePriceA;
+	}
+	
+	
+	public int getChainConfirmStatus() {
+		return chainConfirmStatus;
+	}
+	public void setChainConfirmStatus(int chainConfirmStatus) {
+		this.chainConfirmStatus = chainConfirmStatus;
+	}
+	public String getChainConfirmComment() {
+		return chainConfirmComment;
+	}
+	public void setChainConfirmComment(String chainConfirmComment) {
+		this.chainConfirmComment = chainConfirmComment;
 	}
 	public void putListToSet(){
 		if (product_List != null)

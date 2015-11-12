@@ -325,9 +325,12 @@ public class InventoryOrderJSPAction  extends InventoryOrderAction {
 		   Response  response = inventoryService.cancel(loginUserInfor, orderId);
 		   loggerLocal.infoR(log + "," + response.getReturnCode());
 		   if (response.getReturnCode() ==  Response.FAIL){
-			   addActionError("会计未过账的单据不能红冲,只能删除");
+			   addActionError(response.getMessage());
 			   return "operationError";
-		   }  
+		   } else if (response.getReturnCode() == Response.WARNING){
+			   addActionError(response.getMessage());
+			   return loadOrder();
+		   }
 		}
 		
 		loggerLocal.infoR(log);

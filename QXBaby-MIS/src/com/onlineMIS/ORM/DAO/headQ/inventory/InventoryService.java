@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.sf.json.JSONObject;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -28,6 +31,9 @@ import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
 
 
 
@@ -48,7 +54,9 @@ import com.onlineMIS.ORM.DAO.headQ.user.NewsService;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforService;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
+import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
+import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.Billdraftidx;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.ClientsMS;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.PriceMS;
@@ -70,7 +78,9 @@ import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.action.headQ.inventory.InventoryOrderActionFormBean;
 import com.onlineMIS.action.headQ.inventory.InventoryOrderActionUIBean;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.HttpUtil;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.filter.SystemParm;
 import com.opensymphony.xwork2.ActionContext;
 
 @Service
@@ -724,6 +734,40 @@ public class InventoryService {
         Response response = new Response();
 		
         if (order.getOrder_Status() == InventoryOrder.STATUS_ACCOUNT_COMPLETE){
+        	//1. 检查客户是否已经验收了
+    		String url = SystemParm.getParm("CHAIN_INVENTORY_SERVICE") ;
+            // 要传的参数
+            String s = null;
+            String result = null;
+            try {            	
+    			s= URLEncoder.encode("formBean.order.order_ID", "UTF-8") + "=" +orderId;
+
+    	        result = HttpUtil.callRemoteService(url, s);
+    	        
+    			JSONObject jsonObject = JSONObject.fromObject(result);
+
+    			Response loginResponse = (Response)JSONObject.toBean(jsonObject, Response.class);
+    			if (loginResponse.getReturnCode() == Response.SUCCESS){
+    				Object returnValue = loginResponse.getReturnValue();
+    				jsonObject = JSONObject.fromObject(returnValue);
+    				InventoryOrderVO inventoryOrderVO = (InventoryOrderVO)JSONObject.toBean(jsonObject, InventoryOrderVO.class);
+
+    				if (inventoryOrderVO.getStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM){
+    					response.setQuickValue(Response.WARNING, "客户已经确认此单据收货，无法红冲。请与管理员联系");
+    					response.setReturnValue(order);
+    					return response;
+    				} 
+    			} else {
+					response.setQuickValue(Response.FAIL, loginResponse.getMessage());
+					return response;
+    			}
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			response.setQuickValue(Response.FAIL, "检查远程服务器数据失败，请联系管理员 : " + e.getMessage());
+    			return response;
+    		}
+
+        	
         	//1. to update the order status
 			String hql_order = "UPDATE InventoryOrder i set i.order_Status = ?, i.order_Auditor.user_id=? where order_ID = ?";
 			Object[] values = {InventoryOrder.STATUS_CANCELLED,userInfor.getUser_id(), orderId};
@@ -738,6 +782,7 @@ public class InventoryService {
 			response.setReturnCode(Response.SUCCESS);
         } else {
         	response.setReturnCode(Response.FAIL);
+        	response.setMessage("会计未过账的单据不能红冲,只能删除");
         }
         
         return response;

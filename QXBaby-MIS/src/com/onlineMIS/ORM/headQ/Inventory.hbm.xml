@@ -40,6 +40,9 @@
         <property name="totalQuantityA" column="total_quantity_a" type="integer"/>
         <property name="totalWholePriceA" column="total_whole_price_a" type="double"/> 
         <property name="postAcctAmt" column="post_acct_amt" type="double"/> 
+        <property name="chainConfirmStatus" column="chain_confirm_status" type="integer"/> 
+        <property name="chainConfirmComment" column="chain_confirm_comment" type="string"/> 
+        <property name="chainConfirmDate" column="chain_confirm_date" type="timestamp"/>
         <many-to-one name="pdaScanner" fetch="select" column="pda_scanner" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
         <many-to-one name="order_Auditor" fetch="select" column="order_Auditor" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
         <many-to-one name="order_Keeper" fetch="select" column="order_Keeper" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>

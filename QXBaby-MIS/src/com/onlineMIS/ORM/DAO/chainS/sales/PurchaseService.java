@@ -3,7 +3,9 @@ package com.onlineMIS.ORM.DAO.chainS.sales;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +16,16 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
+import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryService;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.PurchaseOrderTemplate;
@@ -29,6 +34,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderTemplate;
+import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderVO;
 import com.onlineMIS.action.chainS.sales.PurchaseActionFormBean;
 import com.onlineMIS.action.chainS.sales.PurchaseActionUIBean;
 import com.onlineMIS.common.Common_util;
@@ -57,26 +63,46 @@ public class PurchaseService {
 	 * @param searchBean
 	 * @return
 	 */
-	public List<InventoryOrder> searchPurchaseOrders(PurchaseActionFormBean searchBean){
+	public Response searchPurchaseOrders(PurchaseActionFormBean searchBean){
 		boolean cached = false;
+		Response response = new Response();
 		Pager pager = searchBean.getPager();
 
-		if (pager.getTotalPage() == 0){
-		    DetachedCriteria criteria = buildSearchPurchaseOrderCriteria(searchBean);
-			criteria.setProjection(Projections.rowCount());
-			int totalRecord = Common_util.getProjectionSingleValue(inventoryOrderDAOImpl.getByCriteriaProjection(criteria, false));
-			pager.initialize(totalRecord);
-		} else {
-			pager.calFirstResult();
-			cached = true;
+		try {
+			if (pager.getTotalPage() == 0){
+			    DetachedCriteria criteria = buildSearchPurchaseOrderCriteria(searchBean);
+				criteria.setProjection(Projections.rowCount());
+				int totalRecord = Common_util.getProjectionSingleValue(inventoryOrderDAOImpl.getByCriteriaProjection(criteria, false));
+				pager.initialize(totalRecord);
+			} else {
+				pager.calFirstResult();
+				cached = true;
+			}
+			
+			DetachedCriteria criteria2 = buildSearchPurchaseOrderCriteria(searchBean);
+			criteria2.addOrder(Order.asc("order_ID"));
+	
+			List<InventoryOrder> InventoryOrders = inventoryOrderDAOImpl.getByCritera(criteria2, pager.getFirstResult(), pager.getRecordPerPage(), cached);
+			List<InventoryOrderVO> inventoryOrderVOs = constructInventoryVOs(InventoryOrders);
+			
+			response.setReturnValue(inventoryOrderVOs);
+		} catch (Exception e){
+			response.setFail(e.getMessage());
 		}
 		
-		DetachedCriteria criteria2 = buildSearchPurchaseOrderCriteria(searchBean);
-		criteria2.addOrder(Order.asc("client_id"));
-
-		return inventoryOrderDAOImpl.getByCritera(criteria2, pager.getFirstResult(), pager.getRecordPerPage(), cached);
+		return response;
 	}
 	
+	private List<InventoryOrderVO> constructInventoryVOs(
+			List<InventoryOrder> orderList) {
+		List<InventoryOrderVO> inventoryOrderVOs = new ArrayList<InventoryOrderVO>();
+		for (InventoryOrder order : orderList){
+			InventoryOrderVO vo = new InventoryOrderVO(order);
+			inventoryOrderVOs.add(vo);
+		}
+		return inventoryOrderVOs;
+	}
+
 	private DetachedCriteria buildSearchPurchaseOrderCriteria(PurchaseActionFormBean searchBean){
 		DetachedCriteria criteria = DetachedCriteria.forClass(InventoryOrder.class,"order");
 		
@@ -193,6 +219,90 @@ public class PurchaseService {
 			 loggerLocal.error(ex);
 		 }   
 		return null;   
+	}
+	
+	public Response getChainConfirmInfor(int orderId){
+		Response response = new Response();
+		if (orderId <= 0){
+			response.setQuickValue(Response.FAIL, "无效的单据号");
+			return response;
+		}
+			
+		
+		String hql = "SELECT i.chainConfirmStatus,i.chainConfirmComment FROM InventoryOrder i WHERE i.order_ID = ?";
+		Object[] values = new Object[]{orderId};
+		List<Object> objects = inventoryOrderDAOImpl.executeHQLSelect(hql, values, null, true);
+		Object[] objects2 = (Object[])objects.get(0);
+		if (objects == null || objects.size() == 0){
+			response.setQuickValue(Response.FAIL, "无法找到对应单据号，请联系系统管理员，夏林。");
+			return response;
+		}else {
+			int status = Common_util.getInt(objects2[0]);
+			String comment = Common_util.getString(objects2[1]);
+ 
+			InventoryOrderVO vo = new InventoryOrderVO();
+			vo.setStatus(status);
+			vo.setComment(comment);
+			
+			response.setReturnValue(vo);
+			return response;
+		}
+	}
+
+	public void prepareFormUIBean(PurchaseActionFormBean formBean,
+			PurchaseActionUIBean uiBean, InventoryOrder order)  {
+		//1. 确认收货状态下拉清单
+		//   - 如果是收货状态，清楚其他下拉清单
+		//   - 如果有值状态，清除未确认收货值
+		Map<Integer, String> chainConfirmMap = new HashMap<Integer, String>();
+		chainConfirmMap.putAll(InventoryOrderVO.getChainConfirmMap());
+		int chainConfirmStatus = order.getChainConfirmStatus();
+		formBean.setCanEdit(true);
+		if (chainConfirmStatus == InventoryOrder.STATUS_CHAIN_CONFIRM){
+			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM);
+			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT);
+			formBean.setCanEdit(false);
+		} else if (chainConfirmStatus == InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT){
+			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM);
+		} 
+			
+		uiBean.setChainConfirmList(chainConfirmMap);
+		
+		uiBean.setOrder(order);
+		formBean.setOrder(order);
+		uiBean.setOrder_type(Common_util.getOrderTypeClient(order.getOrder_type()));
+		
+	}
+
+	/**
+	 * 更新订单的状态
+	 * 1. 如果订单以前的总部状态不是会计完成就要报错， 或者以前连锁店状态是确认收货也要报错
+	 * 2. 如果登录用户跟当前订单不是同一个连锁店，报错
+	 * @param order
+	 * @param loginUser
+	 * @return
+	 */
+	public void updatePurchaseOrderStatus(InventoryOrder order,
+			ChainUserInfor loginUser, Response response) {
+		InventoryOrder oldOrder = inventoryOrderDAOImpl.get(order.getOrder_ID(), true);
+		
+		if (oldOrder == null){
+			response.setFail("无法找到单据");
+		} else if (oldOrder.getOrder_Status() != InventoryOrder.STATUS_ACCOUNT_COMPLETE || oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM){
+			response.setFail("单据更新状态出现错误，请联系管理员");
+		} else if (oldOrder.getClient_id() != loginUser.getMyChainStore().getClient_id()){
+			response.setFail("没有权限更新其他连锁店单据状态");
+		} else {
+			//1. 修改连锁店确认信息
+			oldOrder.setChainConfirmStatus(order.getChainConfirmStatus());
+			oldOrder.setChainConfirmComment(order.getChainConfirmComment());
+			oldOrder.setChainConfirmDate(new Date());
+			
+			//2. 确认单据的库存
+			
+			inventoryOrderDAOImpl.update(oldOrder, true);
+		}
+		    
 	}
 	
 }

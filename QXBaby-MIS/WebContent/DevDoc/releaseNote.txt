@@ -164,7 +164,15 @@ Release Summary
 		DB	: 1. add chain_weekly_sales columns	
 		         qx_quantity, qx_amount,  my_quantity, my_amount, 	
 		         
-Release Date 
+Release Date 9 9 
 Release Summary
 		DB	: 1. add table chain_vip_prepaid_flow
-		         add column chain_prepaid_amount of chain_sales_order	         	                  
+		         add column chain_prepaid_amount of chain_sales_order	
+		         
+Release Date 11 10 
+Release Summary
+		DB	: 1. 添加	chain_confirm_status，chain_confirm_comment 在表 INVENTORY_ORDER	         
+		
+Release Date
+Release Summary
+		DB	:		         	                  

@@ -43,16 +43,15 @@ public class testHibernate {
 		Transaction transaction = session.beginTransaction();
 		int id = 15619;
 		Object[] values = new Object[]{id};
-		String hql = "select count(*) from InventoryOrderProduct as p where p.productBarcode.id = 15619";
+		String hql = "SELECT i.chainConfirmStatus,i.chainConfirmComment FROM InventoryOrder i WHERE i.order_ID = ?";
 		//String hql = "select count(*) from PeopleEvalMark as pem where pem.peopleEvaluation.evaluationYear=2012 and pem.peopleEvaluation.evaluationMonth=10 and pem.evaluater.user_id = 1 and pem.peopleEvaluation.evaluatee.user_id =3";
 		
 		Query q= session.createQuery(hql);
-//    	if (values != null && values.length > 0)
-//    	  for (int i =0; i < values.length; i++)
-//			  q.setParameter(i, values[i]);
-    	
-		List<Object> result = q.list();
-		int count = ((Long)result.get(0)).intValue();
+    	if (values != null && values.length > 0)
+    	  for (int i =0; i < values.length; i++)
+			  q.setParameter(i, values[i]);
+    	q.list();
+
 		
 		transaction.commit();
 		session.close();
