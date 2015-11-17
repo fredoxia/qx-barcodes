@@ -143,7 +143,7 @@ function printChainSalesOrder(){
 	  	
 	  	dfPrinter.FontSize=fontSizeHead;
 	  	var netAmt = $("#netAmount").val();
-	  	pazu.TPrinter.printToDefaultPrinter("售出总计: " + totalQ + " " + netAmt);
+	  	pazu.TPrinter.printToDefaultPrinter("售出总计: " + totalQ + space2 + netAmt);
 	  	
 	}
 } 
@@ -194,7 +194,7 @@ function printChainReturnOrder(){
 
 	  	dfPrinter.FontSize=fontSizeHead;
 	    
-	  	pazu.TPrinter.printToDefaultPrinter("退货总计: " + totalQ + " " + $("#netAmountR").val());
+	  	pazu.TPrinter.printToDefaultPrinter("退货总计: " + totalQ + space2 + $("#netAmountR").val());
 	}
 }
 

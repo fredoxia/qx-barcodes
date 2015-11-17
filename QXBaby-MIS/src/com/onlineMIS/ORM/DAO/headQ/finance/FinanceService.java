@@ -415,7 +415,7 @@ public class FinanceService {
 	}
 
 	/**
-	 * 获取连锁店当前欠款
+	 * 获取连锁店当前欠款 和 预付款
 	 * @param chainId
 	 * @return
 	 */
@@ -423,12 +423,23 @@ public class FinanceService {
 		Response response = new Response();
 		
 		ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-		double initialAcct = chainStore.getInitialAcctAmt();
 		
+		//1. Get the current finance
+		double initialAcct = chainStore.getInitialAcctAmt();
 		double currentFinance = initialAcct + chainAcctFlowDaoImpl.getAccumulateAcctFlow(chainId);
 		currentFinance = Common_util.roundDouble(currentFinance, 2);
+		
+		//2. get the accumulated prepaid
+		double prepaid = chainFinanceTraceImpl.getSumOfFinanceCategory(FinanceCategory.PREPAY_ACCT_TYPE, chainId);
+		prepaid = Common_util.roundDouble(prepaid, 2);
+		
 		response.setReturnCode(Response.SUCCESS);
-		response.setReturnValue(currentFinance);
+		
+		Map<String, Double> financeDataMap = new HashMap<String, Double>();
+		financeDataMap.put("cf", currentFinance);
+		financeDataMap.put("pp", prepaid);
+		
+		response.setReturnValue(financeDataMap);
 		
 		return response;
 	}

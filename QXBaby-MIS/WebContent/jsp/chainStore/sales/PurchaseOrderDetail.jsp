@@ -24,12 +24,11 @@ function changeStatus(){
 }
 function updatePurchaseStatusBKProcess(data){
 	var returnCode = data.returnCode;
-	
+	var returnMsg = data.message;
 	if (returnCode == SUCCESS){		   
-		alert("成功更新状态");
+		alert(returnMsg);
 		window.location.reload();
 	} else {
-		var returnMsg = data.message;
         alert("错误 : " + returnMsg);
     }
 }
@@ -69,7 +68,7 @@ function updatePurchaseStatusBKProcess(data){
 			      <td colspan="7">
 			            <!-- table to display the staff information -->
 			            <div id="p" class="easyui-panel" 
-			 			style="height:500px;padding:10px;background:#fafafa;"  
+			 			style="height:200px;padding:10px;background:#fafafa;"  
 	        			data-options="collapsible:false">  
 							<table width="99%" class="OuterTable" id="org_table">
 							  <tr  class="PBAInnerTableTitale">

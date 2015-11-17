@@ -43,6 +43,8 @@
         <property name="chainConfirmStatus" column="chain_confirm_status" type="integer"/> 
         <property name="chainConfirmComment" column="chain_confirm_comment" type="string"/> 
         <property name="chainConfirmDate" column="chain_confirm_date" type="timestamp"/>
+        <property name="deliveryComment" column="delivery_comment" type="string"/> 
+        <property name="deliveryDate" column="delivery_date" type="date"/>
         <many-to-one name="pdaScanner" fetch="select" column="pda_scanner" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
         <many-to-one name="order_Auditor" fetch="select" column="order_Auditor" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
         <many-to-one name="order_Keeper" fetch="select" column="order_Keeper" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>

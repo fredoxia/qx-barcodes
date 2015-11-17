@@ -174,7 +174,8 @@ function getChainCurrFinanceBackProcess(data){
 		$("#currentFinance").html("");
 		alert(response.message);
 	} else {
-		$("#currentFinance").html("当前欠款 : " + response.returnValue);
+		var dataMap = response.returnValue
+		$("#currentFinance").html("当前欠款 : " + dataMap.cf + ", 剩余预存款 : " + dataMap.pp);
 	}
 		
 }
@@ -208,7 +209,7 @@ function changeChainStore(chainId){
 											      <img src="<%=request.getContextPath()%>/conf_files/web-image/cal.gif" width="16" height="16" alt="Pick a date" border="0"/>
 											  </a></td>
 							 <td width="400">连锁店 ： <%@ include file="../include/SearchChainStore.jsp"%>
-								              <div style="display:inline;" id="currentFinance"></div>
+								              <div style="display:block;" id="currentFinance"></div>
 						     </td>
 					       </tr>
 						   <tr class="InnerTableContent">	      

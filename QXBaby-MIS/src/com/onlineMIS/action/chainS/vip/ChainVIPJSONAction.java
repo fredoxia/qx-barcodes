@@ -150,7 +150,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
     	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"searchSpecialVIPs");
     	
-		Response response = chainVIPService.searchSpecialVIPs(formBean.getChainStore().getChain_id(), formBean.getSearchType(), this.getPage(), this.getRows());
+		Response response = chainVIPService.searchSpecialVIPs(formBean.getChainStore().getChain_id(), formBean.getSearchType(), formBean.getBirthday(), this.getPage(), this.getRows());
 
 	    jsonMap = (Map)response.getReturnValue();
 

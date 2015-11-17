@@ -17,6 +17,7 @@ public class ChainVIPActionUIBean {
 	public static int SEARCH_TYPE_BIR_TODAY = 1;
 	public static int SEARCH_TYPE_BIR_WEEK = 2;
 	public static int SEARCH_TYPE_BIR_MONTH = 3;
+	public static int SEARCH_TYPE_PART_DATE = 0;
 	
 	private List<ChainVIPType> chainVIPTypes = new ArrayList<ChainVIPType>();
     private List<ChainVIPCard> chainVIPCards = new ArrayList<ChainVIPCard>();
@@ -70,7 +71,8 @@ public class ChainVIPActionUIBean {
 	
 
 	public Map<Integer, String> getSearchTypes() {
-		searchTypes.put(SEARCH_TYPE_BIR_TODAY, "当日生日");
+		searchTypes.put(SEARCH_TYPE_PART_DATE, "特定日期");
+		searchTypes.put(SEARCH_TYPE_BIR_TODAY, "当天生日");
 		searchTypes.put(SEARCH_TYPE_BIR_WEEK, "当周生日");
 		searchTypes.put(SEARCH_TYPE_BIR_MONTH, "当月生日");
 		

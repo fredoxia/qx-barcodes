@@ -729,17 +729,17 @@ public class ChainVIPService {
 	 * @param searchType
 	 * @return
 	 */
-	public Response searchSpecialVIPs(int chain_id, int searchType, int page, int rows) {
+	public Response searchSpecialVIPs(int chain_id, int searchType, Date birthday, int page, int rows) {
 		Response response = new Response();
 		Map data = new HashMap<String, Object>();
 		
 		//1. 获取row count总数
-		DetachedCriteria criteria = buildSearchSpecialVIPsCritiera(chain_id, searchType);
+		DetachedCriteria criteria = buildSearchSpecialVIPsCritiera(chain_id, searchType, birthday);
 		criteria.setProjection(Projections.rowCount());
 		int totalRecord = Common_util.getProjectionSingleValue(chainVIPCardImpl.getByCriteriaProjection(criteria, false));
 		
 		//2. 搜索record
-		DetachedCriteria criteria2 = buildSearchSpecialVIPsCritiera(chain_id, searchType);
+		DetachedCriteria criteria2 = buildSearchSpecialVIPsCritiera(chain_id, searchType,birthday);
 		List<ChainVIPCard> cards = new ArrayList<ChainVIPCard>();
 		
 		if (page == -1 && rows == -1){
@@ -756,7 +756,7 @@ public class ChainVIPService {
 		return response;
 	}
 	
-	private DetachedCriteria buildSearchSpecialVIPsCritiera(int chain_id, int searchType){
+	private DetachedCriteria buildSearchSpecialVIPsCritiera(int chain_id, int searchType, Date birthday){
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainVIPCard.class);
 		if (chain_id != Common_util.ALL_RECORD)
 			criteria.add(Restrictions.eq("issueChainStore.chain_id", chain_id));
@@ -786,7 +786,12 @@ public class ChainVIPService {
 	
 			int month = today.getMonth() + 1;
 			criteria.add(Restrictions.eq("birthMonth", month));
-		} 
+		} else if (searchType == ChainVIPActionUIBean.SEARCH_TYPE_PART_DATE){
+			int month = birthday.getMonth() + 1;
+			int day = birthday.getDate();
+
+			criteria.add(Restrictions.and(Restrictions.eq("birthMonth", month), Restrictions.eq("birthDay", day)));
+		}
 		
 		return criteria;		
 	}

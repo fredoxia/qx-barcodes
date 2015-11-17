@@ -261,10 +261,19 @@ public class Common_util {
 	public static Date calculateVIPCardExpireDate(Date today){
 		int year = today.getYear();
 		
-		Date expireDate = new Date(today.getTime());
-		expireDate.setYear(year + 2);
+		Date newDate = new Date(today.getTime());
+		newDate.setYear(year + 2);
 		
-		return expireDate;
+		return newDate;
+	}
+	
+	public static Date calcualteDate(Date day, int diffDay){
+		int date = day.getDate();
+		
+		Date newDate = new Date(day.getTime());
+		newDate.setDate(date + diffDay);
+		
+		return newDate;
 	}
 	
 	public static String decode(String var){

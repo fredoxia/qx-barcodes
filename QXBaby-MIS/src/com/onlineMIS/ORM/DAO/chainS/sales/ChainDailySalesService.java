@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -267,6 +268,30 @@ public class ChainDailySalesService{
 
 		loggerLocal.infoB(threadId + " runDailyBatch 成功保存 : " + chainId);
 		return true;
+	}
+	
+	/**
+	 * 每天运行一次去检查n天前的单子，看看是否需要系统自动过账
+	 */
+	public void runDailyInventoryOrderCheck(){
+		int interval = Integer.parseInt(SystemParm.getParm("SYSTEM_INVENTORY_CONFIRM_DAYS"));
+		Date today = new Date();
+		Date exceptionDate = null;
+		try {
+			exceptionDate = Common_util.dateFormat.parse(SystemParm.getParm("CHAIN_INVENTORY_CONFIRM_EXCEPTION_DATE"));
+		} catch (ParseException e) {
+			loggerLocal.error(e);
+			return;
+		}
+		
+		//1. 验证today是否是在excetionDate 之前
+		if (today.before(exceptionDate)){
+			loggerLocal.info("今天日期在避免注入日期之前");
+			return ;
+		} else {
+	return;
+		}
+		
 	}
 	
 	/**

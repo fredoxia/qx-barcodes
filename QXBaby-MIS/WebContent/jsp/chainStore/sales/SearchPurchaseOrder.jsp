@@ -140,7 +140,7 @@ function searchOrdersBackProcess(data){
 								    <tbody id="orders">
 						   			</tbody>
 						   			<tr class="InnerTableContent" id="pager">	      
-						      			<td colspan="7"><div id="pageNav"></div></td>
+						      			<td colspan="10"><div id="pageNav"></div></td>
 						  			</tr>	
 								  </table>
 							  </div>

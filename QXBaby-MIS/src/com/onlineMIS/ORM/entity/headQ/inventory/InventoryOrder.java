@@ -45,6 +45,8 @@ public class InventoryOrder implements Serializable {
 	public static final int STATUS_CHAIN_NOT_CONFIRM = 0;
 	//连锁店确认
 	public static final int STATUS_CHAIN_CONFIRM = 1;
+	//系统自动确认
+	public static final int STATUS_SYSTEM_CONFIRM = 3;
 	//单据产品问题
 	public static final int STATUS_CHAIN_PRODUCT_INCORRECT = 2;
 	
@@ -110,7 +112,7 @@ public class InventoryOrder implements Serializable {
      * account complete order
      */
     private Date order_EndTime;
-    private String comment;
+    private String comment = "";
     private double preAcctAmt;
     private double postAcctAmt;
     
@@ -137,9 +139,23 @@ public class InventoryOrder implements Serializable {
     private int totalQuantityA;
     private double totalWholePriceA;
     private int chainConfirmStatus;
-    private String chainConfirmComment;
+    private String chainConfirmComment = "";
     private Date chainConfirmDate;
+    private String deliveryComment ="";
+    private Date deliveryDate;
 
+	public String getDeliveryComment() {
+		return deliveryComment;
+	}
+	public void setDeliveryComment(String deliveryComment) {
+		this.deliveryComment = deliveryComment;
+	}
+	public Date getDeliveryDate() {
+		return deliveryDate;
+	}
+	public void setDeliveryDate(Date deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
 	public Date getChainConfirmDate() {
 		return chainConfirmDate;
 	}

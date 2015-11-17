@@ -97,8 +97,7 @@ public class InventoryService {
 	private ProductsMSDAOImpl productsMSImpl;
 	@Autowired
 	private HeadQSalesHisDAOImpl headQSalesHisDAOImpl;
-	@Autowired
-	private ChainInOutStockDaoImpl chainInOutStockDaoImpl;
+
 	@Autowired
 	private ClientDAOImpl clientDAOImpl;
 	@Autowired
@@ -774,7 +773,7 @@ public class InventoryService {
 			inventoryOrderDAOImpl.executeHQLUpdateDelete(hql_order, values, true);
 			
 			//2. to update the chain in-out stock
-			updateChainInOutStock(order, true);
+//			updateChainInOutStock(order, true);
 			
 			//3. to update the acct flow
 			updateChainAcctFlow(order, order.getOrder_EndTime(), true);
@@ -922,7 +921,7 @@ public class InventoryService {
 			updateSalesHistory(order);
 			
 			//3. update the Chain's InOut stock
-			updateChainInOutStock(order, false);
+//			updateChainInOutStock(order, false);
 			
 			//4. update the acct flow
 			updateChainAcctFlow(order,now, false);
@@ -1007,55 +1006,7 @@ public class InventoryService {
 		}
 	}
 	
-	/**
-	 * to update the inventory order's Chain In Out stock
-	 * @param order
-	 */
-    private void updateChainInOutStock(InventoryOrder order, boolean isCancel) {
-		int clientId = order.getClient_id();
-		ChainStore chainStore = chainStoreDaoImpl.getByClientId(clientId);
-		
-		if (chainStore != null  && chainStore.getStatus() != ChainStore.STATUS_DISABLED){
-			String orderId = String.valueOf(order.getOrder_ID());
-			int offset = isCancel ? -1 : 1;
-			String orderIdHead = isCancel ? "C" : "";
-			if (order.getOrder_type() == InventoryOrder.TYPE_SALES_ORDER_W){
-				orderId = ChainInOutStock.HEADQ_SALES + orderIdHead + orderId;
-			} else {
-				orderId = ChainInOutStock.HEADQ_RETURN + orderIdHead + orderId;
-				offset *= -1;			
-			}
-			
-			Map<String, ChainInOutStock> inOutMap = new HashMap<String, ChainInOutStock>();
-			
-			 Iterator<InventoryOrderProduct> orderProducts = order.getProduct_Set().iterator();
-			 while (orderProducts.hasNext()){
-				 InventoryOrderProduct orderProduct = orderProducts.next();
-				 String barcode = orderProduct.getProductBarcode().getBarcode();
-				 double cost = orderProduct.getWholeSalePrice();
-				 double salePrice = orderProduct.getSalesPrice();
-				 int quantity = orderProduct.getQuantity() * offset;
-				 
-				 int productBarcodeId = orderProduct.getProductBarcode().getId();
-				 double chainSalePrice = productBarcodeDaoImpl.get(productBarcodeId, true).getProduct().getSalesPrice();
-				 
-				 ChainInOutStock inOutStock = new ChainInOutStock(barcode, clientId, orderId, ChainInOutStock.TYPE_PURCHASE, cost, cost * quantity, salePrice, salePrice * quantity, chainSalePrice * quantity, quantity,orderProduct.getProductBarcode());
-				 String key = inOutStock.getKey();
-				 
-				 ChainInOutStock stockInMap = inOutMap.get(key);
-				 if (stockInMap != null){
-					 inOutStock.add(stockInMap);
-					 
-				 }
-				 inOutMap.put(key, inOutStock);
-			 }
-			 
-			 Iterator<ChainInOutStock> stocks = inOutMap.values().iterator();
-			 while (stocks.hasNext()){
-			     chainInOutStockDaoImpl.save(stocks.next(), false);
-			 }
-		}
-	}
+
 	
 	/**
 	 * to generate the excel order

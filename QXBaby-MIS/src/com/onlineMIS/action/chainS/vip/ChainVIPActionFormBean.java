@@ -33,6 +33,7 @@ public class ChainVIPActionFormBean {
      * 3: 当月生日VIP
      */
     private int searchType;
+    private Date birthday = new Date(new java.util.Date().getTime());
     private boolean overWrite;
     
     /**
@@ -41,6 +42,14 @@ public class ChainVIPActionFormBean {
     private int vipScore;
     private String comment;
     
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
 
 	public boolean getCanEditOrderDate() {
 		return canEditOrderDate;

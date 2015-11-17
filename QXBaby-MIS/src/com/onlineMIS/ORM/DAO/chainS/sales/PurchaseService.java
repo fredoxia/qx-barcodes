@@ -4,13 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -22,23 +25,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryService;
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.PurchaseOrderTemplate;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
+import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderTemplate;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderVO;
 import com.onlineMIS.action.chainS.sales.PurchaseActionFormBean;
 import com.onlineMIS.action.chainS.sales.PurchaseActionUIBean;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.filter.SystemParm;
 
 /**
  * the purchase service to support the clients operations on the purchase order
@@ -55,6 +65,12 @@ public class PurchaseService {
 	
 	@Autowired
 	private ChainStoreDaoImpl chainStoreDaoImpl;
+	
+	@Autowired
+	private ChainInOutStockDaoImpl chainInOutStockDaoImpl;
+	
+	@Autowired
+	private ProductBarcodeDaoImpl productBarcodeDaoImpl;
 	
 	/**
 	 * when user search through the search page。
@@ -256,15 +272,24 @@ public class PurchaseService {
 		//   - 如果有值状态，清除未确认收货值
 		Map<Integer, String> chainConfirmMap = new HashMap<Integer, String>();
 		chainConfirmMap.putAll(InventoryOrderVO.getChainConfirmMap());
+		
 		int chainConfirmStatus = order.getChainConfirmStatus();
 		formBean.setCanEdit(true);
 		if (chainConfirmStatus == InventoryOrder.STATUS_CHAIN_CONFIRM){
+			chainConfirmMap.remove(InventoryOrder.STATUS_SYSTEM_CONFIRM);
 			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM);
 			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT);
 			formBean.setCanEdit(false);
 		} else if (chainConfirmStatus == InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT){
+			chainConfirmMap.remove(InventoryOrder.STATUS_SYSTEM_CONFIRM);
 			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM);
-		} 
+		} else if (chainConfirmStatus == InventoryOrder.STATUS_SYSTEM_CONFIRM){
+			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM);
+			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT);
+			chainConfirmMap.remove(InventoryOrder.STATUS_CHAIN_CONFIRM);
+			formBean.setCanEdit(false);
+		} else 
+			chainConfirmMap.remove(InventoryOrder.STATUS_SYSTEM_CONFIRM);
 			
 		uiBean.setChainConfirmList(chainConfirmMap);
 		
@@ -282,27 +307,154 @@ public class PurchaseService {
 	 * @param loginUser
 	 * @return
 	 */
+	@Transactional
 	public void updatePurchaseOrderStatus(InventoryOrder order,
 			ChainUserInfor loginUser, Response response) {
 		InventoryOrder oldOrder = inventoryOrderDAOImpl.get(order.getOrder_ID(), true);
 		
 		if (oldOrder == null){
 			response.setFail("无法找到单据");
-		} else if (oldOrder.getOrder_Status() != InventoryOrder.STATUS_ACCOUNT_COMPLETE || oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM){
+		} else if (oldOrder.getOrder_Status() != InventoryOrder.STATUS_ACCOUNT_COMPLETE || oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM || oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_SYSTEM_CONFIRM ){
 			response.setFail("单据更新状态出现错误，请联系管理员");
 		} else if (oldOrder.getClient_id() != loginUser.getMyChainStore().getClient_id()){
 			response.setFail("没有权限更新其他连锁店单据状态");
 		} else {
+			String message = "";
+			
 			//1. 修改连锁店确认信息
 			oldOrder.setChainConfirmStatus(order.getChainConfirmStatus());
 			oldOrder.setChainConfirmComment(order.getChainConfirmComment());
 			oldOrder.setChainConfirmDate(new Date());
 			
 			//2. 确认单据的库存
+			//   在exception之前的date过账的单子，库存已经自动导入了
+			if (order.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM){
+				Date exceptionDate = null;
+				try {
+					exceptionDate = Common_util.dateFormat.parse(SystemParm.getParm("CHAIN_INVENTORY_CONFIRM_EXCEPTION_DATE"));
+				} catch (ParseException e) {
+					response.setFail(e.getMessage());
+					return;
+				}
+				
+				Response updateInventoryResponse = new Response();
+				if (oldOrder.getOrder_EndTime().after(exceptionDate)){
+					updateChainInOutStock(oldOrder, false, updateInventoryResponse);
+					List<Integer> inventoryData = (List<Integer>)updateInventoryResponse.getReturnValue();
+					message = "已经成功更新单据状态。";
+					message += "\n单据总数量 : " + inventoryData.get(0);
+					message += "\n更新进库存的数量 : "+ inventoryData.get(1);
+					message += "\n不更新进库存的数量(饰品,口袋等) : "+ inventoryData.get(2);
+				} else {
+					message = "已经成功更新单据状态。此单据发生在 " + exceptionDate.toString() + " 之前,总部已经成功导入库存.";
+				}
+				
+			} else {
+				message = "已经成功更新单据状态";
+			}
 			
 			inventoryOrderDAOImpl.update(oldOrder, true);
+			response.setSuccess(message);
 		}
 		    
+	}
+	
+	/**
+	 * 每天晚上要检查n天之前的单子是否连锁店已经确认，如果没有确认那么要自动确认
+	 */
+	@Transactional
+	public void systemUpdateChainInventoryStatus(int orderId, Logger logger){
+		Response response = new Response();
+		InventoryOrder oldOrder = inventoryOrderDAOImpl.get(orderId, true);
+		int clientId = oldOrder.getClient_id();
+		ChainStore chainStore = chainStoreDaoImpl.getByClientId(clientId);
+		if (chainStore != null){
+			if (chainStore.getStatus() != ChainStore.STATUS_DISABLED && chainStore.getStatus() != ChainStore.STATUS_DELETE){
+				if (oldOrder.getOrder_Status() == InventoryOrder.STATUS_ACCOUNT_COMPLETE && oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_NOT_CONFIRM && oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT){
+					//1. 修改连锁店确认信息
+					oldOrder.setChainConfirmStatus(InventoryOrder.STATUS_SYSTEM_CONFIRM);
+					oldOrder.setChainConfirmComment(new Date().toString());
+					oldOrder.setChainConfirmDate(new Date());
+					inventoryOrderDAOImpl.update(oldOrder, true);
+					
+					//2. 更新库存呢
+					updateChainInOutStock(oldOrder, false, response);
+					
+				} else 
+					logger.info("滤过 连锁店单据: " + oldOrder.getClient_name() + "," + oldOrder.getOrder_Status_s() + "," + oldOrder.getChainConfirmStatus());
+			} else 
+				logger.info("滤过 连锁店单据: " + oldOrder.getClient_name() + "," + chainStore.getStatus());
+		} else 
+			logger.info("滤过 非连锁店单据: " + oldOrder.getClient_name() + "," + clientId);
+	}
+	
+	/**
+	 * 更新单据的库存信息
+	 * @param order
+	 */
+    private void updateChainInOutStock(InventoryOrder order, boolean isCancel,Response updateInventoryResponse) {
+		int clientId = order.getClient_id();
+		//更新库存数据
+		//1. 总共多少库存， 2. 有多少更新进去 3.有多少是不需要更新的数据
+		int updatedInventory = 0;
+		int nonUpdatedInventory = 0;
+		List<Integer> inventoryData = new ArrayList<Integer>();
+
+		String orderId = String.valueOf(order.getOrder_ID());
+		int offset = isCancel ? -1 : 1;
+		String orderIdHead = isCancel ? "C" : "";
+		if (order.getOrder_type() == InventoryOrder.TYPE_SALES_ORDER_W){
+			orderId = ChainInOutStock.HEADQ_SALES + orderIdHead + orderId;
+		} else {
+			orderId = ChainInOutStock.HEADQ_RETURN + orderIdHead + orderId;
+			offset *= -1;			
+		}
+		
+		Map<String, ChainInOutStock> inOutMap = new HashMap<String, ChainInOutStock>();
+		
+		 Iterator<InventoryOrderProduct> orderProducts = order.getProduct_Set().iterator();
+		 while (orderProducts.hasNext()){
+			 InventoryOrderProduct orderProduct = orderProducts.next();
+			 String barcode = orderProduct.getProductBarcode().getBarcode();
+			 double cost = orderProduct.getWholeSalePrice();
+			 double salePrice = orderProduct.getSalesPrice();
+			 int quantity = orderProduct.getQuantity() * offset;
+			 
+			 int productBarcodeId = orderProduct.getProductBarcode().getId();
+			 Product product = productBarcodeDaoImpl.get(productBarcodeId, true).getProduct();
+			 
+			 //判断是否是需要导入库存的货品
+			 List<Integer> brands = new ArrayList<Integer>();
+			 int brandId = product.getBrand().getBrand_ID();
+			 Collections.addAll(brands, Brand.BRAND_NOT_COUNT_INVENTORY);
+			 //如果是需要过滤的牌子，just continue
+			 if (brands.contains(brandId)){
+				 nonUpdatedInventory += quantity;
+				 continue;
+			 } else 
+				 updatedInventory += quantity;
+			 
+			 double chainSalePrice = product.getSalesPrice();
+			 ChainInOutStock inOutStock = new ChainInOutStock(barcode, clientId, orderId, ChainInOutStock.TYPE_PURCHASE, cost, cost * quantity, salePrice, salePrice * quantity, chainSalePrice * quantity, quantity,orderProduct.getProductBarcode());
+			 String key = inOutStock.getKey();
+			 
+			 ChainInOutStock stockInMap = inOutMap.get(key);
+			 if (stockInMap != null){
+				 inOutStock.add(stockInMap);
+				 
+			 }
+			 inOutMap.put(key, inOutStock);
+		 }
+		 
+		 Iterator<ChainInOutStock> stocks = inOutMap.values().iterator();
+		 while (stocks.hasNext()){
+		     chainInOutStockDaoImpl.save(stocks.next(), false);
+		 }
+		 
+		 inventoryData.add(order.getTotalQuantity());
+		 inventoryData.add(updatedInventory);
+		 inventoryData.add(nonUpdatedInventory);
+		 updateInventoryResponse.setReturnValue(inventoryData);
 	}
 	
 }

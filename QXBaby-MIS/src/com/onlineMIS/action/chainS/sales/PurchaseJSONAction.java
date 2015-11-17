@@ -103,8 +103,8 @@ public class PurchaseJSONAction extends PurchaseAction {
 		try {
 		    purchaseService.updatePurchaseOrderStatus(formBean.getOrder(),loginUser, response);	
 		} catch (Exception e){
-			e.printStackTrace();
-			response.setQuickValue(Response.FAIL, e.getMessage());
+			loggerLocal.error(e);
+			response.setFail(e.getMessage());
 		}
 
 		//to excludes the set and list inforamtion

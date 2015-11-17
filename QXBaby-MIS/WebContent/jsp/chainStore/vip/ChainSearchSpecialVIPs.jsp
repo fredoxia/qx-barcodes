@@ -77,6 +77,13 @@ function searchVIPs(){
 	var params = $.serializeObject($('#vipSearchForm')); 
 	$('#dataGrid').datagrid('load',params); 
 }
+function changeSearchType(value){
+	if (value == 0)
+		$("#birthdayDiv").show();
+	else 
+		$("#birthdayDiv").hide();
+}
+
 </script>
 </head>
 <body>
@@ -91,7 +98,9 @@ function searchVIPs(){
 				    </tr>    		
 				    <tr class="InnerTableContent">
 				      <td height="30"><strong>查询条件</strong> </td>
-				      <td><s:select name="formBean.searchType" size="1" id="searchType"  list="uiBean.searchTypes" listKey="key" listValue="value"/></td>
+				      <td><s:select name="formBean.searchType" size="1" id="searchType"  list="uiBean.searchTypes" listKey="key" listValue="value" onchange="changeSearchType(this.value);"/>
+				          <div id="birthdayDiv" style="display:inline"><s:textfield id="birthday"  name="formBean.birthday" cssClass="easyui-datebox" data-options="width:100,editable:false"/></div>
+				      </td>
 				    </tr>
 
                     <tr class="InnerTableContent">

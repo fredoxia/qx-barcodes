@@ -31,8 +31,9 @@ public class InventoryOrderVO {
 	private static Map<Integer, String> chainConfirmMap = new HashMap<Integer, String>();
 	static {
 		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_CONFIRM, "清点确认");
-		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM, "未收货");
-		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT, "配货错误");
+		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM, "未确认");
+		chainConfirmMap.put(InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT, "订单错误");
+		chainConfirmMap.put(InventoryOrder.STATUS_SYSTEM_CONFIRM, "系统自动确认");
 	}
 	
 	public InventoryOrderVO(){
