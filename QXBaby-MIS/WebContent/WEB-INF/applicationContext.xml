@@ -168,7 +168,15 @@
    <bean id="dailyGenBarcodeTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="dailyGenBarcodeJob"
    		 p:cronExpression="0 1 20 * * ?"/>   		 
-   
+  
+   <!-- 每天自动检查两个月前单子，是否还没有收货 --> 
+   <bean id="dailyCheckInvetoryOrder" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainDailySalesService"
+   		 p:targetMethod="runDailyInventoryOrderCheck"
+   		 p:concurrent="false"/>
+   <bean id="dailyCheckInvetoryOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="dailyCheckInvetoryOrder"
+   		 p:cronExpression="0 32 13 * * ?"/>    
     
     <!-- weekly rank batch job -->
    <bean id="weeklyRankBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
@@ -225,6 +233,7 @@
    		 		<ref bean="weeklyHotBrandBatchTrigger"/>
    		 		<ref bean="monthlyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyGenBarcodeTrigger"/>
+   		 		<ref bean="dailyCheckInvetoryOrderTrigger"/>
    		 		<!--<ref bean="monthlyDummyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyDummySalesBatchTrigger"/>-->
    		 	</list>

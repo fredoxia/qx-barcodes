@@ -1,6 +1,8 @@
 package com.onlineMIS.ORM.DAO.chainS.user;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
@@ -30,6 +32,23 @@ public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 		else {
 			return null;
 		}
+	}
+	
+	/**
+	 * 获取所有还在运营连锁店的client id
+	 * @return
+	 */
+	public Set<Integer> getAllClientIds(){
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DISABLED));
+		
+		List<ChainStore> chainStores = getByCritera(criteria, true);
+		Set<Integer> clientIds = new HashSet<Integer>();
+		for (ChainStore store : chainStores){
+			clientIds.add(store.getClient_id());
+		}
+		
+		return clientIds;
 	}
 	
 	public static ChainStore getAllChainStoreObject(){

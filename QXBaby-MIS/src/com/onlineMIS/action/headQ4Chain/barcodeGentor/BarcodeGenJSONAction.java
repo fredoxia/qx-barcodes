@@ -18,6 +18,7 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.converter.JSONSQLDateConverter;
 import com.onlineMIS.converter.JSONUtilDateConverter;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -108,7 +109,10 @@ public class BarcodeGenJSONAction extends BarcodeGenAction {
 		Response response = barcodeGenService.searchBarcodeForChain(formBean.getProductBarcode(), formBean.getStartDate(), formBean.getEndDate(), formBean.getNeedCreateDate(), userInfor.getMyChainStore());
 		jsonMap.put("response", response);
 		
-		jsonObject = ProductBarcodeService.transferProductBarcode(jsonMap, null);
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());
+		
+		jsonObject = ProductBarcodeService.transferProductBarcode(jsonMap, jsonConfig);
 		
 		return SUCCESS;
 		

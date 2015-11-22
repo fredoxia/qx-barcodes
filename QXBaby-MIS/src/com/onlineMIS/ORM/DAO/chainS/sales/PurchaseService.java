@@ -363,7 +363,7 @@ public class PurchaseService {
 	 * 每天晚上要检查n天之前的单子是否连锁店已经确认，如果没有确认那么要自动确认
 	 */
 	@Transactional
-	public void systemUpdateChainInventoryStatus(int orderId, Logger logger){
+	public void systemUpdateChainInventoryStatus(int orderId){
 		Response response = new Response();
 		InventoryOrder oldOrder = inventoryOrderDAOImpl.get(orderId, true);
 		int clientId = oldOrder.getClient_id();
@@ -381,11 +381,11 @@ public class PurchaseService {
 					updateChainInOutStock(oldOrder, false, response);
 					
 				} else 
-					logger.info("滤过 连锁店单据: " + oldOrder.getClient_name() + "," + oldOrder.getOrder_Status_s() + "," + oldOrder.getChainConfirmStatus());
+					loggerLocal.infoB("滤过 连锁店单据: " + oldOrder.getClient_name() + "," + oldOrder.getOrder_Status_s() + "," + oldOrder.getChainConfirmStatus());
 			} else 
-				logger.info("滤过 连锁店单据: " + oldOrder.getClient_name() + "," + chainStore.getStatus());
+				loggerLocal.infoB("滤过 连锁店单据: " + oldOrder.getClient_name() + "," + chainStore.getStatus());
 		} else 
-			logger.info("滤过 非连锁店单据: " + oldOrder.getClient_name() + "," + clientId);
+			loggerLocal.infoB("滤过 非连锁店单据: " + oldOrder.getClient_name() + "," + clientId);
 	}
 	
 	/**

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.naming.java.javaURLContextFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -44,6 +45,8 @@ import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.YearDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
+import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryService;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.report.ChainMonthlyActiveNum;
 import com.onlineMIS.ORM.entity.chainS.report.ChainMonthlyHotBrand;
@@ -60,6 +63,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
+import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.action.chainS.charts.ChainSalesChartFormBean;
 import com.onlineMIS.action.chainS.charts.ChainSalesChartUIBean;
 import com.onlineMIS.common.Common_util;
@@ -114,6 +118,13 @@ public class ChainDailySalesService{
 	
 	@Autowired
 	private ProductBarcodeDaoImpl productBarcodeDaoImpl;
+	
+	@Autowired
+	private InventoryOrderDAOImpl inventoryOrderDAOImpl;
+	
+	@Autowired
+	private PurchaseService purchaseService;
+
 
 	private Calendar today = Calendar.getInstance();
 
@@ -277,19 +288,49 @@ public class ChainDailySalesService{
 		int interval = Integer.parseInt(SystemParm.getParm("SYSTEM_INVENTORY_CONFIRM_DAYS"));
 		Date today = new Date();
 		Date exceptionDate = null;
+		
+		loggerLocal.infoB("=========== 开始检查n天前未确认单据 ================== " + today.toString());
 		try {
 			exceptionDate = Common_util.dateFormat.parse(SystemParm.getParm("CHAIN_INVENTORY_CONFIRM_EXCEPTION_DATE"));
 		} catch (ParseException e) {
-			loggerLocal.error(e);
+			loggerLocal.errorB(e);
 			return;
 		}
 		
 		//1. 验证today是否是在excetionDate 之前
 		if (today.before(exceptionDate)){
-			loggerLocal.info("今天日期在避免注入日期之前");
+			loggerLocal.infoB("今天日期在避免注入日期之前");
 			return ;
 		} else {
-	return;
+			Date twoMonthDate = Common_util.calcualteDate(today, -interval);
+			Date startDate = Common_util.formStartDate(twoMonthDate);
+			Date endDate = Common_util.formEndDate(twoMonthDate);
+			loggerLocal.infoB("查找之前单据，日期 : " + twoMonthDate.toString() + "," + startDate.toString() + "," + endDate.toString());
+			
+			DetachedCriteria criteria = DetachedCriteria.forClass(InventoryOrder.class,"order");
+			criteria.add(Restrictions.eq("order.order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
+			criteria.add(Restrictions.between("order.order_EndTime", startDate, endDate));
+			criteria.add(Restrictions.or(Restrictions.eq("order.chainConfirmStatus", InventoryOrder.STATUS_CHAIN_NOT_CONFIRM), Restrictions.eq("order.chainConfirmStatus", InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT)));
+			
+			List<InventoryOrder> orders = inventoryOrderDAOImpl.search(criteria);
+			for (InventoryOrder order : orders){
+				int clientId = order.getClient_id();
+				if (clientId < 0 || order.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM || order.getChainConfirmStatus() == InventoryOrder.STATUS_SYSTEM_CONFIRM)
+					continue;
+				else {
+					ChainStore chainStore = chainStoreDaoImpl.getByClientId(clientId);
+					if (chainStore != null && order.getOrder_EndTime().after(chainStore.getActiveDate())){
+                        loggerLocal.infoB("更新单据 :" + order.getOrder_ID() + "," + order.getClient_name());
+                        try {
+                        	purchaseService.systemUpdateChainInventoryStatus(order.getOrder_ID());
+                        	loggerLocal.infoB("完成更新单据 :" + order.getOrder_ID() + "," + order.getClient_name());
+                        } catch (Exception e){
+                        	loggerLocal.infoB("错误更新单据 :" + order.getOrder_ID() + "," + order.getClient_name());
+                        	loggerLocal.errorB(e);
+                        }
+					}
+				}
+			}
 		}
 		
 	}

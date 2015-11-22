@@ -751,7 +751,7 @@ public class InventoryService {
     				jsonObject = JSONObject.fromObject(returnValue);
     				InventoryOrderVO inventoryOrderVO = (InventoryOrderVO)JSONObject.toBean(jsonObject, InventoryOrderVO.class);
 
-    				if (inventoryOrderVO.getStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM){
+    				if (inventoryOrderVO.getStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM || inventoryOrderVO.getStatus() == InventoryOrder.STATUS_SYSTEM_CONFIRM){
     					response.setQuickValue(Response.WARNING, "客户已经确认此单据收货，无法红冲。请与管理员联系");
     					response.setReturnValue(order);
     					return response;

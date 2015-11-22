@@ -39,7 +39,9 @@ public class JSONUtilDateConverter implements JsonValueProcessor {
 		if (value == null)
 			value="";
 		else if (value instanceof java.util.Date) {
-			String str =  Common_util.dateFormat_f.format((Date) value);
+			String str = "";
+			if (value != null)
+			    str =  Common_util.dateFormat_f.format((Date) value);
 			return str;
 		}
 		return value.toString();

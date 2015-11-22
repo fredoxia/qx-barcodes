@@ -35,6 +35,7 @@
 		<property name="pinYin" column="pin_yin" type="string"/>
 		<property name="allowAddBarcode" column="allow_add_barcode" type="integer"/>
 		
+		<property name="activeDate" column="active_date" type="date"/>
     </class>
     
     <class name="ChainUserFunctionality" table="chain_user_functionality">

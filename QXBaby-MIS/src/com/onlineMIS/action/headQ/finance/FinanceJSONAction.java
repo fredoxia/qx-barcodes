@@ -182,7 +182,8 @@ public class FinanceJSONAction extends FinanceAction {
 		JsonConfig jsonConfig = new JsonConfig();
 
 		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
-
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());
+		
 		try{
 			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
 			} catch (Exception e){

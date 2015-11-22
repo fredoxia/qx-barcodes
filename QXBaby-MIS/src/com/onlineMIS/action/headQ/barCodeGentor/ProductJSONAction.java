@@ -14,6 +14,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
 
+
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
@@ -22,6 +23,7 @@ import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.converter.JSONSQLDateConverter;
 import com.onlineMIS.converter.JSONUtilDateConverter;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -57,7 +59,10 @@ public class ProductJSONAction extends ProductAction {
 		List<ProductBarcode> barcode_org = productService.getBarcodesFromCriteria(formBean.getProductBarcode(), formBean.getBrandIds(), formBean.getStartDate(), formBean.getEndDate(), formBean.getNeedCreateDate());
 		jsonMap.put("barcodes", barcode_org);
 		
-		jsonObject = ProductBarcodeService.transferProductBarcode(jsonMap, null);
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());
+		
+		jsonObject = ProductBarcodeService.transferProductBarcode(jsonMap, jsonConfig);
 		
 		return SUCCESS;
 	}

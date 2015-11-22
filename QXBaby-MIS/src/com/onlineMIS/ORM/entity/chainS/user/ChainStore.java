@@ -57,6 +57,7 @@ public class ChainStore implements Serializable {
 	 * 1: allow
 	 */
 	private int allowAddBarcode;
+	private Date activeDate;
 
 	
 	public int getAllowAddBarcode() {
@@ -144,6 +145,14 @@ public class ChainStore implements Serializable {
 		return statusMap;
 	}
 	
+	public Date getActiveDate() {
+		return activeDate;
+	}
+
+	public void setActiveDate(Date activeDate) {
+		this.activeDate = activeDate;
+	}
+
 	@Override
 	public String toString() {
 		return "ChainStore [chain_id=" + chain_id + ", chain_name="
