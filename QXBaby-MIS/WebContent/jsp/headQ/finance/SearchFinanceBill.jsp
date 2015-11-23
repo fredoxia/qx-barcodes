@@ -53,6 +53,9 @@ function searchBillsBackProcess(data){
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 });
+function changeChainStore(chainId){
+
+}
 </script>
 </head>
 <body>

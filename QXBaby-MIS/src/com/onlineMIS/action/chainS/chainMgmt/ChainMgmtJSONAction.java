@@ -131,6 +131,7 @@ public class ChainMgmtJSONAction extends ChainMgmtAction {
 
 		JsonConfig jsonConfig = new JsonConfig();
 		jsonConfig.setExcludes( new String[]{"myChainStore","roleType", "chainUserFunctions","createDate"} );
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());
 		
 		try{
 			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
