@@ -55,7 +55,15 @@ public class ChainReportJSONAction extends ChainReportAction {
 		
 		if (response.getReturnCode() == Response.SUCCESS){
 			jsonMap = (Map)response.getReturnValue();
-		    jsonObject = JSONObject.fromObject(jsonMap);
+			JsonConfig jsonConfig = new JsonConfig();
+    		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
+    		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
+			try {
+				jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
+			} catch (Exception e) {
+				loggerLocal.error(e);
+				response.setReturnCode(Response.FAIL);
+			}
 		}
 		
 		return SUCCESS;
@@ -81,6 +89,7 @@ public class ChainReportJSONAction extends ChainReportAction {
 			jsonMap = (Map)response.getReturnValue();
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setExcludes( new String[]{"reportDate","createDate"} );
+    		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
 		    jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
 		    return SUCCESS;
 		} else 
