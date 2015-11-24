@@ -57,8 +57,8 @@ function updatePurchaseStatusBKProcess(data){
 				         <td><s:property value="uiBean.order.comment"/></td>    
 				       </tr>
 				       <tr class="InnerTableContent">
-				         <td height="25"><strong>总部开单日期</strong></td>
-				         <td><s:property value="uiBean.order.order_EndTime"/></td>
+				         <td height="25"><strong>订单初始日期</strong></td>
+				         <td><s:property value="uiBean.order.order_StartTime"/></td>
 				         <td><strong>优惠</strong></td>
 				         <td><s:property value="uiBean.order.totalDiscount"/></td>
 			           </tr>

@@ -93,7 +93,7 @@ function searchOrdersBackProcess(data){
 						    </tr>
 						    <tr class="InnerTableContent">
 						      <td height="40">&nbsp;</td>
-						      <td><strong>单据日期</strong></td>
+						      <td><strong>总部下账日期</strong></td>
 						      <td colspan="3">
 						         <s:textfield id="startDate" name="formBean.search_Start_Time" cssClass="easyui-datebox" data-options="width:100,editable:false"/>			      
 					      			&nbsp; 至&nbsp;
@@ -127,7 +127,7 @@ function searchOrdersBackProcess(data){
 								 <table width="100%" border="0" id="org_table">
 								    <tr class="PBAInnerTableTitale">
 								      <th width="40" height="32">编号</th>
-								      <th width="120">单据日期</th>
+								      <th width="120">订单初始日期</th>
 								      <th width="102">单据种类</th>
 								      <th width="60">数量</th>
 								      <th width="80">成本金额</th>
