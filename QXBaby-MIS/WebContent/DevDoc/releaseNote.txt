@@ -171,7 +171,7 @@ Release Summary
 		         
 Release Date 11 10 
 Release Summary
-		DB	: 1. 添加	chain_confirm_status，chain_confirm_comment 在表 INVENTORY_ORDER	         
+		DB	: 1. 添加	chain_confirm_status,chain_confirm_comment,chain_confirm_date,delivery_date,delivery_comment 在表 INVENTORY_ORDER	         
 		
 Release Date
 Release Summary
