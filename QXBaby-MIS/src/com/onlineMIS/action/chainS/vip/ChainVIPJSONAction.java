@@ -158,6 +158,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		JsonConfig jsonConfig = new JsonConfig();
 		//jsonConfig.setExcludes( new String[]{"issueChainStore"} );
 		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtil2SQLDateConverter());  
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
 
 		try{
 			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);

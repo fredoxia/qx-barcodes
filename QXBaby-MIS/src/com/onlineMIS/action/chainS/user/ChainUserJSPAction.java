@@ -64,15 +64,15 @@ public class ChainUserJSPAction extends ChainUserAction{
     	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"");
     	
-		//prepare the news
+		//1. 准备千禧消息
 		uiBean.setNews(newsService.getNews(News.TYPE_CHAIN_S));
 		
-		//看看有没有特别信息
+		//2. 准备特别信息，比如会员日加倍积分
 		Date today = Common_util.getToday();
 		if (today.getDate() == Common_util.VIP_DATE)
 			uiBean.setSpecialMsg(QXMsgManager.getMsg("VIP_DATE_MSG"));
 		
-		//prepare the top rank
+		//3. 准备每周排名信息
 		Response response = new Response();
 		try {
 		     response = chainReportService.getWeeklyTop(userInfor);
@@ -87,7 +87,6 @@ public class ChainUserJSPAction extends ChainUserAction{
 		} catch (Exception e) {
 			loggerLocal.error(e);
 		}
-
 		
 		return "BoardNews";
 	}

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforService;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserFunctionality;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
@@ -209,26 +210,29 @@ public class ChainUserJSONAction extends ChainUserAction {
 	}
 	
 	/**
-	 * function to validate the user by user name and password
-	 * 0 is normal
-	 * 1 is password/username wrong
-	 * 2 is account disabled
-	 * @param userName
-	 * @param password
+	 * 连锁店在首页刷新这几天的单据信息
+	 *
 	 * @return
 	 */
-	private Response validateChainUser(String userName, String password, Response response) {
-
+	public String refreshOrderStatisticsInformation(){
+		Response response = new Response();
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
+    		try {
+    		     chainUserInforService.getOrderStatisticInformation(userInfor, response);
+    		} catch (Exception e){
+    			 response.setFail(e.getMessage());
+    		}
+    	} else {
+    		response.setReturnCode(Response.WARNING);
+    	}
+    	
+		try{
+			   jsonObject = JSONObject.fromObject(response);
+			} catch (Exception e){
+				loggerLocal.error(e);
+			}
 		
-		return response;
-//		
-//		if (response.getReturnCode() instanceof Integer){
-//			return (Integer)validate_result;
-//		} else {
-//			ChainUserInfor user = (ChainUserInfor)validate_result;
-//
-//			ActionContext.getContext().getSession().put(Common_util.LOGIN_CHAIN_USER, user);
-//			return UserInforService.LOGIN_SUCCESS;
-//		}
+		return SUCCESS;
 	}
 }

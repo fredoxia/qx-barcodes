@@ -278,6 +278,14 @@ function addTab4(params) {
  	}
 }
 
+function updateTabName(newName){
+	var tab = $("#indexTab").tabs('getSelected');
+	var options = tab.panel("options");
+    var tab2 = options.tab;
+	var title = tab2.find("span.tabs-title");
+	title.html(newName);
+}
+
 $.modalDialog = function(options) {
 
 	if ($.modalDialog.handler != undefined) {

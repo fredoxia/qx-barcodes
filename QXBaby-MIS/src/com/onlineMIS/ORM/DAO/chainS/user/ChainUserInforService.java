@@ -1,9 +1,11 @@
 package com.onlineMIS.ORM.DAO.chainS.user;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.naming.java.javaURLContextFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -30,6 +32,7 @@ import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.filter.SystemFunctionChainMapping;
 import com.onlineMIS.filter.SystemFunctionHeadQMapping;
+import com.onlineMIS.filter.SystemParm;
 import com.opensymphony.xwork2.ActionContext;
 
 
@@ -430,6 +433,29 @@ public class ChainUserInforService {
 		List<ChainUserInfor> user_list = chainUserInforDaoImpl.getByCritera(criteria, false);
 		
 		return user_list;
+		
+	}
+
+	/**
+	 * 1. 多少草稿销售单未过账
+	 * 2. 多少库存单据
+	 * 3. 多少调货调出单
+	 * 4. 多少调货调入单
+	 * 5. 多少采购单据未确认
+	 * 6. 多少总部财务单据
+	 * @param userInfor
+	 * @param response
+	 */
+	public void getOrderStatisticInformation(ChainUserInfor userInfor,
+			Response response) {
+		int chainId = userInfor.getMyChainStore().getChain_id();
+		int clientId = userInfor.getMyChainStore().getClient_id();
+		int statisDays = Integer.parseInt(SystemParm.getParm("CHAIN_ORDER_STATISTICS_DAYS"));
+		java.util.Date today = Common_util.getToday();
+		java.util.Date startDate = Common_util.formStartDate(Common_util.calcualteDate(today, statisDays * -1));
+		java.util.Date endDate = Common_util.formEndDate(today);
+		
+		
 		
 	}
 

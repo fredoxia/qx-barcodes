@@ -136,7 +136,10 @@ function testPrint(){
 		            + "\n" + e.message);
 	    }
 }
-
+function updateTabWithSaler(){
+	var salerName = $("#chainSaler option[selected]").text();
+	self.parent.updateTabName("新建零售单 " +salerName);
+}
 </script>
 </head>
 <body class="easyui-layout">
@@ -160,7 +163,7 @@ function testPrint(){
 				   	 <table width="100%" border="0">
 				       <tr class="InnerTableContent">
 				         <td width="220" height="32">连锁店:<s:select id="chainStore" name="formBean.chainSalesOrder.chainStore.chain_id"  list="uiBean.chainStores" listKey="chain_id" listValue="chain_name"  onchange="changeChainStore();"/></td>
-				         <td width="180">经手人： <s:select id="chainSaler" name="formBean.chainSalesOrder.saler.user_id"  list="uiBean.chainSalers" listKey="user_id" listValue="name"/></td>
+				         <td width="180">经手人： <s:select id="chainSaler" name="formBean.chainSalesOrder.saler.user_id"  list="uiBean.chainSalers" listKey="user_id" listValue="name" onchange ="updateTabWithSaler();"/></td>
 				         <td width="190">创建人：<s:property value="uiBean.orderCreator.name"/></td>
 				         <td width="230">单据日期 ：
 				                         <s:if test="formBean.canEditOrderDate">
@@ -238,6 +241,8 @@ $(document).ready(function(){
     }
 	jQuery.excel('InnerTableContent');
 	jQuery.excel('PBAOuterTableTitale');
+	
+	updateTabWithSaler();
 	parent.$.messager.progress('close'); 
 });
 </script>
