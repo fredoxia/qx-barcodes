@@ -21,6 +21,7 @@ import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.action.BaseAction;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.converter.JSONSQLDateConverter;
 import com.onlineMIS.converter.JSONUtilDateConverter;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -68,7 +69,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		JsonConfig jsonConfig = new JsonConfig();
 		jsonConfig.setExcludes( new String[]{"productSet","productList","myChainStore","roleType","chainUserFunctions","toChainStore"} );
 		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
-		
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
 		try{
 			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
   
@@ -99,9 +100,10 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		}
 
 		jsonMap.put("response", response);
-
+		JsonConfig jsonConfig = new JsonConfig(); 
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter()); 
 		try{
-			   jsonObject = JSONObject.fromObject(jsonMap);
+			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
 			} catch (Exception e){
 				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"changeFromChainStoreTransfer");
 				loggerLocal.error(e);

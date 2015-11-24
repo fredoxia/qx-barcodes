@@ -16,7 +16,8 @@ function updateVipScoreBk(data){
 		var dialogA = $.modalDialog.handler;
 		dialogA.dialog('close');
 		alert("成功调整VIP积分");
-		location.reload();
+	    document.vipCardListForm.action="chainVIPJSPAction!searchVIPCards";
+	    document.vipCardListForm.submit();
 	} else 
 		alert(response.message);
 }

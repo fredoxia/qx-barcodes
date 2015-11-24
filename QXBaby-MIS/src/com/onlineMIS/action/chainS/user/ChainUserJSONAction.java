@@ -12,6 +12,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainUserFunctionality;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.converter.JSONSQLDateConverter;
 import com.opensymphony.xwork2.ActionContext;
 
 import net.sf.json.JSONObject;
@@ -92,6 +93,7 @@ public class ChainUserJSONAction extends ChainUserAction {
 
 		//to excludes the set and list inforamtion
 		jsonConfig.setExcludes( new String[]{"chainUserFunctionalities"} );
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
 		try{
 			   jsonObject = JSONObject.fromObject(response, jsonConfig);
 //			   loggerLocal.info(jsonObject.toString());

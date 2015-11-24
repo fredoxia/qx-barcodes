@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
@@ -39,6 +40,7 @@ import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.HttpUtil;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.converter.JSONSQLDateConverter;
 import com.onlineMIS.filter.SystemFunctionHeadQMapping;
 import com.onlineMIS.filter.SystemParm;
 import com.opensymphony.xwork2.ActionContext;
@@ -404,7 +406,9 @@ public class UserInforService {
 			Response loginResponse = (Response)JSONObject.toBean(jsonObject, Response.class);
 			if (loginResponse.getReturnCode() == Response.SUCCESS){
 				Object returnValue = loginResponse.getReturnValue();
-				jsonObject = JSONObject.fromObject(returnValue);
+				JsonConfig jsonConfig = new JsonConfig();
+				jsonConfig.setExcludes( new String[]{"activeDate"} );
+				jsonObject = JSONObject.fromObject(returnValue,jsonConfig);
 				ChainUserInfor userInfor = (ChainUserInfor)JSONObject.toBean(jsonObject, ChainUserInfor.class);
 
 				if (userInfor.getMyChainStore().getAllowAddBarcode() != ChainStore.ALLOW_ADD_BARCODE){

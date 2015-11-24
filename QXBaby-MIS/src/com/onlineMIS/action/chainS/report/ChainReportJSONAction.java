@@ -198,7 +198,14 @@ public class ChainReportJSONAction extends ChainReportAction {
 
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setExcludes( new String[]{"roleType","myChainStore","chainUserFunctions"} );
-		    jsonObject = JSONObject.fromObject(jsonMap, jsonConfig);
+			jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
+			
+			try{
+			   jsonObject = JSONObject.fromObject(jsonMap, jsonConfig);
+			} catch (Exception e){
+				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"generateSalesReportBySaler");
+				loggerLocal.error(e);
+			}
 
 		}
 		

@@ -16,6 +16,8 @@ function upgradeVipCardBk(data){
 		var dialogA = $.modalDialog.handler;
 		dialogA.dialog('close');
 		alert("成功升级VIP信息");
+	    document.vipCardListForm.action="chainVIPJSPAction!searchVIPCards";
+	    document.vipCardListForm.submit();
 	} else 
 		alert(response.message);
 }

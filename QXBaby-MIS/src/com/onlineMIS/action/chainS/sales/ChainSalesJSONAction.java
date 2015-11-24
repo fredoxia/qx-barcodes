@@ -3,8 +3,10 @@ package com.onlineMIS.action.chainS.sales;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
+
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
@@ -64,8 +66,11 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 		jsonMap.put("index", index);
 		jsonMap.put("suffix", formBean.getSuffix());
 		
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
+		
 		try{
-		   jsonObject = JSONObject.fromObject(jsonMap);
+		   jsonObject = JSONObject.fromObject(jsonMap, jsonConfig);
 //		   System.out.println(jsonObject.toString());
 		} catch (Exception e){
 			loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"scanByBarcode");
