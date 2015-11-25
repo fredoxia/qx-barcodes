@@ -289,7 +289,7 @@ public class ChainDailySalesService{
 		Date today = new Date();
 		Date exceptionDate = null;
 		
-		loggerLocal.infoB("=========== 开始检查n天前未确认单据 ================== " + today.toString());
+		loggerLocal.infoB("DailyOrderCheck: =========== 开始检查n天前未确认单据 ================== " + today.toString());
 		try {
 			exceptionDate = Common_util.dateFormat.parse(SystemParm.getParm("CHAIN_INVENTORY_CONFIRM_EXCEPTION_DATE"));
 		} catch (ParseException e) {
@@ -299,13 +299,13 @@ public class ChainDailySalesService{
 		
 		//1. 验证today是否是在excetionDate 之前
 		if (today.before(exceptionDate)){
-			loggerLocal.infoB("今天日期在避免注入日期之前");
+			loggerLocal.infoB("DailyOrderCheck: 今天日期在避免注入日期之前");
 			return ;
 		} else {
 			Date twoMonthDate = Common_util.calcualteDate(today, -interval);
 			Date startDate = Common_util.formStartDate(twoMonthDate);
 			Date endDate = Common_util.formEndDate(twoMonthDate);
-			loggerLocal.infoB("查找之前单据，日期 : " + twoMonthDate.toString() + "," + startDate.toString() + "," + endDate.toString());
+			loggerLocal.infoB("DailyOrderCheck: 查找之前单据，日期   " + startDate.toString() + " 到  " + endDate.toString());
 			
 			DetachedCriteria criteria = DetachedCriteria.forClass(InventoryOrder.class,"order");
 			criteria.add(Restrictions.eq("order.order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
@@ -313,6 +313,8 @@ public class ChainDailySalesService{
 			criteria.add(Restrictions.or(Restrictions.eq("order.chainConfirmStatus", InventoryOrder.STATUS_CHAIN_NOT_CONFIRM), Restrictions.eq("order.chainConfirmStatus", InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT)));
 			
 			List<InventoryOrder> orders = inventoryOrderDAOImpl.search(criteria);
+			loggerLocal.infoB("DailyOrderCheck: 单据总数 : " + orders.size());
+			
 			for (InventoryOrder order : orders){
 				int clientId = order.getClient_id();
 				if (clientId < 0 || order.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM || order.getChainConfirmStatus() == InventoryOrder.STATUS_SYSTEM_CONFIRM)
@@ -332,6 +334,9 @@ public class ChainDailySalesService{
 				}
 			}
 		}
+		
+		loggerLocal.infoB("DailyOrderCheck: 单据检查完成");
+		
 		
 	}
 	

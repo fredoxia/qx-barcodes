@@ -2,8 +2,10 @@ package com.onlineMIS.ORM.DAO.chainS.user;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.naming.java.javaURLContextFactory;
 import org.hibernate.criterion.Criterion;
@@ -17,8 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforService;
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
+import com.onlineMIS.ORM.entity.chainS.user.ChainLoginStatisticInforVO;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserFunctionality;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
@@ -51,6 +56,9 @@ public class ChainUserInforService {
 	
 	@Autowired
 	private ChainStoreService chainStoreService;
+	
+	@Autowired
+	private ChainStoreSalesOrderDaoImpl chainStoreSalesOrderDaoImpl;
 	
 	@Transactional
 	public Response validateUser(String userName, String password, boolean addFunction){
@@ -448,6 +456,9 @@ public class ChainUserInforService {
 	 */
 	public void getOrderStatisticInformation(ChainUserInfor userInfor,
 			Response response) {
+		Map<String, Object> statisMap = new HashMap<String, Object>();
+		List<ChainLoginStatisticInforVO> statisEle =  new ArrayList<ChainLoginStatisticInforVO>();
+		
 		int chainId = userInfor.getMyChainStore().getChain_id();
 		int clientId = userInfor.getMyChainStore().getClient_id();
 		int statisDays = Integer.parseInt(SystemParm.getParm("CHAIN_ORDER_STATISTICS_DAYS"));
@@ -455,7 +466,20 @@ public class ChainUserInforService {
 		java.util.Date startDate = Common_util.formStartDate(Common_util.calcualteDate(today, statisDays * -1));
 		java.util.Date endDate = Common_util.formEndDate(today);
 		
+		//1. 获草稿零售单未过账的
+		DetachedCriteria draftOrderCriteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
+		draftOrderCriteria.add(Restrictions.eq("status", ChainStoreSalesOrder.STATUS_DRAFT));
+		draftOrderCriteria.add(Restrictions.eq("chainStore.chain_id", chainId));
+		draftOrderCriteria.add(Restrictions.between("orderCreateDate", startDate, endDate));
+		draftOrderCriteria.setProjection(Projections.rowCount());
+		int draftOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(draftOrderCriteria, true));
+		ChainLoginStatisticInforVO draftOrderVo = new ChainLoginStatisticInforVO("近"+ statisDays + 1 + "天未过账的草稿零售单", draftOrderCount);
 		
+		statisEle.add(draftOrderVo);
+		
+		statisMap.put("rows", statisEle);
+		
+		response.setReturnValue(statisMap);
 		
 	}
 

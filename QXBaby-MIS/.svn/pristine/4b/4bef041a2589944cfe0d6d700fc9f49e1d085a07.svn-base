@@ -1,3 +1,0 @@
-KeyProperty_peopleEvalMark.peopleEvalItemMark_set=id
-Element_peopleEvalMark.peopleEvalItemMark_set=com.onlineMIS.ORM.entity.headQ.HR.PeopleEvalItemMark
-CreateIfNull_peopleEvalMark.peopleEvalItemMark_set=true

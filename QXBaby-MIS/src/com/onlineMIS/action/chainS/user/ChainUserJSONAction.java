@@ -13,6 +13,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.converter.JSONSQLDateConverter;
+import com.onlineMIS.converter.JSONUtilDateConverter;
 import com.opensymphony.xwork2.ActionContext;
 
 import net.sf.json.JSONObject;
@@ -229,11 +230,15 @@ public class ChainUserJSONAction extends ChainUserAction {
     		response.setReturnCode(Response.WARNING);
     	}
     	
-		try{
-			   jsonObject = JSONObject.fromObject(response);
-			} catch (Exception e){
+		if (response.getReturnCode() == Response.SUCCESS){
+			jsonMap = (Map)response.getReturnValue();
+			try {
+		       jsonObject = JSONObject.fromObject(jsonMap);
+			} catch (Exception e ){
 				loggerLocal.error(e);
 			}
+		    
+		}
 		
 		return SUCCESS;
 	}

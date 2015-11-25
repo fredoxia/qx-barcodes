@@ -176,7 +176,7 @@
    		 p:concurrent="false"/>
    <bean id="dailyCheckInvetoryOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="dailyCheckInvetoryOrder"
-   		 p:cronExpression="0 32 13 * * ?"/>    
+   		 p:cronExpression="0 32 0 * * ?"/>    
     
     <!-- weekly rank batch job -->
    <bean id="weeklyRankBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"

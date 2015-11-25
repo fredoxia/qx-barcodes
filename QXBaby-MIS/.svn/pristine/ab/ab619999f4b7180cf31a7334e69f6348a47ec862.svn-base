@@ -1,4 +1,0 @@
-#this is used to store the parameters which may be used in the system context
-SYSTEM_LOGIN_SERVICE: http://hammerxl.westhost.cn:8081/QXBaby-MIS/actionChain/chainUserJSON!loginService
-#SYSTEM_LOGIN_SERVICE: http://localhost:8081/QXBaby-MIS/actionChain/chainUserJSON!loginService
-BARCODE_DOWNLOAD_PATH: c:/QXBaby-MIS/barcode.txt
