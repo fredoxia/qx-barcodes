@@ -473,7 +473,7 @@ public class ChainUserInforService {
 		draftOrderCriteria.add(Restrictions.between("orderCreateDate", startDate, endDate));
 		draftOrderCriteria.setProjection(Projections.rowCount());
 		int draftOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(draftOrderCriteria, true));
-		ChainLoginStatisticInforVO draftOrderVo = new ChainLoginStatisticInforVO("近"+ statisDays + 1 + "天未过账的草稿零售单", draftOrderCount);
+		ChainLoginStatisticInforVO draftOrderVo = new ChainLoginStatisticInforVO("近"+ statisDays + "天未过账的草稿零售单", draftOrderCount);
 		
 		statisEle.add(draftOrderVo);
 		
