@@ -446,11 +446,12 @@ public class ChainUserInforService {
 
 	/**
 	 * 1. 多少草稿销售单未过账
-	 * 2. 多少库存单据
-	 * 3. 多少调货调出单
-	 * 4. 多少调货调入单
-	 * 5. 多少采购单据未确认
-	 * 6. 多少总部财务单据
+	 * 2. 多少报损单据
+	 * 3. 多少报益单据
+	 * 4. 多少调货调出单
+	 * 5. 多少调货调入单
+	 * 6. 多少采购单据未确认
+	 * 7. 多少总部财务单据
 	 * @param userInfor
 	 * @param response
 	 */
@@ -466,6 +467,8 @@ public class ChainUserInforService {
 		java.util.Date startDate = Common_util.formStartDate(Common_util.calcualteDate(today, statisDays * -1));
 		java.util.Date endDate = Common_util.formEndDate(today);
 		
+		statisDays++;
+		
 		//1. 获草稿零售单未过账的
 		DetachedCriteria draftOrderCriteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
 		draftOrderCriteria.add(Restrictions.eq("status", ChainStoreSalesOrder.STATUS_DRAFT));
@@ -474,8 +477,15 @@ public class ChainUserInforService {
 		draftOrderCriteria.setProjection(Projections.rowCount());
 		int draftOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(draftOrderCriteria, true));
 		ChainLoginStatisticInforVO draftOrderVo = new ChainLoginStatisticInforVO("近"+ statisDays + "天未过账的草稿零售单", draftOrderCount);
-		
 		statisEle.add(draftOrderVo);
+		
+		//2. 获取报损单报益单
+		DetachedCriteria invenOrderCriteria = DetachedCriteria.forClass(Inven.class);
+		draftOrderCriteria.add(Restrictions.eq("status", ChainStoreSalesOrder.STATUS_DRAFT));
+		draftOrderCriteria.add(Restrictions.eq("chainStore.chain_id", chainId));
+		draftOrderCriteria.add(Restrictions.between("orderCreateDate", startDate, endDate));
+		draftOrderCriteria.setProjection(Projections.rowCount());
+		int draftOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(draftOrderCriteria, true));		
 		
 		statisMap.put("rows", statisEle);
 		

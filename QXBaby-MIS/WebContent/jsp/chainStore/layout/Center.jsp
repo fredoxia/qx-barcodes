@@ -19,7 +19,9 @@ $(document).ready(function(){
 			     ]]
 	});
 });
-
+function reloadStatis(){
+	$('#dataGrid').datagrid('load',''); 
+}
 </script>
 <div id="indexTab" class="easyui-tabs" fit="true" border="false">  
       <div title="首页">
@@ -46,7 +48,10 @@ $(document).ready(function(){
 			   <td>
 			   		<div id="p2" class="easyui-panel" title="单据统计"  
 			 			style="width:450px;height:250px;padding:10px;background:#fafafa;"  
-	        			data-options="collapsible:false">  
+	        			data-options="collapsible:false,tools: [{  
+        					iconCls:'icon-reload',  
+       						 handler:function(){reloadStatis();}  
+   						 }] ">  
 			    		<table id="dataGrid">			       
 		        		</table>
 			       </div>
