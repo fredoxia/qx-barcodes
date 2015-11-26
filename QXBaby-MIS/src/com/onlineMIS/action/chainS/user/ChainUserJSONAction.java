@@ -224,7 +224,8 @@ public class ChainUserJSONAction extends ChainUserAction {
     		try {
     		     chainUserInforService.getOrderStatisticInformation(userInfor, response);
     		} catch (Exception e){
-    			 response.setFail(e.getMessage());
+    			loggerLocal.error(e);
+    			response.setFail(e.getMessage());
     		}
     	} else {
     		response.setReturnCode(Response.WARNING);

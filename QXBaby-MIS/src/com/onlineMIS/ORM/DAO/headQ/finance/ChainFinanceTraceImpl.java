@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
 import com.onlineMIS.ORM.entity.headQ.finance.ChainFinanceTrace;
+import com.onlineMIS.common.Common_util;
 
 @Repository
 public class ChainFinanceTraceImpl extends BaseDAO<ChainFinanceTrace> {
@@ -19,7 +20,7 @@ public class ChainFinanceTraceImpl extends BaseDAO<ChainFinanceTrace> {
 		List<Object> results = this.executeHQLSelect(hql, values,null, true);
 		
 		if (results != null && results.size() > 0){
-			double sum = (Double)results.get(0);
+			double sum = Common_util.getDouble(results.get(0));
 			return sum;
 		} else 
 			return 0;

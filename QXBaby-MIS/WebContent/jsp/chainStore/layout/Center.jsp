@@ -14,7 +14,7 @@ $(document).ready(function(){
 		rownumbers:false,
 		nowrap : false,
 		columns : [ [
-					{field:'desc', width:50, title: "项目"},
+					{field:'desc', width:50, title: "统计项目"},
 					{field:'quantity', width:40, title:"单据数量"}
 			     ]]
 	});

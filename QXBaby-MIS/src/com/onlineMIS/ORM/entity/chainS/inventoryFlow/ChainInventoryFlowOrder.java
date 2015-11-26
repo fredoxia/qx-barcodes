@@ -25,10 +25,10 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 	 * 2. flowloss order 报损单, value=2 (电脑时4，实际是3 -> 报损单在电脑存储减除)
 	 * 3. inventory order 库存单， value=3
 	 */
-	public static int OVER_FLOW_ORDER = 1;
-	public static int FLOW_LOSS_ORDER = 2;
-	public static int INVENTORY_ORDER = 3;
-	public static int INVENTORY_TRANSFER_ORDER = 4;
+	public final static int OVER_FLOW_ORDER = 1;
+	public final static int FLOW_LOSS_ORDER = 2;
+	public final static int INVENTORY_ORDER = 3;
+	public final static int INVENTORY_TRANSFER_ORDER = 4;
 	/**
 	 * 
 	 */
