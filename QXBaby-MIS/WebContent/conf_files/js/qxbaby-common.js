@@ -13,6 +13,8 @@ var ACTION_DELETE = 3;
 var NORMAL_PRICE = 1;
 var SPECIAL_PRICE = 2;
 
+var SALES_ORDER_TITLE = "新建零售单";
+
 /**
      * 时间格式化 返回格式化的时间
      * @param date {object}  可选参数，要格式化的data对象，没有则为当前时间
@@ -201,6 +203,7 @@ function addTab(params) {
 		border : false,
 		fit : true
 	};
+
 	t.tabs('add', opts);
 }
 

@@ -483,9 +483,9 @@ public class ChainUserInforService {
 		
 		//1. 获草稿零售单未过账的
 		DetachedCriteria draftOrderCriteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
+		draftOrderCriteria.add(Restrictions.between("orderDate", startDate, endDate));
 		draftOrderCriteria.add(Restrictions.eq("status", ChainStoreSalesOrder.STATUS_DRAFT));
 		draftOrderCriteria.add(Restrictions.eq("chainStore.chain_id", chainId));
-		draftOrderCriteria.add(Restrictions.between("orderCreateDate", startDate, endDate));
 		draftOrderCriteria.setProjection(Projections.rowCount());
 		int draftOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(draftOrderCriteria, true));
 		ChainLoginStatisticInforVO draftOrderVo = new ChainLoginStatisticInforVO("近"+ statisDays + "天未过账的草稿零售单", draftOrderCount);

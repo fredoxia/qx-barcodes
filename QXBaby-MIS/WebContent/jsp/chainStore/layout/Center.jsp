@@ -18,12 +18,30 @@ $(document).ready(function(){
 					{field:'quantity', width:40, title:"单据数量"}
 			     ]]
 	});
+	
+	$('#indexTab').tabs({  
+		           onSelect:function(title,content){   
+		               			//alert(title + "," + content +' is selected'); 
+		               			if (title == '新建零售单'){
+		               				//try {
+		               				  var selectedTab = $('#indexTab').tabs("getTab",content);
+		               				  var _refresh_ifram = selectedTab.find('iframe')[0]; 
+		               				  if (_refresh_ifram != null && _refresh_ifram.contentWindow != undefined)
+		               				      _refresh_ifram.contentWindow.onSelected();
+		               				//} catch (e){
+		               				//	console.log("error");
+		               				//}
+		               			}
+	                  		}   
+		           });  
+
 });
 function reloadStatis(){
 	$('#dataGrid').datagrid('load',''); 
 }
+
 </script>
-<div id="indexTab" class="easyui-tabs" fit="true" border="false">  
+<div id="indexTab" class="easyui-tabs" fit="true" border="false"> 
       <div title="首页">
 		<table cellpadding='10px' cellspacing='10px'>
 			<tr valign="top">

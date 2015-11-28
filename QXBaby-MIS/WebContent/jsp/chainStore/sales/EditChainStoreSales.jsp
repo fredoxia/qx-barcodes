@@ -140,6 +140,7 @@ function updateTabWithSaler(){
 	var salerName = $("#chainSaler option[selected]").text();
 	self.parent.updateTabName("新建零售单 " +salerName);
 }
+
 </script>
 </head>
 <body class="easyui-layout">
@@ -245,6 +246,11 @@ $(document).ready(function(){
 	updateTabWithSaler();
 	parent.$.messager.progress('close'); 
 });
+function onSelected() {
+	alert(index);
+    $("#barcode" + index).focus();
+
+}
 </script>
 <s:if test="uiBean.chainStoreConf.printTemplate == 2">
 	<%@include file="../include/Print2.jsp"%>
