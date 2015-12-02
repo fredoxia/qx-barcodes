@@ -44,6 +44,7 @@ function searchOrdersBackProcess(data){
 		          $("<tr class='InnerTableContent'" + bg +" align='center' height='28'><td>"+
 				          orders[i].id+"</td><td>"+
 				          orders[i].startTime+"</td><td>"+
+				          orders[i].clientName+"</td><td>"+
 				          orders[i].orderTypeC+"</td><td>"+
 				          orders[i].totalQ+"</td><td>"+
 				          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')">orders[i].totalWholeSales</s:if><s:else>"-"</s:else>+"</td><td>"+
@@ -59,10 +60,13 @@ function searchOrdersBackProcess(data){
 			$(this).addClass("over");}).mouseout(function(){    
 			$(this).removeClass("over");}); 
    }else {
-   	$("<tr class='InnerTableContent'"+ bg +" align='center'><td colspan=7><font color='red'>对应条件没有查询信息</font> </td></tr>").appendTo("#orders");
+   	$("<tr class='InnerTableContent'"+ bg +" align='center'><td colspan=8><font color='red'>对应条件没有查询信息</font> </td></tr>").appendTo("#orders");
    }
 
    $("#ordersDiv").show();
+}
+function changeChainStore(chainId){
+
 }
 </script>
 </head>
@@ -70,21 +74,19 @@ function searchOrdersBackProcess(data){
     <s:form id="purchaseOrderSearch" name="purchaseOrderSearch" action="/actionChain/purchaseAction!searchOrders" theme="simple" method="POST">
 		   <%@ include file="../../common/pageForm.jsp"%>
 		   <s:hidden id="chainStore" name="formBean.chainSalesOrder.chainStore.chain_id" value="-1"/>
-		   <table width="90%" align="center"  class="OuterTable">
+		   <table width="100%" align="center"  class="OuterTable">
 		    <tr><td>
 				 <table width="100%" border="0">		    
 				 <tr>
 			       <td height="50" colspan="7">
 			            <div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
 				   		<table width="100%" border="0">
-						    <tr class="PBAOuterTableTitale">
-						       <td height="40" colspan="6">搜索采购单据<br />
-						         - 店铺负责人通过此功能可以查看与千禧宝贝总部之间的往来采购配货/退货单据</td>
-						    </tr>
 						    <tr class="InnerTableContent">
 						      <td width="44" height="25">&nbsp;</td>
 						      <td width="82"><strong>连锁店</strong></td>
-						      <td width="165"><s:select name="formBean.order.client_id" list="uiBean.chainStores" listKey="client_id" listValue="chain_name"/>		
+						      <td width="220"><%@ include file="../include/SearchChainStore.jsp"%>
+						      <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
+						      <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="1"/>		
 						      </td>
 						      <td width="82"><strong>单据种类</strong></td>
 						      <td width="165"><s:select name="formBean.order.order_type" list="uiBean.typesMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" />		
@@ -109,8 +111,7 @@ function searchOrdersBackProcess(data){
 						    <tr class="InnerTableContent">
 						      <td height="15">&nbsp;</td>
 						      <td>&nbsp;</td>
-						      <td colspan="2"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseJSONAction!searchOrders')"><input name="submit" type="button" value="搜索单据" onclick="searchOrders();"/></s:if></td>
-						      <td>&nbsp;</td>
+						      <td colspan="3"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseJSONAction!searchOrders')"><input name="submit" type="button" value="搜索单据" onclick="searchOrders();"/></s:if></td>
 						      <td>&nbsp;</td>
 						    </tr>
 						   </table>
@@ -128,6 +129,7 @@ function searchOrdersBackProcess(data){
 								    <tr class="PBAInnerTableTitale">
 								      <th width="40" height="32">编号</th>
 								      <th width="120">订单初始日期</th>
+								      <th width="60">连锁店</th>
 								      <th width="102">单据种类</th>
 								      <th width="60">数量</th>
 								      <th width="80">成本金额</th>

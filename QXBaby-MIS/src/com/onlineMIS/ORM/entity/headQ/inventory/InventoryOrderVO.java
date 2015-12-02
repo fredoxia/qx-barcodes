@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
+
 public class InventoryOrderVO {
 	private int id;
 	private String clientName = "";
@@ -38,6 +40,11 @@ public class InventoryOrderVO {
 	
 	public InventoryOrderVO(){
 		
+	}
+	
+	public InventoryOrderVO(InventoryOrder i, ChainStore chainStore){
+		this(i);
+		this.setClientName(chainStore.getChain_name());
 	}
 	
 	public InventoryOrderVO(InventoryOrder i){

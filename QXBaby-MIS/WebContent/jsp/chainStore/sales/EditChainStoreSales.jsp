@@ -137,7 +137,7 @@ function testPrint(){
 	    }
 }
 function updateTabWithSaler(){
-	var salerName = $("#chainSaler option[selected]").text();
+	var salerName = $("#chainSaler").find("option:selected").text();
 	self.parent.updateTabName("新建零售单 " +salerName);
 }
 
@@ -247,7 +247,6 @@ $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 });
 function onSelected() {
-	alert(index);
     $("#barcode" + index).focus();
 
 }

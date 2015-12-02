@@ -297,6 +297,7 @@ public class ChainInventoryFlowOrderService {
 	 * @param loginUser
 	 * @return
 	 */
+	@Transactional
 	public List<ChainInventoryFlowOrder> searchInvenFlowOrders(
 			ChainInventoryFlowFormBean formBean, ChainUserInfor loginUser) {
 		boolean cache = false;
@@ -315,7 +316,41 @@ public class ChainInventoryFlowOrderService {
 		DetachedCriteria criteria2 = buildSearchInvenFlowCriter(formBean);
 		criteria2.addOrder(Order.asc("chainStore.chain_id")).addOrder(Order.asc("orderDate"));
 		
-		return chainInventoryFlowOrderDaoImpl.getByCritera(criteria2, pager.getFirstResult(), pager.getRecordPerPage(), cache);
+		List<ChainInventoryFlowOrder> chainOrders = chainInventoryFlowOrderDaoImpl.getByCritera(criteria2, pager.getFirstResult(), pager.getRecordPerPage(), cache);
+		
+		for (ChainInventoryFlowOrder order : chainOrders){
+			if (order.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
+				ChainStore fromChainStore = order.getFromChainStore();
+				ChainStore toChainStore = order.getToChainStore();
+
+				String fromChainName = "非连锁店";
+				String toChainName = "非连锁店";
+				
+				if(fromChainStore != null){
+					fromChainStore = chainStoreDaoImpl.get(fromChainStore.getChain_id(), true);
+					fromChainName = fromChainStore.getChain_name();
+					if (fromChainName.length() > 4)
+						fromChainName = fromChainName.substring(0,4);
+				}
+				if (toChainStore != null){
+					toChainStore = chainStoreDaoImpl.get(toChainStore.getChain_id(), true);
+					toChainName = toChainStore.getChain_name();
+					if (toChainName.length() > 4)
+						toChainName = toChainName.substring(0,4);
+				}
+				
+				String transferComment = fromChainName + " -> " + toChainName;
+		
+				String orderComment = order.getComment();
+				if (orderComment.length() > 0)
+					order.setComment(transferComment + "<br/>" + orderComment);
+				else 
+					order.setComment(transferComment);
+				chainInventoryFlowOrderDaoImpl.evict(order);
+			}
+		}
+		
+		return chainOrders;
 	}
 	
 	private DetachedCriteria buildSearchInvenFlowCriter(ChainInventoryFlowFormBean formBean){
@@ -682,6 +717,7 @@ public class ChainInventoryFlowOrderService {
 			    order.setToChainStore(ChainStoreDaoImpl.getOutsideStore());
 			    chainInventoryFlowOrderDaoImpl.evict(order);
 			}
+			
 			order.putSetToList();
 		} else if (orderType ==  ChainInventoryFlowOrder.INVENTORY_ORDER){
 			order.putSetToList(new ChainInventoryOrderProductSorter());
@@ -749,7 +785,7 @@ public class ChainInventoryFlowOrderService {
 		
 		//4. 注入 chainStore
 		//   如果是调库存单，需要注入chainStore.首先fromChainStore,然后toChainStore
-		if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
+		if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){		
 			if (fromChainStore != null && fromChainStore.getChain_id() != 0)
 				flowOrder.setChainStore(fromChainStore);
 			else if (toChainStore != null && toChainStore.getChain_id() != 0)

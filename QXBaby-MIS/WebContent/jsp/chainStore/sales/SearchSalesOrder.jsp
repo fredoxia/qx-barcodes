@@ -37,20 +37,22 @@ function searchOrdersBackProcess(data){
 		    		bg = "<%=Common_util.EVEN_ROW_BG_STYLE%>";
 	 	    	var color = "";
 	 	    	var isVip = "";
+	 	    	var nodeTitle = "连锁销售单据";
 		    	if (orders[i].status == 3)
 			    	color =  "<%=Common_util.CANCEL_ROW_FONT_COLOR%>";
-			    else if (orders[i].status == 1)
+			    else if (orders[i].status == 1){
 				    color =  "<%=Common_util.DRAFT_ROW_FONT_COLOR%>";
+				    nodeTitle = "新建零售单";
+			    }
 
 				if (orders[i].vipCard != null && orders[i].vipCard.id != undefined)
 					isVip = "是";
 		        if (orders[i] != "")  {
 			        var urlLink = "chainSalesJSPAction!getSalesOrderById?formBean.chainSalesOrder.id=" + orders[i].id;
-			        var nodeTitle = "连锁销售单据";
 			          $("<tr class='InnerTableContent' style='" + bg + color +"' align='center'><td height='27'>"+ (j + pager.firstResult) +"</td><td>"+
-					          orders[i].chainStore.chain_name+"</td><td>"+
+			        		  orders[i].id+"</td><td>"+
+			        		  orders[i].chainStore.chain_name+"</td><td>"+
 					          orders[i].orderDate+"</td><td>"+
-					          orders[i].orderCreateDate+"</td><td>"+
 					          orders[i].statusS+"</td><td>"+
 					          isVip+"</td><td>"+
 					          orders[i].saler.name+"</td><td>"+
@@ -180,9 +182,9 @@ function backProcessChangeChainStore(data){
 						<table width="100%"  align="left"  id="org_table">
 						  <tr class="PBAInnerTableTitale" align="center">
 						    <th width="20" height="35"></th>
+						    <th width="60">单据号</th>
 						    <th width="110">连锁店</th>
 						    <th width="85">单据日期</th>
-						    <th width="95">修改时间</th>
 						    <th width="40">状态</th>
 						    <th width="40">VIP</th>
 						    <th width="70">经手人</th>
@@ -192,7 +194,7 @@ function backProcessChangeChainStore(data){
 						    <th width="60">退货数量</th>
 						    <th width="60">退货金额</th>
 						    <th width="60">赠品数量</th>
-						    <th width="60">单据摘要</th>
+						    <th width="80">单据摘要</th>
 						    <th width="25"></th>
 						  </tr>
 						  <tbody id="salesOrders">

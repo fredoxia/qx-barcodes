@@ -115,4 +115,5 @@ public class PurchaseJSONAction extends PurchaseAction {
 			}
 		return SUCCESS;
 	}
+
 }

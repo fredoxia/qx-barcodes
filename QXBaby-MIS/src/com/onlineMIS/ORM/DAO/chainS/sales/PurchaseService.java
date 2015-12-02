@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
@@ -72,6 +74,9 @@ public class PurchaseService {
 	@Autowired
 	private ProductBarcodeDaoImpl productBarcodeDaoImpl;
 	
+	
+	@Autowired
+	private ChainStoreService chainStoreService;
 	/**
 	 * when user search through the search page。
 	 * 1. Only those complete order can be searched
@@ -113,7 +118,8 @@ public class PurchaseService {
 			List<InventoryOrder> orderList) {
 		List<InventoryOrderVO> inventoryOrderVOs = new ArrayList<InventoryOrderVO>();
 		for (InventoryOrder order : orderList){
-			InventoryOrderVO vo = new InventoryOrderVO(order);
+			ChainStore chainStore = chainStoreDaoImpl.getByClientId(order.getClient_id());
+			InventoryOrderVO vo = new InventoryOrderVO(order, chainStore);
 			inventoryOrderVOs.add(vo);
 		}
 		return inventoryOrderVOs;
@@ -125,7 +131,13 @@ public class PurchaseService {
 		if (searchBean.getOrder().getOrder_type() != Common_util.ALL_RECORD)
 		    criteria.add(Restrictions.eq("order_type", searchBean.getOrder().getOrder_type()));
 		
-		criteria.add(Restrictions.eq("client_id", searchBean.getOrder().getClient_id()));
+		if (searchBean.getChainStore().getChain_id() != Common_util.ALL_RECORD){
+		   ChainStore store = chainStoreDaoImpl.get(searchBean.getChainStore().getChain_id(), true);
+		   criteria.add(Restrictions.eq("client_id", store.getClient_id()));
+		} else {
+		   Set<Integer> clientIds = chainStoreDaoImpl.getAllClientIds();
+		   criteria.add(Restrictions.in("client_id", clientIds));
+		}
 		
 		criteria.add(Restrictions.eq("order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
 		
@@ -189,18 +201,18 @@ public class PurchaseService {
 	 * @param uiBean
 	 * @param userInfor
 	 */
-	public void prepareSearchUI(PurchaseActionUIBean uiBean,
+	public void prepareSearchUI(PurchaseActionFormBean formBean,PurchaseActionUIBean uiBean,
 			ChainUserInfor userInfor) {
 		uiBean.setTypesMap(InventoryOrder.getTypesMap_retailer());
-		List<ChainStore> chainStores = new ArrayList<ChainStore>();
-		
-		if (ChainUserInforService.isMgmtFromHQ(userInfor))
-			chainStores =  chainStoreDaoImpl.getAll(ChainStoreDaoImpl.cached);
-		else {
-			chainStores.add(userInfor.getMyChainStore());
+
+		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
+			int chainId = userInfor.getMyChainStore().getChain_id();
+			ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
+			formBean.setChainStore(chainStore);
+		} else {
+			ChainStore allChainStore = ChainStoreDaoImpl.getAllChainStoreObject();
+			formBean.setChainStore(allChainStore);
 		}
-		
-		uiBean.setChainStores(chainStores);
 	}
 
 	@Transactional

@@ -1,5 +1,6 @@
 package com.onlineMIS.ORM.DAO.chainS.finance;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+
+import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.headQ.finance.FinanceBillImpl;
@@ -14,7 +17,6 @@ import com.onlineMIS.ORM.DAO.headQ.finance.FinanceCategoryImpl;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBill;
-
 import com.onlineMIS.action.headQ.finance.FinanceActionFormBean;
 import com.onlineMIS.action.headQ.finance.FinanceActionUIBean;
 
@@ -34,10 +36,15 @@ public class FinanceChainService {
 	 * @param formBean
 	 * @param uiBean
 	 */
-	public void prepareSearchFinanceBill(FinanceActionUIBean uiBean, ChainUserInfor user){
-		List<ChainStore> chainStores = chainStoreService.getChainStoreList(user);
-		uiBean.setChainStores(chainStores);
-		
+	public void prepareSearchFinanceBill(FinanceActionFormBean formBean, ChainUserInfor userInfor){
+		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
+			int chainId = userInfor.getMyChainStore().getChain_id();
+			ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
+			formBean.setChainStore(chainStore);
+		} else {
+			ChainStore allChainStore = ChainStoreDaoImpl.getAllChainStoreObject();
+			formBean.setChainStore(allChainStore);
+		}
 	}
 
 	@Transactional

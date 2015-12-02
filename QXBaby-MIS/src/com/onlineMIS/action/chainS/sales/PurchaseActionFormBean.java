@@ -3,6 +3,7 @@ package com.onlineMIS.action.chainS.sales;
 import java.sql.Date;
 
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.action.chainS.ChainActionFormBaseBean;
 
@@ -13,12 +14,17 @@ public class PurchaseActionFormBean extends ChainActionFormBaseBean{
 	private Date search_Start_Time = new Date(new java.util.Date().getTime());
     private Date search_End_Time = new Date(new java.util.Date().getTime());
     private int productId;
-    
-    
+    private ChainStore chainStore;
     private InventoryOrder order = new InventoryOrder();
     private Pager pager = new Pager();
     
     
+	public ChainStore getChainStore() {
+		return chainStore;
+	}
+	public void setChainStore(ChainStore chainStore) {
+		this.chainStore = chainStore;
+	}
 	public int getProductId() {
 		return productId;
 	}

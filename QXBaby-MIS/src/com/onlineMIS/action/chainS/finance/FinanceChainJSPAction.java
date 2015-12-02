@@ -33,7 +33,7 @@ public class FinanceChainJSPAction extends FinanceJSPAction {
     	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"preSearchFHQ");
     	
-		financeChainService.prepareSearchFinanceBill(uiBean, userInfor);
+		financeChainService.prepareSearchFinanceBill(formBean, userInfor);
 
 		return "preSearchHQFinanceBill";
 	}

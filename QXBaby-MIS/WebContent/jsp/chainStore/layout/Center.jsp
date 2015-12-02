@@ -21,16 +21,16 @@ $(document).ready(function(){
 	
 	$('#indexTab').tabs({  
 		           onSelect:function(title,content){   
-		               			//alert(title + "," + content +' is selected'); 
-		               			if (title == '新建零售单'){
-		               				//try {
+		               			//alert(title + "," + content); 
+		               			if (title.startWith('新建零售单')){
+		               				try {
 		               				  var selectedTab = $('#indexTab').tabs("getTab",content);
 		               				  var _refresh_ifram = selectedTab.find('iframe')[0]; 
 		               				  if (_refresh_ifram != null && _refresh_ifram.contentWindow != undefined)
 		               				      _refresh_ifram.contentWindow.onSelected();
-		               				//} catch (e){
-		               				//	console.log("error");
-		               				//}
+		               				} catch (e){
+		               					//console.log("error");
+		               				}
 		               			}
 	                  		}   
 		           });  

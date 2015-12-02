@@ -25,6 +25,7 @@ function searchBills(){
 	resetSearchForm();
     pageNav.fn($("#currentPage").val(),$("#totalPage").val());
 }
+function changeChainStore(chainId){}
 function searchBillsBackProcess(data){
 	var bills = data.bills;
 	var pager = data.pager;
@@ -80,7 +81,9 @@ function searchBillsBackProcess(data){
 						    <tr class="InnerTableContent">
 						      <td width="40" height="25">&nbsp;</td>
 						      <td width="82"><strong>连锁店</strong></td>
-						      <td width="165"><s:select name="formBean.chainStore.chain_id"  list="uiBean.chainStores" listKey="chain_id" listValue="chain_name"/><td width="72"></td>
+						      <td width="220"><%@ include file="../include/SearchChainStore.jsp"%>
+						      <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
+						      <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="1"/>	
 						      <td width="82"><strong>单据种类</strong></td>
 						      <td width="165"><s:select name="formBean.financeBill.type"  list="formBean.financeBill.typeChainMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" /></td>
 						      <td>&nbsp;</td>
@@ -97,9 +100,7 @@ function searchBillsBackProcess(data){
 		                    <tr class="InnerTableContent">
 						      <td height="15">&nbsp;</td>
 						      <td>&nbsp;</td>
-						      <td colspan="2"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('financeChainJSON!searchFHQBill')"><input type="button" value="搜索单据" onclick="searchBills();"/></s:if></td>
-						      <td>&nbsp;</td>
-						      <td>&nbsp;</td>
+						      <td colspan="3"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('financeChainJSON!searchFHQBill')"><input type="button" value="搜索单据" onclick="searchBills();"/></s:if></td>
 						    </tr>
 						  </table>
 					 </td>

@@ -46,7 +46,7 @@ public class PurchaseJSPAction extends PurchaseAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"preSearch");
     	
-		purchaseService.prepareSearchUI(uiBean, userInfor);
+		purchaseService.prepareSearchUI(formBean, uiBean, userInfor);
 		
 		return "SearchPurchase";
 	}
@@ -92,4 +92,5 @@ public class PurchaseJSPAction extends PurchaseAction {
 		
 		return "excelObject";
 	}
+
 }

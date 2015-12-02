@@ -5,7 +5,7 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/jquery-1.8.0.min.js"></script>
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/json2.js"></script> 
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/qxbaby-common.js?v=11.23"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/qxbaby-common.js?v=11.29"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ajaxfileupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/easyUI/jquery.easyui.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/conf_files/easyUI/themes/default/easyui.css">
