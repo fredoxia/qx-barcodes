@@ -289,7 +289,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"saveToDraft : " + formBean.getFlowOrder().getId());
     	
 		try {
-		    flowOrderService.saveToDraft(formBean.getFlowOrder(), loginUser);
+		    flowOrderService.saveToDraft(formBean.getFlowOrder(),formBean.getInventory(), loginUser);
 			
 			addActionMessage("已经成功保存单据到草稿");
 		} catch (Exception e) {

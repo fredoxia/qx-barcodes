@@ -384,11 +384,23 @@ public class ChainInventoryFlowOrderService {
 	 * @throws Exception 
 	 */
 	@Transactional
-	public Response saveToDraft(ChainInventoryFlowOrder flowOrder,ChainUserInfor loginUser) throws Exception {
+	public Response saveToDraft(ChainInventoryFlowOrder flowOrder,File file, ChainUserInfor loginUser) throws Exception {
 		int status_org = flowOrder.getStatus();
 		Response response = new Response();
 		if (status_org == ChainInventoryFlowOrder.STATUS_INITIAL || status_org == ChainInventoryFlowOrder.STATUS_DRAFT){
 		    flowOrder.setStatus(ChainInventoryFlowOrder.STATUS_DRAFT);
+		    
+		    List<ChainInventoryFlowOrderProduct> products = null;
+		    try {
+		       products = parseInventoryFile(file);
+		    } catch (Exception e) {
+				response.setQuickValue(Response.FAIL, "库存文件格式错误");
+				return response;
+			}
+
+		    List<ChainInventoryFlowOrderProduct> currentProducts = flowOrder.getProductList();
+		    currentProducts.addAll(products);
+		    
 		    save(flowOrder, loginUser);
 		    response.setReturnCode(Response.SUCCESS);
 		    response.setMessage("已经成功保存");
@@ -1342,6 +1354,52 @@ public class ChainInventoryFlowOrderService {
 		return originalProducts;
 	}
 
+    /**
+     * to parse the file from the inventory machine
+     * @param inventory
+     * @return
+     */
+	@SuppressWarnings("unchecked")
+	private List<ChainInventoryFlowOrderProduct> parseInventoryFile(File inventoryFile) {
+		List<ChainInventoryFlowOrderProduct> orderProducts = new ArrayList<ChainInventoryFlowOrderProduct>();
+
+		if (inventoryFile != null){
+			InventoryFileTemplate inventoryFileTemplate = new InventoryFileTemplate(inventoryFile);
+			
+			Response response = inventoryFileTemplate.process();
+			List<Object> returnValues = (List<Object>)response.getReturnValue();
+			Map<String, Integer> barcodeMap = (Map<String, Integer>)returnValues.get(0);
+			Set<String> barcodes = (Set<String>)returnValues.get(1);
+
+			//2. prepare the data
+			Map<String,ProductBarcode> products = productBarcodeDaoImpl.getProductMapByBarcode(barcodes);
+
+
+			for (String barcode: barcodes){
+				ProductBarcode product = products.get(barcode);
+				
+				if (product == null){
+					loggerLocal.error("Could not find the " + barcode + " in product table");
+					continue;
+				}
+				
+				ChainInventoryFlowOrderProduct chainInventoryFlowOrderProduct = new ChainInventoryFlowOrderProduct();
+				chainInventoryFlowOrderProduct.setProductBarcode(product);
+				
+				Integer quantityI = barcodeMap.get(product.getBarcode());
+				int quantity = 0;
+				if (quantityI != null)
+					quantity = quantityI.intValue();
+
+				chainInventoryFlowOrderProduct.setQuantity(quantity);
+				
+				orderProducts.add(chainInventoryFlowOrderProduct);
+			}
+		
+		}
+		
+		return orderProducts;
+	}
 
     /**
      * to parse the file from the inventory machine

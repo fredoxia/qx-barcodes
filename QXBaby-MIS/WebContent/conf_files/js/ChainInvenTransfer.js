@@ -118,8 +118,44 @@ function validateTransferOrderForm(){
 	if (fromChainStoreId == toChainStoreId){
 		alert("调入连锁店 与 调出连锁店不能为同一个连锁店选项");
 		return false;
-	} else 
-		return true;
+	} else {
+		var error = "";
+		var hasChar_q = false;
+
+		for (var i = 0; i < index; i++){
+
+			var q = $("#quantity" + i).val();
+
+			if (q != undefined){
+				if (isNaN(q) || q<0){
+					hasChar_q = true;
+					errorIndexes.push(i);
+				}
+			}
+		}
+		
+		if (hasChar_q)
+			error += "数量 - 必须为大于0的整数. 请检查后重新输入!\n";
+
+		if (error != ""){
+			for (var i =0; i < errorIndexes.length; i++){
+				$("#orderRow" + errorIndexes[i]).css('background-color', '#EE8553');
+			}
+			
+			alert(error);
+			return false;
+		}else{
+			var totalQ = $("#totalQuantity").val();
+			var file = $("#inventory").val();
+			if (totalQ =="" && file == ""){
+				alert("请输入货品或者导入盘点文件后再保存单据!");
+				return false;
+			}
+            return true;
+		}
+		
+	}
+
 }
 
 function changeFromChain(){
@@ -143,7 +179,7 @@ function backProcessChangeFromChainStore(data){
 
 
 function saveFinal(){
-	if (validateInvenFlowForm(1) && validateTransferOrderForm()){
+	if (validateTransferOrderForm()){
 		   formSubmit = true;
 		   document.chainInventoryFlowForm.action = "actionChain/inventoryFlowJSPAction!saveToFinal";
 		   document.chainInventoryFlowForm.submit();
@@ -155,7 +191,7 @@ function saveFinal(){
  * actions
  */
 function saveDraft(){
-	if (validateInvenFlowForm(1) && validateTransferOrderForm()){
+	if (validateTransferOrderForm()){
 	   formSubmit = true;
 	   document.chainInventoryFlowForm.action = "actionChain/inventoryFlowJSPAction!saveToDraft";
 	   document.chainInventoryFlowForm.submit();

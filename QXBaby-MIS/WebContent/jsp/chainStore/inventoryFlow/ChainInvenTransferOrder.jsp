@@ -8,7 +8,7 @@
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTransfer.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTransfer.js?v12.3"></script>
 
 <script>
 $(document).ready(function(){
@@ -21,7 +21,7 @@ index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
 </head>
 <body>
 
-    <s:form action="/actionChain/inventoryFlowAction!saveToDraft" method="POST" name="chainInventoryFlowForm" id="chainInventoryFlowForm" theme="simple">
+    <s:form action="/actionChain/inventoryFlowAction!saveToDraft" method="POST" name="chainInventoryFlowForm" id="chainInventoryFlowForm" enctype="multipart/form-data" theme="simple">
 	<s:hidden name="formBean.flowOrder.type"/>  
 	<s:hidden name="formBean.flowOrder.id"/>   
 	<s:hidden name="formBean.flowOrder.status"/> 
@@ -119,7 +119,11 @@ index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
 					         <td height="40">备注</td>
 					         <td colspan="2"><textarea name="formBean.flowOrder.comment" id="comment" rows="2" cols="50"><s:property value="formBean.flowOrder.comment"/></textarea></td>
 				           </tr>
-						  <tr class="InnerTableContent">
+				           <tr class="InnerTableContent">
+					         <td height="40">盘点文件</td>
+					         <td colspan="2"><input type="file" name="formBean.inventory" id="inventory"/></td>
+				           </tr>
+						   <tr class="InnerTableContent">
 						    <td width="3%" height="25" align='left'>&nbsp;</td>
 						    <td width="3%" align='left'>&nbsp;</td>
 						    <td width="90%" align='left'>

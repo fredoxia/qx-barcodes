@@ -88,10 +88,11 @@ function changeChainStore(chainId){
 						      <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
 						      <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="1"/>		
 						      </td>
-						      <td width="82"><strong>单据种类</strong></td>
-						      <td width="165"><s:select name="formBean.order.order_type" list="uiBean.typesMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" />		
+						      <td width="70"><strong>单据种类</strong></td>
+						      <td width="130"><s:select name="formBean.order.order_type" list="uiBean.typesMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" />		
 						      </td>
-						      <td>&nbsp;</td>
+						      <td width="70"><strong>单据状态</strong></td>
+						      <td><s:select id="chainConfirmStatus" name="formBean.order.chainConfirmStatus"  list="uiBean.chainConfirmList" listKey="key" listValue="value"  headerKey="-1" headerValue="---全部---"/></td>
 						    </tr>
 						    <tr class="InnerTableContent">
 						      <td height="40">&nbsp;</td>
@@ -102,16 +103,18 @@ function changeChainStore(chainId){
 					      		 <s:textfield id="endDate" name="formBean.search_End_Time" cssClass="easyui-datebox" data-options="width:100,editable:false"/>		  
 							   </td>
 						      <td>&nbsp;</td>
+						      <td>&nbsp;</td>
 						      </tr>
 						     <tr class="InnerTableContent">
 					      		<td height="30">&nbsp;</td>
 					      		<td><strong>包含货品</strong></td>
-					      		<td colspan="4"><%@ include file="../include/SearchProduct.jsp"%></td>
+					      		<td colspan="5"><%@ include file="../include/SearchProduct.jsp"%></td>
 					   		 </tr>	
 						    <tr class="InnerTableContent">
 						      <td height="15">&nbsp;</td>
 						      <td>&nbsp;</td>
 						      <td colspan="3"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseJSONAction!searchOrders')"><input name="submit" type="button" value="搜索单据" onclick="searchOrders();"/></s:if></td>
+						      <td>&nbsp;</td>
 						      <td>&nbsp;</td>
 						    </tr>
 						   </table>

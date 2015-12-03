@@ -139,6 +139,9 @@ public class PurchaseService {
 		   criteria.add(Restrictions.in("client_id", clientIds));
 		}
 		
+		if (searchBean.getOrder().getChainConfirmStatus() != Common_util.ALL_RECORD)
+			criteria.add(Restrictions.eq("chainConfirmStatus", searchBean.getOrder().getChainConfirmStatus()));
+		
 		criteria.add(Restrictions.eq("order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
 		
 		if (searchBean.getSearch_Start_Time() != null && searchBean.getSearch_End_Time() != null){
@@ -204,6 +207,10 @@ public class PurchaseService {
 	public void prepareSearchUI(PurchaseActionFormBean formBean,PurchaseActionUIBean uiBean,
 			ChainUserInfor userInfor) {
 		uiBean.setTypesMap(InventoryOrder.getTypesMap_retailer());
+		
+		uiBean.setChainConfirmList(InventoryOrderVO.getChainConfirmMap());
+		
+		formBean.getOrder().setChainConfirmStatus(Common_util.ALL_RECORD);
 
 		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
 			int chainId = userInfor.getMyChainStore().getChain_id();
