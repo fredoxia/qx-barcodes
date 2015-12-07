@@ -278,4 +278,18 @@ public class ChainMgmtJSPAction extends ChainMgmtAction {
 			
 		return "editChainPriceIncre";
 	}
+	
+	/**
+	 * 准备 千禧宝贝系统当前 主要服饰的年份和季度
+	 * @return
+	 */
+	public String preCreateConf(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	
+		Response response = chainMgmtService.preparePreCreateConfUI(formBean, uiBean, userInfor);
+		if (!response.isSuccess())
+			addActionError(response.getMessage());
+		
+		return "preCreateConf";
+	}
 }

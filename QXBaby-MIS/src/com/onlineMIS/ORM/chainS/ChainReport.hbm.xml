@@ -90,5 +90,31 @@
         <property name="keDanAvg" column="ke_dan_raio" type="double"/>
         <property name="createDate" column="create_date" type="timestamp"/>
         <property name="rank" column="rank" type="integer"/>
-      </class>                  
+      </class>   
+      
+     <class name="ChainManualCtrlBatchJob" table="chain_manual_ctrl_batch_job">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="rptId" column="rpt_id" type="integer"/>
+        <property name="comment" column="comment" type="string"/>
+        <property name="startDate" column="start_date" type="date"/>
+        <property name="endDate" column="end_date" type="date"/>
+        <property name="yearId" column="year_id" type="integer"/>
+        <property name="quarterId" column="quarter_id" type="integer"/>
+        <property name="brandId" column="brand_id" type="integer"/>
+        <property name="createDate" column="create_date" type="timestamp"/>
+        <property name="executeDate" column="execute_date" type="timestamp"/>
+        <property name="attachmentFileName" column="attachment_file_name" type="string"/>
+        <property name="executed" column="executed" type="integer"/>
+      </class> 
+      
+      <class name="ChainAutoRptRepositoty" table="chain_auto_rpt_repository">
+        <id name="rptId" column="rpt_id">
+            <generator class="identity" />
+        </id>
+        <property name="rptName" column="rpt_name" type="string"/>
+        <property name="rptDate" column="rpt_date" type="date"/>
+		<property name="rptDes" column="rpt_des" type="string"/>
+      </class>                            
 </hibernate-mapping>

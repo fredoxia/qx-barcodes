@@ -3,6 +3,10 @@ package com.onlineMIS.ORM.entity.chainS.chainMgmt;
 import java.io.Serializable;
 
 public class ChainPriceIncrement implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6609215693878322729L;
 	public static final int TYPE_MULTIPLE = 1;
 	public static final int TYPE_ADD = 2;
 	

@@ -15,8 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.chainMgmt.QxbabyConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.QuarterDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.YearDaoImpl;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.manualRpt.ChainDailyManualReportAnalysisItem;
 import com.onlineMIS.ORM.entity.chainS.manualRpt.ChainDailyManualRpt;
 import com.onlineMIS.ORM.entity.chainS.manualRpt.ChainDailyManualRptConf;
@@ -24,6 +28,7 @@ import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.ClientsMS;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.action.chainS.manualRpt.ChainDailyManualRptActionFormBean;
 import com.onlineMIS.action.chainS.manualRpt.ChainDailyManualRptActionUIBean;
 import com.onlineMIS.common.Common_util;
@@ -39,6 +44,8 @@ public class ChainDailyManualRptService {
 	
 	@Autowired
 	private ChainDailyManualRptDaoImpl chainDailyManualRptDaoImpl;
+	
+
 	
 	public void preparePreCreateManualRptUI(
 			ChainDailyManualRptActionFormBean formBean,
@@ -181,5 +188,6 @@ public class ChainDailyManualRptService {
 
 		return response;
 	}
+
 
 }

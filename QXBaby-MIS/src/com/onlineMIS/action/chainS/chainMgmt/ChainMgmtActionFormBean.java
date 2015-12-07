@@ -10,6 +10,7 @@ import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainInitialStock;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroup;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
@@ -58,7 +59,15 @@ public class ChainMgmtActionFormBean {
 	
 	private ChainPriceIncrement priceIncrement;
 
+	private QxbabyConf qxbabyConf = new QxbabyConf();
 	
+	
+	public QxbabyConf getQxbabyConf() {
+		return qxbabyConf;
+	}
+	public void setQxbabyConf(QxbabyConf qxbabyConf) {
+		this.qxbabyConf = qxbabyConf;
+	}
 	public int getAccessLevel() {
 		return accessLevel;
 	}

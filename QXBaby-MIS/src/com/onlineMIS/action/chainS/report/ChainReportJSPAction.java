@@ -446,5 +446,15 @@ public class ChainReportJSPAction extends ChainReportAction {
 		
 		return "PreVIPConsumpReport";
 	}
+	
+	/**
+	 * 准备生成报表库的页面
+	 * @return
+	 */
+	public String preChainAutoRptRepository(){
+		chainReportService.prepareChainRptRepositoryUI(formBean, uiBean);
+		
+		return "rptRepositoryUI";
+	}
 
 }

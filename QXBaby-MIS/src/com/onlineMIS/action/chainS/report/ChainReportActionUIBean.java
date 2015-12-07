@@ -1,5 +1,6 @@
 package com.onlineMIS.action.chainS.report;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelOne;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelTwo;
+import com.onlineMIS.ORM.entity.chainS.report.ChainAutoRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelOne;
@@ -59,7 +61,21 @@ public class ChainReportActionUIBean {
 	private List<ChainAllInOneReportItemLevelThree> allInOneLevelThree = new ArrayList<ChainAllInOneReportItemLevelThree>();
 	private List<ChainAllInOneReportItemLevelFour> allInOneLevelFour = new ArrayList<ChainAllInOneReportItemLevelFour>();
 
+	/**
+	 * report repository的参数
+	 */
+	private List<ChainAutoRptRepositoty> currentSalesDates = new ArrayList<ChainAutoRptRepositoty>();
 	
+	
+	
+	public List<ChainAutoRptRepositoty> getCurrentSalesDates() {
+		return currentSalesDates;
+	}
+
+	public void setCurrentSalesDates(List<ChainAutoRptRepositoty> currentSalesDates) {
+		this.currentSalesDates = currentSalesDates;
+	}
+
 	public List<ChainAllInOneReportItemLevelThree> getAllInOneLevelThree() {
 		return allInOneLevelThree;
 	}

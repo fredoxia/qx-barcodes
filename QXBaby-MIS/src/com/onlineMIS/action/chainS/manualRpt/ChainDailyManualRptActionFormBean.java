@@ -2,6 +2,7 @@ package com.onlineMIS.action.chainS.manualRpt;
 
 import java.sql.Date;
 
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.manualRpt.ChainDailyManualRpt;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.common.Common_util;
@@ -12,8 +13,7 @@ public class ChainDailyManualRptActionFormBean {
 	private ChainDailyManualRpt rpt = new ChainDailyManualRpt();
 	private Integer[] salerSize = {0,1,2,3};
 	private Integer[] brandSize = {0,1,2,3,4};
-	
-	
+
 	public Integer[] getBrandSize() {
 		return brandSize;
 	}

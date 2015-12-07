@@ -181,13 +181,16 @@ $(function() {
 						</s:if>						
 					</ul>
 				</li>
-				<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainUserJSP!preMgmtUserFunction') || #session.LOGIN_CHAIN_USER.containFunction('chainUserJSP!switchToHeadq')">
+				<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainUserJSP!preMgmtUserFunction') || #session.LOGIN_CHAIN_USER.containFunction('chainUserJSP!switchToHeadq') || #session.LOGIN_CHAIN_USER.containFunction('chainDailyManualRptJSPAction!preCreateConf')">
 			       <li data-options="iconCls:'icon-cog',state:'closed'">
 					<span>系统管理</span>
 					<ul>
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainUserJSP!preMgmtUserFunction')">
 							<li data-options="iconCls:'icon-cog',attributes:{url:'chainUserJSP!preMgmtUserFunction'}">权限管理</li>
 						</s:if>
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainMgmtJSP!preCreateConf')">	
+	        		         <li data-options="iconCls:'icon-cog',attributes:{url:'chainMgmtJSP!preCreateConf'}">修改系统配置</li>
+	        		    </s:if>
 					</ul>
 				   </li>
 				</s:if>
@@ -212,16 +215,14 @@ $(function() {
 	        			</s:if>	        			
 	        			
 	        		</ul> 
-		     </li>
-
-		     <!-- 
-		     <li data-options="iconCls:'icon-chart_bar',state:'open',border:false">  
-		            <span>连锁店总结报表</span>  
+           <li data-options="iconCls:'icon-chart_bar',state:'open',border:false">  
+		            <span>总部分析报表</span>  
 	        		<ul>
-	        		    <li data-options="iconCls:'icon-chart_bar',attributes:{url:'chainDailyManualRptJSPAction!preCreateManualRpt'}">创建日报表</li>
+	        		    <li data-options="iconCls:'icon-chart_bar',attributes:{url:'chainReportJSPAction!preChainAutoRptRepository'}">总部分析报表库</li>       			
+	        			
 	        		</ul> 
-		     </li> -->
 		 </ul>
+
  
     </div>  
 </div>

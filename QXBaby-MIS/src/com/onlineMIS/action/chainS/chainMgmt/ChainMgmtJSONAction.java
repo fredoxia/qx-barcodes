@@ -21,7 +21,7 @@ import com.onlineMIS.converter.JSONSQLDateConverter;
 import com.onlineMIS.converter.JSONUtilDateConverter;
 import com.opensymphony.xwork2.ActionContext;
 
-@SuppressWarnings("serial")
+
 public class ChainMgmtJSONAction extends ChainMgmtAction {
 	/**
 	 * 
@@ -523,6 +523,29 @@ public class ChainMgmtJSONAction extends ChainMgmtAction {
 		try{
 			   jsonMap.put("response", response);
 			   jsonObject = JSONObject.fromObject(jsonMap);
+			} catch (Exception e){
+				loggerLocal.error(e);
+			}
+		
+		return "successful";
+	}
+	
+	/**
+	 * 保存连锁店的配置信息
+	 * @return
+	 */
+	public String updateQxbabyConf(){
+		Response response = new Response();
+		
+		try {
+		    chainMgmtService.updateQxbabyConf(formBean.getQxbabyConf());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setQuickValue(Response.ERROR, e.getMessage());
+		}
+
+		try{
+			   jsonObject = JSONObject.fromObject(response);
 			} catch (Exception e){
 				loggerLocal.error(e);
 			}

@@ -401,7 +401,9 @@
             <result name="listChainStores">/jsp/chainStore/chainMgmt/ListChainStores.jsp</result> 
             <result name="listBrands">/jsp/chainStore/chainMgmt/ListBrands.jsp</result>     
             <result name="searchChainSalesPrice">/jsp/chainStore/chainMgmt/ChainSearchSalesPrice.jsp</result>
-            <result name="editChainSalesPrice">/jsp/chainStore/chainMgmt/ChainEditSalesPrice.jsp</result>        
+            <result name="editChainSalesPrice">/jsp/chainStore/chainMgmt/ChainEditSalesPrice.jsp</result>     
+            <result name="preCreateConf">/jsp/chainStore/chainMgmt/EditQxbabyConf.jsp</result>  
+               
         </action>   
          <action name="productJSPAction" class="com.onlineMIS.action.headQ.barCodeGentor.ProductJSPAction">
               <result name="BrandList">/jsp/headQ/barcodeGentor/BrandList.jsp</result>
@@ -432,6 +434,8 @@
             <result name="PurchaseStatisticReportLevelFour">/jsp/chainStore/report/PurchaseStatisticReportLevelFour.jsp</result>  
             <result name="PurchaseStatisticReportLevelThree">/jsp/chainStore/report/PurchaseStatisticReportLevelThree.jsp</result> 
 
+            <result name="rptRepositoryUI">/jsp/chainStore/report/headRptRepository/ChainRptRepository.jsp</result> 
+            
             <result type="stream" name="report">  
                  <param name="contentType">  
                      application/vnd.ms-excel   

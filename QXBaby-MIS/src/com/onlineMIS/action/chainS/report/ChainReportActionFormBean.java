@@ -3,6 +3,7 @@ package com.onlineMIS.action.chainS.report;
 import java.sql.Date;
 
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.chainS.report.ChainAutoRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
@@ -22,6 +23,18 @@ public class ChainReportActionFormBean {
     private ChainUserInfor saler = new ChainUserInfor();
     private Pager pager = new Pager();
     
+    /**
+     * report repository
+     */
+    private ChainAutoRptRepositoty rptRepository = new ChainAutoRptRepositoty();
+    
+    
+	public ChainAutoRptRepositoty getRptRepository() {
+		return rptRepository;
+	}
+	public void setRptRepository(ChainAutoRptRepositoty rptRepository) {
+		this.rptRepository = rptRepository;
+	}
 	public ChainUserInfor getSaler() {
 		return saler;
 	}

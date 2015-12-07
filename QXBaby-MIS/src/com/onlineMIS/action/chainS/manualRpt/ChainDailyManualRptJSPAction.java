@@ -19,6 +19,8 @@ public class ChainDailyManualRptJSPAction extends ChainDailyManualRptAction {
 	@Autowired
 	private ChainDailyManualRptService chainDailyManualRptService;
 	
+
+	
 	/**
 	 * 准备 创建manual report的UI
 	 * @return

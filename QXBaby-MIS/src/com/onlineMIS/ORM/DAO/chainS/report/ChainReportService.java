@@ -55,6 +55,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelOne;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelTwo;
+import com.onlineMIS.ORM.entity.chainS.report.ChainAutoRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainDailySalesAnalysis;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReportItem;
@@ -151,6 +152,8 @@ public class ChainReportService {
 	@Autowired
 	private ChainVIPPrepaidImpl chainVIPPrepaidImpl;
 	
+	@Autowired
+	private ChainAutoRptRepositoryDaoImpl chainAutoRptRepositoryDaoImpl;
 	/**
 	 * to prepare the generate the report UI
 	 * @param uiBean
@@ -3432,6 +3435,30 @@ public class ChainReportService {
 		String criteria2 = "SELECT COUNT(DISTINCT vipCard.id) " + criteria;
 		    
 	    return chainSalesOrderDaoImpl.executeHQLCount(criteria2, value_sale, true);
+	}
+
+	/**
+	 * 准备 report repository 数据
+	 * @param formBean
+	 * @param uiBean
+	 */
+	public void prepareChainRptRepositoryUI(ChainReportActionFormBean formBean,
+			ChainReportActionUIBean uiBean) {
+		
+		Map<Integer, List<ChainAutoRptRepositoty>> dataMap = chainAutoRptRepositoryDaoImpl.getRptRepositoryDateMap();
+		Iterator<Integer> ids = dataMap.keySet().iterator();
+		
+		while (ids.hasNext()){
+			int id = ids.next();
+			switch (id) {
+				case ChainAutoRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT:
+				    uiBean.setCurrentSalesDates(dataMap.get(id));
+					break;
+
+				default:
+					break;
+			}
+		}
 	}
 
 

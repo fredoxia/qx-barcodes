@@ -21,6 +21,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainRoleTypeDaoImpl;
@@ -41,6 +42,7 @@ import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroup;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroupElement;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.InitialInventoryFileTemplate;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryItem;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelTwoInventoryItem;
@@ -59,6 +61,8 @@ import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistory;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryFileTemplate;
 import com.onlineMIS.action.chainS.chainMgmt.ChainMgmtActionFormBean;
 import com.onlineMIS.action.chainS.chainMgmt.ChainMgmtActionUIBean;
+import com.onlineMIS.action.chainS.manualRpt.ChainDailyManualRptActionFormBean;
+import com.onlineMIS.action.chainS.manualRpt.ChainDailyManualRptActionUIBean;
 import com.onlineMIS.action.chainS.vo.ChainProductBarcodeVO;
 import com.onlineMIS.action.headQ.barCodeGentor.BarcodeGenBasicData;
 import com.onlineMIS.common.Common_util;
@@ -113,6 +117,10 @@ public class ChainMgmtService {
 	
 	@Autowired
 	private ChainStoreDaoImpl chainStoreDaoImpl;
+	
+	@Autowired
+	private QxbabyConfDaoImpl qxbabyConfDaoImpl;
+
 	
 	/**
 	 * to prepare the ui bean for edit chain inforamtion ui
@@ -772,6 +780,26 @@ public class ChainMgmtService {
 		
 		response.setReturnCode(Response.SUCCESS);
 		return response;
+	}
+
+	public Response preparePreCreateConfUI(ChainMgmtActionFormBean formBean,
+			ChainMgmtActionUIBean uiBean, ChainUserInfor userInfor) {
+		Response response = new Response();
+		QxbabyConf qxbabyConf = qxbabyConfDaoImpl.getConf();
+		if (qxbabyConf == null)
+			response.setFail("尚未设置配置信息"); 
+		else 
+			formBean.setQxbabyConf(qxbabyConf);
+		
+		uiBean.setYearList(yearDaoImpl.getAll(true));
+		
+		uiBean.setQuarterList(quarterDaoImpl.getAll(true));
+		
+		return response;
+	}
+	
+	public void updateQxbabyConf(QxbabyConf conf){
+		qxbabyConfDaoImpl.saveOrUpdate(conf, true);
 	}
 
 
