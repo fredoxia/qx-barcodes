@@ -110,11 +110,12 @@
       </class> 
       
       <class name="ChainAutoRptRepositoty" table="chain_auto_rpt_repository">
-        <id name="rptId" column="rpt_id">
-            <generator class="identity" />
-        </id>
+        <composite-id>
+            <key-property name="rptId" column="rpt_id" type="integer"/>
+            <key-property name="rptDate" column="rpt_date" type="date"/>
+        </composite-id>
         <property name="rptName" column="rpt_name" type="string"/>
-        <property name="rptDate" column="rpt_date" type="date"/>
+        
 		<property name="rptDes" column="rpt_des" type="string"/>
       </class>                            
 </hibernate-mapping>

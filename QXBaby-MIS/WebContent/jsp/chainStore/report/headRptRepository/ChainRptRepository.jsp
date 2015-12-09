@@ -26,7 +26,7 @@ function generateCurrentSalesReport(){
 	     	<table width="100%" border="1" cellpadding="0" cellspacing="0">
 			    <tr class="InnerTableContent">
 		          <td height="32" width="200"><strong>报表种类</strong></td>
-			      <td width="150"><strong>查询时间段</strong></td>
+			      <td width="180"><strong>报表时间段</strong></td>
 			      <td></td>
 		        </tr>
 		

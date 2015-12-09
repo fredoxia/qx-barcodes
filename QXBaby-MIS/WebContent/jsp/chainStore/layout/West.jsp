@@ -215,12 +215,17 @@ $(function() {
 	        			</s:if>	        			
 	        			
 	        		</ul> 
-           <li data-options="iconCls:'icon-chart_bar',state:'open',border:false">  
+	            </li>
+	            <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preChainAutoRptRepository')">
+                <li data-options="iconCls:'icon-chart_bar',state:'open',border:false">  
 		            <span>总部分析报表</span>  
 	        		<ul>
-	        		    <li data-options="iconCls:'icon-chart_bar',attributes:{url:'chainReportJSPAction!preChainAutoRptRepository'}">总部分析报表库</li>       			
-	        			
+	        		     <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preChainAutoRptRepository')">
+	        		        <li data-options="iconCls:'icon-chart_bar',attributes:{url:'chainReportJSPAction!preChainAutoRptRepository'}">总部分析报表库</li>       			
+	        			</s:if>
 	        		</ul> 
+	        	</li>
+	        	</s:if>
 		 </ul>
 
  
