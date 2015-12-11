@@ -30,6 +30,8 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 		}
 		dateUI = Common_util.dateFormat.format(c.getDateD());
 		
+		calculatedAmts = String.valueOf(Common_util.roundDouble(this.getCalculatedAmt(), 1));
+		
 		if (this.getStatus() == ChainVIPPrepaidFlow.STATUS_SUCCESS)
 			statusS = "完成";
 		else if  (this.getStatus() == ChainVIPPrepaidFlow.STATUS_CANCEL)
@@ -43,8 +45,17 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	private String consump = "-";
 	private String dateUI = "";
 	private String statusS = "";
+	private String calculatedAmts = "";
 	
 	
+	public String getCalculatedAmts() {
+		return calculatedAmts;
+	}
+
+	public void setCalculatedAmt(String calculatedAmt) {
+		this.calculatedAmts = calculatedAmt;
+	}
+
 	public String getDateUI() {
 		return dateUI;
 	}

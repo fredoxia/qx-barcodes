@@ -68,6 +68,7 @@
         <property name="operationType" column="operation_type" type="string"/>
         <property name="depositType" column="deposit_type" type="string"/>
         <property name="amount" column="amount" type="double"/>
+        <property name="calculatedAmt" column="calculated_amount" type="double"/>
         <property name="comment" column="comment" type="string"/>
         <property name="dateD" column="date" type="date"/>
         <property name="createDate" column="create_date" type="timestamp"/>

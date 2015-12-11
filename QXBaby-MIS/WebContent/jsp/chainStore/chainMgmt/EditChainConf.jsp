@@ -68,7 +68,7 @@ function backProcessEditChainConf(data){
 	if (returnCode != SUCCESS){
 		alert(response.message);
 	} else {
-		alert("成功更新。\n如果有开启的零售单据页面，请关闭之后重新打开，配置才能生效");
+		alert("成功更新。\n如果有开启的零售单据页面，预存金冲值页面，请关闭之后重新打开，配置才能生效");
 	}
 }
 
@@ -202,6 +202,17 @@ function clearChainStoreConf(){
           <td>&nbsp;</td>
           <td>&nbsp;</td>
        </tr>
+       <tr class="InnerTableContent">
+   	      <td height="25"><strong>预存金 使用计划</strong></td>
+   	      <td><s:select id="prepaidType" name="formBean.chainStoreConf.prepaidCalculationType"  list="#{0:'正常预存 - 预存100抵用100',1:'1.1倍 - 预存500抵用550,预存1000抵用1100'}" listKey="key" listValue="value" />
+   	      </td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+       </tr>       
        <tr class="InnerTableContent">
    	      <td height="25"><strong>连锁店地址 打印于小票</strong></td>
    	      <td>

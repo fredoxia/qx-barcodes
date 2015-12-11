@@ -419,7 +419,7 @@ public class ChainVIPService {
 
 	public double getAcumulateVipPrepaid(ChainVIPCard vipCard) {
 		double totalPrepaid = 0;
-		String hql = "SELECT c.operationType, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.vipCard.id = ? and c.status=? GROUP BY c.operationType";
+		String hql = "SELECT c.operationType, sum(calculatedAmt) FROM ChainVIPPrepaidFlow c WHERE c.vipCard.id = ? and c.status=? GROUP BY c.operationType";
 	    Object[] values = new Object[]{vipCard.getId(), ChainVIPPrepaidFlow.STATUS_SUCCESS};
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
@@ -1006,8 +1006,17 @@ public class ChainVIPService {
 		} else if (vipCard.getIssueChainStore().getChain_id() != chainStore.getChain_id()){
 			response.setFail("错误: 此vip卡的发卡连锁店不是当前连锁店.充值仅限于当前连锁店的客户.");
 		} else {
+			//1. 获取连锁店配置，看看是哪种计划形式
+			int chainId = chainStore.getChain_id();
+			ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
+			if (conf == null || conf.getPrepaidCalculationType() == 0)
+				vipPrepaid.setCalculatedAmt(amount);
+			else {
+				vipPrepaid.setCalculatedAmt(conf.getRatioByPrepaidType() * amount);
+			}
+			
 			//1. 第一步保存 prepaid
-			chainStore = chainStoreDaoImpl.get(chainStore.getChain_id(), true);
+			chainStore = chainStoreDaoImpl.get(chainId, true);
 			vipPrepaid.setChainStore(chainStore);
 			vipPrepaid.setCreateDate(new java.util.Date());
 			vipPrepaid.setDateD(Common_util.getToday());
@@ -1026,7 +1035,8 @@ public class ChainVIPService {
             
             response.setReturnValue(vipPrepaid);
             String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值" + Common_util.roundDouble(vipPrepaid.getAmount(), 0) +"元 \n";
-            msg += "剩余预存款 :" + accumulateVipPrepaid + "元";
+            msg += "实际到帐 :" + vipPrepaid.getCalculatedAmt() + "元\n";
+            msg += "剩余可用预存款 :" + accumulateVipPrepaid + "元";
             response.setMessage(msg);   
 		}
 		return response;
@@ -1115,9 +1125,9 @@ public class ChainVIPService {
 		
 		String criteriaTotal = "";
 		if (chainId == Common_util.ALL_RECORD)
-			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE  chainStore.chain_id <> "+  ChainStore.CHAIN_ID_TEST_ID + " AND "  + whereCriteria +" GROUP BY operationType, depositType";
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount), SUM(calculatedAmt) FROM ChainVIPPrepaidFlow WHERE  chainStore.chain_id <> "+  ChainStore.CHAIN_ID_TEST_ID + " AND "  + whereCriteria +" GROUP BY operationType, depositType";
 		else 
-			criteriaTotal = "SELECT operationType, depositType, SUM(amount) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +  " AND " +whereCriteria +" GROUP BY operationType, depositType";
+			criteriaTotal = "SELECT operationType, depositType, SUM(amount), SUM(calculatedAmt) FROM ChainVIPPrepaidFlow WHERE chainStore.chain_id = " + chainId +  " AND " +whereCriteria +" GROUP BY operationType, depositType";
 		List<Object> totalObject =  (List<Object>)chainVIPPrepaidImpl.executeHQLSelect(criteriaTotal, value_sale,null, false);
 		ChainVIPPrepaidFlowUI totalPrepaid = new ChainVIPPrepaidFlowUI();
 		processTotalPrepaid(totalObject, totalPrepaid);
@@ -1184,6 +1194,7 @@ public class ChainVIPService {
 		totalPrepaid.setDepositCash("0");
 		totalPrepaid.setConsump("0");
 		
+		double totalCalculatedAmt = 0;
 
 		if (totalObject != null){
 			  for (Object object: totalObject){
@@ -1191,6 +1202,7 @@ public class ChainVIPService {
 					String opType = Common_util.getString(object2[0]);
 					String deType = Common_util.getString(object2[1]);
 					double amt = Common_util.getDouble(object2[2]);
+					double calculatedAmt = Common_util.getDouble(object2[3]);
 					if (opType == null && deType == null)
 						continue;
 					if (ChainVIPPrepaidFlow.OPERATION_TYPE_CONSUMP.equalsIgnoreCase(opType))
@@ -1201,8 +1213,12 @@ public class ChainVIPService {
 						} else if (ChainVIPPrepaidFlow.DEPOSIT_TYPE_CARD.equalsIgnoreCase(deType)){
 							totalPrepaid.setDepositCard(String.valueOf(Common_util.roundDouble(amt, 1)));
 						} 
+						
+						totalCalculatedAmt += calculatedAmt;
 					}
 			  }
+			  
+			  totalPrepaid.setCalculatedAmt(String.valueOf(Common_util.roundDouble(totalCalculatedAmt, 1)));
 		}
 		
 	}

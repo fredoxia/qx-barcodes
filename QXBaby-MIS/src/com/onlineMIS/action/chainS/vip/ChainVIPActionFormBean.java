@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Date;
 
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPPrepaidFlow;
@@ -16,6 +17,7 @@ public class ChainVIPActionFormBean {
 	private ChainVIPPrepaidFlow vipPrepaid = new ChainVIPPrepaidFlow();
 	private int selectedCardId;
 	private ChainStore chainStore = new ChainStore();
+	private ChainStoreConf chainStoreConf = new ChainStoreConf();
 	private boolean canEditOrderDate = false;
 	
     //file upload
@@ -42,6 +44,14 @@ public class ChainVIPActionFormBean {
     private int vipScore;
     private String comment;
     
+
+	public ChainStoreConf getChainStoreConf() {
+		return chainStoreConf;
+	}
+
+	public void setChainStoreConf(ChainStoreConf chainStoreConf) {
+		this.chainStoreConf = chainStoreConf;
+	}
 
 	public Date getBirthday() {
 		return birthday;

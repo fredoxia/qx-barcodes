@@ -2,6 +2,8 @@ package com.onlineMIS.ORM.entity.chainS.chainMgmt;
 
 import java.io.Serializable;
 
+import com.hp.hpl.sparta.xpath.ThisNodeTest;
+
 public class ChainStoreConf implements Serializable {
 	/**
 	 * 
@@ -37,12 +39,26 @@ public class ChainStoreConf implements Serializable {
 	private int hideDiscountPrint = 0;
 	//允许我店铺使用 其他连锁店的预存金
 	private int allowMyPrepaidCrossStore = 0;
+	/**
+	 * type=1 : amount * 1.1 = calculated amount
+	 */
+	private int prepaidCalculationType = 0;
 	
 	public ChainStoreConf(){
 		
 	}
 
 	
+	public int getPrepaidCalculationType() {
+		return prepaidCalculationType;
+	}
+
+
+	public void setPrepaidCalculationType(int prepaidCalculationType) {
+		this.prepaidCalculationType = prepaidCalculationType;
+	}
+
+
 	public int getAllowMyPrepaidCrossStore() {
 		return allowMyPrepaidCrossStore;
 	}
@@ -132,6 +148,15 @@ public class ChainStoreConf implements Serializable {
 
 	public void setVipScoreCashRatio(double vipScoreCashRatio) {
 		this.vipScoreCashRatio = vipScoreCashRatio;
+	}
+	
+	public double getRatioByPrepaidType(){
+		switch (this.prepaidCalculationType) {
+			case 1:
+				return 1.1;
+			default:
+				return 1;
+		}
 	}
 
 	public enum lowCostAlert {

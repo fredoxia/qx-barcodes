@@ -73,6 +73,8 @@ function changeChainStore(chainId){
 <body>
    <s:hidden name="uiBean.chainStoreConf.printCopy" id="printCopy"/>
    <s:hidden name="uiBean.chainStoreConf.address" id="address"/>
+   <s:hidden name="uiBean.chainStoreConf.prepaidCalculationType" id="prepaidCalculationType"/>
+    
    <s:form action="" method="POST"  name="vipPrepaidDepositForm" id="vipPrepaidDepositForm" theme="simple"> 
 	<table width="95%" align="center"  class="OuterTable">
 	    <tr><td>

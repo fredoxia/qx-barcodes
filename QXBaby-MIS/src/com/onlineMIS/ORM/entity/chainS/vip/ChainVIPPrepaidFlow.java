@@ -35,6 +35,7 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	 */
 	private String depositType = "";
 	private double amount;
+	private double calculatedAmt;
 	private String comment = "";
 	private java.sql.Date dateD;
 	private Date createDate;
@@ -45,6 +46,12 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	private double accumulateVipPrepaid = 0;
 	
 	
+	public double getCalculatedAmt() {
+		return calculatedAmt;
+	}
+	public void setCalculatedAmt(double calculatedAmt) {
+		this.calculatedAmt = calculatedAmt;
+	}
 	public double getAccumulateVipPrepaid() {
 		return accumulateVipPrepaid;
 	}
