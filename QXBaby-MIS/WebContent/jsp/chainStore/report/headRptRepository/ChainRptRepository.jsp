@@ -13,12 +13,16 @@ $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 	});
 function generateCurrentSalesReport(){
-	alert("go");
+	$("#reportType").attr("value", 1);
+	$("#reportDate").attr("value",$("#currentSalesDate").val());
+    document.preGenReportForm.submit();
 }
 </script>
 </head>
 <body>
-   <s:form id="preGenReportForm" name="preGenReportForm" action="/actionChain/chainReportJSPAction!generateAllInOneReport" theme="simple" method="POST"> 
+   <s:form id="preGenReportForm" name="preGenReportForm" action="/actionChain/chainReportJSPAction!generateChainRptRepository" theme="simple" method="POST"> 
+   		<s:textfield id="reportType" name="formBean.rptRepository.rptId"/>
+   		<s:textfield id="reportDate" name="formBean.rptRepository.rptDate"/> 
    </s:form>
    <s:form id="tempForm" name="tempForm" action="" theme="simple" method="POST"> 
      <table width="90%" align="center"  class="OuterTable">

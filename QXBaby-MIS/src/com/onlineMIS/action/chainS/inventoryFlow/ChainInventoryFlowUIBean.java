@@ -39,8 +39,8 @@ public class ChainInventoryFlowUIBean{
 	private List<ChainLevelOneInventoryItem> levelOneInventoryItem = new ArrayList<ChainLevelOneInventoryItem>();
 	private List<ChainInvenTraceInfoVO> traceItems = new ArrayList<ChainInvenTraceInfoVO>();
 	private ChainInvenTraceInfoVO traceFooter = new ChainInvenTraceInfoVO();
-	
-	
+
+
 	public List<ChainInvenTraceInfoVO> getTraceItems() {
 		return traceItems;
 	}

@@ -67,6 +67,9 @@ function searchOrdersBackProcess(data){
 
     $("#invenFlowOrderDiv").show();
 }
+function changeChainStore(chainId){
+
+}
 </script>
 </head>
 <body>
@@ -91,7 +94,10 @@ function searchOrdersBackProcess(data){
 					      		 <s:textfield id="endDate" name="formBean.searchEndTime" cssClass="easyui-datebox" data-options="width:100,editable:false"/>	
 		                      </td>
 		                      <td><strong>连锁店</strong></td>
-						      <td><s:select id="chainStore" name="formBean.flowOrder.chainStore.chain_id"  list="uiBean.chainStores" listKey="chain_id" listValue="chain_name"/></td>
+						      <td><%@ include file="../include/SearchChainStore.jsp"%>
+						      		<input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
+						      		<input type="hidden" id="accessLevel" name="formBean.accessLevel" value="1"/>		
+						      </td>
 						      <td>&nbsp;</td>
 						    </tr>
 							<tr class="InnerTableContent">

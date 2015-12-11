@@ -1035,8 +1035,8 @@ public class ChainVIPService {
             
             response.setReturnValue(vipPrepaid);
             String msg = "成功为VIP " + vipCard.getVipCardNo() + " 充值" + Common_util.roundDouble(vipPrepaid.getAmount(), 0) +"元 \n";
-            msg += "实际到帐 :" + vipPrepaid.getCalculatedAmt() + "元\n";
-            msg += "剩余可用预存款 :" + accumulateVipPrepaid + "元";
+            msg += "实际到帐 :" + Common_util.roundDouble(vipPrepaid.getCalculatedAmt(),0) + "元\n";
+            msg += "剩余可用预存款 :" + Common_util.roundDouble(accumulateVipPrepaid,0) + "元";
             response.setMessage(msg);   
 		}
 		return response;

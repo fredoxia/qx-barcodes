@@ -42,8 +42,9 @@ function printContent(prepaid){
 	else if  (prepaid.depositType == "D")
 		depositType = "刷卡";
 			
-	pazu.TPrinter.printToDefaultPrinter("充值金额 : " + prepaid.amount + " " + depositType);  
-	pazu.TPrinter.printToDefaultPrinter("剩余充值金额  : " + prepaid.accumulateVipPrepaid);  
+	pazu.TPrinter.printToDefaultPrinter("充值金额 : " + (prepaid.amount).toFixed(0) + " " + depositType); 
+	pazu.TPrinter.printToDefaultPrinter("实际到账金额 : " + (prepaid.calculatedAmt).toFixed(0));
+	pazu.TPrinter.printToDefaultPrinter("剩余充值金额  : " + (prepaid.accumulateVipPrepaid).toFixed(0));  
 	pazu.TPrinter.printToDefaultPrinter("备注  : " + prepaid.comment);  
 } 
 

@@ -6,12 +6,17 @@ import java.sql.Date;
 
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.action.chainS.ChainActionFormBaseBean;
 
 public class ChainInventoryFlowFormBean extends ChainActionFormBaseBean{
 	
 	private ChainInventoryFlowOrder flowOrder = new ChainInventoryFlowOrder();
 	private int chainId ;
+	
+	private ChainStore chainStore;
+
+
 	private String barcode;
 	/**
 	 * 
@@ -40,7 +45,13 @@ public class ChainInventoryFlowFormBean extends ChainActionFormBaseBean{
 	//for the chain inventory excle report
 	private int reportType;
 	
+	public ChainStore getChainStore() {
+		return chainStore;
+	}
 
+	public void setChainStore(ChainStore chainStore) {
+		this.chainStore = chainStore;
+	}
 	public String getBarcode() {
 		return barcode;
 	}

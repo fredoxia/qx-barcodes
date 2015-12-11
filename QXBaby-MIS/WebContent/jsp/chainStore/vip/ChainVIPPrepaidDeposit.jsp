@@ -55,6 +55,7 @@ function backProcessDepositPrepaid(data){
        
        var prepaid = response.returnValue;
        try {
+    	   //alert((prepaid.accumulateVipPrepaid).toFixed(0));
 	        printSalesOrder(prepaid);
        } catch (e){
 			alert("小票打印出现问题 ,请联系总部管理员");
@@ -116,7 +117,7 @@ function changeChainStore(chainId){
 		    <tr class="InnerTableContent">
 		      <td>充值金额 *</td>
 		      <td colspan="2">
-		      	<s:textfield name="formBean.vipPrepaid.amount" id="amount" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:50,min:0,max:2000"/>
+		      	<s:textfield name="formBean.vipPrepaid.amount" id="amount" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:500,min:500,max:4000"/>
 		      </td>
 		    </tr>		
 		    <tr class="InnerTableContent">

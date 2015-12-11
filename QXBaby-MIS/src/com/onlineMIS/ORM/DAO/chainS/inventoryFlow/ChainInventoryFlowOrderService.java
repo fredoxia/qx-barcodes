@@ -268,8 +268,14 @@ public class ChainInventoryFlowOrderService {
 	public void prepareSearchFlowOrderFormUIBean(ChainUserInfor loginUser,
 			ChainInventoryFlowUIBean uiBean, ChainInventoryFlowFormBean formBean) {
 		//1. set the store list
-		List<ChainStore> stores = chainStoreService.getChainStoreList(loginUser);
-		uiBean.setChainStores(stores);
+		if (!ChainUserInforService.isMgmtFromHQ(loginUser)){
+			int chainId = loginUser.getMyChainStore().getChain_id();
+			ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
+			formBean.setChainStore(chainStore);
+		} else {
+			ChainStore allChainStore = ChainStoreDaoImpl.getAllChainStoreObject();
+			formBean.setChainStore(allChainStore);
+		}
 		
 		//2. set the status 
 		ChainInventoryFlowOrder chainInventoryFlowOrder = new ChainInventoryFlowOrder();
@@ -356,7 +362,7 @@ public class ChainInventoryFlowOrderService {
 	private DetachedCriteria buildSearchInvenFlowCriter(ChainInventoryFlowFormBean formBean){
         DetachedCriteria criteria = DetachedCriteria.forClass(ChainInventoryFlowOrder.class);
 		
-		int chainId = formBean.getFlowOrder().getChainStore().getChain_id();
+		int chainId = formBean.getChainStore().getChain_id();
 		if (chainId != Common_util.ALL_RECORD){
 			criteria.add(Restrictions.or(Restrictions.eq("chainStore.chain_id", chainId), Restrictions.and(Restrictions.eq("toChainStore.chain_id", chainId),Restrictions.ne("status", ChainInventoryFlowOrder.STATUS_DRAFT))));
 		}

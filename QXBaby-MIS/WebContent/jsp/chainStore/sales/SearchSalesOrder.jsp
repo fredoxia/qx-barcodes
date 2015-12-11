@@ -53,6 +53,7 @@ function searchOrdersBackProcess(data){
 			        		  orders[i].id+"</td><td>"+
 			        		  orders[i].chainStore.chain_name+"</td><td>"+
 					          orders[i].orderDate+"</td><td>"+
+					          orders[i].orderCreateDate+"</td><td>"+
 					          orders[i].statusS+"</td><td>"+
 					          isVip+"</td><td>"+
 					          orders[i].saler.name+"</td><td>"+
@@ -68,7 +69,7 @@ function searchOrdersBackProcess(data){
 		    
 		    //2.渲染总数
 		    var totalResult = result[1];
-	          $("<tr class='PBAInnerTableTitale' align='center'><td height='27' colspan='7'>总计</td><td>"+
+	          $("<tr class='PBAInnerTableTitale' align='center'><td height='27' colspan='8'>总计</td><td>"+
 	        		  totalResult.totalQuantity+"</td><td>"+
 	        		  (totalResult.netAmount).toFixed(2)+"</td><td>"+
 	        		  (totalResult.totalAmount - totalResult.netAmount).toFixed(2)+"</td><td>"+
@@ -182,9 +183,10 @@ function backProcessChangeChainStore(data){
 						<table width="100%"  align="left"  id="org_table">
 						  <tr class="PBAInnerTableTitale" align="center">
 						    <th width="20" height="35"></th>
-						    <th width="60">单据号</th>
+						    <th width="55">单据号</th>
 						    <th width="110">连锁店</th>
-						    <th width="85">单据日期</th>
+						    <th width="75">单据日期</th>
+						    <th width="85">过账日期</th>
 						    <th width="40">状态</th>
 						    <th width="40">VIP</th>
 						    <th width="70">经手人</th>
@@ -200,7 +202,7 @@ function backProcessChangeChainStore(data){
 						  <tbody id="salesOrders">
 						  </tbody>
 						  <tr class="InnerTableContent" id="pager">	      
-						      <td colspan="15"><div id="pageNav"></div></td>
+						      <td colspan="16"><div id="pageNav"></div></td>
 						  </tr>					       
 						</table>
 					  </div>

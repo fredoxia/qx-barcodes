@@ -456,5 +456,17 @@ public class ChainReportJSPAction extends ChainReportAction {
 		
 		return "rptRepositoryUI";
 	}
+	
+	/**
+	 * 生成报表
+	 * @return
+	 */
+	public String generateChainRptRepository(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"generateChainRptRepository");
+    	
+    	return "";
+    	
+	}
 
 }
