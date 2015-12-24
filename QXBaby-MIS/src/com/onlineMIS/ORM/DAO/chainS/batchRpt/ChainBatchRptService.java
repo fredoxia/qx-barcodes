@@ -69,6 +69,7 @@ import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.FileCompressionUtil;
+import com.onlineMIS.common.FileOperation;
 import com.onlineMIS.common.loggerLocal;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -337,7 +338,7 @@ public class ChainBatchRptService {
 		}
 		
 		List<ChainCurrentSeasonProductAnalysisItem> rptItems = new ArrayList<ChainCurrentSeasonProductAnalysisItem>(rptItemMap.values());
-		Collections.sort(rptItems, new ChainCurrentSalesAnalysisComparator());
+		Collections.sort(rptItems, new ChainCurrentProductAnalysisComparator());
 		
 		rpt.setRptItems(rptItems);
 		
@@ -354,7 +355,7 @@ public class ChainBatchRptService {
 		 */
 		
 		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
-		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT);;
+		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT);;
 		chainBatchRptRepositoty.setRptDate(startDate);
 		chainBatchRptRepositoty.setRptDes(startDate, endDate);
 		
@@ -542,6 +543,7 @@ public class ChainBatchRptService {
 			try {
 			    calculatePurchaseMapForSalesAnalysis(dates.get(0), dates.get(1), purchaseAccumulatedMap, inDeliveryAccumulatedMap, returnAccumulatedMap,year, quarter);
 			} catch (Exception e){
+				e.printStackTrace();
 				loggerLocal.errorB("获取累计采购件数出错 : " + dates.get(0) + ", " + dates.get(1));
 				loggerLocal.errorB(e);
 			}
@@ -583,7 +585,6 @@ public class ChainBatchRptService {
 		productIoInventoryCriteria.add(Restrictions.eq("year.year_ID", year.getYear_ID()));
 		productIoInventoryCriteria.add(Restrictions.eq("quarter.quarter_ID", quarter.getQuarter_ID()));
 
-		
 		ProjectionList projectionInventoryList = Projections.projectionList();
 		projectionInventoryList.add(Projections.groupProperty("clientId"));
 		projectionInventoryList.add(Projections.sum("costTotal"));
@@ -638,28 +639,28 @@ public class ChainBatchRptService {
 			int key = keys.next();
 			ChainCurrentSeasonSalesAnalysisItem item = rptItemMap.get(key);
 			try {
-			if (item != null){
-				Double weeklyPurchase = purchaseAccumulatedMap.get(key);
-				if (weeklyPurchase != null)
-					item.setPurchaseAmt(weeklyPurchase);
-				
-				Double weeklyReturn = returnAccumulatedMap.get(key);
-				if (weeklyReturn != null)
-					item.setReturnAmt(weeklyReturn);
-				
-				Double salesAmt = salesAccumulatedMap.get(key);
-				if (salesAmt != null)
-					item.setSalesAmt(salesAmt);
-				
-				item.calculateRatio();
-			}
+				if (item != null){
+					Double weeklyPurchase = purchaseAccumulatedMap.get(key);
+					if (weeklyPurchase != null)
+						item.setPurchaseAmt(weeklyPurchase);
+					
+					Double weeklyReturn = returnAccumulatedMap.get(key);
+					if (weeklyReturn != null)
+						item.setReturnAmt(weeklyReturn);
+					
+					Double salesAmt = salesAccumulatedMap.get(key);
+					if (salesAmt != null)
+						item.setSalesAmt(salesAmt);
+					
+					item.calculateRatio();
+				}
 			} catch (Exception e){
 				loggerLocal.error("错误 :" + e.getMessage() + ", " + key);
 				loggerLocal.errorB(e);
 			}
 		}
 		
-		List<ChainCurrentSeasonProductAnalysisItem> rptItems = new ArrayList<ChainCurrentSeasonProductAnalysisItem>(rptItemMap.values());
+		List<ChainCurrentSeasonSalesAnalysisItem> rptItems = new ArrayList<ChainCurrentSeasonSalesAnalysisItem>(rptItemMap.values());
 		Collections.sort(rptItems, new ChainCurrentSalesAnalysisComparator());
 		
 		rpt.setRptItems(rptItems);
@@ -677,42 +678,40 @@ public class ChainBatchRptService {
 		 */
 		
 		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
-		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT);;
+		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT);
 		chainBatchRptRepositoty.setRptDate(startDate);
 		chainBatchRptRepositoty.setRptDes(startDate, endDate);
 		
 	   /**
 	    * 9.2 所有连锁店的数据
 	    */
+
+	   loggerLocal.infoB("准备excel文件");
 	   Map<String, HSSFWorkbook> bookMap = new HashMap<String, HSSFWorkbook>();
 		
 	   try {
-		   loggerLocal.infoB("准备zip文件");
-		   ChainCurrentSeasonProductAnalysisTemplate rptTemplate = new ChainCurrentSeasonProductAnalysisTemplate(rpt, contextPath + "WEB-INF\\template\\");
+		   ChainCurrentSeasonSalesAnalysisTemplate rptTemplate = new ChainCurrentSeasonSalesAnalysisTemplate(rpt, contextPath + "WEB-INF\\template\\");
 		   HSSFWorkbook wholeChainWorkbook = rptTemplate.process();
-		   String wholeChainWorkbookName = rpt.getChainStore().getChain_name() + ".xls";
-		   
+		   String wholeChainWorkbookName = "mainFile";
 		   bookMap.put(wholeChainWorkbookName, wholeChainWorkbook);
-	
-	       String zipFilePath = chainBatchRptRepositoty.getRptPathByType() + "\\" + chainBatchRptRepositoty.getDownloadRptName();    
-	
-	       loggerLocal.infoB("zip文件名: " + zipFilePath);
-	       FileCompressionUtil.zipWorkbooks(zipFilePath, bookMap);
-	       
-	       //如果打包出现错误回滚
-	       loggerLocal.infoB("写入报表数据到数据库");
+		   
+		   //如果打包出现错误回滚
+		   loggerLocal.infoB("写入报表数据到数据库");
 		   chainBatchRptRepositotyDaoImpl.saveOrUpdate(chainBatchRptRepositoty, true);
-			
+		   String filePath = chainBatchRptRepositoty.getRptPathByType() + "\\" + chainBatchRptRepositoty.getDownloadRptName();    
+	
+	       loggerLocal.infoB("zip文件名: " + filePath);
+	       FileCompressionUtil.zipWorkbooks(filePath, bookMap);
+	       
+		   loggerLocal.infoB("------" + startDate + " 报表成功生成----");
+		   response.setMessage(message);
 	   } catch (Exception e){
-		   loggerLocal.error("发生严重错误 : ");
-		   loggerLocal.errorB(e);
+		   loggerLocal.error(e);
+		   response.setFail(e.getMessage());
+		   loggerLocal.infoB("------" + startDate + " 报表生成失败----");
 	   }
-	   
-		response.setMessage(message);
-		loggerLocal.infoB("------" + startDate + " 报表成功生成----");
-		return response;
-		
-		return response;
+
+	   return response;
 	}
 	
 	private void calculateSalesMapForSalesAnalysis(java.sql.Date startDate,
@@ -829,7 +828,7 @@ public class ChainBatchRptService {
 		
 	}
 
-	class ChainCurrentSalesAnalysisComparator implements Comparator<ChainCurrentSeasonProductAnalysisItem> {
+	class ChainCurrentProductAnalysisComparator implements Comparator<ChainCurrentSeasonProductAnalysisItem> {
 
 		@Override
 		public int compare(ChainCurrentSeasonProductAnalysisItem o1,
@@ -838,6 +837,22 @@ public class ChainBatchRptService {
 			
 		}
 	}
+	
+	class ChainCurrentSalesAnalysisComparator implements Comparator<ChainCurrentSeasonSalesAnalysisItem> {
+
+		@Override
+		public int compare(ChainCurrentSeasonSalesAnalysisItem o1,
+				ChainCurrentSeasonSalesAnalysisItem o2) {
+			double result = o2.getSalesAmt() - o1.getSalesAmt();
+			if (result > 0)
+				return 1;
+			else if (result < 0)
+				return -1;
+			else 
+				return 0;
+			
+		}
+	}	
 }
 
 

@@ -114,7 +114,13 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 			returnRatio = returnAmt / purchaseAmt;
 		}
 		
-		
+		if (netPurchaseAmt == 0) {
+			salesRatio = Common_util.ALL_RECORD;
+			inventoryRatio = Common_util.ALL_RECORD;
+		} else {
+			salesRatio = salesAmt/ netPurchaseAmt;
+			inventoryRatio = inventoryAmt / netPurchaseAmt;
+		}	
 	}
 
 	

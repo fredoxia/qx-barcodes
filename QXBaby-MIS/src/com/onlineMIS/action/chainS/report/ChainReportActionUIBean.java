@@ -64,10 +64,21 @@ public class ChainReportActionUIBean {
 	/**
 	 * report repository的参数
 	 */
+	//产品分析报表日期
 	private List<ChainBatchRptRepositoty> currentSalesDates = new ArrayList<ChainBatchRptRepositoty>();
+	//销售分析报表日期
+	private List<ChainBatchRptRepositoty> accumulatedSalesDates = new ArrayList<ChainBatchRptRepositoty>();
 	
 	
 	
+	public List<ChainBatchRptRepositoty> getAccumulatedSalesDates() {
+		return accumulatedSalesDates;
+	}
+
+	public void setAccumulatedSalesDates(List<ChainBatchRptRepositoty> accumulatedSalesDates) {
+		this.accumulatedSalesDates = accumulatedSalesDates;
+	}
+
 	public List<ChainBatchRptRepositoty> getCurrentSalesDates() {
 		return currentSalesDates;
 	}

@@ -3455,10 +3455,12 @@ public class ChainReportService {
 		while (ids.hasNext()){
 			int id = ids.next();
 			switch (id) {
-				case ChainBatchRptRepositoty.TYPE_WEEKLY_SALES_ANALYSIS_RPT:
+				case ChainBatchRptRepositoty.TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT:
 				    uiBean.setCurrentSalesDates(dataMap.get(id));
 					break;
-
+				case ChainBatchRptRepositoty.TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT:
+				    uiBean.setAccumulatedSalesDates(dataMap.get(id));
+					break;
 				default:
 					break;
 			}

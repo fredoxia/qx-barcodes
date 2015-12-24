@@ -13,8 +13,23 @@ $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 	});
 function generateCurrentSalesReport(){
+	var date = $("#currentSalesDate").val();
+	if (date == ""){
+		alert("无效的报表日期");
+		return;
+	}
 	$("#reportType").attr("value", 1);
-	$("#reportDate").attr("value",$("#currentSalesDate").val());
+	$("#reportDate").attr("value",date);
+    document.preGenReportForm.submit();
+}
+function generateAccumulatedSalesReport(){
+	var date = $("#accumulatedSalesDate").val();
+	if (date == ""){
+		alert("无效的报表日期");
+		return;
+	}
+	$("#reportType").attr("value", 2);
+	$("#reportDate").attr("value", date);
     document.preGenReportForm.submit();
 }
 </script>
@@ -35,11 +50,17 @@ function generateCurrentSalesReport(){
 		        </tr>
 		
 			    <tr class="InnerTableContent">
-			      <td height="32" >每周当季货品销售分析报表</td>
-			      <td ><s:select id="currentSalesDate" name="formBean.chainStore.chain_id"  list="uiBean.currentSalesDates" listKey="rptDate" listValue="rptDes" />
+			      <td height="32" >每周当季货品分析报表</td>
+			      <td ><s:select id="currentSalesDate" name="formBean.rptDate"  list="uiBean.currentSalesDates" listKey="rptDate" listValue="rptDes" />
 			      </td>
 			      <td><input type="button" value="下载报表" onclick="generateCurrentSalesReport();"/></td>
 		        </tr>
+			    <tr class="InnerTableContent">
+			      <td height="32" >每周当季货品累计销售分析报表</td>
+			      <td ><s:select id="accumulatedSalesDate" name="formBean.rptDate"  list="uiBean.accumulatedSalesDates" listKey="rptDate" listValue="rptDes" />
+			      </td>
+			      <td><input type="button" value="下载报表" onclick="generateAccumulatedSalesReport();"/></td>
+		        </tr>		        
 			</table>
 		</td></tr>
 	</table>

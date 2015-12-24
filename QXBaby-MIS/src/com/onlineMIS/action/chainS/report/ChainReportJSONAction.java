@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.batchRpt.ChainBatchRptService;
+import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
@@ -52,7 +53,20 @@ public class ChainReportJSONAction extends ChainReportAction {
 		Response response = new Response();
 		
     	try {
-    	    response = chainBatchRptService.runWeeklyCurrentSeasonProductAnalysisRpt();
+    		int reportType = formBean.getReportType();
+    		
+    		switch (reportType) {
+			case ChainBatchRptRepositoty.TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT:
+				response = chainBatchRptService.runWeeklyCurrentSeasonSalesAnalysisRpt();
+				break;
+			case ChainBatchRptRepositoty.TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT:
+				response = chainBatchRptService.runWeeklyCurrentSeasonProductAnalysisRpt();
+				break;
+			default:
+				response.setFail("没有输入report种类");
+				break;
+			}
+    	    
     	} catch (Exception e) {
 			loggerLocal.error(e);
 		}

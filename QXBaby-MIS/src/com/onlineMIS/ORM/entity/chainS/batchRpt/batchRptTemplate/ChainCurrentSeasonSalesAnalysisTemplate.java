@@ -55,7 +55,8 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 		
 		//报表头
 		Row header1 = sheet.getRow(0);
-		header1.createCell(0).setCellValue(year.getYear() + "-" + quarter.getQuarter_Name() + " " + header + " (" + rpt.getRptDate() + " 至  " + rpt.getEndDate() +  ")");
+		String generatedTime = Common_util.dateFormat.format((Common_util.getToday()));
+		header1.createCell(0).setCellValue(year.getYear() + "-" + quarter.getQuarter_Name() + " " + header + " (" + rpt.getRptDate() + " 至  " + rpt.getEndDate() +  ") " + generatedTime);
 
 		//写报表内容
 		int totalDataRow = items.size();
@@ -68,12 +69,21 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 			row.createCell(RANK_COL).setCellValue(i+1);
 			row.createCell(CHANIN_NAME_COL).setCellValue(item.getChainStore().getChain_name());
 			row.createCell(LAST_YEAR_PURCHASE_COL).setCellValue(Common_util.formatDouble(item.getLastYearPurchase(), Common_util.df));
-			row.createCell(NET_PURCHASE_COL).setCellValue(Common_util.formatDouble(item.getPurchaseAmt(), Common_util.df));
-			row.createCell(RETURN_RATIO_COL).setCellValue(item.getReturnRatio());
+			row.createCell(NET_PURCHASE_COL).setCellValue(Common_util.formatDouble(item.getNetPurchaseAmt(), Common_util.df));
+			
+			if (item.getReturnRatio() != Common_util.ALL_RECORD)
+				row.createCell(RETURN_RATIO_COL).setCellValue(Common_util.pf.format(item.getReturnRatio()));
+			
 			row.createCell(INVENTORY_AMT_COL).setCellValue(item.getInventoryAmt());
-			row.createCell(INVENTORY_RATIO_COL).setCellValue(item.getInventoryRatio());
+			
+			if (item.getInventoryRatio() != Common_util.ALL_RECORD)
+				row.createCell(INVENTORY_RATIO_COL).setCellValue(Common_util.pf.format(item.getInventoryRatio()));
+			
 			row.createCell(SALES_AMT_COL).setCellValue(item.getSalesAmt());
-			row.createCell(INVENTORY_RATIO_COL).setCellValue(item.getInventoryRatio());
+			
+			if (item.getSalesRatio() != Common_util.ALL_RECORD)
+				row.createCell(SALES_RATIO_COL).setCellValue(Common_util.pf.format(item.getSalesRatio()));
+
 		}	
 		
 		Row footerRow = sheet.createRow(totalDataRow + DATA_ROW);
@@ -90,7 +100,7 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 	}
 
 	private String writeFormula(String column){
-		return "AVERAGE("+ column +":" + formulaStart + ":" + column + formulaEnd + ")";
+		return "AVERAGE("+ column  + formulaStart + ":" + column + formulaEnd + ")";
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
