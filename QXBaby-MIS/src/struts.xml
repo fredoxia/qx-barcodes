@@ -448,7 +448,7 @@
             </result>  
              <result type="stream" name="zipReport">  
                  <param name="contentType">  
-                     application/zip;charset=UTF-8 
+                     application/zip
                 </param>  
                 <param name="inputName">excelStream</param>  
                <param name="contentDisposition">  

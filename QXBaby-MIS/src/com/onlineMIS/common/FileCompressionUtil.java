@@ -15,9 +15,10 @@ import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.CheckedOutputStream;
-import java.util.zip.ZipEntry;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipOutputStream; 
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
@@ -93,6 +94,7 @@ public class FileCompressionUtil {
 					out.write(data, 0, count);
 				}
 			}
+			out.setEncoding("UTF-8");
 		} catch (Exception e){
 			loggerLocal.error(e);
 			throw e;
@@ -146,99 +148,6 @@ public class FileCompressionUtil {
 		}
 
 		return checkStream.getChecksum().getValue();
-	}
-
-	/**
-	 * Unzip files to path.
-	 *
-	 * @param zipFileName
-	 *            the zip file name
-	 * @param fileExtractPath
-	 *            the file extract path
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	public static void unzipFilesToPath(final String zipFileName,
-			final String fileExtractPath) throws IOException {
-
-		final FileInputStream fis = new FileInputStream(zipFileName);
-		final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(
-				fis));
-		try {
-			ZipEntry entry;
-
-			while ((entry = zis.getNextEntry()) != null) {
-				int count;
-				byte[] data = new byte[BUFFER];
-				final FileOutputStream fos = new FileOutputStream(
-						fileExtractPath + PATH_SEP + entry.getName());
-				final BufferedOutputStream dest = new BufferedOutputStream(fos,
-						BUFFER);
-				while ((count = zis.read(data, 0, BUFFER)) != -1) {
-					dest.write(data, 0, count);
-				}
-				dest.flush();
-				dest.close();
-			}
-		} finally {
-			fis.close();
-			zis.close();
-		}
-
-	}
-
-	/**
-	 * Unzip files to path with checksum. CRC32
-	 *
-	 * @param zipFileName
-	 *            the zip file name
-	 * @param fileExtractPath
-	 *            the file extract path
-	 * @param checksum
-	 *            the checksum
-	 * @return true, if checksum matches;
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 */
-	public static boolean unzipFilesToPathWithChecksum(
-			final String zipFileName, final String fileExtractPath,
-			final long checksum) throws IOException {
-
-		boolean checksumMatches = false;
-		final FileInputStream fis = new FileInputStream(zipFileName);
-		final CheckedInputStream checkStream = new CheckedInputStream(fis,
-				new CRC32());
-		final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(
-				checkStream));
-
-		try {
-
-			ZipEntry entry = null;
-			while ((entry = zis.getNextEntry()) != null) {
-				int count;
-				byte[] data = new byte[BUFFER];
-				final FileOutputStream fos = new FileOutputStream(
-						fileExtractPath + PATH_SEP + entry.getName());
-				final BufferedOutputStream dest = new BufferedOutputStream(fos,
-						BUFFER);
-				while ((count = zis.read(data, 0, BUFFER)) != -1) {
-					dest.write(data, 0, count);
-				}
-				dest.flush();
-				dest.close();
-			}
-
-		} finally {
-			zis.close();
-			fis.close();
-			checkStream.close();
-		}
-
-		if (checkStream.getChecksum().getValue() == checksum) {
-			checksumMatches = true;
-		}
-
-		return checksumMatches;
 	}
 
 }

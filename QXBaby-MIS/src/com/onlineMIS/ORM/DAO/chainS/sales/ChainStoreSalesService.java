@@ -1226,7 +1226,7 @@ public class ChainStoreSalesService {
 			 double chainSalePrice = productBarcodeDaoImpl.get(productBarcodeId, true).getProduct().getSalesPrice();
 			 
 			 ChainInOutStock inOutStock = new ChainInOutStock(barcode, clientId, orderId, orderProduct.getType() , cost, cost * quantity, salePrice * discount, salePrice * quantity * discount,chainSalePrice*quantity, quantity,orderProduct.getProductBarcode());
-			 System.out.println(barcode+","+ clientId+","+ orderId+","+  orderProduct.getType());
+//			 System.out.println(barcode+","+ clientId+","+ orderId+","+  orderProduct.getType());
 			 
 			 chainInOutStockDaoImpl.save(inOutStock, false);
 		 }

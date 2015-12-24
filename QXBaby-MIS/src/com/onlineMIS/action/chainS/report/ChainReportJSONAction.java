@@ -52,7 +52,7 @@ public class ChainReportJSONAction extends ChainReportAction {
 		Response response = new Response();
 		
     	try {
-    	    response = chainBatchRptService.runWeeklyRptBatch();
+    	    response = chainBatchRptService.runWeeklyCurrentSeasonProductAnalysisRpt();
     	} catch (Exception e) {
 			loggerLocal.error(e);
 		}

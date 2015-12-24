@@ -203,7 +203,7 @@
          1.每周分析当季货品销售情况-->
     <bean id="weeklyBatchRptJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainBatchRptService"
-   		 p:targetMethod="runWeeklyRptBatch"
+   		 p:targetMethod="runWeeklyCurrentSeasonProductAnalysisRpt"
    		 p:concurrent="false"/>
    <bean id="weeklyBatchRptTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="weeklyBatchRptJob"

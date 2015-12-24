@@ -56,7 +56,8 @@ public class ChainCurrentSeasonProductAnalysisTemplate extends ExcelTemplate{
 		
 		//报表头
 		Row header1 = sheet.getRow(0);
-		header1.createCell(0).setCellValue(year.getYear() + "-" + quarter.getQuarter_Name() + " " + header + " (" + rpt.getRptDate() + " 至  " + rpt.getEndDate() +  ")");
+		String generatedTime = Common_util.dateFormat.format((Common_util.getToday()));
+		header1.createCell(0).setCellValue(year.getYear() + "-" + quarter.getQuarter_Name() + " " + header + " (" + rpt.getRptDate() + " 至  " + rpt.getEndDate() +  ") " + generatedTime);
 
 		
 		//写报表内容
