@@ -729,7 +729,7 @@ public class ChainBatchRptService {
 			ChainStore store = order.getChainStore();
 			if (store == null)
 				continue;
-			int clientId = store.getClient_id();
+			int chainId = store.getChain_id();
 			
 			while (orderProductIterator.hasNext()){
 				ChainStoreSalesOrderProduct orderProduct = orderProductIterator.next();
@@ -750,11 +750,11 @@ public class ChainBatchRptService {
 				}
 			}
 			
-			Double originalCost = salesAccumulatedMap.get(clientId);
+			Double originalCost = salesAccumulatedMap.get(chainId);
 			if (originalCost == null)
 				originalCost = new Double(0);
 			
-			salesAccumulatedMap.put(clientId, originalCost + salesCost);
+			salesAccumulatedMap.put(chainId, originalCost + salesCost);
 		}
 		
 	}
