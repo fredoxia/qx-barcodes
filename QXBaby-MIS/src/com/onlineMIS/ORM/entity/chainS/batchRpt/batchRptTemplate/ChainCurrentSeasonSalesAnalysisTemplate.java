@@ -3,8 +3,12 @@ package com.onlineMIS.ORM.entity.chainS.batchRpt.batchRptTemplate;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
 import com.onlineMIS.ORM.entity.chainS.batchRpt.ChainCurrentSeasonProductAnalysisItem;
@@ -47,6 +51,9 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 	}
 	
 	public HSSFWorkbook process(){
+		HSSFCellStyle percentageStyle = templateWorkbook.createCellStyle();  
+		percentageStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.0%"));  
+
 		HSSFSheet sheet = templateWorkbook.getSheetAt(0);
 		Year year = rpt.getYear();
 		Quarter quarter = rpt.getQuarter();
@@ -71,24 +78,29 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 			row.createCell(LAST_YEAR_PURCHASE_COL).setCellValue(Common_util.formatDouble(item.getLastYearPurchase(), Common_util.df));
 			row.createCell(NET_PURCHASE_COL).setCellValue(Common_util.formatDouble(item.getNetPurchaseAmt(), Common_util.df));
 			
-			if (item.getReturnRatio() != Common_util.ALL_RECORD)
-				row.createCell(RETURN_RATIO_COL).setCellValue(Common_util.pf.format(item.getReturnRatio()));
-			else 
-				row.createCell(RETURN_RATIO_COL).setCellValue(0);
+			if (item.getReturnRatio() != Common_util.ALL_RECORD){
+				Cell cell = row.createCell(RETURN_RATIO_COL);
+				cell.setCellStyle(percentageStyle);
+				cell.setCellValue(item.getReturnRatio());
+			}
+
 			
 			row.createCell(INVENTORY_AMT_COL).setCellValue(item.getInventoryAmt());
 			
-			if (item.getInventoryRatio() != Common_util.ALL_RECORD)
-				row.createCell(INVENTORY_RATIO_COL).setCellValue(Common_util.pf.format(item.getInventoryRatio()));
-			else 
-				row.createCell(INVENTORY_RATIO_COL).setCellValue(0);
+			if (item.getInventoryRatio() != Common_util.ALL_RECORD){
+				Cell cell = row.createCell(INVENTORY_RATIO_COL);
+				cell.setCellStyle(percentageStyle);
+				cell.setCellValue(item.getInventoryRatio());
+			}
 			
 			row.createCell(SALES_AMT_COL).setCellValue(item.getSalesAmt());
 			
-			if (item.getSalesRatio() != Common_util.ALL_RECORD)
-				row.createCell(SALES_RATIO_COL).setCellValue(Common_util.pf.format(item.getSalesRatio()));
-			else 
-				row.createCell(SALES_RATIO_COL).setCellValue(0);
+			if (item.getSalesRatio() != Common_util.ALL_RECORD){
+				Cell cell = row.createCell(SALES_RATIO_COL);
+				cell.setCellStyle(percentageStyle);
+				cell.setCellValue(item.getSalesRatio());
+			}
+
 
 		}	
 		
