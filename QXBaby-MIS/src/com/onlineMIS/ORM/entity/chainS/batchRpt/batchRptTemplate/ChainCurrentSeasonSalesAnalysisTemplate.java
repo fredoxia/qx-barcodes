@@ -37,7 +37,7 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 	private final int SALES_AMT_COL = 7;
 	private final int SALES_RATIO_COL = 8;
 
-	private int formulaStart = DATA_ROW;
+	private int formulaStart = DATA_ROW + 1;
 	private int formulaEnd = DATA_ROW;
 	
 	public ChainCurrentSeasonSalesAnalysisTemplate(ChainCurrentSeasonSalesAnalysisRpt rpt, String templateWorkbookPath)
@@ -73,21 +73,27 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 			
 			if (item.getReturnRatio() != Common_util.ALL_RECORD)
 				row.createCell(RETURN_RATIO_COL).setCellValue(Common_util.pf.format(item.getReturnRatio()));
+			else 
+				row.createCell(RETURN_RATIO_COL).setCellValue(0);
 			
 			row.createCell(INVENTORY_AMT_COL).setCellValue(item.getInventoryAmt());
 			
 			if (item.getInventoryRatio() != Common_util.ALL_RECORD)
 				row.createCell(INVENTORY_RATIO_COL).setCellValue(Common_util.pf.format(item.getInventoryRatio()));
+			else 
+				row.createCell(INVENTORY_RATIO_COL).setCellValue(0);
 			
 			row.createCell(SALES_AMT_COL).setCellValue(item.getSalesAmt());
 			
 			if (item.getSalesRatio() != Common_util.ALL_RECORD)
 				row.createCell(SALES_RATIO_COL).setCellValue(Common_util.pf.format(item.getSalesRatio()));
+			else 
+				row.createCell(SALES_RATIO_COL).setCellValue(0);
 
 		}	
 		
 		Row footerRow = sheet.createRow(totalDataRow + DATA_ROW);
-		formulaEnd = totalDataRow + DATA_ROW - 1;
+		formulaEnd = totalDataRow + DATA_ROW;
 		footerRow.createCell(LAST_YEAR_PURCHASE_COL).setCellFormula(writeFormula("C"));
 		footerRow.createCell(NET_PURCHASE_COL).setCellFormula(writeFormula("D"));
 		footerRow.createCell(RETURN_RATIO_COL).setCellFormula(writeFormula("E"));

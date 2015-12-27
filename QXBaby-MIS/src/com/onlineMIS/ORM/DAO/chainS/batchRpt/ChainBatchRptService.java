@@ -368,7 +368,7 @@ public class ChainBatchRptService {
 		   loggerLocal.infoB("准备zip文件");
 		   ChainCurrentSeasonProductAnalysisTemplate rptTemplate = new ChainCurrentSeasonProductAnalysisTemplate(rpt, contextPath + "WEB-INF\\template\\");
 		   HSSFWorkbook wholeChainWorkbook = rptTemplate.process();
-		   String wholeChainWorkbookName = rpt.getChainStore().getChain_name() + ".xls";
+		   String wholeChainWorkbookName = rpt.getChainStore().getChain_name() + Common_util.dateFormat.format(startDate) + ".xls";
 		   
 		   bookMap.put(wholeChainWorkbookName, wholeChainWorkbook);
 	
@@ -692,7 +692,7 @@ public class ChainBatchRptService {
 	   try {
 		   ChainCurrentSeasonSalesAnalysisTemplate rptTemplate = new ChainCurrentSeasonSalesAnalysisTemplate(rpt, contextPath + "WEB-INF\\template\\");
 		   HSSFWorkbook wholeChainWorkbook = rptTemplate.process();
-		   String wholeChainWorkbookName = "mainFile";
+		   String wholeChainWorkbookName = "所有连锁店报表" + Common_util.dateFormat.format(startDate) + ".xls";
 		   bookMap.put(wholeChainWorkbookName, wholeChainWorkbook);
 		   
 		   //如果打包出现错误回滚

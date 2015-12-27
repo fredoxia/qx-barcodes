@@ -201,14 +201,23 @@
    		 
     <!-- 运行每周报表 ：
          1.每周分析当季货品销售情况-->
-    <bean id="weeklyBatchRptJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+    <bean id="weeklyBatchProductAnalysisRptJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainBatchRptService"
    		 p:targetMethod="runWeeklyCurrentSeasonProductAnalysisRpt"
    		 p:concurrent="false"/>
-   <bean id="weeklyBatchRptTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
-   		 p:jobDetail-ref="weeklyBatchRptJob"
+   <bean id="weeklyBatchProductAnalysisRptTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="weeklyBatchProductAnalysisRptJob"
    	     p:cronExpression="0 20 1 ? * MON"/> 
-   		 
+    <!-- 运行每周报表 ：
+         2.每周分析当季货品累计销售情况-->   	     
+     <bean id="weeklyBatchSalesAnalysisRptJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainBatchRptService"
+   		 p:targetMethod="runWeeklyCurrentSeasonProductAnalysisRpt"
+   		 p:concurrent="false"/>
+    <bean id="weeklyBatchSalesAnalysisRptTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="weeklyBatchSalesAnalysisRptJob"
+   	     p:cronExpression="0 20 2 ? * MON"/> 
+   	       		 
     <!-- monthly dummy hot brand batch job -->
     <!--<bean id="monthlyDummyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainDailySalesService"
@@ -237,7 +246,8 @@
    		 		<ref bean="monthlyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyGenBarcodeTrigger"/>
    		 		<ref bean="dailyCheckInvetoryOrderTrigger"/>
-   		 		<ref bean="weeklyBatchRptTrigger"/>
+   		 		<ref bean="weeklyBatchProductAnalysisRptTrigger"/>
+   		 		<ref bean="weeklyBatchSalesAnalysisRptTrigger"/>
    		 		<!--<ref bean="monthlyDummyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyDummySalesBatchTrigger"/>-->
    		 	</list>

@@ -57,7 +57,7 @@ function generateAccumulatedSalesReport(){
 		        </tr>
 			    <tr class="InnerTableContent">
 			      <td height="32" >每周当季货品累计销售分析报表</td>
-			      <td ><s:select id="accumulatedSalesDate" name="formBean.rptDate"  list="uiBean.accumulatedSalesDates" listKey="rptDate" listValue="rptDes" />
+			      <td ><s:select id="accumulatedSalesDate" name="formBean.rptDate2"  list="uiBean.accumulatedSalesDates" listKey="rptDate" listValue="rptDes" />
 			      </td>
 			      <td><input type="button" value="下载报表" onclick="generateAccumulatedSalesReport();"/></td>
 		        </tr>		        

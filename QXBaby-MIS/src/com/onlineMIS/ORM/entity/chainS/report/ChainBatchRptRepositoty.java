@@ -9,7 +9,7 @@ public class ChainBatchRptRepositoty implements Serializable {
 	 */
 	private static final long serialVersionUID = -8894145370950092740L;
 	
-	public static final Integer[] RPT_TYPES = {1};
+	public static final Integer[] RPT_TYPES = {1,2};
 	/**
 	 * 当季货品的每周滞销货，热销货报表
 	 */
@@ -71,8 +71,10 @@ public class ChainBatchRptRepositoty implements Serializable {
 	}
 	public String getRptPathByType(){
 		switch (rptId) {
-		case TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT:
+		case TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT: 
 			return REPORITORY_ROOT + "\\WeeklySalesAnalysis\\";
+		case TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT:
+			return REPORITORY_ROOT + "\\AccumulatedSalesAnalysis\\";
 		default:
 			return "";
 		}
