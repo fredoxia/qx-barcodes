@@ -290,4 +290,17 @@ public class BaseDAO<T> extends DAOAbstract implements DAOInterface<T>{
 		});	
 	}
 	
+	@Override
+	public void clearSession(){
+		getHibernateTemplate().setCacheQueries(false);
+		
+		getHibernateTemplate().execute(new HibernateCallback<Integer>() {
+			@Override
+			public Integer doInHibernate(Session session){
+            	session.clear();
+				return 1;
+			}
+		});	
+	}
+	
 }

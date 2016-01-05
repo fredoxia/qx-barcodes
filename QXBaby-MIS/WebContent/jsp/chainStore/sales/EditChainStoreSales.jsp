@@ -67,9 +67,13 @@ function draftOrderBKProcess(data){
         alert(returnMsg);
     }
 }
-
+function postSalesOrder2(){
+	postSalesOrder2();
+	postSalesOrder2();
+}
 function postSalesOrder(){
 	$("#submitBt").attr("disabled", true);
+
 	var isValidDraf = validateDraftSalesForm();
 	var isValidSalesOrder = validateSalesOrder(SALES_ORDER);
 	if (isValidDraf && isValidSalesOrder){
@@ -85,8 +89,8 @@ function postSalesOrder(){
 	    		data: params,         
 	    		timeout: 30000, 
 	            dataType: 'json',        
-	            error: function(XMLHttpRequest, textStatus, errorThrown){    
-	            	alert("提交单据发生异常,请重新提交");
+	            error: function(XMLHttpRequest, textStatus, errorThrown){ 
+	            	alert("提交单据发生异常 : ");
 	            	$.messager.progress('close'); 
 	            	$("#submitBt").removeAttr("disabled");
 	            }, 
@@ -95,7 +99,7 @@ function postSalesOrder(){
 	            	postOrderBKProcess(result);
 	            }
 				});
-		   //$.post("<%=request.getContextPath()%>/actionChain/chainSalesJSONAction!postSalesOrder",params, postOrderBKProcess,"json");
+		   //$.post("<%=request.getContextPath()%>/actionChain/chainPostSalesJSONAction!postSalesOrder",params, postOrderBKProcess,"json");
 	} else {
 		$("#submitBt").removeAttr("disabled");
 	}
@@ -154,14 +158,13 @@ function updateTabWithSaler(){
     <s:hidden name="uiBean.chainStoreConf.defaultDiscount" id="defaultDiscount"/>
     <s:hidden name="uiBean.chainStoreConf.address" id="address"/>
     <s:hidden name="uiBean.chainStoreConf.hideDiscountPrint" id="hideDiscountPrint"/>
-    
+	<s:hidden name="formBean.token"/>
     <div data-options="region:'north',split:false,border:false,noheader:true" style="height:65px;overflow:hidden;">
     
 			 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 			    <tr>
 			       <td colspan="7">
-			         <div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
-				   	 <table width="100%" border="0">
+			         <table width="100%" border="0">
 				       <tr class="InnerTableContent">
 				         <td width="220" height="32">连锁店:<s:select id="chainStore" name="formBean.chainSalesOrder.chainStore.chain_id"  list="uiBean.chainStores" listKey="chain_id" listValue="chain_name"  onchange="changeChainStore();"/></td>
 				         <td width="180">经手人： <s:select id="chainSaler" name="formBean.chainSalesOrder.saler.user_id"  list="uiBean.chainSalers" listKey="user_id" listValue="name" onchange ="updateTabWithSaler();"/></td>
@@ -186,6 +189,7 @@ function updateTabWithSaler(){
 		    </table>
 	     </div>
 	     <div data-options="region:'center'" style="border:false">
+	     			<div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
 				     <table width="100%"  align="left" class="OuterTable" id="org_table">
 					    <tr class="PBAInnerTableTitale">
 					      <td colspan="16">

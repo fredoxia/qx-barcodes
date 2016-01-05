@@ -93,6 +93,12 @@ function backProcessS(data){
 }
 
 function searchBarcode(){
+	var categoryId = $("#category_ID").combo("getValue");
+	if (categoryId != "0" && !isValidPositiveInteger(categoryId)){
+		alert("货品类别不是一个正确的输入");
+		return;
+	}
+
     if (validateSearch()){
 		parent.$.messager.progress({
 			text : '数据获取中，请稍后....'
@@ -244,7 +250,7 @@ function selectBrand(brandName, brandId){
 			      <td><input type="text" name="formBean.productBarcode.product.productCode" id="productCode" title="产品货号"/>			      </td>
 			      <td><strong>货品类：</strong></td>
 			      <td>
-			        <s:select name="formBean.productBarcode.product.category.category_ID" size="1" id="category_ID" list="uiBean.basicData.categoryList" listKey="category_ID" listValue="category_Name"  headerKey="0" headerValue="---全选---" />			      </td>
+			        <s:select name="formBean.productBarcode.product.category.category_ID" size="1" cssClass="easyui-combobox"  id="category_ID" list="uiBean.basicData.categoryList" listKey="category_ID" listValue="category_Name"  headerKey="0" headerValue="" />			      </td>
 			      <td>&nbsp;</td>
 		        </tr>
 			    <tr class="InnerTableContent">

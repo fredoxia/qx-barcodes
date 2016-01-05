@@ -176,6 +176,12 @@ public class BaseDAOMS<T> extends DAOAbstract implements DAOInterface<T>{
 		return null;
 	}
 
+	@Override
+	public void clearSession() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	
 }

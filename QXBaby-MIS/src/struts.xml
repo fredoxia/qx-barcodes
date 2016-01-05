@@ -11,18 +11,20 @@
     <!-- super package -->
     <package name="super-package" extends="struts-default">
        <interceptors>
-	   <interceptor-stack name="myInteceptors">
-				<interceptor-ref name="defaultStack" />	
-				<interceptor-ref name="exception">
-					<param name="logEnabled">true</param>
-					<param name="logLevel">info</param>             
-				</interceptor-ref>
-		</interceptor-stack>
+		   <interceptor-stack name="myInteceptors">
+					<interceptor-ref name="defaultStack" />	
+					<interceptor-ref name="exception">
+						<param name="logEnabled">true</param>
+						<param name="logLevel">info</param>             
+					</interceptor-ref>
+					
+			</interceptor-stack>
 		</interceptors>
 		
 		<default-interceptor-ref name="myInteceptors" />
 		
 		<global-results>
+			
 		    <result name="error">/jsp/common/error.jsp</result>
 		    <result name="operationError">/jsp/common/operationError.jsp</result>
 	        <result name="exception">/jsp/common/exception.jsp</result>
@@ -36,6 +38,7 @@
     <!--The namespace /action is the headquarter actions-->
     <package name="headQJSPPackage" extends="super-package" namespace="/action">
         <action name="login" class="com.onlineMIS.action.headQ.user.LoginAction">
+        	
             <result name="myTasks">/jsp/headQ/MyTasks.jsp</result>
             <result name="error">/indexHeadQ.jsp</result>
             <result name="pdaLoginSuccess" type="redirect">/jsp/headQ/PDA/PDACreateOrder.jsp</result>
@@ -488,6 +491,7 @@
                  <param name="root">jsonObject</param>
             </result>
         </action> 
+         
         <action name="inventoryFlowJSONAction" class="com.onlineMIS.action.chainS.inventoryFlow.ChainInventoryFlowJSONAction">
             <result type="json" name="successful">
                  <param name="root">jsonObject</param>

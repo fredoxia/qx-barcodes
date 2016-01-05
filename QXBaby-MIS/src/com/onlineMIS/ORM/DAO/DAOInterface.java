@@ -115,4 +115,6 @@ public interface DAOInterface <T>{
 	 * @return
 	 */
 	public int executeHQLCount(String queryString, Object[] values, boolean cached);
+	
+	public void clearSession();
 }

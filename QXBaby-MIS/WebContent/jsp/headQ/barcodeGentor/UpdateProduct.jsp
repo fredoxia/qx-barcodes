@@ -37,7 +37,11 @@ function update(){
 		error +="产品货号 - 不能为空\n";
 		$("#productCode").focus();
 	} 	
-	
+	var categoryId = $("#category").combo("getValue");
+	if (categoryId != "0" && !isValidPositiveInteger(categoryId)){
+		alert("货品类别不是一个正确的输入");
+		return;
+	}
 	var priceValue = $("#salesPrice").val();
 	if (priceValue != "" && isNaN(priceValue)){
         error += "连锁店零售价 - 必须是数字\n";
@@ -154,7 +158,7 @@ function update(){
 	       </tr>
 	       <tr class="InnerTableContent">
 	          <td height="18"><strong>类别</strong>       :</td>
-	          <td><s:select name="formBean.productBarcode.product.category.category_ID" size="1" id="category" list="uiBean.basicData.categoryList"  listKey="category_ID" listValue="category_Name"/></td>
+	          <td><s:select name="formBean.productBarcode.product.category.category_ID"  cssClass="easyui-combobox" size="1" id="category" list="uiBean.basicData.categoryList"  listKey="category_ID" listValue="category_Name"/></td>
 	       </tr>
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td height="18"><strong>产品货号</strong>:</td><td><s:textfield name="formBean.productBarcode.product.productCode" id="productCode"/>*</td>

@@ -101,7 +101,14 @@ function isValidInteger(s){
     	return true;
     }
 }
-
+function isValidPositiveInteger(s){
+    var num= /^[1-9][0-9]{0,6}/; 
+    if(!num.test(s))
+	    return false;
+    else {
+    	return true;
+    }
+}
 function  isValidDate(str)   {  
 	 var reg =/\d{4}-\d{1,2}-\d{1,2}/ ;  
 	 if (reg.test(str))

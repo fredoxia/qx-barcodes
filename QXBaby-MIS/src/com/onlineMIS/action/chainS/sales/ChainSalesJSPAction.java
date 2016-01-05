@@ -34,6 +34,9 @@ public class ChainSalesJSPAction extends ChainSalesAction {
 		//2. parepare the parameters in the ui
         chainStoreSalesService.calculateSalesParm(formBean, userInfor, new ChainStoreSalesOrder());
 		
+        //3. 当前功能需要防止多次提交
+        formBean.setToken(createToken(null));
+        
 		return "EditChainSalesOrder";	
 	}
 	
@@ -170,13 +173,15 @@ public class ChainSalesJSPAction extends ChainSalesAction {
 			}
 			
 			//4. set the parameter
-			ChainUtility.calculateParam(formBean, salesOrder);
+	        chainStoreSalesService.calculateSalesParm(formBean, userInfor, new ChainStoreSalesOrder());
 			
 			addActionMessage(response.getMessage());
 			
-			if (order_type == ChainStoreSalesOrder.SALES)
+			if (order_type == ChainStoreSalesOrder.SALES){
+		        //3. 当前功能需要防止多次提交
+		        formBean.setToken(createToken(null));
 		        return "EditChainSalesOrder";
-		    else
+			} else
 				return ERROR;
 		}
 	}

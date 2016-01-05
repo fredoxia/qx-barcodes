@@ -7,21 +7,31 @@ import com.onlineMIS.common.Common_util;
 public class ChainCurrentSeasonSalesAnalysisItem {
 	private int rank;
 	private ChainStore chainStore;
-	private double lastYearPurchase;
-	private double purchaseAmt;
-	private double returnAmt;
-	private double netPurchaseAmt;
-	private double inDeliveryAmt;
+	private double lastYearPurchase = 0;
+	private double purchaseAmt = 0;
+	private double returnAmt = 0;
+	private double netPurchaseAmt = 0;
+	private double inDeliveryAmt = 0;
 	private double returnRatio;
-	private double inventoryAmt;
+	private double inventoryAmt = 0;
 	private double inventoryRatio;
-	private double salesAmt;
+	private double salesAmt = 0;
 	private double salesRatio;
+	private double inDeliveryRatio;
+	
 	
 	public ChainCurrentSeasonSalesAnalysisItem(){
 		
 	}
 	
+	public double getInDeliveryRatio() {
+		return inDeliveryRatio;
+	}
+
+	public void setInDeliveryRatio(double inDeliveryRatio) {
+		this.inDeliveryRatio = inDeliveryRatio;
+	}
+
 	public double getNetPurchaseAmt() {
 		return netPurchaseAmt;
 	}
@@ -117,9 +127,11 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 		if (netPurchaseAmt == 0) {
 			salesRatio = Common_util.ALL_RECORD;
 			inventoryRatio = Common_util.ALL_RECORD;
+			inDeliveryRatio = Common_util.ALL_RECORD;
 		} else {
 			salesRatio = salesAmt/ netPurchaseAmt;
 			inventoryRatio = inventoryAmt / netPurchaseAmt;
+			inDeliveryRatio = inDeliveryAmt / netPurchaseAmt;
 		}	
 	}
 

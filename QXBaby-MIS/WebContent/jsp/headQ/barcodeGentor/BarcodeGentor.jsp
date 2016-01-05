@@ -45,6 +45,7 @@ function generateBarcode(){
     var params=$("#barcodeGenForm").serialize(); 
     $.post("action/productJSONAction!generateProductBarcode",params, saveBarcodeBackProcess,"json");
 }
+
 function saveProduct(){
     $("#saveButton").attr("disabled", true);
     
@@ -62,9 +63,13 @@ function saveProduct(){
 	if (brandId == "" || brandId == 0){
           error += "品牌 - 是必选项\n";
 	} 
-	if ($("#category_ID").val() == ""){
+	
+	var categoryId = $("#category_ID").combo("getValue");
+	if (categoryId == ""){
           error += "货品类 - 是必选项\n";
-	} 
+	} else if (!isValidPositiveInteger(categoryId)) {
+        error += "货品类 - 必须是系统已经存在的类别，请检查\n";
+	}
 	if ($("#productCode").val() == ""){
           error += "货号 - 是必选项\n";
           $("#productCode").focus();
@@ -195,8 +200,10 @@ function assignProductValue(p){
 		$("#productCode").attr("value",p.productCode);
 		$("#recCost").attr("value",p.recCost);
 		$("#wholeSalePrice").attr("value",p.wholeSalePrice);
-		$("#wholeSalePrice2").attr("value",p.wholeSalePrice2);
-		$("#wholeSalePrice3").attr("value",p.wholeSalePrice3);
+		if (p.wholeSalePrice2 > 0)
+			$("#wholeSalePrice2").attr("value",p.wholeSalePrice2);
+		if (p.wholeSalePrice3 > 0)
+			$("#wholeSalePrice3").attr("value",p.wholeSalePrice3);
 		$("#salesPriceFactory").attr("value",p.salesPriceFactory);
 		$("#discount").attr("value",p.discount);
 		$("#numPerHand").attr("value",p.numPerHand);
@@ -206,7 +213,8 @@ function assignProductValue(p){
 		$("#brand_ID").attr("value",p.brand.brand_ID);
 		$("#brandName").attr("value",p.brand.brand_Name);
 		$("#salesPrice").attr("value",p.salesPrice);
-		$("#category_ID").attr("value",p.category.category_ID);
+		$("#category_ID").combobox("select",p.category.category_ID);
+		
 	}
 }
 function clearAllData(){
@@ -291,10 +299,10 @@ function clickSize(){
             <s:select name="formBean.productBarcode.product.quarter.quarter_ID" size="1" id="quarter_ID" list="uiBean.basicData.quarterList" listKey="quarter_ID" listValue="quarter_Name"  />
       </td>
       <td width="85"><strong>品牌：</strong></td>
-      <td width="200">
+      <td colspan="2">
          <%@ include file="SearchBrandStub.jsp"%>
       </td>
-      <td width="70">&nbsp;</td>
+      
       <td>&nbsp;</td>        
     </tr>
     <tr class="InnerTableContent">
@@ -304,7 +312,7 @@ function clickSize(){
       </td>
       <td><strong>货品类：</strong></td>
       <td>
-         <s:select name="formBean.productBarcode.product.category.category_ID" size="1" id="category_ID" list="uiBean.basicData.categoryList" listKey="category_ID" listValue="category_Name" />      </td>
+          <s:select name="formBean.productBarcode.product.category.category_ID" cssClass="easyui-combobox" size="1" id="category_ID" list="uiBean.basicData.categoryList" listKey="category_ID" listValue="category_Name"  headerKey="-1" headerValue="" />      </td>
       <td><strong>单位：</strong></td>
       <td>
       	 <s:select name="formBean.productBarcode.product.unit" size="1" id="unit" list="uiBean.basicData.unitList" listKey="productUnit" listValue="productUnit"/>
@@ -326,7 +334,7 @@ function clickSize(){
 		      </td>
 		      <td width="80"><strong>厂家零售价：</strong></td>
 		      <td width="110"><input type="text" name="formBean.productBarcode.product.salesPriceFactory" id="salesPriceFactory" onfocus="this.select();" size="9"/></td>
-		      <td width="80"><strong>折扣:</strong></td>
+		      <td width="60"><strong>折扣:</strong></td>
 		      <td><input type="text" name="formBean.productBarcode.product.discount" id="discount" onfocus="this.select();" size="9"/></td>
 		    </tr>
 		    <tr class="InnerTableContent">

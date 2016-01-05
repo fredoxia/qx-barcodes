@@ -40,7 +40,9 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 	private final int INVENTORY_RATIO_COL = 6;
 	private final int SALES_AMT_COL = 7;
 	private final int SALES_RATIO_COL = 8;
-
+	private final int DELIVERY_AMT_COL = 9;
+	private final int DELIVERY_RATIO_COL = 10;
+	
 	private int formulaStart = DATA_ROW + 1;
 	private int formulaEnd = DATA_ROW;
 	
@@ -63,7 +65,7 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 		//报表头
 		Row header1 = sheet.getRow(0);
 		String generatedTime = Common_util.dateFormat.format((Common_util.getToday()));
-		header1.createCell(0).setCellValue(year.getYear() + "-" + quarter.getQuarter_Name() + " " + header + " (" + rpt.getRptDate() + " 至  " + rpt.getEndDate() +  ") " + generatedTime);
+		header1.createCell(0).setCellValue(year.getYear() + "-" + quarter.getQuarter_Name() + " " + header + " (截止  " + rpt.getEndDate() +  ") " + generatedTime);
 
 		//写报表内容
 		int totalDataRow = items.size();
@@ -80,8 +82,10 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 			
 			if (item.getReturnRatio() != Common_util.ALL_RECORD){
 				Cell cell = row.createCell(RETURN_RATIO_COL);
-				cell.setCellStyle(percentageStyle);
+				
 				cell.setCellValue(item.getReturnRatio());
+				cell.setCellStyle(percentageStyle);
+				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			}
 
 			
@@ -89,19 +93,30 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 			
 			if (item.getInventoryRatio() != Common_util.ALL_RECORD){
 				Cell cell = row.createCell(INVENTORY_RATIO_COL);
-				cell.setCellStyle(percentageStyle);
+				
 				cell.setCellValue(item.getInventoryRatio());
+				cell.setCellStyle(percentageStyle);
 			}
 			
 			row.createCell(SALES_AMT_COL).setCellValue(item.getSalesAmt());
 			
 			if (item.getSalesRatio() != Common_util.ALL_RECORD){
+
 				Cell cell = row.createCell(SALES_RATIO_COL);
-				cell.setCellStyle(percentageStyle);
+				
 				cell.setCellValue(item.getSalesRatio());
+				cell.setCellStyle(percentageStyle);
 			}
 
+			row.createCell(DELIVERY_AMT_COL).setCellValue(item.getInDeliveryAmt());
+			
+			if (item.getInDeliveryRatio()!= Common_util.ALL_RECORD){
 
+				Cell cell = row.createCell(DELIVERY_RATIO_COL);
+				
+				cell.setCellValue(item.getInDeliveryRatio());
+				cell.setCellStyle(percentageStyle);
+			}
 		}	
 		
 		Row footerRow = sheet.createRow(totalDataRow + DATA_ROW);

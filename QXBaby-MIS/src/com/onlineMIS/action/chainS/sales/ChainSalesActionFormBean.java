@@ -38,8 +38,14 @@ public class ChainSalesActionFormBean extends ChainActionFormBaseBean{
     private Date search_End_Time = new Date(new java.util.Date().getTime());
     private boolean initialSearch = false;
     private Pager pager = new Pager();
-  
+    private String token = "";
     
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
 	public String getVipCardNo() {
 		return vipCardNo;
 	}

@@ -28,7 +28,7 @@ public class ChainStoreSalesOrder extends BaseOrder {
 	public static final int SALES = 1;
 	
     private int id;
-	private ChainStore chainStore;
+	private ChainStore chainStore = new ChainStore();
 	private ChainUserInfor saler;
 	private ChainUserInfor creator;
 	private int accountTypeId;

@@ -44,6 +44,7 @@ function backProcessGetChainStore(data){
 			 var hideDiscountPrint = chainStoreConf.hideDiscountPrint;
 			 var prepaidUsage = chainStoreConf.allowMyPrepaidCrossStore;
 			 var prepaidType = chainStoreConf.prepaidCalculationType;
+			 var defaultVipScoreMultiple = chainStoreConf.defaultVipScoreMultiple;
 			 
 			 $("#amtType").val(discountAmtType).attr("selected", true);
 			 $("#printCopy").attr("value", printCopy);
@@ -55,6 +56,7 @@ function backProcessGetChainStore(data){
 			 $("#hideDiscountPrint").attr("value",hideDiscountPrint);
 			 $("#prepaidUsage").attr("value",prepaidUsage);
 			 $("#prepaidType").attr("value",prepaidType);
+			 $("#defaultVipScoreMultiple").attr("value",defaultVipScoreMultiple);
 		}
 	}
 }

@@ -21,13 +21,15 @@ import com.opensymphony.xwork2.ActionContext;
 
 public class ChainSalesJSONAction extends ChainSalesAction {
 
+
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 775133978858252166L;
+	private static final long serialVersionUID = 6614237635805549673L;
 
-	private JSONObject jsonObject;
-	private Map<String,Object> jsonMap = new HashMap<String, Object>();
+	protected JSONObject jsonObject;
+	protected Map<String,Object> jsonMap = new HashMap<String, Object>();
 
 	public JSONObject getJsonObject() {
 		return jsonObject;
@@ -191,7 +193,7 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 	 * sales order
 	 * @return
 	 */
-	public String postSalesOrder(){
+/*	public String postSalesOrder(){
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"postSalesOrder : " + formBean.getChainSalesOrder().getChainStore().getChain_id() + "," + formBean.getChainSalesOrder().getSaler().getUser_name());
     	
@@ -220,7 +222,7 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 			}
 		
 		return SUCCESS;
-	}
+	}*/
 	
 	/**
 	 * 搜索product inforamtion需要验证是否具有
@@ -249,7 +251,10 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 	    jsonMap.put("response", response);
 	    
 		try{
-			   jsonObject = JSONObject.fromObject(jsonMap);
+			
+			   JsonConfig jsonConfig = new JsonConfig();
+			   jsonConfig.setExcludes( new String[]{"chainStore"} );
+			   jsonObject = JSONObject.fromObject(jsonMap, jsonConfig);
 //			   System.out.println(jsonObject.toString());
 			} catch (Exception e){
 				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"checkProductInfor");
@@ -300,5 +305,51 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 		return SUCCESS;
 	}
 
+	/**
+	 * triggered by click the post the sales exchange order "单据过账"
+	 * sales order
+	 * @return
+	 */
+	public String postSalesOrder(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"postSalesOrder : " + formBean.getChainSalesOrder().getChainStore().getChain_id() + "," + formBean.getChainSalesOrder().getSaler().getUser_name());
+		
+		Response response = new Response();
+		
+		String token = formBean.getToken();
+		boolean validToken = isValidToken(token);
+		
+    	if (!validToken){
+    		response.setFail("系统发现当前操作是并拦截了重复提交单据风险,请检查当前单据是否提交成功。 - 搜索零售单据");
+    	} else {
+    		removeToken(token);
+    		
+			//set the data
+			ChainStoreSalesOrder salesOrder = formBean.getChainSalesOrder();			
+			try {		
+			     response = chainStoreSalesService.saveSaleOrders(salesOrder, userInfor, ChainStoreSalesOrder.SALES, ChainStoreSalesOrder.STATUS_COMPLETE);
+			} catch (Exception e) {
+				loggerLocal.error(e);
+				response.setQuickValue(Response.FAIL, e.getMessage());
+			}
+			int salerId = salesOrder.getSaler().getUser_id();
+			jsonMap.put("salerId", salerId);
+    	}
 
+	    jsonMap.put("response", response);
+
+		try{
+			   jsonObject = JSONObject.fromObject(jsonMap);
+//			   System.out.println(jsonObject.toString());
+			   
+				if (validToken && !response.isSuccess()){
+					createToken(token);
+				}
+			} catch (Exception e){
+				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"postSalesOrder");
+				loggerLocal.error(e);
+			} 
+		
+		return SUCCESS;
+	}
 }
