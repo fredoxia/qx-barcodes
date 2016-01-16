@@ -16,7 +16,11 @@ $(document).ready(function(){
 		$(this).removeClass("over");}); 																																	
 });
 var baseurl = "<%=request.getContextPath()%>";
-
+function downloadOrder(){
+	
+    document.chainInventoryFlowForm.action="inventoryFlowJSPAction!downloadFlowOrder";
+    document.chainInventoryFlowForm.submit();
+}
 
 
 </script>
@@ -109,6 +113,9 @@ var baseurl = "<%=request.getContextPath()%>";
 						    <td width="90%" align='left'>
 						      <s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!cancelOrder') && formBean.canCancel && (uiBean.flowOrder.chainStore.chain_id == #session.LOGIN_CHAIN_USER.myChainStore.chain_id || #session.LOGIN_CHAIN_USER.roleType.chainRoleTypeId == 1 || #session.LOGIN_CHAIN_USER.roleType.chainRoleTypeId == 2)">
 						            <input type="button" value="红冲单据" onclick="cancelOrder();"/>	
+						      </s:if>
+						      <s:if test="formBean.flowOrder.id > 0">
+						            <input type="button" value="下载单据" onclick="downloadOrder();"/>	
 						      </s:if>
 						      <input type="button" value="打印单据到POS机" onclick="printOrder();"/>	
 						    </td>

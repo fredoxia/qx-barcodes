@@ -254,9 +254,14 @@ public class ChainSalesJSPAction extends ChainSalesAction {
 //						formBean.setVipCardNo(vipCard.getVipCardNo());
 //					}
 
-					if (order_type == ChainStoreSalesOrder.SALES)
+			        
+					if (order_type == ChainStoreSalesOrder.SALES){
+						
+				        //3. 当前功能需要防止多次提交
+				        formBean.setToken(createToken(null));
+				        
 				       return "EditChainSalesOrder";
-					else
+					} else
 						return ERROR;
 				//2.1.2 complete 或者 cancel的order
 				}else if (order_status == ChainStoreSalesOrder.STATUS_COMPLETE || order_status == ChainStoreSalesOrder.STATUS_CANCEL){

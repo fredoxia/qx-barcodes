@@ -55,6 +55,7 @@ import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStockArchive;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInvenTraceInfoVO;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrderProduct;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrderTemplate;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryItem;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryReportTemplate;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryVO;
@@ -67,6 +68,7 @@ import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCardDownloadTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
@@ -326,32 +328,7 @@ public class ChainInventoryFlowOrderService {
 		
 		for (ChainInventoryFlowOrder order : chainOrders){
 			if (order.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
-				ChainStore fromChainStore = order.getFromChainStore();
-				ChainStore toChainStore = order.getToChainStore();
-
-				String fromChainName = "非连锁店";
-				String toChainName = "非连锁店";
-				
-				if(fromChainStore != null){
-					fromChainStore = chainStoreDaoImpl.get(fromChainStore.getChain_id(), true);
-					fromChainName = fromChainStore.getChain_name();
-					if (fromChainName.length() > 4)
-						fromChainName = fromChainName.substring(0,4);
-				}
-				if (toChainStore != null){
-					toChainStore = chainStoreDaoImpl.get(toChainStore.getChain_id(), true);
-					toChainName = toChainStore.getChain_name();
-					if (toChainName.length() > 4)
-						toChainName = toChainName.substring(0,4);
-				}
-				
-				String transferComment = fromChainName + " -> " + toChainName;
-		
-				String orderComment = order.getComment();
-				if (orderComment.length() > 0)
-					order.setComment(transferComment + "<br/>" + orderComment);
-				else 
-					order.setComment(transferComment);
+				formatTransferOrderComment(order);
 				chainInventoryFlowOrderDaoImpl.evict(order);
 			}
 		}
@@ -359,6 +336,36 @@ public class ChainInventoryFlowOrderService {
 		return chainOrders;
 	}
 	
+	private void formatTransferOrderComment(ChainInventoryFlowOrder order) {
+		ChainStore fromChainStore = order.getFromChainStore();
+		ChainStore toChainStore = order.getToChainStore();
+
+		String fromChainName = "非连锁店";
+		String toChainName = "非连锁店";
+		
+		if(fromChainStore != null && fromChainStore.getChain_id() != 0){
+			fromChainStore = chainStoreDaoImpl.get(fromChainStore.getChain_id(), true);
+			fromChainName = fromChainStore.getChain_name();
+			if (fromChainName.length() > 4)
+				fromChainName = fromChainName.substring(0,4);
+		}
+		if (toChainStore != null && toChainStore.getChain_id() != 0){
+			toChainStore = chainStoreDaoImpl.get(toChainStore.getChain_id(), true);
+			toChainName = toChainStore.getChain_name();
+			if (toChainName.length() > 4)
+				toChainName = toChainName.substring(0,4);
+		}
+		
+		String transferComment = fromChainName + " -> " + toChainName;
+
+		String orderComment = order.getComment();
+		if (orderComment.length() > 0)
+			order.setComment(transferComment + "<br/>" + orderComment);
+		else 
+			order.setComment(transferComment);
+		
+	}
+
 	private DetachedCriteria buildSearchInvenFlowCriter(ChainInventoryFlowFormBean formBean){
         DetachedCriteria criteria = DetachedCriteria.forClass(ChainInventoryFlowOrder.class);
 		
@@ -2345,6 +2352,40 @@ public class ChainInventoryFlowOrderService {
 		data.put("footer", footers);
 	
 		response.setReturnValue(data);
+		return response;
+	}
+
+	@Transactional
+	public Response downloadFlowOrder(int id, ChainUserInfor loginUser) throws Exception {
+		Response response = new Response();
+		List<Object> values = new ArrayList<Object>();
+		
+		String webInf = this.getClass().getClassLoader().getResource("").getPath();
+		String contextPath = webInf.substring(1, webInf.indexOf("classes")).replaceAll("%20", " ");  
+
+		ChainInventoryFlowOrder order = getOrderById(id, loginUser);
+		if (order.getType() ==  ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
+			formatTransferOrderComment(order);
+			chainInventoryFlowOrderDaoImpl.evict(order);
+		}
+		
+		boolean showCost = loginUser.containFunction("purchaseAction!seeCost");
+
+		ByteArrayInputStream byteArrayInputStream;   
+		HSSFWorkbook wb = null;   
+		ChainInventoryFlowOrderTemplate flowOrderTemplate = new ChainInventoryFlowOrderTemplate(order, contextPath + "template\\", showCost);
+		wb = flowOrderTemplate.process();
+	
+		ByteArrayOutputStream os = new ByteArrayOutputStream();   
+		wb.write(os);   
+  
+		byte[] content = os.toByteArray();   
+		byteArrayInputStream = new ByteArrayInputStream(content);  
+		
+		values.add(byteArrayInputStream);
+		values.add(order.getTypeChainS());
+		response.setReturnValue(values);   
+
 		return response;
 	}
 

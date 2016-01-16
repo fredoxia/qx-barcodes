@@ -28,7 +28,11 @@ function copyOrder(){
     document.chainInventoryFlowForm.action = "<%=request.getContextPath()%>/actionChain/inventoryFlowJSPAction!copyOrder";
 	document.chainInventoryFlowForm.submit();
 }
-
+function downloadOrder(){
+	
+    document.chainInventoryFlowForm.action="inventoryFlowJSPAction!downloadFlowOrder";
+    document.chainInventoryFlowForm.submit();
+}
 </script>
 </head>
 <body>
@@ -125,6 +129,9 @@ function copyOrder(){
 						      <s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!copyOrder') && formBean.canCopy">
 						            <input type="button" value="复制单据" onclick="copyOrder();"/>	
 						      </s:if>	
+						      <s:if test="formBean.flowOrder.id > 0">
+						            <input type="button" value="下载单据" onclick="downloadOrder();"/>	
+						      </s:if>
 						    </td>
 					      </tr>
 					    </table>

@@ -162,21 +162,34 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 	public String saveSalesToDraft(){
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"saveSalesToDraft : " + formBean.getChainSalesOrder().getId());
-    	
-		//set the data
-		ChainStoreSalesOrder salesOrder = formBean.getChainSalesOrder();
 		Response response = new Response();
 		
-		try {
-		    response = chainStoreSalesService.saveSaleOrders(salesOrder,userInfor,ChainStoreSalesOrder.SALES, ChainStoreSalesOrder.STATUS_DRAFT);
-		} catch (Exception e) {
-			response.setQuickValue(Response.FAIL, e.getMessage());
-		}
+		String token = formBean.getToken();
+		boolean validToken = isValidToken(token);
 		
-		int salerId = salesOrder.getSaler().getUser_id();
-	    jsonMap.put("response", response);
-	    jsonMap.put("salerId", salerId);
+    	if (!validToken){
+    		loggerLocal.error("系统发现当前操作是并拦截了重复提交单据风险" + userInfor.getName());
+    		response.setFail("系统发现当前操作是并拦截了重复提交单据风险,请检查当前单据是否提交成功。 - 搜索零售单据");
+    	} else {
+    		removeToken(token);
+    		
+			//set the data
+			ChainStoreSalesOrder salesOrder = formBean.getChainSalesOrder();
+	
+			
+			try {
+			    response = chainStoreSalesService.saveSaleOrders(salesOrder,userInfor,ChainStoreSalesOrder.SALES, ChainStoreSalesOrder.STATUS_DRAFT);
+			} catch (Exception e) {
+				response.setQuickValue(Response.FAIL, e.getMessage());
+			}
+	
+			int salerId = salesOrder.getSaler().getUser_id();
+		    jsonMap.put("response", response);
+		    jsonMap.put("salerId", salerId);
 	    
+    	}
+		
+
 		try{
 			   jsonObject = JSONObject.fromObject(jsonMap);
 			   //System.out.println(jsonObject.toString());
@@ -320,6 +333,7 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 		boolean validToken = isValidToken(token);
 		
     	if (!validToken){
+    		loggerLocal.error("系统发现当前操作是并拦截了重复提交单据风险" + userInfor.getName());
     		response.setFail("系统发现当前操作是并拦截了重复提交单据风险,请检查当前单据是否提交成功。 - 搜索零售单据");
     	} else {
     		removeToken(token);

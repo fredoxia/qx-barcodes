@@ -16,6 +16,11 @@ $(document).ready(function(){
 });
 var baseurl = "<%=request.getContextPath()%>";
 index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
+function downloadOrder(){
+	
+    document.chainInventoryFlowForm2.action="inventoryFlowJSPAction!downloadFlowOrder";
+    document.chainInventoryFlowForm2.submit();
+}
 </script>
 </head>
 <body>
@@ -136,7 +141,9 @@ index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
 						      <s:if test="formBean.flowOrder.id !=0">
 						            <input type="button" value="删除单据" onclick="deleteOrder();"/>	
 						      </s:if>
-
+						      <s:if test="formBean.flowOrder.id > 0">
+						            <input type="button" value="下载单据" onclick="downloadOrder();"/>	
+						      </s:if>
 						      <input type="button" value="一键纠正库存" onclick="oneKeyToAdjustInventory();" title="此功能将根据此库存单,自动添加报损单和报溢单达到纠正库存目的"/>	
 						      <input type="button" value="库存扎帐" onclick="oneKeyToClearAndAdjustInventory();" title="此功能将会使用此库存单据,清空原始库存再根据此单自动添加报损单和报溢单达到纠正库存目的"/>	
 						      <input type="button" value="生成最终报表" onclick="genInventoryReport();"/>		
@@ -152,6 +159,9 @@ index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
 			  </table>
 	   </td></tr>
 	 </table>
+	 </s:form>
+	 	 <s:form action="/actionChain/inventoryFlowAction!saveToDraft" method="POST" name="chainInventoryFlowForm2" id="chainInventoryFlowForm2" theme="simple">
+	     <s:hidden name="formBean.flowOrder.id"/>  
 	 </s:form>
 </body>
 </html>

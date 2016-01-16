@@ -100,9 +100,9 @@ function upgradeVIPDialog(){
 		var param = "formBean.vipCard.id="  + $("input:radio[name='formBean.selectedCardId']:checked").val() ;
 		$.modalDialog({
 			title : 'VIP升级',
-			width : 330,
+			width : 350,
 			height : 220,
-			modal : true,
+			modal : false,
 			href : '<%=request.getContextPath()%>/actionChain/chainVIPJSPAction!preUpgradeVIP?' + param,
 			buttons : [ {
 				text : '提交信息',
@@ -116,11 +116,12 @@ function upgradeVIPDialog(){
 function updateVIPScoreDialog(){
 	if (validateSubmit()){
 		var param = "formBean.vipCard.id="  + $("input:radio[name='formBean.selectedCardId']:checked").val() ;
+		
 		$.modalDialog({
 			title : 'VIP积分调整',
-			width : 330,
+			width : 350,
 			height : 220,
-			modal : true,
+			modal : false,
 			href : '<%=request.getContextPath()%>/actionChain/chainVIPJSPAction!preUpdateVIPScore?' + param,
 			buttons : [ {
 				text : '确认调整积分',
@@ -130,6 +131,26 @@ function updateVIPScoreDialog(){
 			} ]
 			});
 	}
+}
+function updateVipScore(){
+    var params = $("#vipUpdateForm").serialize(); 
+    //var params += "&formBean.chainUserInfor.myChainStore.chain_id =" + chainId;
+    $.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!updateVipScore",params, updateVipScoreBk,"json");
+}
+
+function updateVipScoreBk(data){
+	var response = data.response;
+	var returnCode = response.returnCode;
+
+	if (returnCode == SUCCESS){
+		flag = true;
+		var dialogA = $.modalDialog.handler;
+		dialogA.dialog('close');
+		alert("成功调整VIP积分");
+	    document.vipCardListForm.action="chainVIPJSPAction!searchVIPCards";
+	    document.vipCardListForm.submit();
+	} else 
+		alert(response.message);
 }
 </script>
 </head>

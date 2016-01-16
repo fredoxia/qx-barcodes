@@ -53,7 +53,7 @@ import com.opensymphony.xwork2.ActionContext;
 public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 	private final String CHAIN_INVENTORY_REPORT_TEMPLATENAME = "ChainInventoryReportTemplate.xls";
 	private final String CHAIN_INVENTORY_REPORT_NAME = "KuCunBiao.xls";
-	
+
 	@Autowired
 	private ChainStoreService chainStoreService;
 
@@ -774,6 +774,27 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 			uiBean.setTraceItems(traceVOs);
 		}
 		return "OpenCheckInventoryTracePage";
+	}
+	
+	public String downloadFlowOrder(){
+		ChainUserInfor loginUserInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.chainActionInfo(loginUserInfor,this.getClass().getName()+ "."+"openInvenTracePage ： " + formBean.getBarcode());
+
+		Response response = new Response();
+		try {
+		    response = flowOrderService.downloadFlowOrder(formBean.getFlowOrder().getId(), loginUserInfor);
+		} catch (Exception e){
+			e.printStackTrace();
+			addActionError(e.getMessage());
+			return "error";
+		}
+
+		List<Object> values = (List<Object>)response.getReturnValue();
+		
+		formBean.setFileStream((InputStream)values.get(0)); 
+		formBean.setFileName(values.get(1).toString().trim() + formBean.getFlowOrder().getId() + ".xls");
+		
+		return "download"; 
 	}
 	
 	private String postSubmitFlowOrder(boolean toFinalize){

@@ -8,6 +8,7 @@ import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.action.chainS.ChainActionFormBaseBean;
+import com.onlineMIS.common.Common_util;
 
 public class ChainInventoryFlowFormBean extends ChainActionFormBaseBean{
 	
@@ -105,7 +106,8 @@ public class ChainInventoryFlowFormBean extends ChainActionFormBaseBean{
 	}
 
 	public void setFileName(String fileName) {
-		this.fileName = fileName;
+		this.fileName =Common_util.encodeAttachment(fileName);
+//		this.fileName = fileName;
 	}
 
 	public int getChainId() {

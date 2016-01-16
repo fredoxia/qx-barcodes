@@ -16,7 +16,11 @@ $(document).ready(function(){
 });
 var baseurl = "<%=request.getContextPath()%>";
 index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
-
+function downloadOrder(){
+	
+    document.chainInventoryFlowForm2.action="inventoryFlowJSPAction!downloadFlowOrder";
+    document.chainInventoryFlowForm2.submit();
+}
 </script>
 </head>
 <body>
@@ -135,6 +139,9 @@ index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
 						      </s:if>
 						      <s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!deleteOrder') && formBean.canDelete">
 						            <input type="button" value="删除单据" onclick="deleteOrder();"/>	
+						      </s:if>
+						      						      <s:if test="formBean.flowOrder.id > 0">
+						            <input type="button" value="下载单据" onclick="downloadOrder();"/>	
 						      </s:if>						
 						    </td>
 					      </tr>
@@ -148,5 +155,8 @@ index = parseInt("<s:property value='formBean.flowOrder.productList.size()'/>");
 	   </td></tr>
 	 </table>
 	 </s:form>
+     <s:form action="/actionChain/inventoryFlowAction!saveToDraft" method="POST" name="chainInventoryFlowForm2" id="chainInventoryFlowForm2" theme="simple">
+	     <s:hidden name="formBean.flowOrder.id"/>  
+	 </s:form>	 
 </body>
 </html>

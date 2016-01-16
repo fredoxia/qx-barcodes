@@ -436,8 +436,6 @@ public class ChainStoreSalesService {
 				statusCurrent = origOrder.getStatus();
 				chainStoreSalesOrderDaoImpl.evict(origOrder);
 			} else {
-				loggerLocal.info("" + (chainStoreService == null));
-				loggerLocal.info("" + (salesOrder.getChainStore() == null));
 				salesOrder.setChainStore(chainStoreService.getChainStoreByID(salesOrder.getChainStore().getChain_id()));
 			}
 			

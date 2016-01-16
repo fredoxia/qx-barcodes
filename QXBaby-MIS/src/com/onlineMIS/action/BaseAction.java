@@ -102,6 +102,9 @@ public class BaseAction extends ActionSupport implements Action {
 
 		if (tokenObject != null){
 			Set<String> tokenSet = (HashSet<String>) tokenObject;	
+//			System.out.println(tokenSet);
+//			System.out.println(token);
+			
 			if (tokenSet.contains(token))
 				return true;
 			else 
