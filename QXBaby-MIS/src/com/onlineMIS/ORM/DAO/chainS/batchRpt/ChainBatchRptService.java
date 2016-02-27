@@ -341,7 +341,7 @@ public class ChainBatchRptService {
 		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
 		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT);;
 		chainBatchRptRepositoty.setRptDate(startDate);
-		chainBatchRptRepositoty.setRptDes(startDate, endDate);
+		chainBatchRptRepositoty.setRptDes(startDate, endDate, quarter);
 		
 	   /**
 	    * 9.2 所有连锁店的数据
@@ -645,7 +645,7 @@ public class ChainBatchRptService {
 		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
 		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT);
 		chainBatchRptRepositoty.setRptDate(rptDate);
-		chainBatchRptRepositoty.setRptDes(rptDate.toString());
+		chainBatchRptRepositoty.setRptDes(rptDate.toString() + " " + quarter.getQuarter_Name());
 		
 	   /**
 	    * 9.2 所有连锁店的数据

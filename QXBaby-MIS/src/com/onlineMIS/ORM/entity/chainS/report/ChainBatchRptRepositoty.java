@@ -3,6 +3,8 @@ package com.onlineMIS.ORM.entity.chainS.report;
 import java.io.Serializable;
 import java.sql.Date;
 
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
+
 public class ChainBatchRptRepositoty implements Serializable {
 	/**
 	 * 
@@ -40,8 +42,8 @@ public class ChainBatchRptRepositoty implements Serializable {
 	public void setRptDes(String rptDes) {
 		this.rptDes = rptDes;
 	}
-	public void setRptDes(java.sql.Date startDate, java.sql.Date endDate){
-		this.setRptDes(startDate + " 至  " + endDate);
+	public void setRptDes(java.sql.Date startDate, java.sql.Date endDate, Quarter quarter){
+		this.setRptDes(startDate + " 至  " + endDate + " " + quarter.getQuarter_Name());
 	}
 	
 	public int getRptId() {

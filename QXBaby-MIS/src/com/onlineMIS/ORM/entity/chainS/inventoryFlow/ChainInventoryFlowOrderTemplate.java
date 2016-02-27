@@ -37,6 +37,7 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 	private int barcode_column =6;
 	private int quantity_column = 7;
 	private int totalCost_column = 8;
+	private int totalSales_column = 9;
 	private int data_row = 3;
 
 
@@ -73,6 +74,7 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 		int totalDataRow = items.size();
 		int totalQuantity = 0;
 		double totalCost = 0;
+		double totalSales = 0;
 		
 		Iterator<ChainInventoryFlowOrderProduct> itemIterator = items.iterator();
 		int i = 0;
@@ -106,22 +108,29 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 			row.createCell(quantity_column).setCellValue(levelFourItem.getQuantity());
 			
 			double cost = 0;
+			double sales = 0;
 			if (showCost){
 				cost = levelFourItem.getQuantity() * ProductBarcodeDaoImpl.getWholeSalePrice(levelFourItem.getProductBarcode());
 				row.createCell(totalCost_column).setCellValue(cost);
+				
+				sales = levelFourItem.getQuantity() * product.getSalesPrice();
+				row.createCell(totalSales_column).setCellValue(sales);
 			}
 				
 
 			totalQuantity += levelFourItem.getQuantity();
 			totalCost += cost;
+			totalSales += sales;
 			i++;
 		}
 		
 		Row row = sheet.createRow(totalDataRow + 3);
 		row.createCell(0).setCellValue("合计");
 		row.createCell(quantity_column).setCellValue(totalQuantity);
-		if (showCost)
+		if (showCost){
 		   row.createCell(totalCost_column).setCellValue(totalCost);
+		   row.createCell(totalSales_column).setCellValue(totalSales);
+		}
 		
 		return templateWorkbook;
 	}
