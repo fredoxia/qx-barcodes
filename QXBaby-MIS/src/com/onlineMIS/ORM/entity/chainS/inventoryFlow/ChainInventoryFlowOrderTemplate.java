@@ -1,15 +1,9 @@
 package com.onlineMIS.ORM.entity.chainS.inventoryFlow;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -23,7 +17,6 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
-import com.onlineMIS.common.loggerLocal;
 
 public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 	private ChainInventoryFlowOrder order = new ChainInventoryFlowOrder();
@@ -112,10 +105,10 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 			if (showCost){
 				cost = levelFourItem.getQuantity() * ProductBarcodeDaoImpl.getWholeSalePrice(levelFourItem.getProductBarcode());
 				row.createCell(totalCost_column).setCellValue(cost);
-				
-				sales = levelFourItem.getQuantity() * product.getSalesPrice();
-				row.createCell(totalSales_column).setCellValue(sales);
 			}
+			
+			sales = levelFourItem.getQuantity() * product.getSalesPrice();
+			row.createCell(totalSales_column).setCellValue(sales);
 				
 
 			totalQuantity += levelFourItem.getQuantity();
@@ -129,8 +122,8 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 		row.createCell(quantity_column).setCellValue(totalQuantity);
 		if (showCost){
 		   row.createCell(totalCost_column).setCellValue(totalCost);
-		   row.createCell(totalSales_column).setCellValue(totalSales);
 		}
+		   row.createCell(totalSales_column).setCellValue(totalSales);
 		
 		return templateWorkbook;
 	}
