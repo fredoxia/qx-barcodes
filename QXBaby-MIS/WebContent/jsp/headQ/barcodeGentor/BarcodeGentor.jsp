@@ -204,7 +204,8 @@ function assignProductValue(p){
 			$("#wholeSalePrice2").attr("value",p.wholeSalePrice2);
 		if (p.wholeSalePrice3 > 0)
 			$("#wholeSalePrice3").attr("value",p.wholeSalePrice3);
-		$("#salesPriceFactory").attr("value",p.salesPriceFactory);
+		if (p.salesPriceFactory > 0)
+		    $("#salesPriceFactory").attr("value",p.salesPriceFactory);
 		$("#discount").attr("value",p.discount);
 		$("#numPerHand").attr("value",p.numPerHand);
 		$("#unit").attr("value",p.unit);

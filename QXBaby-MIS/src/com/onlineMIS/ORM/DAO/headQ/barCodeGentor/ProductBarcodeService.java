@@ -821,19 +821,33 @@ public class ProductBarcodeService {
 		}
 			
 		List<ProductBarcode> productBarcodes = productBarcodeDaoImpl.getBarcodeFromProduct(product.getProductId());
+		List<ProductBarcode> deletedProductBarcodes = new ArrayList<ProductBarcode>();
+		for (ProductBarcode barcode : productBarcodes){
+			if (barcode.getStatus() == ProductBarcode.STATUS_DELETE)
+				deletedProductBarcodes.add(barcode);
+		}
 		
 		for (Color color: colors){
 			for (Size size: sizes){	
 				//save the productBarcode information
 				ProductBarcode productBarcode = new ProductBarcode(product, color, size);
-				if (!productBarcodes.contains(productBarcode)){
-					productBarcodeDaoImpl.save(productBarcode, true);
-					
-					//generate the barcode
-					int id = productBarcode.getId();
-					String barcode = generateBarcode(id, null);
-					productBarcode.setBarcode(barcode);
-					productBarcodeDaoImpl.update(productBarcode, true);
+				if (productBarcodes.contains(productBarcode)){
+					if (deletedProductBarcodes.contains(productBarcode)){
+						for (ProductBarcode pBarcode : deletedProductBarcodes){
+							if (pBarcode.equals(productBarcode)){
+								pBarcode.setStatus(ProductBarcode.STATUS_OK);
+								productBarcodeDaoImpl.update(pBarcode, true);
+							}
+						}
+					} 
+				} else {
+						productBarcodeDaoImpl.save(productBarcode, true);
+						
+						//generate the barcode
+						int id = productBarcode.getId();
+						String barcode = generateBarcode(id, null);
+						productBarcode.setBarcode(barcode);
+						productBarcodeDaoImpl.update(productBarcode, true);
 				}
 			}
 		}	
