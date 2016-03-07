@@ -45,6 +45,7 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 	private int totalInventoryQ;
 	private int totalQuantityDiff;
 	private double totalWholePrice;
+	private double totalSalesPrice = 0;
 	private Date orderDate;
 	private String comment;
 	private ChainUserInfor creator;
@@ -162,6 +163,14 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 	}
 
 	
+	public double getTotalSalesPrice() {
+		return totalSalesPrice;
+	}
+
+	public void setTotalSalesPrice(double totalSalesPrice) {
+		this.totalSalesPrice = totalSalesPrice;
+	}
+
 	/**
      * to build the index for each order product
      * index is to tell the sequence of the products scanned

@@ -17,6 +17,7 @@
         <property name="status" column="status" type="integer"/>
         <property name="comment" column="comment" type="string"/>
 		<property name="orderDate" column="order_date" type="timestamp"/>
+		<property name="totalSalesPrice" column="total_sales_price" type="double"/> 
         <set name="productSet" cascade="all-delete-orphan" inverse="true" lazy="true" fetch="subselect" batch-size="15">
              <key column="order_Id"/>
              <one-to-many class="ChainInventoryFlowOrderProduct"/>
@@ -30,6 +31,8 @@
         <property name="quantity" column="quantity" type="integer"/>    
         <property name="inventoryQ" column="inventory_quantity" type="integer"/> 
         <property name="quantityDiff" column="quantity_diff" type="integer"/> 
+        <property name="totalSalesPrice" column="total_sales_price" type="double"/> 
+        
         <many-to-one name="productBarcode" fetch="join" column="product_id" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" not-null="true" lazy="false"/>
         <many-to-one name="flowOrder" column="order_id" class="com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder" not-null="true"/>
         <property name="comment" column="comment" type="string"/>

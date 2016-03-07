@@ -192,7 +192,9 @@ function addNewRow(){
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.year.year' id='year"+index+"'  size='4' readonly='readonly'/></td>"; 
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.quarter.quarter_Name' id='quarter"+index+"'  size='4' readonly='readonly'/></td>"; 
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.unit' id='unit"+index+"' size='4' readonly='readonly'/></td>";  
+    str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.salesPrice' id='salesPrice"+index+"'  size='2' readonly='readonly'/></td>";     
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].quantity' id='quantity"+index+"'  size='2' onchange='calculateTotal("+index+")' onkeypress='return is_number(event);'/></td>";  
+    str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].totalSalesPrice' id='totalSalesPrice"+index+"'  size='2' readonly='readonly'/></td>"; 
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].inventoryQ' id='inventoryQ"+index+"' readonly size='2' onchange='calculateTotal("+index+")' onkeypress='return is_number(event);'/></td>";  
     str += "<td><div id='delIcon"+index+"' style='display:none'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0'  onclick='deleteRow(\"orderRow"+index +"\");' style='cursor:pointer;'/></div></td>";  
     str += "</tr>";   

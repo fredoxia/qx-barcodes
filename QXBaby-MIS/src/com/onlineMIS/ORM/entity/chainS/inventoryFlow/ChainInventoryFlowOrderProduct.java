@@ -17,6 +17,7 @@ public class ChainInventoryFlowOrderProduct  extends BaseProduct  {
 	private int inventoryQ;
 	private int quantityDiff;
 	private String comment = "";
+	private double totalSalesPrice = 0;
 
 	public int getId() {
 		return id;
@@ -61,6 +62,13 @@ public class ChainInventoryFlowOrderProduct  extends BaseProduct  {
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	
+	public double getTotalSalesPrice() {
+		return totalSalesPrice;
+	}
+	public void setTotalSalesPrice(double totalSalesPrice) {
+		this.totalSalesPrice = totalSalesPrice;
 	}
 	@Override
 	public String toString() {
