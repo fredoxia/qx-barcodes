@@ -7,8 +7,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js?v3.7"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTransfer.js?v12.3"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js?v3.8"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTransfer.js?v3.7"></script>
 
 <script>
 $(document).ready(function(){
@@ -66,9 +66,9 @@ function downloadOrder(){
 						    <th width="40">年份</th>
 						    <th width="40">季度</th>
 						    <th width="40">单位</th>
-						    <th width="45">零售单价</th>
-						    <th width="39">数量</th>
-						    <th width="39">零售额</th>
+						    <th width="45">零售单价<br/>A</th>
+						    <th width="39">数量<br/>B</th>
+						    <th width="39">零售额<br/>A*B</th>
 						    <th width="39">库存</th>
 						    <th width="20"></th>
 						  </tr>

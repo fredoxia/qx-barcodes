@@ -7,8 +7,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenShare.js"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenShare.js?v3.7"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js?v3.8"></script>
 <LINK href="<%=request.getContextPath()%>/conf_files/css/qxbaby_css.css" type=text/css rel=STYLESHEET>
 <script>
 $(document).ready(function(){
@@ -29,7 +29,7 @@ function downloadOrder(){
 	<s:hidden name="formBean.flowOrder.type"/>  
 	<s:hidden name="formBean.flowOrder.id"/>   
 	<s:hidden name="formBean.flowOrder.status"/> 
-    <table width="78%" align="center"  class="OuterTable">
+    <table width="85%" align="center"  class="OuterTable">
 	    <tr><td>
 	         <div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
 			 <table width="100%" border="0">
@@ -67,7 +67,9 @@ function downloadOrder(){
 						    <th width="40">年份</th>
 						    <th width="40">季度</th>
 						    <th width="40">单位</th>
-						    <th width="39">纠正数量</th>
+						    <th width="40">零售单价<br/>A</th>
+						    <th width="39">纠正数量<br/>B</th>
+						    <th width="40">总零售价<br/>A*B</th>
 						    <th width="39">库存</th>
 						    <th width="20"></th>
 						  </tr>
@@ -85,7 +87,9 @@ function downloadOrder(){
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value="#st.index"/>].productBarcode.product.year.year" id="year<s:property value="#st.index"/>"  size="4" readonly="readonly" value="<s:property value="#orderProduct.productBarcode.product.year.year"/>"/></td>
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value="#st.index"/>].productBarcode.product.quarter.quarter_Name" id="quarter<s:property value="#st.index"/>"  size="4" readonly="readonly" value="<s:property value="#orderProduct.productBarcode.product.quarter.quarter_Name"/>"/></td>
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value="#st.index"/>].productBarcode.product.unit" id="unit<s:property value="#st.index"/>" size="4" readonly="readonly" value="<s:property value="#orderProduct.productBarcode.product.unit"/>"/></td>
+							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value="#st.index"/>].productBarcode.product.salesPrice" id="salesPrice<s:property value="#st.index"/>" size="2" readonly="readonly" value="<s:property value="#orderProduct.productBarcode.product.salesPrice"/>"/></td>
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value="#st.index"/>].quantity" id="quantity<s:property value="#st.index"/>"  size="2" onchange="calculateTotal()" onkeypress="return is_number(event);" value="<s:property value="#orderProduct.quantity"/>"/></td>
+							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value="#st.index"/>].totalSalesPrice" id="totalSalesPrice<s:property value="#st.index"/>" size="2" readonly="readonly" value="<s:property value="#orderProduct.totalSalesPrice"/>"/></td>
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value="#st.index"/>].inventoryQ" id="inventoryQ<s:property value="#st.index"/>"  size="2" onchange="calculateTotal()" onkeypress="return is_number(event);" value="<s:property value="#orderProduct.inventoryQ"/>"/></td>
 							      <td><div id="delIcon<s:property value="#st.index"/>" style="display:block"><img src="<%=request.getContextPath()%>/conf_files/web-image/delete.png" border="0"  onclick="deleteRow('orderRow<s:property value="#st.index"/>');" style="cursor:pointer;"/></div>
 								  </td>
@@ -101,15 +105,19 @@ function downloadOrder(){
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value='formBean.flowOrder.productList.size()'/>].productBarcode.product.year.year" id="year<s:property value='formBean.flowOrder.productList.size()'/>"  size="4" readonly="readonly"/></td>
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value='formBean.flowOrder.productList.size()'/>].productBarcode.product.quarter.quarter_Name" id="quarter<s:property value='formBean.flowOrder.productList.size()'/>"  size="4" readonly="readonly"/></td>
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value='formBean.flowOrder.productList.size()'/>].productBarcode.product.unit" id="unit<s:property value='formBean.flowOrder.productList.size()'/>" size="4" readonly="readonly"/></td>
+							      							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value='formBean.flowOrder.productList.size()'/>].productBarcode.product.salesPrice" id="salesPrice<s:property value='formBean.flowOrder.productList.size()'/>" size="2" readonly="readonly"/></td>
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value='formBean.flowOrder.productList.size()'/>].quantity" id="quantity<s:property value='formBean.flowOrder.productList.size()'/>"  size="2" onchange="calculateTotal()" onkeypress="return is_number(event);"/></td>
+							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value='formBean.flowOrder.productList.size()'/>].totalSalesPrice" id="totalSalesPrice<s:property value='formBean.flowOrder.productList.size()'/>" size="2" readonly="readonly"/></td>
+							      
 							      <td><input type="text" name="formBean.flowOrder.productList[<s:property value='formBean.flowOrder.productList.size()'/>].inventoryQ" id="inventoryQ<s:property value='formBean.flowOrder.productList.size()'/>" readonly size="2" onchange="calculateTotal()" onkeypress="return is_number(event);"/></td>
 							      <td><div id="delIcon<s:property value='formBean.flowOrder.productList.size()'/>" style="display:none"><img src="<%=request.getContextPath()%>/conf_files/web-image/delete.png" border="0"  onclick="deleteRow('orderRow<s:property value='formBean.flowOrder.productList.size()'/>');" style="cursor:pointer;"/></div>
 								  </td>
 							     </tr>  
 						  </tbody>
 						  <tr class="PBAInnerTableTitale">
-						    <th height="25" colspan="8" align='left'>合计</th>
+						    <th height="25" colspan="9" align='left'>合计</th>
 						    <th align='left'><s:textfield name="formBean.flowOrder.totalQuantity" id="totalQuantity" readonly="true" size="2"/></th>
+						    <th align='left'><s:textfield name="formBean.flowOrder.totalSalesPrice" id="totalSalesPriceOrder" readonly="true" size="2"/></th>
 						    <th align='left'><s:textfield name="formBean.flowOrder.totalInventoryQ" id="totalInventoryQ" readonly="true" size="2"/></th>
 						    <th></th>
 						  </tr>

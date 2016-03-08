@@ -63,6 +63,8 @@ function backRetrievePByBarcodeProcess(data){
     	var quarterInput = $("#quarter"+index_c); 
     	var inventoryInput = $("#inventoryQ"+index_c); 
     	var colorInput = $("#color"+index_c); 
+    	var salesPriceInput = $("#salesPrice" + index_c);
+    	var totalSalesPriceInput = $("#totalSalesPrice" + index_c);
     	
 		var barcode = data.productBarcode.barcode;
 		var productId = data.productBarcode.id;
@@ -78,6 +80,8 @@ function backRetrievePByBarcodeProcess(data){
 		var colorName = "";
 		if (color != null)
     		colorName = color.name;
+		var salesPrice = product.salesPrice;
+		var totalSalesPrice = quantity * salesPrice;
 
 		productIdInput.attr("value",productId);
 		barcodeInput.attr("value",barcode);
@@ -89,6 +93,8 @@ function backRetrievePByBarcodeProcess(data){
     	quarterInput.attr("value",quarter); 
     	inventoryInput.attr("value", inventoryQ);
     	colorInput.attr("value", colorName);
+    	salesPriceInput.attr("value", salesPrice);
+    	totalSalesPriceInput.attr("value", totalSalesPrice);
     	
     	//if the user just changed the original barcode information
     	//then no need to add the index by one
@@ -160,20 +166,30 @@ function validateRowInputFromChild(currentBarcode){
 function calculateTotal(){
 	var quantity_t =0;
 	var inventory_t = 0;
+	var totalSalesPriceOrder = 0;
 
 	for (var i = 0; i <= index; i++){
 	   	var quantityInput =  $("#quantity"+i); 
 	   	var inventoryInput =  $("#inventoryQ"+i); 
+	   	var salesPriceInput = $("#salesPrice"+i); 
+	   	var totalSalesPriceInput = $("#totalSalesPrice"+i); 
         if (quantityInput.val()!= undefined && quantityInput.val()!="" ){
 		   quantity_t += parseInt(quantityInput.val());
         }
         if (inventoryInput.val()!= undefined && inventoryInput.val()!=""){
         	inventory_t += parseInt(inventoryInput.val());
         }
+        if (quantityInput.val()!= undefined && quantityInput.val()!="" && salesPriceInput.val()!= undefined && salesPriceInput.val()!=""){
+        	var totalSalesPrice = parseInt(quantityInput.val()) * salesPriceInput.val();
+        	totalSalesPriceInput.attr("value", totalSalesPrice);
+        	totalSalesPriceOrder += totalSalesPrice;
+        }
 	}
 
    	$("#totalQuantity").attr("value",quantity_t); 
    	$("#totalInventoryQ").attr("value",inventory_t); 
+   	
+   	$("#totalSalesPriceOrder").attr("value",totalSalesPriceOrder); 
 }
 
 function addNewRow(){
