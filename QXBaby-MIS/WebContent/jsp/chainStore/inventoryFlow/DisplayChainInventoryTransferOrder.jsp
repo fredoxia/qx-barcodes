@@ -72,7 +72,9 @@ function downloadOrder(){
 						    <th width="10%">颜色</th>
 						    <th width="12%">条形码</th>
 						    <th width="10%">单位</th>
-						    <th width="10%">数量</th>
+						    <th width="8%">零售单价</th>
+						    <th width="8%">数量</th>
+						    <th width="8%">零售额</th>
 						    <th width="15%">摘要</th>
 						  </tr>
 						  <tbody id="orderTablebody">
@@ -86,14 +88,18 @@ function downloadOrder(){
 							      <td><s:property value="#orderProduct.productBarcode.color.name"/></td>
 							      <td><s:property value="#orderProduct.productBarcode.barcode"/></td>
 							      <td><s:property value="#orderProduct.productBarcode.product.unit"/></td>
+							      <td><s:property value="#orderProduct.productBarcode.product.salesPrice"/></td>
 							      <td><s:property value="#orderProduct.quantity"/></td>
+							      <td><s:property value="#orderProduct.totalSalesPrice"/></td>
 							      <td><s:property value="#orderProduct.comment"/></td>
 							     </tr>
 							   </s:iterator>  
 						  </tbody>
 						  <tr class="PBAInnerTableTitale">
-						    <th height="25" colspan="8" align='left'>合计</th>
+						    <th height="25" colspan="9" align='left'>合计</th>
 						    <th align='center'><s:property value="uiBean.flowOrder.totalQuantity"/></th>
+						    <th align='center'><s:property value="uiBean.flowOrder.totalSalesPrice"/></th>
+						    
 						    <th></th>
 						  </tr>
 					     </table>
