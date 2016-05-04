@@ -1462,6 +1462,7 @@ public class ChainInventoryFlowOrderService {
 				
 				chainInventoryFlowOrderProduct.setQuantity(quantity);
 				chainInventoryFlowOrderProduct.setInventoryQ(inventory);
+				chainInventoryFlowOrderProduct.setTotalSalesPrice(quantity * product.getProduct().getSalesPrice());
 				chainInventoryFlowOrderProduct.setQuantityDiff(quantity - inventory);
 				
 				orderProducts.add(chainInventoryFlowOrderProduct);

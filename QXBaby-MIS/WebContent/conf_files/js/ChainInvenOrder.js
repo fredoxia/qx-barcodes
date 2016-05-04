@@ -72,6 +72,8 @@ function backRetrievePByBarcodeProcess(data){
     	var inventoryInput = $("#inventoryQ"+index_c); 
     	var quantityDiffInput = $("#quantityDiff"+index_c); 
     	var colorInput = $("#color"+index_c); 
+    	var salesPriceInput = $("#salesPrice" + index_c);
+    	var totalSalesPriceInput = $("#totalSalesPrice" + index_c);
     	
 		var barcode = data.productBarcode.barcode;
 		var productId = data.productBarcode.id;
@@ -91,6 +93,9 @@ function backRetrievePByBarcodeProcess(data){
 
 		if (color != null)
     		colorName = color.name;
+		
+		var salesPrice = product.salesPrice;
+		var totalSalesPrice = quantity * salesPrice;
 
 		productIdInput.attr("value",productId);
 		barcodeInput.attr("value",barcode);
@@ -103,6 +108,8 @@ function backRetrievePByBarcodeProcess(data){
     	inventoryInput.attr("value", inventoryQ);
     	quantityDiffInput.attr("value", quantity - inventoryQ);
     	colorInput.attr("value", colorName);
+    	salesPriceInput.attr("value", salesPrice);
+    	totalSalesPriceInput.attr("value", totalSalesPrice);
     	
     	calculateTotal();
     	
@@ -126,11 +133,14 @@ function calculateTotal(){
 	var quantity_t =0;
 	var inventory_t = 0;
 	var quantityDiff_t = 0;
+	var totalSalesPriceOrder = 0;
 
 	for (var i = 0; i <= index; i++){
 	   	var quantityInput =  $("#quantity"+i); 
 	   	var inventoryInput =  $("#inventoryQ"+i); 
 	   	var quantityDiffInput =  $("#quantityDiff"+i); 
+	   	var salesPriceInput = $("#salesPrice"+i); 
+	   	var totalSalesPriceInput = $("#totalSalesPrice"+i); 
 	   	
         if (quantityInput.val()!= undefined && quantityInput.val()!="" ){
 		   quantity_t += parseInt(quantityInput.val());
@@ -144,11 +154,17 @@ function calculateTotal(){
 	        quantityDiffInput.attr("value", diff);
 	        quantityDiff_t += parseInt(diff);
         }
+        if (quantityInput.val()!= undefined && quantityInput.val()!="" && salesPriceInput.val()!= undefined && salesPriceInput.val()!=""){
+        	var totalSalesPrice = parseInt(quantityInput.val()) * salesPriceInput.val();
+        	totalSalesPriceInput.attr("value", totalSalesPrice);
+        	totalSalesPriceOrder += totalSalesPrice;
+        }
 	}
 
    	$("#totalQuantity").attr("value",quantity_t); 
    	$("#totalInventoryQ").attr("value",inventory_t); 
    	$("#totalQuantityDiff").attr("value",quantityDiff_t);
+   	$("#totalSalesPriceOrder").attr("value",totalSalesPriceOrder); 
 }
 
 /**
@@ -175,7 +191,9 @@ function addNewRow(){
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.year.year' id='year"+index+"'  size='4' readonly='readonly'/></td>"; 
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.quarter.quarter_Name' id='quarter"+index+"'  size='4' readonly='readonly'/></td>"; 
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.unit' id='unit"+index+"' size='4' readonly='readonly'/></td>";  
+    str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].productBarcode.product.salesPrice' id='salesPrice"+index+"'  size='2' readonly='readonly'/></td>";
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].quantity' id='quantity"+index+"'  size='2' onchange='calculateTotal("+index+")' onkeypress='return is_number(event);'/></td>";  
+    str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].totalSalesPrice' id='totalSalesPrice"+index+"'  size='2' readonly='readonly'/></td>"; 
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].inventoryQ' id='inventoryQ"+index+"' readonly  size='2' onchange='calculateTotal("+index+")' onkeypress='return is_number(event);'/></td>";
     str += "<td><input type='text' name='formBean.flowOrder.productList["+index+"].quantityDiff' id='quantityDiff"+index+"'  size='2'/></td>";  
     str += "<td><div id='delIcon"+index+"' style='display:none'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0'  onclick='deleteRow(\"orderRow"+index +"\");' style='cursor:pointer;'/></div></td>";  

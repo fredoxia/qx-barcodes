@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -40,19 +41,14 @@ public class testProduct {
 		Session session = sFactory.openSession();
 		Transaction transaction = session.beginTransaction();
 		
-		Criteria criteria = session.createCriteria(ProductBarcode.class);
-		Set<String> keys = new HashSet<String>();
-		keys.add("193000112580");
-		keys.add("128000109469");
-		keys.add("165000109457");
+		String ids = "SELECT pb.id FROM ProductBarcode pb JOIN pb.product p WHERE p.year.year_ID =1 AND p.quarter.quarter_ID =1 AND p.brand.brand_ID=100";
 		
-		criteria.add(Restrictions.in("barcode", keys));
+//		Criteria criteria = session.createCriteria(ProductBarcode.class);
+		
+		Query criteria = session.createQuery(ids);
+		List<Object> result = criteria.list();
+		
 
-		List<ProductBarcode> result = criteria.list();
-		
-		for (ProductBarcode pb: result)
-			System.out.println(pb.getBarcode() + "," +  pb.getId());
-		
 		transaction.commit();
 		session.close();
 		

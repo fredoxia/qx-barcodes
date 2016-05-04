@@ -129,9 +129,9 @@ public class ChainBatchRptService {
 		Year year = yearDaoImpl.get(qxbabyConf.getYearId(), true);
 		Quarter quarter = quarterDaoImpl.get(qxbabyConf.getQuarterId(), true);
 		
-		List<java.sql.Date> lastWeekDays = Common_util.getLastWeekDays();
-		java.sql.Date startDate = lastWeekDays.get(0);
-		java.sql.Date endDate = lastWeekDays.get(6);
+		java.sql.Date endDate = Common_util.getYestorday();
+		java.sql.Date startDate = new java.sql.Date(Common_util.calcualteDate(endDate, -6).getTime());
+		
 		
 		loggerLocal.infoB("当季配置 :" + year.getYear() + " - " + quarter.getQuarter_Name());
 		String message = startDate + "," + year.getYear() + "," + quarter.getQuarter_Name();
