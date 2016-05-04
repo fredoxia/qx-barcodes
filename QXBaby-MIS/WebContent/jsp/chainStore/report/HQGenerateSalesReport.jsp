@@ -114,6 +114,7 @@ $(document).ready(function(){
 });
 function changeChainStore(chainId){}
 function genSalesReport(){
+
 	var params = $.serializeObject($('#preGenReportForm')); 
 	$('#dataGrid').datagrid('load',params); 
 }
