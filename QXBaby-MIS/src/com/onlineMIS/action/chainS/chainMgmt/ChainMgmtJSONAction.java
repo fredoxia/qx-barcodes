@@ -552,4 +552,27 @@ public class ChainMgmtJSONAction extends ChainMgmtAction {
 		
 		return "successful";
 	}
+	
+	/**
+	 * 永久删除这个chain store, 需要非常小心
+	 * @return
+	 */
+	public String deleteChainStore(){
+		Response response = new Response();
+		
+		try {
+			response = chainMgmtService.deleteChainStore(formBean.getChainStore().getChain_id());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setQuickValue(Response.ERROR, e.getMessage());
+		}
+
+		try{
+			   jsonObject = JSONObject.fromObject(response);
+			} catch (Exception e){
+				loggerLocal.error(e);
+			}
+		
+		return "successful";
+	}
 }

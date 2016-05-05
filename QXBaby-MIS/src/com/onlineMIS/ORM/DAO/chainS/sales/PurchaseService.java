@@ -388,7 +388,7 @@ public class PurchaseService {
 		int clientId = oldOrder.getClient_id();
 		ChainStore chainStore = chainStoreDaoImpl.getByClientId(clientId);
 		if (chainStore != null){
-			if (chainStore.getStatus() != ChainStore.STATUS_DISABLED && chainStore.getStatus() != ChainStore.STATUS_DELETE){
+			if (chainStore.getStatus() != ChainStore.STATUS_DELETE){
 				if (oldOrder.getOrder_Status() == InventoryOrder.STATUS_ACCOUNT_COMPLETE && oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_NOT_CONFIRM && oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_PRODUCT_INCORRECT){
 					//1. 修改连锁店确认信息
 					oldOrder.setChainConfirmStatus(InventoryOrder.STATUS_SYSTEM_CONFIRM);

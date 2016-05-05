@@ -18,21 +18,37 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockArchiveDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderProductDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.sales.ChainDailySalesDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.sales.ChainDailySalesImpactDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderProductDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainRoleTypeDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
+import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
+import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPCardImpl;
+import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPPrepaidImpl;
+import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPScoreImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.CategoryDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.QuarterDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.YearDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.finance.ChainAcctFlowDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.finance.ChainFinanceTraceImpl;
+import com.onlineMIS.ORM.DAO.headQ.finance.FinanceBillImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.HeadQSalesHisDAOImpl;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainInitialStock;
@@ -73,6 +89,19 @@ import com.onlineMIS.sorter.SortYear;
 public class ChainMgmtService {
 	@Autowired
 	private YearDaoImpl yearDaoImpl;
+	
+	@Autowired
+	private CategoryDaoImpl categoryDaoImpl;
+
+	
+	@Autowired
+	private ChainInOutStockArchiveDaoImpl chainInOutStockArchiveDaoImpl;
+
+	
+	@Autowired	
+	private ChainUserInforDaoImpl chainUserInforDaoImpl;
+
+	
 	@Autowired
 	private QuarterDaoImpl quarterDaoImpl;
 	
@@ -800,6 +829,41 @@ public class ChainMgmtService {
 	
 	public void updateQxbabyConf(QxbabyConf conf){
 		qxbabyConfDaoImpl.saveOrUpdate(conf, true);
+	}
+
+	/**
+	 * 永久删除连锁店
+	 * @param chain_id
+	 */
+	@Transactional
+	public Response deleteChainStore(int chain_id) {
+		Response response = new Response();
+		
+		ChainStore chainStore = chainStoreService.getChainStoreByID(chain_id);
+		if (chainStore == null){
+			response.setFail("无法找到连锁店信息");
+		} else if (chainStore.getStatus() == ChainStore.STATUS_ACTIVE){
+			response.setFail("状态正常的连锁店不能直接删除");
+		} else {
+			int clientId = chainStore.getClient_id();
+			
+			Object[] valuesChainId = new Object[]{chain_id};
+			Object[] valuesClientId = new Object[]{clientId};
+			
+			chainInOutStockDaoImpl.executeHQLUpdateDelete("DELETE FROM ChainInOutStock WHERE clientId=?", valuesClientId, false);
+			
+			chainInOutStockArchiveDaoImpl.executeHQLUpdateDelete("DELETE FROM ChainInOutStockArchive WHERE clientId=?", valuesClientId, false);
+
+			chainInitialStockDaoImpl.executeHQLUpdateDelete("DELETE FROM ChainInitialStock WHERE id.clientId=?", valuesClientId, false);
+			
+			chainStore.setStatus(ChainStore.STATUS_DELETE);
+			chainStoreDaoImpl.update(chainStore, true);
+			
+			
+			chainUserInforDaoImpl.executeHQLUpdateDelete("UPDATE ChainUserInfor SET resign =1 WHERE myChainStore.chain_id=?", valuesChainId, true);
+		}
+		
+		return response;
 	}
 
 

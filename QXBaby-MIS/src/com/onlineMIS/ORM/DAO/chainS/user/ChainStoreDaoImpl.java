@@ -40,7 +40,7 @@ public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 	 */
 	public Set<Integer> getAllClientIds(){
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
-		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DISABLED));
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
 		
 		List<ChainStore> chainStores = getByCritera(criteria, true);
 		Set<Integer> clientIds = new HashSet<Integer>();

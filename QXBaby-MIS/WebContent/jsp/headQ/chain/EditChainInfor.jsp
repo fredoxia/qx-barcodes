@@ -39,10 +39,15 @@ function backProcessEditChainStore(data){
     }
 }
 function deleteChainStore(){
-	if (confirm("连锁店需要删除?")){
-		var params="formBean.chainStore.chain_id=" + chainStoreId;
-		$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!deleteChainStore",params, backProcessDeleteChainStore,"json");
-	}
+	$.messager.prompt("密码验证","一旦删除这个连锁店，所有当前连锁店的信息将会被永久删除.输入密码:", function(password){
+		if (password == "vj7683c688"){
+			var params="formBean.chainStore.chain_id=" + chainStoreId;
+			$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!deleteChainStore",params, backProcessDeleteChainStore,"json");
+		} else {
+			alert("密码错误");
+		}	   
+	});
+
 }
 function backProcessDeleteChainStore(data){
 	

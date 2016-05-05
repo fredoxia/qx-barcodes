@@ -89,7 +89,7 @@ public class ChainUserInforService {
 		}
 		if (user_list != null && user_list.size() != 0){
 			ChainUserInfor user = user_list.get(0);
-			if (user.getResign() == UserInfor.RESIGNED || user.getMyChainStore().getStatus() == ChainStore.STATUS_DISABLED)
+			if (user.getResign() == UserInfor.RESIGNED || user.getMyChainStore().getStatus() == ChainStore.STATUS_DELETE)
 				response.setQuickValue(Response.ERROR, "你的账户已经停用，请联系管理员");
 			else {
 				if (addFunction){
@@ -424,7 +424,7 @@ public class ChainUserInforService {
 			ChainUserInfor user = user_list.get(0);
 			if (user.getMyChainStore().getChain_id() != chainId){
 				response.setQuickValue(Response.ERROR, "登陆信息错误");
-			} else if (user.getResign() == UserInfor.RESIGNED || user.getMyChainStore().getStatus() == ChainStore.STATUS_DISABLED)
+			} else if (user.getResign() == UserInfor.RESIGNED || user.getMyChainStore().getStatus() == ChainStore.STATUS_DELETE)
 				response.setQuickValue(Response.ERROR, "此账户已经停用，请联系管理员");
 			else {
 				response.setReturnCode(Response.SUCCESS);

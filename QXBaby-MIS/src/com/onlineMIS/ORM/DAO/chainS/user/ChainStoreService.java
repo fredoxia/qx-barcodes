@@ -115,12 +115,7 @@ public class ChainStoreService {
 				storeInDB.setPriceIncrement(null);
 			else 
 				storeInDB.setPriceIncrement(chainStore.getPriceIncrement());
-			
-			
-			//need check whether need change the status
-			int status = chainStore.getStatus();
-			if (status == ChainStore.STATUS_DISABLED)
-				disableChainStore(chainStore.getChain_id());
+
 			
 			try {
 			    chainStoreDaoImpl.saveOrUpdate(storeInDB, cached);
@@ -153,7 +148,7 @@ public class ChainStoreService {
 	 */
 	public List<ChainStore> getAvailableClientChainstores(){
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
-		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DISABLED));
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
 		criteria.add(Restrictions.ne("chain_id", ChainStore.CHAIN_ID_TEST_ID));
 		
 		return chainStoreDaoImpl.getByCritera(criteria, true);
@@ -177,19 +172,6 @@ public class ChainStoreService {
 		return chainStoreDaoImpl.executeHQLCount(queryString, values, true);
 	}
 
-	/**
-	 * this function is to disble one chain with its users
-	 * @param chain_id
-	 */
-	public void disableChainStore(int chain_id) {
-		String hql = "UPDATE ChainUserInfor SET resign = " + ChainUserInfor.RESIGNED + " WHERE myChainStore.chain_id = ?";
-		Object[] values = new Object[]{chain_id};
-		chainUserInforDaoImpl.executeHQLUpdateDelete(hql, values, cached);
-//		
-//		String hql_c = "UPDATE ChainStore SET status = " + ChainStore.STATUS_DISABLED + " WHERE chain_id = ?";
-//		Object[] values_c = new Object[]{chain_id};
-//		chainStoreDaoImpl.executeHQLUpdateDelete(hql_c, values_c, cached);
-	}
 	
 	/**
 	 * 获取这个用户可以看到的连锁店
@@ -257,7 +239,7 @@ public class ChainStoreService {
 		
 		//1. check the pager
 		if (pager.getTotalResult() == 0){
-			DetachedCriteria criteria = buildChainStoreHQCriteria(isAll);
+			DetachedCriteria criteria = buildChainStoreHQCriteria();
 			criteria.setProjection(Projections.rowCount());
 			int totalRecord = Common_util.getProjectionSingleValue(chainStoreDaoImpl.getByCriteriaProjection(criteria, false));
 			pager.initialize(totalRecord);
@@ -267,7 +249,7 @@ public class ChainStoreService {
 		}
 		
 		//2. 获取连锁店列表
-		DetachedCriteria searchCriteria = buildChainStoreHQCriteria(isAll);
+		DetachedCriteria searchCriteria = buildChainStoreHQCriteria();
 		searchCriteria.addOrder(Order.asc("pinYin"));
 		chainStores = chainStoreDaoImpl.getByCritera(searchCriteria, pager.getFirstResult(), pager.getRecordPerPage(), cache);
 		
@@ -284,10 +266,9 @@ public class ChainStoreService {
 
 	}
 	
-	private DetachedCriteria buildChainStoreHQCriteria(boolean isAll) {
+	private DetachedCriteria buildChainStoreHQCriteria() {
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
-		if (!isAll)
-		    criteria.add(Restrictions.ne("status", ChainStore.STATUS_DISABLED));
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
 		return criteria;
 	}
 
@@ -297,7 +278,7 @@ public class ChainStoreService {
 	 */
 	private DetachedCriteria buildChainStoreCriteria() {
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
-		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DISABLED));
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
 		return criteria;
 	}
 
@@ -325,7 +306,7 @@ public class ChainStoreService {
 		
 		DetachedCriteria chainCriteria = DetachedCriteria.forClass(ChainStore.class);
 		chainCriteria.add(Restrictions.eq("allowChangeSalesPrice", ChainStore.ALLOW_CHANGE_PRICE));
-		chainCriteria.add(Restrictions.ne("status", ChainStore.STATUS_DISABLED));
+		chainCriteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
 			
 		chainStores = chainStoreDaoImpl.getByCritera(chainCriteria, true);
 			

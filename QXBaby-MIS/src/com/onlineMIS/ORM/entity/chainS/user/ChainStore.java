@@ -12,7 +12,6 @@ public class ChainStore implements Serializable {
 	/**
 	 * 
 	 */
-	public static final int STATUS_DISABLED = 1;
 	public static final int STATUS_NOT_ACTIVE = 2;
 	public static final int STATUS_ACTIVE = 0;
 	public static final int STATUS_DELETE = -1;
@@ -33,7 +32,6 @@ public class ChainStore implements Serializable {
 	private static Map<Integer, String> statusMap = new LinkedHashMap<Integer, String>();
 	
 	static {
-		statusMap.put(STATUS_DISABLED, "停用");
 		statusMap.put(STATUS_NOT_ACTIVE, "不活跃");
 		statusMap.put(STATUS_ACTIVE, "活跃");
 	}
