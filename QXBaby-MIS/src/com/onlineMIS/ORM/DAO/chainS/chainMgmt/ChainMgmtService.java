@@ -160,7 +160,7 @@ public class ChainMgmtService {
 		//1. chain store list
 		List<ChainStore> chainStores =  new ArrayList<ChainStore>();
 
-		chainStores = chainStoreService.getChainStoreList();
+		chainStores = chainStoreDaoImpl.getAllChainStoreList();
 		uiBean.setChainStores(chainStores);
 			
 		//2. status map
@@ -179,7 +179,7 @@ public class ChainMgmtService {
 	 * to prepare the UI bean for the edit initial stock ui
 	 */
 	public void prepareEditInitialStockUI(ChainMgmtActionUIBean uiBean){
-		List<ChainStore> chainStores = chainStoreService.getChainStoreList();
+		List<ChainStore> chainStores = chainStoreDaoImpl.getAllChainStoreList();
 		uiBean.setChainStores(chainStores);
 	}
 	
@@ -843,7 +843,7 @@ public class ChainMgmtService {
 		if (chainStore == null){
 			response.setFail("无法找到连锁店信息");
 		} else if (chainStore.getStatus() == ChainStore.STATUS_ACTIVE){
-			response.setFail("状态正常的连锁店不能直接删除");
+			response.setFail("状态活跃的连锁店不能直接删除");
 		} else {
 			int clientId = chainStore.getClient_id();
 			
@@ -856,7 +856,10 @@ public class ChainMgmtService {
 
 			chainInitialStockDaoImpl.executeHQLUpdateDelete("DELETE FROM ChainInitialStock WHERE id.clientId=?", valuesClientId, false);
 			
+			chainStoreGroupElementDaoImpl.deleteEleByChainId(chain_id);
+			
 			chainStore.setStatus(ChainStore.STATUS_DELETE);
+			chainStore.setClient_id(clientId * -1);
 			chainStoreDaoImpl.update(chainStore, true);
 			
 			

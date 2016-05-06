@@ -26,6 +26,18 @@ public class ChainStoreGroupElementDaoImpl extends BaseDAO<ChainStoreGroupElemen
 		int success = this.executeHQLUpdateDelete(sql, values, true);
 		return success;
 	}
+	
+	/**
+	 * 删除chain group element by groupId
+	 * @param chainGroupId
+	 */
+	public int deleteEleByChainId(int chainId) {
+		String sql = "DELETE FROM ChainStoreGroupElement C WHERE C.chainId = ?";
+		Object[] values = new Object[]{chainId};
+		
+		int success = this.executeHQLUpdateDelete(sql, values, true);
+		return success;
+	}
 
 	/**
 	 * 检查chain是否存在于非这个chainGroupId的其他chainGroup里面

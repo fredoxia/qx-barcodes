@@ -41,7 +41,7 @@ function backProcessEditChainStore(data){
 function deleteChainStore(){
 	$.messager.prompt("密码验证","一旦删除这个连锁店，所有当前连锁店的信息将会被永久删除.输入密码:", function(password){
 		if (password == "vj7683c688"){
-			var params="formBean.chainStore.chain_id=" + chainStoreId;
+			var params="formBean.chainStore.chain_id=" + $("#chainStoreId").val();
 			$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!deleteChainStore",params, backProcessDeleteChainStore,"json");
 		} else {
 			alert("密码错误");
@@ -50,7 +50,12 @@ function deleteChainStore(){
 
 }
 function backProcessDeleteChainStore(data){
-	
+	if (data.returnCode == SUCCESS){
+		window.location.reload();
+	} else {
+		alert("删除失败 : " + data.message);
+	}
+		
 }
 
 

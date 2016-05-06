@@ -287,7 +287,7 @@ public class ChainVIPService {
 			store_dummy.setChain_id(Common_util.ALL_RECORD);
 			store_dummy.setChain_name("--所有连锁店--");
 			chainStores.add(0, store_dummy);
-			List<ChainStore> otherStores = chainStoreDaoImpl.getAll(true);
+			List<ChainStore> otherStores = chainStoreDaoImpl.getAllChainStoreList();
 			chainStores.addAll(otherStores);
 		} else {
 			int myChainId = userInfor.getMyChainStore().getChain_id();
@@ -592,7 +592,7 @@ public class ChainVIPService {
 						criteria.add(Restrictions.in("issueChainStore.chain_id", chainStoreIds));
 					}
 				}
-			}
+			} 
 		}
 		
 		return criteria;

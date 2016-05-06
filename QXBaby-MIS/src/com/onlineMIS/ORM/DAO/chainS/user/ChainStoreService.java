@@ -49,7 +49,7 @@ public class ChainStoreService {
 	 */
 	public List<ChainStore> getChainStoreList(ChainUserInfor loginUser) {
 		if (ChainUserInforService.isMgmtFromHQ(loginUser))
-			return chainStoreDaoImpl.getAll(cached);
+			return chainStoreDaoImpl.getAllChainStoreList();
 		else {
 			List<ChainStore> chainStores = new ArrayList<ChainStore>();
 			chainStores.add(loginUser.getMyChainStore());
@@ -134,8 +134,12 @@ public class ChainStoreService {
 	 * @param loginUser
 	 * @return
 	 */
-	public List<ChainStore> getChainStoreList() {
-		return chainStoreDaoImpl.getAll(cached);
+//	public List<ChainStore> getChainStoreList() {
+//		return chainStoreDaoImpl.getAll(cached);
+//	}
+	public List<ChainStore> getAllChainStoreList() {
+
+		return chainStoreDaoImpl.getAllChainStoreList();
 	}
 
 	public ChainStore getChainStoreByID(int chainStoreId) {

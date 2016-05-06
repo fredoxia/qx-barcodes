@@ -969,7 +969,7 @@ public class InventoryService {
     	
     	//must be the client id instead of chainId
 		ChainStore chainStore = chainStoreDaoImpl.getByClientId(clientId);
-		if (chainStore != null && chainStore.getStatus() != ChainStore.STATUS_DISABLED){
+		if (chainStore != null && chainStore.getStatus() != ChainStore.STATUS_DELETE){
 			int chainId = chainStore.getChain_id();
 			int orderId = order.getOrder_ID();
 	    	

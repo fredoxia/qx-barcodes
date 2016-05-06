@@ -67,4 +67,11 @@ public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 		chainStore.setChain_name("非连锁店");
 		return chainStore;
 	}
+	
+	public List<ChainStore> getAllChainStoreList() {
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
+		
+		return this.getByCritera(criteria, true);
+	}
 }
