@@ -13,31 +13,20 @@ $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 	});
 function generateCurrentSalesReport(){
-	var date = $("#currentSalesDate").val();
-	if (date == ""){
-		alert("无效的报表日期");
-		return;
-	}
-	$("#reportType").attr("value", 1);
-	$("#reportDate").attr("value",date);
+	var rptId = $("#rptId").val();
+	$("#id").attr("value",rptId);
     document.preGenReportForm.submit();
 }
 function generateAccumulatedSalesReport(){
-	var date = $("#accumulatedSalesDate").val();
-	if (date == ""){
-		alert("无效的报表日期");
-		return;
-	}
-	$("#reportType").attr("value", 2);
-	$("#reportDate").attr("value", date);
+	var rptId = $("#rptId2").val();
+	$("#id").attr("value",rptId);
     document.preGenReportForm.submit();
 }
 </script>
 </head>
 <body>
    <s:form id="preGenReportForm" name="preGenReportForm" action="/actionChain/chainReportJSPAction!generateChainRptRepository" theme="simple" method="POST"> 
-   		<s:hidden id="reportType" name="formBean.rptRepository.rptId"/>
-   		<s:hidden id="reportDate" name="formBean.rptRepository.rptDate"/> 
+   		<s:hidden id="id" name="formBean.rptRepository.id"/>
    </s:form>
    <s:form id="tempForm" name="tempForm" action="" theme="simple" method="POST"> 
      <table width="90%" align="center"  class="OuterTable">
@@ -51,13 +40,13 @@ function generateAccumulatedSalesReport(){
 		
 			    <tr class="InnerTableContent">
 			      <td height="32" >每周当季货品分析报表</td>
-			      <td ><s:select id="currentSalesDate" name="formBean.rptDate"  list="uiBean.currentSalesDates" listKey="rptDate" listValue="rptDes" />
+			      <td ><s:select id="rptId" name="formBean.id"  list="uiBean.currentSalesDates" listKey="id" listValue="rptDes" />
 			      </td>
 			      <td><input type="button" value="下载报表" onclick="generateCurrentSalesReport();"/></td>
 		        </tr>
 			    <tr class="InnerTableContent">
 			      <td height="32" >每周当季货品累计销售分析报表</td>
-			      <td ><s:select id="accumulatedSalesDate" name="formBean.rptDate2"  list="uiBean.accumulatedSalesDates" listKey="rptDate" listValue="rptDes" />
+			      <td ><s:select id="rptId2" name="formBean.id"  list="uiBean.accumulatedSalesDates" listKey="id" listValue="rptDes" />
 			      </td>
 			      <td><input type="button" value="下载报表" onclick="generateAccumulatedSalesReport();"/></td>
 		        </tr>		        

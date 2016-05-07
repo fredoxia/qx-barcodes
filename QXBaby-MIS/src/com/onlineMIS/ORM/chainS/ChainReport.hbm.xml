@@ -110,12 +110,12 @@
       </class> 
       
       <class name="ChainBatchRptRepositoty" table="chain_auto_rpt_repository">
-        <composite-id>
-            <key-property name="rptId" column="rpt_id" type="integer"/>
-            <key-property name="rptDate" column="rpt_date" type="date"/>
-        </composite-id>
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="rptId" column="rpt_id" type="integer"/>
+        <property name="rptDate" column="rpt_date" type="date"/>
         <property name="rptName" column="rpt_name" type="string"/>
-        
 		<property name="rptDes" column="rpt_des" type="string"/>
 		<property name="rptPath" column="rpt_path" type="string"/>
       </class>                            

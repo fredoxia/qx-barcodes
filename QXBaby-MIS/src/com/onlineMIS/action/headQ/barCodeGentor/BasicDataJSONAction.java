@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.common.loggerLocal;
@@ -47,8 +48,16 @@ public class BasicDataJSONAction extends BasicDataAction {
 		}
 		
 		if (response.getReturnCode() == Response.SUCCESS){
+			JsonConfig jsonConfig = new JsonConfig();
+			
+			jsonConfig.setExcludes( new String[]{"activeDate"} );
+			
 			jsonMap = (Map)response.getReturnValue();
-		    jsonObject = JSONObject.fromObject(jsonMap);
+			try {
+				jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
+			} catch (Exception e){
+				e.printStackTrace();
+			}
 		}
 		
 		return SUCCESS;

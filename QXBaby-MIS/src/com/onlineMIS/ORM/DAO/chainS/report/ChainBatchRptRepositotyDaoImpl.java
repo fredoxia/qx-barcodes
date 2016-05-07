@@ -31,16 +31,4 @@ public class ChainBatchRptRepositotyDaoImpl   extends BaseDAO<ChainBatchRptRepos
 		
 		return resultMap;
 	}
-	
-	public ChainBatchRptRepositoty getByPk(int rptType, java.sql.Date rptDate){
-		DetachedCriteria criteria = DetachedCriteria.forClass(ChainBatchRptRepositoty.class);
-		criteria.add(Restrictions.eq("rptId", rptType));
-		criteria.add(Restrictions.eq("rptDate", rptDate));
-		
-		List<ChainBatchRptRepositoty> rptRepositoties = this.getByCritera(criteria, 0, 10, true);
-		if (rptRepositoties.size() > 0)
-			return rptRepositoties.get(0);
-		else 
-			return null;
-	}
 }

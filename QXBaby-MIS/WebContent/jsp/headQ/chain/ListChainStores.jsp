@@ -36,6 +36,7 @@ function selectChainStore(chainId, chainName){
 					<table width="100%"  align="left" class="OuterTable" id="org_table">
 					  <tr class="PBAInnerTableTitale" align='left'>
 					    <th width="20" height ="25">No.</th>
+					    <th width="20"></th>
 					    <th width="140">连锁店名称</th>
 					    <th width="120">连锁店经营者</th>
 					    <th></th>
@@ -43,6 +44,7 @@ function selectChainStore(chainId, chainName){
 				      <s:iterator value="uiBean.chainStores" status="st" id="chainStore" >
 						    <tr class="InnerTableContent" <s:if test="#st.even">style='background-color: rgb(255, 250, 208);'</s:if>>	      
 						      <td><s:property value="#st.index +1 + formBean.pager.firstResult"/></td>
+						      <td>&nbsp;<s:property value="#chainStore.pinYin.substring(0,1) "/></td>
 						      <td><s:property value="#chainStore.chain_name"/></td>
 						      <td><s:property value="#chainStore.owner_name"/></td>
 						      <td><a href='#' onclick="selectChainStore(<s:property value="#chainStore.chain_id"/>,'<s:property value="#chainStore.chain_name"/>');"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
@@ -50,11 +52,11 @@ function selectChainStore(chainId, chainName){
 				       </s:iterator>	
 				       <s:if test="uiBean.chainStores.size == 0">
 						    <tr class="InnerTableContent">	      
-						      <td colspan="4">没有记录</td>
+						      <td colspan="5">没有记录</td>
 						     </tr>				       
 				       </s:if><s:else>
 						    <tr class="InnerTableContent">	      
-						      <td colspan="4"><div id="pageNav"></div></td>
+						      <td colspan="5"><div id="pageNav"></div></td>
 						    </tr>					       
 				       </s:else>  
 					</table></td>

@@ -27,12 +27,9 @@ function backProcessEditChainStore(data){
     } else {
     	var chainStore =  data.chainStore;
 		if (chainStore != undefined){
-			if ($("#chainStoreId").val() != 0)
-			    $("#chainStoreId").find("option:selected").text(chainStore.chain_name);
-			else {
-				$("#chainStoreId").append("<option value='"+chainStore.chain_id+"'>"+chainStore.chain_name+"</option>"); 
-				$("#chainStoreId").attr("value", chainStore.chain_id);
-			}
+			$("#chainName").attr("value", chainStore.chain_name);
+			$("#chainId").attr("value", chainStore.chain_id);
+			$("#chainStoreId").attr("value", chainStore.chain_id);
 			alert("成功更新");
 		} else 
 			alert("更新失败");
@@ -59,21 +56,20 @@ function backProcessDeleteChainStore(data){
 }
 
 
-function getChainStore(){
-	var chainStoreId = $("#chainStoreId").val();
-	if (chainStoreId == 0){
-		clearChainStore();
-	} else {
-		var params="formBean.chainStore.chain_id=" + chainStoreId;
-		$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!getChainStore",params, backProcessGetChainStore,"json");
-	}
+function changeChainStore(chainId){
+	var params="formBean.chainStore.chain_id=" + chainId;
+	$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!getChainStore",params, backProcessGetChainStore,"json");
+
 }
+
 function backProcessGetChainStore(data){
 	var chainStore =  data.chainStoreInfor;
 
 	if (chainStore != undefined){
+		$("#chainId").attr("value", chainStore.chain_id);
+		$("#chainStoreId").attr("value", chainStore.chain_id);
 		$("#chainOwner").attr("value", chainStore.owner_name);
-		$("#chainName").attr("value", chainStore.chain_name);
+		$("#chainNameS").attr("value", chainStore.chain_name);
 		$("#clientId").attr("value", chainStore.client_id);
 		$("#initialAcctAmt").attr("value",chainStore.initialAcctAmt);
 		$("#status").attr("value",chainStore.status);
@@ -93,11 +89,15 @@ function backProcessGetChainStore(data){
 
 }
 function clearChainStore(){
+	$("#chainId").attr("value", 0);
+	$("#chainStoreId").attr("value", 0);
 	$("#chainOwner").attr("value", "");
+	$("#chainNameS").attr("value", "");
 	$("#chainName").attr("value", "");
+	
 	$("#initialAcctAmt").attr("value","");
 	$("#clientId").attr("value","");
-	$("#allowEdit").attr("value", "1");
+	$("#allowEdit").attr("value", "0");
 	$("#initialAcctAmt").removeAttr("readonly");
 	$("#clientId").removeAttr("readonly");
 	$("#priceIncrement").attr("value", 0);
@@ -108,7 +108,7 @@ function clearChainStore(){
 function validateChainStore(){
 	var error = "";
 	var chainOwner = $("#chainOwner").val();
-	var chainNm = $("#chainName").val();
+	var chainNm = $("#chainNameS").val();
 
 	if (chainNm == "")
 		error += "连锁店名字 - 不能为空.\n";
@@ -129,10 +129,11 @@ function validateChainStore(){
 </script>
 </head>
 <body>
-<s:form id="EditChainInforForm" action="/action/chainSMgmtJSP!save" method="POST" theme="simple" target="_blank" onsubmit="" >
-  <table width="90%" align="center"  class="OuterTable">
+<table width="90%" align="center"  class="OuterTable">
     <tr><td>
-		 <table width="100%" border="0">
+        
+		<table width="100%" border="0">
+		 <s:form id="fakeForm" theme="simple">
 	    <tr class="PBAOuterTableTitale">
 	       <td height="78" colspan="8">连锁店/人员信息管理<br />
 	         <br />
@@ -141,15 +142,20 @@ function validateChainStore(){
 	    <tr class="InnerTableContent">
 	      <td width="90" height="25">
 	         <strong>连锁店</strong></td>
-	      <td><s:select id="chainStoreId" name="formBean.chainStore.chain_id"  list="uiBean.chainStores" headerKey="0" headerValue="----- 新增 -----"  listKey="chain_id" listValue="chain_name" onchange="getChainStore();"/></td>
+	      <td> <%@ include file="../include/SearchChainStore.jsp"%>
+	      <input type="button" value="清空数据,准备新增连锁店" onclick="clearChainStore();"/>
+	      </td>
 	      <td width="68">&nbsp;</td>
 	      <td width="314">&nbsp;</td>
 	      <td width="182">&nbsp;</td>
 	      <td width="137">&nbsp;</td>
 	    </tr>
+	    </s:form>
+	    <s:form id="EditChainInforForm" action="/action/chainSMgmtJSP!save" method="POST" theme="simple" target="_blank" onsubmit="" >
 	    <tr class="InnerTableContent">
 	      <td height="25"><strong>连锁店名字</strong></td>
-	      <td><s:textfield id="chainName" name="formBean.chainStore.chain_name" size="25"/></td>
+	      <td><s:textfield id="chainNameS" name="formBean.chainStore.chain_name" size="25"/>
+	      	  <s:hidden name="formBean.chainStore.chain_id" id="chainStoreId"/></td>
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
@@ -222,12 +228,14 @@ function validateChainStore(){
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
 	    </tr>
+	  
+	  </s:form>
 	  </table>
    </td>
    </tr>
 
  </table>
-</s:form>
+
 
 </body>
 </html>

@@ -3478,10 +3478,9 @@ public class ChainReportService {
 		Response response = new Response();
 		Map<String, Object> result = new HashMap<String, Object>();
 		
-		int rptType = rptRepository.getRptId();
-		java.sql.Date rptDate = rptRepository.getRptDate();
+		int rptId = rptRepository.getId();
 		
-		rptRepository = chainAutoRptRepositoryDaoImpl.getByPk(rptType, rptDate);
+		rptRepository = chainAutoRptRepositoryDaoImpl.get(rptId, true);
 		if (rptRepository == null){
 			response.setFail("无法找到报表");
 		} else {

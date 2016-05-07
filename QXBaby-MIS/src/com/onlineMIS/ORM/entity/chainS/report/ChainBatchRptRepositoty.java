@@ -23,6 +23,8 @@ public class ChainBatchRptRepositoty implements Serializable {
 	
 	public static final String REPORITORY_ROOT = "D:\\QXBaby-MIS\\BatchReport";
 	
+	private int id;
+	
 	/**
 	 * rpt type id
 	 */
@@ -36,6 +38,12 @@ public class ChainBatchRptRepositoty implements Serializable {
 	private String rptDes = "";
 	private String rptPath = "";
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getRptDes() {
 		return rptDes;
 	}

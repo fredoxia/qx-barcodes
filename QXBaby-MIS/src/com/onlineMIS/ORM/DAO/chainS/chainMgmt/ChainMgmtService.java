@@ -158,10 +158,10 @@ public class ChainMgmtService {
 	public void prepareEditChainInforUI(ChainMgmtActionUIBean uiBean) {
 		
 		//1. chain store list
-		List<ChainStore> chainStores =  new ArrayList<ChainStore>();
-
-		chainStores = chainStoreDaoImpl.getAllChainStoreList();
-		uiBean.setChainStores(chainStores);
+//		List<ChainStore> chainStores =  new ArrayList<ChainStore>();
+//
+//		chainStores = chainStoreDaoImpl.getAllChainStoreList();
+//		uiBean.setChainStores(chainStores);
 			
 		//2. status map
 		uiBean.setStatusMap(ChainStore.getStatusMap());
