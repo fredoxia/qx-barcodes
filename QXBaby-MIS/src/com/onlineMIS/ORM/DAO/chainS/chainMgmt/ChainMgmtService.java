@@ -155,13 +155,17 @@ public class ChainMgmtService {
 	 * to prepare the ui bean for edit chain inforamtion ui
 	 * @param uiBean
 	 */
-	public void prepareEditChainInforUI(ChainMgmtActionUIBean uiBean) {
+	public void prepareEditChainInforUI(ChainMgmtActionFormBean formBean, ChainMgmtActionUIBean uiBean, ChainUserInfor loginUser) {
 		
 		//1. chain store list
 //		List<ChainStore> chainStores =  new ArrayList<ChainStore>();
 //
 //		chainStores = chainStoreDaoImpl.getAllChainStoreList();
 //		uiBean.setChainStores(chainStores);
+		if (!ChainUserInforService.isMgmtFromHQ(loginUser)){
+			ChainStore chainStore = chainStoreService.getChainStoreByID(loginUser.getMyChainStore().getChain_id());
+			formBean.setChainStore(chainStore);
+		} 
 			
 		//2. status map
 		uiBean.setStatusMap(ChainStore.getStatusMap());
@@ -191,16 +195,21 @@ public class ChainMgmtService {
 	 */
 	public void prepareEditChainConfUI(ChainMgmtActionUIBean uiBean, ChainMgmtActionFormBean formBean,
 			ChainUserInfor userInfor) {
-		List<ChainStore> chainStores =  new ArrayList<ChainStore>();
 		ChainStoreConf chainStoreConf = null;
 
+		ChainStore chainStore = null;
 		//1. set the chain store informations
-		chainStores = chainStoreService.getChainStoreList(userInfor);
-		uiBean.setChainStores(chainStores);
+		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){
+			chainStore = chainStoreService.getChainStoreByID(userInfor.getMyChainStore().getChain_id());
+			formBean.setChainStore(chainStore);
+		} else {
+			chainStore = chainStoreService.getChainStoreByID(ChainStore.CHAIN_ID_TEST_ID);
+			formBean.setChainStore(chainStore);
+		}
 		
 		//2. set the first chain store
-		if (chainStores != null && chainStores.size() > 0){
-			int chainId = chainStores.get(0).getChain_id();
+		if (chainStore != null){
+			int chainId = chainStore.getChain_id();
 			formBean.getChainStoreConf().setChainId(chainId);
 			chainStoreConf = chainConfDaoImpl.getChainStoreConfByChainId(chainId);
 		}

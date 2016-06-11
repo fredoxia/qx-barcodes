@@ -981,19 +981,24 @@ public class ChainStoreSalesService {
 	 * @param userInfor
 	 * @return
 	 */
-	public ChainSalesActionUIBean prepareSearchSalesOrderUI(
-			ChainUserInfor userInfor) {
-		ChainSalesActionUIBean uiBean = new ChainSalesActionUIBean();
-
+	public void prepareSearchSalesOrderUI(
+			ChainUserInfor userInfor, ChainSalesActionUIBean uiBean, ChainSalesActionFormBean formBean) {
 		//1. set the store list
-		List<ChainStore> stores =  new ArrayList<ChainStore>();
-		stores = chainStoreService.getChainStoreList(userInfor);
-		uiBean.setChainStores(stores);
+		int chainId = 0;
+		ChainStore chainStore = null;
+		if (ChainUserInforService.isMgmtFromHQ(userInfor)){
+			chainId = ChainStore.CHAIN_ID_TEST_ID;
+			chainStore = chainStoreService.getChainStoreByID(ChainStore.CHAIN_ID_TEST_ID);
+		} else {
+			chainId = userInfor.getMyChainStore().getChain_id();
+			chainStore = chainStoreService.getChainStoreByID(chainId);
+		}
+		formBean.setChainStore(chainStore);
+
 		
 		//2. set the sales person in the chain store
 		List<ChainUserInfor> salers = new ArrayList<ChainUserInfor>();
-		if (stores.size() > 0)
-		    salers.addAll(chainUserInforDaoImpl.getActiveChainUsersByChainStore(stores.get(0).getChain_id()));
+		salers.addAll(chainUserInforDaoImpl.getActiveChainUsersByChainStore(chainId));
 		uiBean.setChainSalers(salers);
 		
 		//3. set the sales order type list
@@ -1004,8 +1009,6 @@ public class ChainStoreSalesService {
 		//4. set the sales order status list
 		Map<Integer, String> status = chainStoreSalesOrder.getStatusMap();
 		uiBean.setChainOrderStatus(status);
-		
-		return uiBean;
 	}
 
 
@@ -1077,7 +1080,7 @@ public class ChainStoreSalesService {
 	private DetachedCriteria buildSearchSalesCriteria(ChainSalesActionFormBean formBean){
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
 		
-		int chainStoreId = formBean.getChainSalesOrder().getChainStore().getChain_id();
+		int chainStoreId = formBean.getChainStore().getChain_id();
 		criteria.add(Restrictions.eq("chainStore.chain_id", chainStoreId));
 		
 		int salerId = formBean.getChainSalesOrder().getSaler().getUser_id();

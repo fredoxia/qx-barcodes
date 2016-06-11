@@ -1,13 +1,16 @@
 package com.onlineMIS.action.chainS.sales;
 
 import java.sql.Date;
+
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.action.chainS.ChainActionFormBaseBean;
 
 
 public class ChainSalesActionFormBean extends ChainActionFormBaseBean{
+	private ChainStore chainStore ;
 	private ChainStoreSalesOrder chainSalesOrder = new ChainStoreSalesOrder();
 	private ChainStoreConf chainStoreConf = new ChainStoreConf();
 	private int productId = 0;
@@ -40,6 +43,12 @@ public class ChainSalesActionFormBean extends ChainActionFormBaseBean{
     private Pager pager = new Pager();
     private String token = "";
     
+	public ChainStore getChainStore() {
+		return chainStore;
+	}
+	public void setChainStore(ChainStore chainStore) {
+		this.chainStore = chainStore;
+	}
 	public String getToken() {
 		return token;
 	}

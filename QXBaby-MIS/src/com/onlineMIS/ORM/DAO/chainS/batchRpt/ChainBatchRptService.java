@@ -1,7 +1,9 @@
 package com.onlineMIS.ORM.DAO.chainS.batchRpt;
 
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.naming.java.javaURLContextFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
 import org.hibernate.criterion.DetachedCriteria;
@@ -56,9 +60,13 @@ import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
+import com.onlineMIS.ORM.entity.chainS.report.ChainSalesVIPPercentageItem;
+import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
@@ -792,6 +800,127 @@ public class ChainBatchRptService {
 		}
 		
 		inventoryOrderDAOImpl.clearSession();
+	}
+	
+	public void runDailySalesVIPPercentage(){
+		Date rptDate = Common_util.getYestorday();
+		
+		final String SPLIT = "@";
+		loggerLocal.infoB(new Date() + " 开始 *日* 连锁店销售VIP占比报表 :  ChainBatchRptService.runDailySalesVIPPercentage()");
+		
+		/**
+		 * example : ChainStore 1
+		 * NetSales : 1<@>N
+		 * VIP1 : 1<@>V1
+		 * VIP2 : 1<@>V2
+		 * VIP3 : 1<@>V3
+		 */
+		Map<String, Double> valueMap = new HashMap<String, Double>();
+		
+		Date startDate = Common_util.formStartDate(rptDate);
+		Date endDate = Common_util.formEndDate(rptDate);
+		
+		DetachedCriteria salesCriteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
+		salesCriteria.add(Restrictions.eq("status", ChainStoreSalesOrder.STATUS_COMPLETE));
+		salesCriteria.add(Restrictions.between("orderDate", startDate, endDate));
+		List<ChainStoreSalesOrder> salesOrders = chainStoreSalesOrderDaoImpl.getByCritera(salesCriteria, false);
+		
+		Double totalSalesAmt = null;
+		Double vipSalesAmt = null;
+		for (ChainStoreSalesOrder order : salesOrders){
+			ChainStore chainStore = order.getChainStore();
+			int chainId = chainStore.getChain_id();
+			ChainVIPCard vipCard = order.getVipCard();
+			double netSales = order.getNetAmount() - order.getNetAmountR();
+			
+			//1. 计算总销售
+			String SALES_AMT_KEY = chainId + SPLIT + "N";
+			totalSalesAmt = valueMap.get(SALES_AMT_KEY);
+			if (totalSalesAmt == null)
+				totalSalesAmt = new Double(0);
+			valueMap.put(SALES_AMT_KEY, totalSalesAmt + netSales);
+			
+			//2. 查vip
+			if (vipCard != null){
+				int VIPType = vipCard.getVipType().getId();
+				String SALES_VIP_KEY = chainId + SPLIT + "V" + VIPType;
+				
+				vipSalesAmt = valueMap.get(SALES_VIP_KEY);
+				if (vipSalesAmt == null)
+					vipSalesAmt  = new Double(0);
+				valueMap.put(SALES_VIP_KEY, vipSalesAmt + netSales);
+			}
+			
+		}
+		
+		List<ChainSalesVIPPercentageItem> percentageItems = new ArrayList<ChainSalesVIPPercentageItem>();
+		
+		//准备连锁店数据
+		List<ChainStore> chainStores = chainStoreDaoImpl.getAllChainStoreList();
+		for (ChainStore chainStore : chainStores){
+			int chainId = chainStore.getChain_id();
+			String SALES_AMT_KEY = chainId + SPLIT + "N";
+			String SALES_VIP1_KEY = chainId + SPLIT + "V" + ChainVIPType.VIP1_ID;
+			String SALES_VIP2_KEY = chainId + SPLIT + "V" + ChainVIPType.VIP2_ID;
+			String SALES_VIP3_KEY = chainId + SPLIT + "V" + ChainVIPType.VIP3_ID;
+			
+			ChainSalesVIPPercentageItem item = new ChainSalesVIPPercentageItem();
+			
+			Double netSales = valueMap.get(SALES_AMT_KEY);
+			Double vip1Sales = valueMap.get(SALES_VIP1_KEY);
+			Double vip2Sales = valueMap.get(SALES_VIP2_KEY);
+			Double vip3Sales = valueMap.get(SALES_VIP3_KEY);
+			
+			if (netSales == null)
+				netSales = new Double(0);
+			if (vip1Sales == null)
+				vip1Sales = new Double(0);
+			if (vip2Sales == null)
+				vip2Sales = new Double(0);
+			if (vip3Sales == null)
+				vip3Sales = new Double(0);
+			
+			item.setChainStore(chainStore);
+			item.setNetSales(netSales.intValue());
+			item.setVip1NetSales(vip1Sales.intValue());
+			item.setVip2NetSales(vip2Sales.intValue());
+			item.setVip3NetSales(vip3Sales.intValue());
+			
+			if (netSales == 0){
+				item.setVip1NetSalesPercentage(0);
+				item.setVip2NetSalesPercentage(0);
+				item.setVip3NetSalesPercentage(0);
+			} else {
+				if (vip1Sales >0)
+				    item.setVip1NetSalesPercentage(vip1Sales / netSales);
+				if (vip2Sales >0)
+					item.setVip2NetSalesPercentage(vip2Sales / netSales);
+				if (vip3Sales >0)
+					item.setVip3NetSalesPercentage(vip3Sales / netSales);
+			}
+			
+			percentageItems.add(item);
+		}
+		
+		String webInf = this.getClass().getClassLoader().getResource("").getPath();
+		String contextPath = webInf.substring(1, webInf.indexOf("classes")).replaceAll("%20", " ");  
+
+		ChainSalesReportVIPPercentageTemplate percentageTemplate = null;
+		try {
+			percentageTemplate = new ChainSalesReportVIPPercentageTemplate(percentageItems, contextPath, rptDate);
+			HSSFWorkbook workbook = percentageTemplate.process();
+			
+			String rptPath = ChainSalesReportVIPPercentageTemplate.getFilePath(rptDate);
+			File fileOuputFile = new File(rptPath);
+			FileOutputStream fileOutputStream = new FileOutputStream(fileOuputFile);
+			workbook.write(fileOutputStream);
+			fileOutputStream.close();
+		} catch (Exception e) {
+			loggerLocal.error("生成vip报表出现错误 : " + rptDate);
+			loggerLocal.errorB(e);
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	class ChainCurrentProductAnalysisComparator implements Comparator<ChainCurrentSeasonProductAnalysisItem> {

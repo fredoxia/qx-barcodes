@@ -81,6 +81,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainWMRankItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWeeklySales;
 import com.onlineMIS.ORM.entity.chainS.report.VIPReportVO;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportTemplate;
+import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesStatisticsReportTemplate;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.PurchaseOrderTemplate;
@@ -3496,6 +3497,25 @@ public class ChainReportService {
 			}
 		}
 
+		return response;
+	}
+
+	/**
+	 * 获取vip销售占比分析报表
+	 * @param rptDate
+	 * @return
+	 */
+	public Response getVIPSalesAnalysisRpt(java.sql.Date rptDate) {
+		Response response = new Response();
+		
+		String filePath = ChainSalesReportVIPPercentageTemplate.getFilePath(rptDate);
+		
+		File vipRpt = new File(filePath);
+		if (!vipRpt.exists())
+			response.setFail("无法找到当前VIP分析报表");
+		else {
+			response.setReturnValue(vipRpt);
+		}
 		return response;
 	}
 

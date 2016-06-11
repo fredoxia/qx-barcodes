@@ -108,9 +108,8 @@ pageNav.fn = function(page,totalPage){
 /**
  * after change the chain store, we need change the user list and customer groups as well
  */
-function changeChainStore(){
-	var chainStore = $("#chainStore").val();
-	var params = "formBean.chainSalesOrder.chainStore.chain_id=" + chainStore;
+function changeChainStore(chainId){
+	var params = "formBean.chainSalesOrder.chainStore.chain_id=" + chainId;
 	$.post("chainSalesJSONAction!changeChainStore",params, backProcessChangeChainStore,"json");
 }
 function backProcessChangeChainStore(data){
@@ -152,7 +151,7 @@ function backProcessChangeChainStore(data){
 						<tr class="InnerTableContent">
 					      <td height="30">&nbsp;</td>
 					      <td><strong>连锁店</strong></td>
-					      <td><s:select id="chainStore" name="formBean.chainSalesOrder.chainStore.chain_id"  list="uiBean.chainStores" listKey="chain_id" listValue="chain_name" onchange="changeChainStore();"/></td>
+					      <td><%@ include file="../include/SearchChainStore.jsp"%></td>
 					      <td><strong>经手人</strong></td>
 					      <td><s:select id="chainSaler" name="formBean.chainSalesOrder.saler.user_id"  list="uiBean.chainSalers" listKey="user_id" listValue="name" headerKey="-1" headerValue="--所有人员--" /></td>
 					      <td></td>

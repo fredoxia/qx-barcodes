@@ -1,5 +1,8 @@
 package com.onlineMIS.action.chainS.report;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
@@ -32,6 +35,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFou
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelOne;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelTwo;
+import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
@@ -489,6 +493,36 @@ public class ChainReportJSPAction extends ChainReportAction {
 		    return "zipReport"; 
 		} else 
 			return ERROR;	
+	}
+	
+	/**
+	 * VIP每个类别销售的占比，每天晚上运行处理的报表。通过界面下载
+	 * @return
+	 */
+	public String preVIPSalesAnalysisRpt(){
+		formBean.setStartDate(Common_util.getYestorday());
+		return "vipSalesAnalysisRpt";
+	}
+	
+	/**
+	 * 下载vip excel报表
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	public String getVIPSalesAnalysisRpt() throws FileNotFoundException{
+		Date rptDate = formBean.getStartDate();
+		
+		Response response = chainReportService.getVIPSalesAnalysisRpt(rptDate);
+		if (response.isSuccess()){
+			File excelFile = (File)response.getReturnValue();
+		    InputStream excelStream= new FileInputStream(excelFile);
+		    this.setExcelStream(excelStream);
+		    this.setExcelFileName(ChainSalesReportVIPPercentageTemplate.getFileName(rptDate));
+			return "report";
+		} else {
+			addActionError("无法找到 " + rptDate + "的报表");
+			return "vipSalesAnalysisRpt";
+		}
 	}
 
 }

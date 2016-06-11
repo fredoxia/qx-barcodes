@@ -14,7 +14,7 @@ $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 });
 function changeChainStore(){
-	var chainStoreId = $("#chainStoreId").val();
+	var chainStoreId = $("#chainId").val();
 	if (chainStoreId == 0){
 		clearChainStoreConf();
 	} else {
@@ -79,7 +79,7 @@ function backProcessEditChainConf(data){
 }
 
 function validateChainConf(){
-	var chainStoreId = $("#chainStoreId").val();
+	var chainStoreId = $("#chainId").val();
 	if (chainStoreId == 0){
 		alert("选择连锁店之后更新");
 		return false;
@@ -135,7 +135,7 @@ function clearChainStoreConf(){
 	    <tr class="InnerTableContent">
 	      <td width="150" height="32">
 	         <strong>连锁店</strong></td>
-	      <td colspan="3"><s:select id="chainStoreId" name="formBean.chainStoreConf.chainId"  list="uiBean.chainStores"  listKey="chain_id" listValue="chain_name" onchange="changeChainStore();"/></td>
+	      <td colspan="3"><%@ include file="../include/SearchChainStore.jsp"%></td>
 	      <td width="78">&nbsp;</td>
 	      <td width="314">&nbsp;</td>
 	      <td width="182">&nbsp;</td>

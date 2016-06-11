@@ -33,8 +33,8 @@ function backProcessCheckUserName(data){
 	}
 }
 
-function getChainStore(){
-	var chainStoreId = $("#chainStoreId").val();
+function changeChainStore(chainId){
+	var chainStoreId = chainId;
 	if (chainStoreId == 0){
 		clearChainUserDrop();
 		clearChainUser();
@@ -149,7 +149,7 @@ function backProcessCheckRoleType(data){
 
 function validateChainUser(){
 	var error = "";
-	var chainId = $("#chainStoreId").val();
+	var chainId = $("#chainId").val();
 	var clientId = $("#clientId").val();
 	var name = $("#name").val();
 	var mobilePhone = $("#mobilePhone").val();
@@ -203,7 +203,7 @@ function validateChainUser(){
 	    <tr class="InnerTableContent">
 	      <td width="100" height="25">
 	         <strong>连锁店</strong></td>
-	      <td colspan="3"><s:select id="chainStoreId" name="formBean.chainStore.chain_id"  list="uiBean.chainStores" headerKey="0" headerValue="----------"  listKey="chain_id" listValue="chain_name" onchange="getChainStore();"/></td>
+	      <td colspan="3"><%@ include file="../include/SearchChainStore.jsp"%></td>
 	      <td width="68">&nbsp;</td>
 	      <td width="314">&nbsp;</td>
 	      <td width="182">&nbsp;</td>

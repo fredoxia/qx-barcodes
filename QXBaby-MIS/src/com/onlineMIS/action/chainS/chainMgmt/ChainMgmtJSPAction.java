@@ -31,10 +31,10 @@ public class ChainMgmtJSPAction extends ChainMgmtAction {
 	 * @return
 	 */
 	public String preEditChainInfor(){
-//    	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
 //    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"");
     		
-		chainMgmtService.prepareEditChainInforUI(uiBean);
+		chainMgmtService.prepareEditChainInforUI(formBean,uiBean,userInfor);
 		
 		formBean.getChainUserInfor().getRoleType().setChainRoleTypeId(ChainRoleType.CHAIN_STAFF);
 

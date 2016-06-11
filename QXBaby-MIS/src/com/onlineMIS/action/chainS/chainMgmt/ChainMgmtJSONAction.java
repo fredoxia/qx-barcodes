@@ -314,7 +314,7 @@ public class ChainMgmtJSONAction extends ChainMgmtAction {
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"saveChainStoreConf");
     	
 		ChainStoreConf chainStoreConf = formBean.getChainStoreConf();
-		
+		chainStoreConf.setChainId(formBean.getChainStore().getChain_id());
 		Response response = new Response();
 		try{
 			response = chainMgmtService.saveChainStoreConf(chainStoreConf);

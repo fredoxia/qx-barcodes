@@ -194,7 +194,7 @@ public class ChainSalesJSPAction extends ChainSalesAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"preSearchDraftSalesOrder");
     	
-		uiBean = chainStoreSalesService.prepareSearchSalesOrderUI(userInfor);	 
+		chainStoreSalesService.prepareSearchSalesOrderUI(userInfor, uiBean, formBean);	 
 		
 		formBean.getChainSalesOrder().setStatus(ChainStoreSalesOrder.STATUS_DRAFT);
 		formBean.setInitialSearch(true);
@@ -210,7 +210,7 @@ public class ChainSalesJSPAction extends ChainSalesAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"");
     	
-		uiBean = chainStoreSalesService.prepareSearchSalesOrderUI(userInfor);	 
+		chainStoreSalesService.prepareSearchSalesOrderUI(userInfor, uiBean, formBean);	 
 
 		return "SalesOrderSearch";
 	}
