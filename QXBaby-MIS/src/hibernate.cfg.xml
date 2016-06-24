@@ -43,7 +43,7 @@
             <property name="hibernate.cache.use_query_cache">false</property>
             <property name="hibernate.cache.use_second_level_cache">false</property> 
           <property name="show_sql">true</property>
-          
+          <mapping resource="com/onlineMIS/ORM/headQ/PreOrder.hbm.xml"/>
           <mapping resource="com/onlineMIS/ORM/chainS/ChainInventorySample.hbm.xml" />
           <mapping resource="com/onlineMIS/ORM/chainS/ChainVIP.hbm.xml" />
           <mapping resource="com/onlineMIS/ORM/chainS/ChainInventoryFlow.hbm.xml" />

@@ -856,7 +856,7 @@ public class ChainBatchRptService {
 		List<ChainSalesVIPPercentageItem> percentageItems = new ArrayList<ChainSalesVIPPercentageItem>();
 		
 		//准备连锁店数据
-		List<ChainStore> chainStores = chainStoreDaoImpl.getAllChainStoreList();
+		List<ChainStore> chainStores = chainStoreService.getActiveChainstoresWithOrder();
 		for (ChainStore chainStore : chainStores){
 			int chainId = chainStore.getChain_id();
 			String SALES_AMT_KEY = chainId + SPLIT + "N";

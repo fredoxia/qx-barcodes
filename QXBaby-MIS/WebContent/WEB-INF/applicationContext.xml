@@ -53,6 +53,7 @@
 	             <value>com/onlineMIS/ORM/headQ/BarcodeGentor.hbm.xml</value>
 	             <value>com/onlineMIS/ORM/headQ/Inventory.hbm.xml</value>
 	             <value>com/onlineMIS/ORM/headQ/HRManagement.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/headQ/PreOrder.hbm.xml</value>
 	             <value>com/onlineMIS/ORM/chainS/ChainUserInfor.hbm.xml</value>
 	             <value>com/onlineMIS/ORM/chainS/ChainSales.hbm.xml</value>
 	             <value>com/onlineMIS/ORM/chainS/ChainVIP.hbm.xml</value>

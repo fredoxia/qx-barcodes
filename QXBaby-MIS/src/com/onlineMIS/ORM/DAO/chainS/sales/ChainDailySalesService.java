@@ -437,12 +437,7 @@ public class ChainDailySalesService{
 		java.sql.Date startDate = lastWeekDays.get(0);
 		java.sql.Date endDate = lastWeekDays.get(6);
 		
-		List<ChainStore> chainStores = chainStoreService.getActiveChainstores();
-		int numOfActiveChain = chainStores.size();
-		if (numOfActiveChain == 0){
-			chainStores = chainStoreService.getActiveChainstores();
-			numOfActiveChain = chainStores.size();
-		}
+		int numOfActiveChain = chainStoreService.getNumOfActiveChainStore();
 		
 		/**
 		 * 1. 查找所有连锁店热销品牌,
@@ -639,12 +634,7 @@ public class ChainDailySalesService{
 		
 		loggerLocal.infoB(new Date() + ": 开始 " +  startDate +  " *月* 热销品牌 Batch job :  ChainDailySalesService.runMonthlyHotBrandProduct()");
 				
-		List<ChainStore> chainStores = chainStoreService.getActiveChainstores();
-		int numOfActiveChain = chainStores.size();
-		if (numOfActiveChain == 0){
-			chainStores = chainStoreService.getActiveChainstores();
-			numOfActiveChain = chainStores.size();
-		}
+		int numOfActiveChain = chainStoreService.getNumOfActiveChainStore();
 		
 		ChainMonthlyActiveNum monthlyActiveNum = new ChainMonthlyActiveNum(startDate, numOfActiveChain);
 		chainMonthlyActiveNumDaoImpl.saveOrUpdate(monthlyActiveNum, true);

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="com.onlineMIS.ORM.entity.headQ.inventory">
-   <class name="CustOrder" table="cust_preorder">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.headQ.preOrder">
+   <class name="CustPreOrder" table="cust_preorder">
         <id name="id" column="id">
             <generator class="identity" />
         </id>
@@ -18,18 +18,24 @@
         <property name="comment" column="comment" type="string"/>
         <property name="status" column="status" type="integer"/>
         <set name="productSet" cascade="all" inverse="true" lazy="true" fetch="subselect" batch-size="20">
-             <key column="id"/>
+             <key column="preorder_id"/>
              <one-to-many class="CustPreOrderProduct"/>
         </set>
     </class>  
     <class name="CustPreOrderProduct" table="cust_preorder_product">
-         <composite-id>
-             <key-many-to-one name="productBarcode" column="product_barcode_id" class="qdh.dao.entity.product.ProductBarcode" lazy="false"/>  
-             <key-property name="id" column="id" type="integer"></key-property>       
+        <composite-id>
+             <key-many-to-one name="productBarcode" column="product_barcode_id" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" lazy="false"/>     
+             <key-many-to-one name="preOrder" column="preorder_id" class="CustPreOrder" lazy="false"/>   
         </composite-id>
-        <property name="totalQuantity" column="total_quantity" type="integer"/>
+        <property name="index" column="indexNum" type="integer"/>
+        <property name="totalQuantity" column="quantity" type="integer"/>
         <property name="sumCost" column="sum_cost" type="double"/>
         <property name="sumWholePrice" column="sum_whole_price" type="double"/>
         <property name="sumRetailPrice" column="sum_retail_price" type="double"/>
-    </class>       
+    </class>  
+    <class name="CustPreorderIdentity" table="cust_preorder_identity">
+        <id name="orderIdentity" column="order_identity">
+            <generator class="assigned" />
+        </id>
+     </class>     
 </hibernate-mapping>

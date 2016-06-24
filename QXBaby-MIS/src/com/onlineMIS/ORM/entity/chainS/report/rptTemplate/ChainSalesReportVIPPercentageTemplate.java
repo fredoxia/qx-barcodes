@@ -10,6 +10,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesVIPPercentageItem;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
 
@@ -21,14 +22,15 @@ public class ChainSalesReportVIPPercentageTemplate extends ExcelTemplate {
 	private List<ChainSalesVIPPercentageItem> items;
 	private Date rptDate = null;
 	private int DATA_ROW = 3;
-	private int CHAIN_COL = 0;
-	private int NET_SALES_COL = 1;
-	private int VIP1_SALES_COL = 2;
-	private int VIP1_SALES_PER = 3;
-	private int VIP2_SALES_COL = 4;
-	private int VIP2_SALES_PER = 5;
-	private int VIP3_SALES_COL = 6;
-	private int VIP3_SALES_PER = 7;
+	private int CHAR_COL = 0;
+	private int CHAIN_COL = 1;
+	private int NET_SALES_COL = 2;
+	private int VIP1_SALES_COL = 3;
+	private int VIP1_SALES_PER = 4;
+	private int VIP2_SALES_COL = 5;
+	private int VIP2_SALES_PER = 6;
+	private int VIP3_SALES_COL = 7;
+	private int VIP3_SALES_PER = 8;
 	private int DATE_ROW = 1;
 
 	public ChainSalesReportVIPPercentageTemplate(List<ChainSalesVIPPercentageItem> items, String templateWorkbookPath, Date rptDate) throws IOException{
@@ -48,7 +50,12 @@ public class ChainSalesReportVIPPercentageTemplate extends ExcelTemplate {
 		for (ChainSalesVIPPercentageItem item : items){
 			dataRow = sheet.createRow(DATA_ROW + i);
 			
-			dataRow.createCell(CHAIN_COL).setCellValue(item.getChainStore().getChain_name());
+			ChainStore chainStore = item.getChainStore();
+			String pinyin = chainStore.getPinYin();
+			if (pinyin != null && pinyin.length() > 0)
+				dataRow.createCell(CHAR_COL).setCellValue(pinyin.substring(0, 1));
+			
+			dataRow.createCell(CHAIN_COL).setCellValue(chainStore.getChain_name());
 			dataRow.createCell(NET_SALES_COL).setCellValue(item.getNetSales());
 			
 			if (item.getVip1NetSales() != 0)

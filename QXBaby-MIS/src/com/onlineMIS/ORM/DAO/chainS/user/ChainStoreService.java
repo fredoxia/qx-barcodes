@@ -162,16 +162,18 @@ public class ChainStoreService {
 	 * 
 	 * @return
 	 */
-	public List<ChainStore> getActiveChainstores(){
+	public List<ChainStore> getActiveChainstoresWithOrder(){
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
 		criteria.add(Restrictions.eq("status", ChainStore.STATUS_ACTIVE));
+		criteria.add(Restrictions.ne("chain_id", ChainStore.CHAIN_ID_TEST_ID));
+		criteria.addOrder(Order.asc("pinYin"));
 		
 		return chainStoreDaoImpl.getByCritera(criteria, true);
 	}
 	
 	public Integer getNumOfActiveChainStore(){
-		String queryString = "select count(chain_id) from ChainStore where status = ?";
-		Object[] values = new Object[]{ChainStore.STATUS_ACTIVE};
+		String queryString = "select count(chain_id) from ChainStore where status = ? and chain_id !=?";
+		Object[] values = new Object[]{ChainStore.STATUS_ACTIVE, ChainStore.CHAIN_ID_TEST_ID};
 		
 		return chainStoreDaoImpl.executeHQLCount(queryString, values, true);
 	}

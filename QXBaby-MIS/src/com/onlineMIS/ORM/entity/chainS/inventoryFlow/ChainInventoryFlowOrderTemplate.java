@@ -1,9 +1,12 @@
 package com.onlineMIS.ORM.entity.chainS.inventoryFlow;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -17,6 +20,7 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
+import com.onlineMIS.sorter.ChainInventoryOrderProductSorter;
 
 public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 	private ChainInventoryFlowOrder order = new ChainInventoryFlowOrder();
@@ -31,6 +35,8 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 	private int quantity_column = 7;
 	private int totalCost_column = 8;
 	private int totalSales_column = 9;
+	private int computerQ_column = 10;
+	private int qDiff_column = 11;
 	private int data_row = 3;
 
 
@@ -51,7 +57,7 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 	public HSSFWorkbook process(){
 		HSSFSheet sheet = templateWorkbook.getSheetAt(0);
 		ChainStore chainStore = order.getChainStore();
-		Set<ChainInventoryFlowOrderProduct> items = order.getProductSet();
+		List<ChainInventoryFlowOrderProduct> items = order.getProductList();
 		
 		Row header2 = sheet.getRow(0);
 		header2.createCell(1).setCellValue(order.getTypeChainS());
@@ -69,10 +75,8 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 		double totalCost = 0;
 		double totalSales = 0;
 		
-		Iterator<ChainInventoryFlowOrderProduct> itemIterator = items.iterator();
 		int i = 0;
-		while (itemIterator.hasNext()){
-			ChainInventoryFlowOrderProduct levelFourItem = itemIterator.next();
+		for (ChainInventoryFlowOrderProduct levelFourItem : items){
 			Row row = sheet.createRow(data_row + i);
 
 			Product product = levelFourItem.getProductBarcode().getProduct();
@@ -110,7 +114,9 @@ public class ChainInventoryFlowOrderTemplate  extends ExcelTemplate{
 			sales = levelFourItem.getQuantity() * product.getSalesPrice();
 			row.createCell(totalSales_column).setCellValue(sales);
 				
-
+			row.createCell(computerQ_column).setCellValue(levelFourItem.getInventoryQ());
+			row.createCell(qDiff_column).setCellValue(levelFourItem.getQuantityDiff());
+						
 			totalQuantity += levelFourItem.getQuantity();
 			totalCost += cost;
 			totalSales += sales;
