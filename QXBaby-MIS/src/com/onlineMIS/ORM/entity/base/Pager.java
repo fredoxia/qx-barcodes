@@ -87,6 +87,9 @@ public class Pager implements Serializable{
 	public int getRecordPerPage() {
 		return recordPerPage;
 	}
+	public void setRecordPerPage(int recordPerPage){
+		this.recordPerPage = recordPerPage;
+	}
 
 
 	/**

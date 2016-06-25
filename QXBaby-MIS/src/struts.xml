@@ -216,7 +216,13 @@
             <result name="listChainPriceIncre">/jsp/headQ/chain/ListChainPriceIncrement.jsp</result>
             <result name="editChainPriceIncre">/jsp/headQ/chain/EditChainPriceIncrement.jsp</result>
             
-        </action>                
+        </action>    
+        
+        <!-- the preorder JSP Action -->
+        <action name="preorderHQJSP" class="com.onlineMIS.action.headQ.preOrder.PreOrderJSPAction">
+            <result name="preOrderSearch">/jsp/headQ/preOrder/preOrderSearch.jsp</result>
+            <result name="preOrderDetail">/jsp/headQ/preOrder/preOrderDetail.jsp</result>
+        </action>              
           
     </package>
     
@@ -284,6 +290,11 @@
             </result>
         </action> 
          <action name="basicDataJSON" class="com.onlineMIS.action.headQ.barCodeGentor.BasicDataJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>
+        <action name="preOrderActionJSON" class="com.onlineMIS.action.headQ.preOrder.PreOrderJSONAction">
             <result type="json">
                  <param name="root">jsonObject</param>
             </result>

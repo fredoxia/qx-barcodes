@@ -7,8 +7,9 @@
         </id>
         <property name="custId" column="cust_id" type="integer"/>
         <property name="custName" column="cust_name" type="string"/>
-        <property name="chainId" column="chain_id" type="integer" not-null="false"/>
-        <property name="chainStoreName" column="chain_store_name" type="string"/>
+        <property name="orderIdentity" column="order_identity" type="string"/>
+        <many-to-one name="chainStore" fetch="join" column="chain_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="false"/>
+        <property name="chainStoreName" column="chain_store_name" type="string" not-null="false"/>
         <property name="totalQuantity" column="total_quantity" type="integer"/>
         <property name="sumCost" column="sum_cost" type="double"/>
         <property name="sumWholePrice" column="sum_whole_price" type="double"/>
@@ -27,7 +28,7 @@
              <key-many-to-one name="productBarcode" column="product_barcode_id" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" lazy="false"/>     
              <key-many-to-one name="preOrder" column="preorder_id" class="CustPreOrder" lazy="false"/>   
         </composite-id>
-        <property name="index" column="indexNum" type="integer"/>
+        <property name="index" column="index_num" type="integer"/>
         <property name="totalQuantity" column="quantity" type="integer"/>
         <property name="sumCost" column="sum_cost" type="double"/>
         <property name="sumWholePrice" column="sum_whole_price" type="double"/>

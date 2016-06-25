@@ -1,9 +1,31 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <script>
 var layout_west_tree;
-
+var layout_west_tree2;
 $(function() {
 		layout_west_tree = $('#treeMenu').tree({
+			onClick : function(node) {
+				if (node.attributes && node.attributes.url) {
+					var url;
+					url = node.attributes.url;
+					parent.$.messager.progress({
+								title : '提示',
+								text : '数据处理中，请稍后....'
+							});
+
+     				addTab4({
+						url : url,
+						title : node.text,
+						iconCls : node.iconCls
+					});
+
+				}
+			},
+			onLoadSuccess : function(node, data) {
+				parent.$.messager.progress('close');
+			}
+		});
+		layout_west_tree2 = $('#treeMenu2').tree({
 			onClick : function(node) {
 				if (node.attributes && node.attributes.url) {
 					var url;
@@ -69,7 +91,7 @@ $(function() {
 			    	</ul>
 			    </li>
 			    </s:if>
-			    
+			   
 			    <s:if test="#session.LOGIN_USER.containFunction('financeHQJSP!preCreateFHQ') || #session.LOGIN_USER.containFunction('financeHQJSP!preSearchFHQ')">
 			  	<li  data-options="iconCls:'icon-money_yen',state:'open',border:false">
 			  	    <span>业务管理</span>
@@ -82,6 +104,7 @@ $(function() {
 			    </li>
 			    </s:if>
 
+			    
 			    <li  data-options="iconCls:'icon-status_online',state:'open',border:false">
 			    	<span>我的系统</span>
 				  	<ul style="width: 150%">
@@ -106,7 +129,14 @@ $(function() {
 		</ul>
 
 	</div>  
-    <div title="其他信息" style="padding:10px;">  
-        	暂时无其他信息
+    <div title="其他功能" style="padding:10px;">  
+    	<ul id="treeMenu2" class="easyui-tree"  lines="true" >  
+        		<li  data-options="iconCls:'icon-images',state:'open',border:false">
+			  	    <span>订货会订单管理</span>
+			  		<ul style="width: 150%">
+			    		<li data-options="iconCls:'icon-images',attributes:{url:'preorderHQJSP!preOrderSearch'}">订货会订单查询</li>
+			    	</ul>
+			    </li>
+		</ul>
     </div>  
 </div>

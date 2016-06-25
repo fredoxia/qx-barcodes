@@ -40,10 +40,14 @@ function selectClient(clientId, clientName){
 	$("#clientName").attr("value", clientName);
 	$("#ClientDiv").dialog("close");
 }
+function clearCustomer(){
+	$("#clientID").attr("value", 0);
+	$("#clientName").attr("value", "");
+}
 
 </script>
 <s:hidden id="clientID" name="formBean.order.client_id"/>
-<s:textfield id="clientName" name="formBean.order.client_name" size="20"/> <input type="button" value="查询" onClick="searchCustomer();"/>
+<s:textfield id="clientName" name="formBean.order.client_name" size="20"/> <input type="button" value="查询" onClick="searchCustomer();"/><input type="button" value="清除" onClick="clearCustomer();"/>
                           
  <div id="ClientDiv"  class="easyui-dialog" style="width:400px;height:300px"
 		data-options="title:'查找客户',modal:false,closed:true,resizable:true">

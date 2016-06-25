@@ -4,12 +4,17 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.stereotype.Repository;
+
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
+import com.onlineMIS.common.Common_util;
 import com.onlineMIS.sorter.ProductSortByIndex;
 
 
@@ -20,16 +25,16 @@ public class CustPreOrder implements Serializable{
 	private static final long serialVersionUID = 1151511966760113877L;
 	private int id;
 	private int custId ;
-	private String orderIdentity;
+	private String orderIdentity = "";
 	private String custName = "";
-    private Integer chainId = null;
+    private ChainStore chainStore = new ChainStore();
     private String chainStoreName = "";
     private int totalQuantity = 0;
-    private Timestamp createDate = null;
+    private Date createDate = Common_util.getToday();
     private double sumCost = 0;
     private double sumWholePrice = 0;
     private double sumRetailPrice = 0;
-    private Timestamp exportDate = null;
+    private Date exportDate = Common_util.getToday();
     private int status;
     private String comment = "";
     private Set<CustPreOrderProduct> productSet = new HashSet<CustPreOrderProduct>();
@@ -85,10 +90,10 @@ public class CustPreOrder implements Serializable{
 	public void setSumRetailPrice(double sumRetailPrice) {
 		this.sumRetailPrice = sumRetailPrice;
 	}
-	public Timestamp getExportDate() {
+	public Date getExportDate() {
 		return exportDate;
 	}
-	public void setExportDate(Timestamp exportDate) {
+	public void setExportDate(Date exportDate) {
 		this.exportDate = exportDate;
 	}
 	public int getStatus() {
@@ -115,14 +120,13 @@ public class CustPreOrder implements Serializable{
 		this.custName = custName;
 	}
 
-	public Integer getChainId() {
-		return chainId;
+	
+	public ChainStore getChainStore() {
+		return chainStore;
 	}
-
-	public void setChainId(Integer chainId) {
-		this.chainId = chainId;
+	public void setChainStore(ChainStore chainStore) {
+		this.chainStore = chainStore;
 	}
-
 	public String getChainStoreName() {
 		return chainStoreName;
 	}
@@ -139,11 +143,11 @@ public class CustPreOrder implements Serializable{
 		this.totalQuantity = totalQuantity;
 	}
 
-	public Timestamp getCreateDate() {
+	public Date getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(Timestamp createDate) {
+	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
 //	
@@ -172,7 +176,7 @@ public class CustPreOrder implements Serializable{
 	public String toString() {
 		return "CustPreOrder [id=" + id + ", custId=" + custId
 				+ ", orderIdentity=" + orderIdentity + ", custName=" + custName
-				+ ", chainId=" + chainId + ", chainStoreName=" + chainStoreName
+				+ ", chainId=" + chainStore + ", chainStoreName=" + chainStoreName
 				+ ", totalQuantity=" + totalQuantity + ", sumCost=" + sumCost
 				+ ", sumWholePrice=" + sumWholePrice + ", sumRetailPrice="
 				+ sumRetailPrice + ", status=" + status + ", comment="
