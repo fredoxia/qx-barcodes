@@ -1,11 +1,15 @@
 package com.onlineMIS.ORM.DAO.headQ.preOrder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -16,8 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrderTemplate;
 import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrder;
 import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrderProduct;
+import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrderTemplate;
 import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreorderIdentity;
 import com.onlineMIS.action.headQ.preOrder.PreOrderActionFormBean;
 import com.onlineMIS.action.headQ.preOrder.PreOrderActionUIBean;
@@ -97,6 +104,35 @@ public class PreOrderHQService {
 		order.putSetToList();
 		order.setProductSet(null);
 		response.setReturnValue(order);
+		return response;
+	}
+
+	@Transactional
+	public Response downloadFlowOrder(int id, boolean showCost) throws IOException {
+		Response response = new Response();
+		List<Object> values = new ArrayList<Object>();
+		
+		String webInf = this.getClass().getClassLoader().getResource("").getPath();
+		String contextPath = webInf.substring(1, webInf.indexOf("classes")).replaceAll("%20", " ");  
+
+		CustPreOrder preOrder = preOrderDaoImpl.getById(id, true);
+		preOrder.putSetToList();
+
+		ByteArrayInputStream byteArrayInputStream;   
+		HSSFWorkbook wb = null;   
+		CustPreOrderTemplate orderTemplate = new CustPreOrderTemplate(preOrder, contextPath + "template\\", showCost);
+		wb = orderTemplate.process();
+	
+		ByteArrayOutputStream os = new ByteArrayOutputStream();   
+		wb.write(os);   
+  
+		byte[] content = os.toByteArray();   
+		byteArrayInputStream = new ByteArrayInputStream(content);  
+		
+		values.add(byteArrayInputStream);
+		values.add(Common_util.correctFileName(preOrder.getCustName()));
+		response.setReturnValue(values);   
+
 		return response;
 	}
 }

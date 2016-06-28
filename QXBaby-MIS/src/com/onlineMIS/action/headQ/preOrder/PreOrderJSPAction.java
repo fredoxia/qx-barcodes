@@ -1,5 +1,8 @@
 package com.onlineMIS.action.headQ.preOrder;
 
+import java.io.InputStream;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 
 import com.onlineMIS.ORM.DAO.Response;
@@ -41,5 +44,27 @@ public class PreOrderJSPAction extends PreOrderAction {
 		}
 		
 		return "preOrderDetail";
+	}
+	
+	/**
+	 * 总部下载单据
+	 * @return
+	 */
+	public String downloadOrderHQById(){
+		Response response = new Response();
+		try {
+		    response = preOrderHQService.downloadFlowOrder(formBean.getOrder().getId(), true);
+		} catch (Exception e){
+			e.printStackTrace();
+			addActionError(e.getMessage());
+			return "error";
+		}
+
+		List<Object> values = (List<Object>)response.getReturnValue();
+		
+		formBean.setFileStream((InputStream)values.get(0)); 
+		formBean.setFileName(values.get(1).toString().trim() + ".xls");
+		
+		return "download"; 
 	}
 }

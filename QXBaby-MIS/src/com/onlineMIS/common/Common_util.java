@@ -637,4 +637,8 @@ public class Common_util {
 		System.out.println(Common_util.getLastWeekDays());
 	}
 
+	public static Object correctFileName(String custName) {
+		return custName.replaceAll("<", "").replaceAll(">", "").replaceAll("\\?", "").replaceAll(":", "").replaceAll("\\*", "").replaceAll("|", "").replaceAll("//", "");
+	}
+
 }

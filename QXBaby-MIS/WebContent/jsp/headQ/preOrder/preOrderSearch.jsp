@@ -38,7 +38,7 @@ $(document).ready(function(){
 							return row.chainStore.chain_name;
 						}},
 					{field:'orderIdentity', width:50,title:'订货会',sortable:true,order:'desc'},
-					{field:'totalQuantity', width:50,title:'总数量',sortable:true,order:'desc'},
+					{field:'totalQuantity', width:50,title:'总数量(手)',sortable:true,order:'desc'},
 					{field:'sumWholePrice', width:50,title:'总批发价',sortable:true,order:'desc'},
 					{field:'sumRetailPrice', width:50,title:'总零售价',sortable:true,order:'desc'},
 					{field:'createDate', width:50,title:'订货日期',sortable:true},
@@ -56,6 +56,18 @@ function searchOrders(){
 
 	var params = $.serializeObject($('#preOrderForm')); 
 	$('#dataGrid').datagrid('load',params); 
+}
+function downloadOrder(){
+	var rows = dataGrid.datagrid('getSelections');
+	if (rows.length == 0){
+		parent.$.messager.alert('错误', '请选中一张订单再继续操作', 'error');
+		return;
+	}
+	var	id = rows[0].id;
+	var param = "formBean.order.id="+ id;
+	
+    document.preOrderForm.action="preorderHQJSP!downloadOrderHQById?" + param;
+    document.preOrderForm.submit();
 }
 function openOrder(){
 	var rows = dataGrid.datagrid('getSelections');
