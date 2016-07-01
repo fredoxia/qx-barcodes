@@ -7,8 +7,9 @@
  function searchChainStore(){
 	 var param = "";
 	 var indicator = $("#indicator").val();
+
 	 if (indicator != undefined)
-		 param = "formBean.indicator = " + indicator;
+		 param = "formBean.indicator=" + indicator;
 	 
 	 var url = "chainSMgmtJSP!listChainStoreHQ" + "?" + param;
 

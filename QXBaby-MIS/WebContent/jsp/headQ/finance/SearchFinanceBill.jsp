@@ -8,14 +8,17 @@
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 <SCRIPT src="<%=request.getContextPath()%>/conf_files/js/datetimepicker_css.js" type=text/javascript></SCRIPT>
+<link href="<%=request.getContextPath()%>/conf_files/css/pagination.css" rel="stylesheet" type="text/css"/>
+<SCRIPT src="<%=request.getContextPath()%>/conf_files/js/pagenav1.1.js" type=text/javascript></SCRIPT>
 <script>
 function searchBills(){
-     var params=$("#financeBillSearchForm").serialize();  
-     $.post("financeHQJSON!searchFHQBill",params, searchBillsBackProcess,"json");	
+	pageNav.clearPager();
+    pageNav.fn($("#currentPage").val(),$("#totalPage").val());
 }
 function searchBillsBackProcess(data){
 	var bills = data.bills;
-
+	var pager = data.pager;
+	
     $('#bills tr').each(function () {                
         $(this).remove();
     });
@@ -48,8 +51,19 @@ function searchBillsBackProcess(data){
     	$("<tr class='InnerTableContent'"+ bg +" align='center'><td colspan=7><font color='red'>对应条件没有查询信息</font> </td></tr>").appendTo("#bills");
     }
 
+    renderPaginationBar(pager.currentPage, pager.totalPage);
     $("#billsDiv").show();
+    $.messager.progress('close'); 
 }
+pageNav.fn = function(page,totalPage){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
+	$("#currentPage").attr("value",page);
+    var params=$("#financeBillSearchForm").serialize();  
+    $.post("financeHQJSON!searchFHQBill",params, searchBillsBackProcess,"json");	
+};
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 });
@@ -60,6 +74,7 @@ function changeChainStore(chainId){
 </head>
 <body>
     <s:form id="financeBillSearchForm" name="financeBillSearchForm" action="/actionChain/inventoryFlowAction!searchInvenOrder" theme="simple" method="POST"> 
+     <%@ include file="../../common/pageForm.jsp"%>
      <table width="95%" align="center"  class="OuterTable">
 	    <tr><td>
 			 <table width="100%" border="0">
@@ -75,18 +90,16 @@ function changeChainStore(chainId){
 						      <td width="50" height="25">&nbsp;</td>
 						      <td width="78"><strong>单据日期</strong></td>
 						      <td width="267">开始日期 ：
-						        <input type="text" id="startDate" readonly="readonly" name="formBean.searchStartTime" value="<%=new SimpleDateFormat("yyyy-MM-dd").format(new Date())%>" />
-		                        <a href="javascript:NewCssCal('startDate','yyyymmdd','arrow')"> <img src="<%=request.getContextPath()%>/conf_files/web-image/cal.gif" width="16" height="16" alt="选择开始日期" border="0" /> </a>				      </td>
+						      	<s:textfield id="startDate" name="formBean.searchStartTime" cssClass="easyui-datebox" data-options="width:100,editable:false"/>
 						      <td width="72"><strong>连锁店</strong></td>
-						      <td width="393"><%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" name="formBean.indicator" value="-1"/>	</td>
+						      <td width="393"><%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>	</td>
 						      <td width="193">&nbsp;</td>
 						    </tr>
 							<tr class="InnerTableContent">
 						      <td width="50" height="25">&nbsp;</td>
 						      <td width="78">&nbsp;</td>
 						      <td width="267">截止日期 ：
-						        <input type="text" id="endDate" readonly="readonly" name="formBean.searchEndTime" value="<%=new SimpleDateFormat("yyyy-MM-dd").format(new Date())%>" />
-		                        <a href="javascript:NewCssCal('endDate','yyyymmdd','arrow')"> <img src="<%=request.getContextPath()%>/conf_files/web-image/cal.gif" width="16" height="16" alt="选择截止日期" border="0" /> </a>				      </td>
+						         <s:textfield id="endDate" name="formBean.searchEndTime" cssClass="easyui-datebox" data-options="width:100,editable:false"/>
 						      <td width="72"><strong>单据状态</strong></td>
 						      <td width="393"><s:select name="formBean.financeBill.status"  list="formBean.financeBill.statusMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" /></td>
 						      <td width="193">&nbsp;</td>
@@ -133,6 +146,9 @@ function changeChainStore(chainId){
 						    </tr>
 						    <tbody id="bills">
 						   </tbody>
+						  <tr class="InnerTableContent" id="pager">	      
+						      <td colspan="16"><div id="pageNav"></div></td>
+						  </tr>	
 						</table>
 					  </div>
 			      </td>

@@ -75,7 +75,7 @@ public class FinanceService {
 //		List<ChainStore> chainStores = chainStoreDaoImpl.getAll(true);
 //		uiBean.setChainStores(chainStores);
 		
-	//	formBean.setChainStore(ChainStoreDaoImpl.getAllChainStoreObject());
+		formBean.setChainStore(ChainStoreDaoImpl.getAllChainStoreObject());
 	}
 	
 	/**
