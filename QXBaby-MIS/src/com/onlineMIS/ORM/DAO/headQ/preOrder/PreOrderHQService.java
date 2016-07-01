@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -19,11 +21,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrderTemplate;
+import com.onlineMIS.ORM.entity.headQ.SQLServer.ClientsMS;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrder;
 import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrderProduct;
+import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrderSummaryData;
+import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrderSummaryTemplate;
 import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreOrderTemplate;
 import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreorderIdentity;
 import com.onlineMIS.action.headQ.preOrder.PreOrderActionFormBean;
@@ -38,6 +45,10 @@ public class PreOrderHQService {
 	
 	@Autowired
 	private PreOrderIdentityDaoImpl preOrderIdentityDaoImpl;
+	
+	@Autowired
+	private BrandDaoImpl brandDaoImpl;
+
 	
 	@Transactional
 	public Response searchOrders(int clientId, String preOrderIdentity, Integer page, Integer rowPerPage, String sortName, String sortOrder){
@@ -108,7 +119,7 @@ public class PreOrderHQService {
 	}
 
 	@Transactional
-	public Response downloadFlowOrder(int id, boolean showCost) throws IOException {
+	public Response downloadPreOrder(int id, boolean showCost) throws IOException {
 		Response response = new Response();
 		List<Object> values = new ArrayList<Object>();
 		
@@ -131,6 +142,118 @@ public class PreOrderHQService {
 		
 		values.add(byteArrayInputStream);
 		values.add(Common_util.correctFileName(preOrder.getCustName()));
+		response.setReturnValue(values);   
+
+		return response;
+	}
+
+	@Transactional
+	public Response downloadPreOrderSummary(String orderIdentity) throws IOException {
+		Response response = new Response();
+		List<Object> values = new ArrayList<Object>();
+		
+		String webInf = this.getClass().getClassLoader().getResource("").getPath();
+		String contextPath = webInf.substring(1, webInf.indexOf("classes")).replaceAll("%20", " ");  
+
+		//1.获取牌子
+		CustPreorderIdentity orderIdentity2 = preOrderIdentityDaoImpl.get(orderIdentity, true);
+		if (orderIdentity2 == null){
+			response.setFail("无法找到 订货会代码");
+			return response;
+		}
+		String[] brandArray = orderIdentity2.getBrands().split(",");
+		List<Brand> brands = new ArrayList<Brand>();
+		for (String brandString : brandArray){
+			int brandId = Integer.parseInt(brandString);
+			brands.add(brandDaoImpl.get(brandId, true));
+		}	
+
+		//2. 获取所有订单
+		DetachedCriteria preOrderCriteria = DetachedCriteria.forClass(CustPreOrder.class);
+		preOrderCriteria.add(Restrictions.eq("orderIdentity", orderIdentity));
+		preOrderCriteria.addOrder(Order.desc("totalQuantity"));
+		List<CustPreOrder> orders = preOrderDaoImpl.getByCritera(preOrderCriteria, true);
+		
+		//2. 分析订单数据
+		//key : CustId@brandId
+		//value : quantity
+		//full key : CustId@-1
+		Map<String, Integer> summaryMapData = new HashMap<String, Integer>();
+		String mapKey = "";
+
+		List<ClientsMS> clients = new ArrayList<ClientsMS>();
+		for (CustPreOrder order : orders){
+			int totalQ = 0;
+			int custId = order.getCustId();
+			
+			ClientsMS clientsMS = new ClientsMS();
+			clientsMS.setClient_id(custId);
+			clientsMS.setName(order.getCustName());
+			clients.add(clientsMS);
+			
+			Set<CustPreOrderProduct> products = order.getProductSet();
+			for (CustPreOrderProduct p : products){
+				int brandId = p.getProductBarcode().getProduct().getBrand().getBrand_ID();
+				int q = p.getTotalQuantity();
+				
+				mapKey = custId + "@" + brandId;
+				Integer qInMap = summaryMapData.get(mapKey);
+				if (qInMap != null){
+					q += qInMap;
+				} 
+				
+				summaryMapData.put(mapKey, q);
+				totalQ += q;
+			}
+			
+			String fullKey = custId + "@" + "-1";
+			summaryMapData.put(fullKey, totalQ);
+		}
+		
+		List<CustPreOrderSummaryData> summaryDatas = new ArrayList<CustPreOrderSummaryData>();
+		for (ClientsMS client : clients){
+			CustPreOrderSummaryData summaryData = new CustPreOrderSummaryData();
+			List<Integer> quantities = new ArrayList<Integer>();
+			
+			int clientId = client.getClient_id();
+			String clientName = client.getName();
+			
+			summaryData.setCustName(clientName);
+			for (Brand brand : brands){
+				int brandId = brand.getBrand_ID();
+				
+				String key = clientId + "@" + brandId;
+								
+				Integer q = summaryMapData.get(key);
+				if (q == null)
+					q = 0;
+				
+				quantities.add(q);
+			}
+			String fullKey = clientId + "@" + "-1";
+			Integer q = summaryMapData.get(fullKey);
+			if (q == null)
+				q = 0;
+			summaryData.setSum(q);
+			
+			summaryData.setQ(quantities);
+			
+			summaryDatas.add(summaryData);
+		}
+
+		ByteArrayInputStream byteArrayInputStream;   
+		HSSFWorkbook wb = null;   
+		CustPreOrderSummaryTemplate custPreOrderSummaryTemplate = new CustPreOrderSummaryTemplate(orderIdentity, brands, summaryDatas, contextPath + "template\\");
+		wb = custPreOrderSummaryTemplate.process();
+	
+		ByteArrayOutputStream os = new ByteArrayOutputStream();   
+		wb.write(os);   
+  
+		byte[] content = os.toByteArray();   
+		byteArrayInputStream = new ByteArrayInputStream(content);  
+		
+		values.add(byteArrayInputStream);
+		values.add(Common_util.correctFileName("订货会" + orderIdentity + "汇总信息"));
 		response.setReturnValue(values);   
 
 		return response;

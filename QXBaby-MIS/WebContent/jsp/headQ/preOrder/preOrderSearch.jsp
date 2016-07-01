@@ -39,7 +39,10 @@ $(document).ready(function(){
 						}},
 					{field:'orderIdentity', width:50,title:'订货会',sortable:true,order:'desc'},
 					{field:'totalQuantity', width:50,title:'总数量(手)',sortable:true,order:'desc'},
-					{field:'sumWholePrice', width:50,title:'总批发价',sortable:true,order:'desc'},
+					{field:'sumWholePrice', width:50,title:'总批发价',sortable:true,order:'desc',
+						formatter: function (value, row, index){
+							return (row.sumWholePrice).toFixed(0);
+						}},
 					{field:'sumRetailPrice', width:50,title:'总零售价',sortable:true,order:'desc'},
 					{field:'createDate', width:50,title:'订货日期',sortable:true},
 					{field:'exportDate', width:50,title:'导出日期',sortable:true}
@@ -56,6 +59,17 @@ function searchOrders(){
 
 	var params = $.serializeObject($('#preOrderForm')); 
 	$('#dataGrid').datagrid('load',params); 
+}
+function exportOrderSummary(){
+	var preOrderIdentity = $("#orderIdentity").val();
+	if (preOrderIdentity == ""){
+		alert("此功能必须选中一个订货会，才能继续操作");
+		return;
+	} else {
+
+	    document.preOrderForm.action="preorderHQJSP!downloadPreOrderSummary";
+	    document.preOrderForm.submit();
+	}
 }
 function downloadOrder(){
 	var rows = dataGrid.datagrid('getSelections');
@@ -107,12 +121,14 @@ function openOrder(){
 				<tr class="InnerTableContent">
 			      <td height="30">&nbsp;</td>
 			      <td><strong>订货会代码</strong></td>
-			      <td colspan="3"><s:select name="formBean.order.orderIdentity"  list="uiBean.identities" listKey="orderIdentity" listValue="orderIdentity" headerKey="" headerValue="---全部---" /></td>
+			      <td colspan="3"><s:select name="formBean.order.orderIdentity" id="orderIdentity"  list="uiBean.identities" listKey="orderIdentity" listValue="orderIdentity" headerKey="" headerValue="---全部---" /></td>
 			    </tr>
                 <tr class="InnerTableContent">
 			      <td height="25">&nbsp;</td>
 			      <td>&nbsp;</td>
-			      <td colspan="2"><input type="button" value="搜索单据" onclick="searchOrders();"/>
+			      <td colspan="2">
+			      	<input type="button" value="搜索单据" onclick="searchOrders();"/>&nbsp;&nbsp;
+			      	<input type="button" value="下载订货会汇总" onclick="exportOrderSummary();"/>
 			      </td>
 			      <td>&nbsp;</td>
 			    </tr>

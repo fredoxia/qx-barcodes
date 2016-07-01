@@ -53,7 +53,7 @@ public class PreOrderJSPAction extends PreOrderAction {
 	public String downloadOrderHQById(){
 		Response response = new Response();
 		try {
-		    response = preOrderHQService.downloadFlowOrder(formBean.getOrder().getId(), true);
+		    response = preOrderHQService.downloadPreOrder(formBean.getOrder().getId(), true);
 		} catch (Exception e){
 			e.printStackTrace();
 			addActionError(e.getMessage());
@@ -65,6 +65,27 @@ public class PreOrderJSPAction extends PreOrderAction {
 		formBean.setFileStream((InputStream)values.get(0)); 
 		formBean.setFileName(values.get(1).toString().trim() + ".xls");
 		
+		return "download"; 
+	}
+	
+	/**
+	 * 下载订单总计
+	 * @return
+	 */
+	public String downloadPreOrderSummary(){
+		Response response = new Response();
+		try {
+		    response = preOrderHQService.downloadPreOrderSummary(formBean.getOrder().getOrderIdentity());
+		} catch (Exception e){
+			e.printStackTrace();
+			addActionError(e.getMessage());
+			return "error";
+		}
+
+		List<Object> values = (List<Object>)response.getReturnValue();
+		
+		formBean.setFileStream((InputStream)values.get(0)); 
+		formBean.setFileName(values.get(1).toString().trim() + ".xls");
 		return "download"; 
 	}
 }
