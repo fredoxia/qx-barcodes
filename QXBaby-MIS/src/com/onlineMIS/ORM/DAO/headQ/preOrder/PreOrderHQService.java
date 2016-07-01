@@ -195,6 +195,7 @@ public class PreOrderHQService {
 			for (CustPreOrderProduct p : products){
 				int brandId = p.getProductBarcode().getProduct().getBrand().getBrand_ID();
 				int q = p.getTotalQuantity();
+				totalQ += q;
 				
 				mapKey = custId + "@" + brandId;
 				Integer qInMap = summaryMapData.get(mapKey);
@@ -203,7 +204,7 @@ public class PreOrderHQService {
 				} 
 				
 				summaryMapData.put(mapKey, q);
-				totalQ += q;
+
 			}
 			
 			String fullKey = custId + "@" + "-1";
