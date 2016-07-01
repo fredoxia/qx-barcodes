@@ -13,6 +13,7 @@ $(document).ready(function(){
 	$("#org_table tr").mouseover(function(){      
 		$(this).addClass("over");}).mouseout(function(){    
 		$(this).removeClass("over");}); 
+	$("#clearBt").removeAttr("disabled");
 });
 
 function del(){
@@ -37,6 +38,11 @@ function update(){
 		error +="产品货号 - 不能为空\n";
 		$("#productCode").focus();
 	} 	
+	
+	if ($("#brand_ID").val() == ""){
+		error +="产品牌 - 不能为空\n";
+	} 	
+	
 	var categoryId = $("#category").combo("getValue");
 	if (categoryId != "0" && !isValidPositiveInteger(categoryId)){
 		alert("货品类别不是一个正确的输入");

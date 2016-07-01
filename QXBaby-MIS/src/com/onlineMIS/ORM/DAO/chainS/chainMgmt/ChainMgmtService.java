@@ -162,7 +162,7 @@ public class ChainMgmtService {
 //
 //		chainStores = chainStoreDaoImpl.getAllChainStoreList();
 //		uiBean.setChainStores(chainStores);
-		if (!ChainUserInforService.isMgmtFromHQ(loginUser)){
+		if (loginUser != null && !ChainUserInforService.isMgmtFromHQ(loginUser)){
 			ChainStore chainStore = chainStoreService.getChainStoreByID(loginUser.getMyChainStore().getChain_id());
 			formBean.setChainStore(chainStore);
 		} 
