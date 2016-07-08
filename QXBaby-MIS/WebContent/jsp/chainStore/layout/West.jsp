@@ -8,10 +8,10 @@ $(function() {
 				if (node.attributes && node.attributes.url) {
 					var url;
 					url = node.attributes.url;
-					parent.$.messager.progress({
+					/*parent.$.messager.progress({
 								title : '提示',
 								text : '数据处理中，请稍后....'
-							});
+							});*/
 
      				addTab({
 						url : url,
@@ -74,6 +74,7 @@ $(function() {
         	    <li data-options="iconCls:'icon-package',state:'closed',border:false">
 					<span>采购管理</span>
 					<ul>
+						<li data-options="iconCls:'icon-package',attributes:{url:'preorderChainJSP!preOrderSearch'}">订货会单据</li>
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!preSearch')">
 							<li data-options="iconCls:'icon-package',attributes:{url:'purchaseAction!preSearch'}">采购单据</li>
 						</s:if>

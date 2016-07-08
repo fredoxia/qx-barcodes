@@ -1,4 +1,4 @@
-package com.onlineMIS.action.headQ.preOrder;
+package com.onlineMIS.action.chainS.preOrder;
 
 import java.io.InputStream;
 import java.util.List;
@@ -18,7 +18,7 @@ import com.onlineMIS.common.loggerLocal;
 import com.opensymphony.xwork2.ActionContext;
 
 @Controller
-public class PreOrderJSPAction extends PreOrderAction {
+public class PreOrderChainJSPAction extends PreOrderAction {
 
 	/**
 	 * 
@@ -26,18 +26,21 @@ public class PreOrderJSPAction extends PreOrderAction {
 	private static final long serialVersionUID = -1271465764649626831L;
 
 	/**
-	 * 进入preorder查找界面 (HQ)
+	 * 进入preorder查找界面 (Chain)
 	 * @return
 	 */
 	public String preOrderSearch(){
-		
-		preOrderHQService.prepareSearchUI(formBean, uiBean);
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	
+		preOrderChainService.prepareSearchUI(formBean, uiBean, userInfor);
 		
 		return "preOrderSearch";
 	}
 
 	public String getOrderById(){
-		Response response = preOrderHQService.getOrderById(formBean.getOrder().getId());
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	
+		Response response = preOrderChainService.getOrderById(formBean.getOrder().getId(), userInfor);
 		if (response.isSuccess()){
 			CustPreOrder order = (CustPreOrder)response.getReturnValue();
 			uiBean.setOrder(order);
@@ -50,10 +53,12 @@ public class PreOrderJSPAction extends PreOrderAction {
 	 * 总部下载单据
 	 * @return
 	 */
-	public String downloadOrderHQById(){
+	public String downloadOrderById(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	
 		Response response = new Response();
 		try {
-		    response = preOrderHQService.downloadPreOrder(formBean.getOrder().getId(), true);
+		    response = preOrderChainService.downloadPreOrder(formBean.getOrder().getId(), userInfor);
 		} catch (Exception e){
 			e.printStackTrace();
 			addActionError(e.getMessage());
@@ -67,25 +72,5 @@ public class PreOrderJSPAction extends PreOrderAction {
 		
 		return "download"; 
 	}
-	
-	/**
-	 * 下载订单总计
-	 * @return
-	 */
-	public String downloadPreOrderSummary(){
-		Response response = new Response();
-		try {
-		    response = preOrderHQService.downloadPreOrderSummary(formBean.getOrder().getOrderIdentity());
-		} catch (Exception e){
-			e.printStackTrace();
-			addActionError(e.getMessage());
-			return "error";
-		}
 
-		List<Object> values = (List<Object>)response.getReturnValue();
-		
-		formBean.setFileStream((InputStream)values.get(0)); 
-		formBean.setFileName(values.get(1).toString().trim() + ".xls");
-		return "download"; 
-	}
 }

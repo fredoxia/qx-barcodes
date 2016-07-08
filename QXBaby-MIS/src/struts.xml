@@ -497,7 +497,22 @@
         <action name="chainDailyManualRptJSPAction" class="com.onlineMIS.action.chainS.manualRpt.ChainDailyManualRptJSPAction">
 				<result name="preCreateManualRpt">/jsp/chainStore/manualRpt/PreCreateManualRpt.jsp</result>
 				<result name="createManualRpt">/jsp/chainStore/manualRpt/CreateManualRpt.jsp</result>
-	     </action>	    
+	     </action>	
+	             <!-- the preorder JSP Action -->
+         <action name="preorderChainJSP" class="com.onlineMIS.action.chainS.preOrder.PreOrderChainJSPAction">
+            <result name="preOrderSearch">/jsp/chainStore/preOrder/preOrderSearch.jsp</result>
+            <result name="preOrderDetail">/jsp/chainStore/preOrder/preOrderDetail.jsp</result>
+            <result type="stream" name="download">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">formBean.fileStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${formBean.fileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result> 
+        </action>       
     </package>
     
     
@@ -573,7 +588,12 @@
             <result type="json" name="successful">
                  <param name="root">jsonObject</param>
             </result>
-        </action>             
+        </action>   
+        <action name="preOrderChainActionJSON" class="com.onlineMIS.action.chainS.preOrder.PreOrderChainJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>          
      </package>
      
      <!-- package for the Head4Chain -->
