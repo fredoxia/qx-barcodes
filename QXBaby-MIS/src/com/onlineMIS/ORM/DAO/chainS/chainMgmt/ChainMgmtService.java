@@ -540,8 +540,8 @@ public class ChainMgmtService {
 		List<ChainStoreGroup> chainStoreGroups = chainStoreGroupDaoImpl.getAll(true);
 		uiBean.setChainGroups(chainStoreGroups);
 		
-		//2.获取所有活跃连锁店
-		List<ChainStore> chainStores = chainStoreService.getAvailableClientChainstores();
+		//2.获取所有活跃的顶级连锁店
+		List<ChainStore> chainStores = chainStoreService.getAvailableParentChainstores();
 		uiBean.setChainStores(chainStores);
 	}
 
@@ -871,6 +871,17 @@ public class ChainMgmtService {
 			chainStore.setClient_id(clientId * -1);
 			chainStoreDaoImpl.update(chainStore, true);
 			
+			//检查是否有子连锁店
+			DetachedCriteria criteriaCheck = DetachedCriteria.forClass(ChainStore.class);
+			criteriaCheck.add(Restrictions.eq("parentStore.chain_id", chain_id));
+			List<ChainStore> stores = chainStoreDaoImpl.getByCritera(criteriaCheck, true);
+			if (stores.size() > 0){
+				for (ChainStore chainStore2 : stores){
+					chainStore2.setStatus(ChainStore.STATUS_DELETE);
+					chainStore2.setClient_id(chainStore2.getClient_id() * -1);
+					chainStoreDaoImpl.update(chainStore2, true);
+				}
+			}
 			
 			chainUserInforDaoImpl.executeHQLUpdateDelete("UPDATE ChainUserInfor SET resign =1 WHERE myChainStore.chain_id=?", valuesChainId, true);
 		}

@@ -54,7 +54,10 @@ public class ChainMgmtActionFormBean {
 	private Date startDate = new Date(new java.util.Date().getTime());
 	private Date endDate = new Date(new java.util.Date().getTime());
 	
-	//list chainstore的indicator
+	//isAll : 1 是否列举所有关系的连锁店，0 或者只列举 父亲连锁店， -1 只列举儿子连锁店
+	private int isAll = 0;
+	
+	//includeAllChain : 是否包含 所有连锁店 选项在第一页
 	private int indicator = 0;
 	
 	private ChainPriceIncrement priceIncrement;
@@ -62,6 +65,12 @@ public class ChainMgmtActionFormBean {
 	private QxbabyConf qxbabyConf = new QxbabyConf();
 	
 	
+	public int getIsAll() {
+		return isAll;
+	}
+	public void setIsAll(int isAll) {
+		this.isAll = isAll;
+	}
 	public QxbabyConf getQxbabyConf() {
 		return qxbabyConf;
 	}

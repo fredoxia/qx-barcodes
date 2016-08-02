@@ -118,11 +118,12 @@ public class Common_util {
 	 * 	      1. 严格 只能查看当前登录连锁店
 	 *        2. 中等 owner账号可以查看关联连锁店, 其他账号不行
 	 *        3. 松 所有账号都可以查看关联连锁店
+	 *        4. 严格 只能看当前登录连锁店和子连锁店
 	 */
 	public static final int CHAIN_ACCESS_LEVEL_1 = 1;
 	public static final int CHAIN_ACCESS_LEVEL_2 = 2;
 	public static final int CHAIN_ACCESS_LEVEL_3 = 3;
-	
+	public static final int CHAIN_ACCESS_LEVEL_4 = 4;
     /**
      * common variables such as row background
      */

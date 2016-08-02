@@ -7,12 +7,20 @@
  function searchChainStore(){
 	 var param = "";
 	 var indicator = $("#indicator").val();
+	 var isAll = $("#isAll").val();
 
-	 if (indicator != undefined)
-		 param = "formBean.indicator=" + indicator;
+	 if (isAll != undefined)
+		 param = "formBean.isAll=" + isAll;
+
+	 if (indicator != undefined){
+		 if (param != "")
+			 param += "&";
+		 param += "formBean.indicator=" + indicator;
+	 }
 	 
-	 var url = "chainSMgmtJSP!listChainStoreHQ" + "?" + param;
 
+	 var url = "chainSMgmtJSP!listChainStoreHQ" + "?" + param;
+	 
 	 window.open(url,'新窗口','height=400, width=400, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, status=no');  
 }
 

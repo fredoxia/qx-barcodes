@@ -49,7 +49,7 @@ public class ChainStoreService {
 	 */
 	public List<ChainStore> getChainStoreList(ChainUserInfor loginUser) {
 		if (ChainUserInforService.isMgmtFromHQ(loginUser))
-			return chainStoreDaoImpl.getAllChainStoreList();
+			return chainStoreDaoImpl.getAllParentStores();
 		else {
 			List<ChainStore> chainStores = new ArrayList<ChainStore>();
 			chainStores.add(loginUser.getMyChainStore());
@@ -94,6 +94,25 @@ public class ChainStoreService {
 			if (priceIncrementId == 0)
 				chainStore.setPriceIncrement(null);
 			
+			//验证parent store 不是自己，自己和parent store 之间没有循环
+			ChainStore parentStore = chainStore.getParentStore();
+			if (parentStore.getParentStore() != null && parentStore.getParentStore().getChain_id() != 0){
+				response.setFail("父连锁店 上面还有一层连锁店，请检查");
+				return response;
+				
+			//检查选择的父连锁店是否已经存在其他的子连锁店，否则不允许。当前只允许一个子连锁店
+			} else {
+				DetachedCriteria criteriaCheck = DetachedCriteria.forClass(ChainStore.class);
+				criteriaCheck.add(Restrictions.eq("parentStore.chain_id", parentStore.getChain_id()));
+				
+				List<ChainStore> stores = chainStoreDaoImpl.getByCritera(criteriaCheck, true);
+
+				if (stores.size() >0){
+					response.setFail("你所选择的父连锁店 已经包含一个子连锁店请检查 : " + stores.get(0).getChain_name());
+					return response;
+				}
+			}
+			
 			chainStoreDaoImpl.saveOrUpdate(chainStore, cached);
 		} else {
 			ChainStore storeInDB = chainStoreDaoImpl.get(chainStoreId, true);
@@ -115,6 +134,43 @@ public class ChainStoreService {
 				storeInDB.setPriceIncrement(null);
 			else 
 				storeInDB.setPriceIncrement(chainStore.getPriceIncrement());
+			
+			ChainStore parentStore = chainStore.getParentStore();
+			if (parentStore == null || parentStore.getChain_id() == 0){
+				storeInDB.setParentStore(null);
+			} else {
+				//验证parent store 不是自己，自己和parent store 之间没有循环
+				if (parentStore.getChain_id() == storeInDB.getChain_id()){
+					response.setFail("父连锁店不能是当前连锁店");
+					return response;
+				} else if (parentStore.getParentStore() != null && parentStore.getParentStore().getChain_id() != 0){
+					response.setFail("父连锁店 上面还有一层连锁店，请检查");
+					return response;
+				} else {
+					//检查当前连锁店不是某个连锁店的父连锁店
+					DetachedCriteria criteriaCheckThisStore = DetachedCriteria.forClass(ChainStore.class);
+					criteriaCheckThisStore.add(Restrictions.eq("parentStore.chain_id", storeInDB.getChain_id()));
+					List<ChainStore> stores2 = chainStoreDaoImpl.getByCritera(criteriaCheckThisStore, true);
+					if (stores2.size() > 0){
+						response.setFail("当前连锁店已经是一个连锁店的父连锁店，不能再添加父连锁店在当前连锁店 : " + stores2.get(0).getChain_name());
+						return response;
+					}
+					
+					
+					//检查选择的父连锁店是否已经存在其他的子连锁店，否则不允许。当前只允许一个子连锁店
+					DetachedCriteria criteriaCheck = DetachedCriteria.forClass(ChainStore.class);
+					criteriaCheck.add(Restrictions.ne("chain_id", storeInDB.getChain_id()));
+					criteriaCheck.add(Restrictions.eq("parentStore.chain_id", parentStore.getChain_id()));
+					
+					List<ChainStore> stores = chainStoreDaoImpl.getByCritera(criteriaCheck, true);
+
+					if (stores.size() >0){
+						response.setFail("你所选择的父连锁店 已经包含一个子连锁店请检查 : " + stores.get(0).getChain_name());
+						return response;
+					}
+				}
+				storeInDB.setParentStore(parentStore);
+			}
 
 			
 			try {
@@ -142,8 +198,23 @@ public class ChainStoreService {
 		return chainStoreDaoImpl.getAllChainStoreList();
 	}
 
+	@Transactional
 	public ChainStore getChainStoreByID(int chainStoreId) {
 		return chainStoreDaoImpl.get(chainStoreId, cached);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public List<ChainStore> getAvailableParentChainstores(){
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
+		criteria.add(Restrictions.ne("chain_id", ChainStore.CHAIN_ID_TEST_ID));
+		criteria.add(Restrictions.isNull("parentStore.chain_id"));
+		criteria.addOrder(Order.asc("pinYin"));
+		
+		return chainStoreDaoImpl.getByCritera(criteria, true);
 	}
 	
 	/**
@@ -181,10 +252,12 @@ public class ChainStoreService {
 	
 	/**
 	 * 获取这个用户可以看到的连锁店
+	 * isAll : 1 是否列举所有关系的父子连锁店，0 或者只列举 父亲连锁店， -1 只列举儿子连锁店      
 	 * @param AccessLevel (连锁店内权限验证)
 	 *        1. 严格 只能查看当前登录连锁店
 	 *        2. 中等 owner账号可以查看关联连锁店, 其他账号不行
 	 *        3. 松 所有账号都可以查看关联连锁店
+	 *        4. 严格 只能查看当前登录连锁店和子连锁店
 	 * @param userInfor
 	 * @return
 	 */
@@ -199,7 +272,7 @@ public class ChainStoreService {
 			
 			//1. check the pager
 			if (pager.getTotalResult() == 0){
-				DetachedCriteria criteria = buildChainStoreCriteria();
+				DetachedCriteria criteria = buildChainStoreCriteria(accessLevel);
 				criteria.setProjection(Projections.rowCount());
 				int totalRecord = Common_util.getProjectionSingleValue(chainStoreDaoImpl.getByCriteriaProjection(criteria, false));
 				pager.initialize(totalRecord);
@@ -209,7 +282,7 @@ public class ChainStoreService {
 			}
 			
 			//2. 获取连锁店列表
-			DetachedCriteria searchCriteria = buildChainStoreCriteria();
+			DetachedCriteria searchCriteria = buildChainStoreCriteria(accessLevel);
 			searchCriteria.addOrder(Order.asc("pinYin"));
 			chainStores = chainStoreDaoImpl.getByCritera(searchCriteria, pager.getFirstResult(), pager.getRecordPerPage(), cache);
 			
@@ -234,10 +307,12 @@ public class ChainStoreService {
 	
 	/**
 	 * 总部用户获取这个用户可以看到的连锁店
+	 * includeAllChain : 1 包含 所有连锁店 选项在第一页, 0不包含
+	 * isAll : 1 是否列举所有的连锁店，0 或者只列举 父亲连锁店， -1 只列举儿子连锁店
 	 * @param userInfor
 	 * @return
 	 */
-	public Response getChainStoreListHQ(UserInfor userInfor, Pager pager, boolean isAll, int indicator) {
+	public Response getChainStoreListHQ(UserInfor userInfor, Pager pager, int isAll, int includeAllChain) {
 		Response response = new Response();
 		List<ChainStore> chainStores = new ArrayList<ChainStore>(); 
 
@@ -245,7 +320,7 @@ public class ChainStoreService {
 		
 		//1. check the pager
 		if (pager.getTotalResult() == 0){
-			DetachedCriteria criteria = buildChainStoreHQCriteria();
+			DetachedCriteria criteria = buildChainStoreHQCriteria(isAll);
 			criteria.setProjection(Projections.rowCount());
 			int totalRecord = Common_util.getProjectionSingleValue(chainStoreDaoImpl.getByCriteriaProjection(criteria, false));
 			pager.initialize(totalRecord);
@@ -255,12 +330,12 @@ public class ChainStoreService {
 		}
 		
 		//2. 获取连锁店列表
-		DetachedCriteria searchCriteria = buildChainStoreHQCriteria();
+		DetachedCriteria searchCriteria = buildChainStoreHQCriteria(isAll);
 		searchCriteria.addOrder(Order.asc("pinYin"));
 		chainStores = chainStoreDaoImpl.getByCritera(searchCriteria, pager.getFirstResult(), pager.getRecordPerPage(), cache);
 		
 		//3. 添加所有连锁店
-		if (pager.getCurrentPage() == Pager.FIRST_PAGE && indicator != 0){
+		if (pager.getCurrentPage() == Pager.FIRST_PAGE && includeAllChain != 0){
 		    ChainStore allStore = chainStoreDaoImpl.getAllChainStoreObject();
 		    chainStores.add(0, allStore);
 		}
@@ -272,9 +347,16 @@ public class ChainStoreService {
 
 	}
 	
-	private DetachedCriteria buildChainStoreHQCriteria() {
+	private DetachedCriteria buildChainStoreHQCriteria(int isAll) {
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
 		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
+		//获取父亲连锁店
+		if (isAll == 0){
+			criteria.add(Restrictions.isNull("parentStore.chain_id"));
+		//获取儿子连锁店
+		} else if (isAll == -1){
+			criteria.add(Restrictions.isNotNull("parentStore.chain_id"));
+		}
 		return criteria;
 	}
 
@@ -282,9 +364,13 @@ public class ChainStoreService {
 	 * this criteria 用来搜索连锁店
 	 * @return
 	 */
-	private DetachedCriteria buildChainStoreCriteria() {
+	private DetachedCriteria buildChainStoreCriteria(int accessLevel) {
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
 		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
+		//只获取父亲连锁店
+		if (accessLevel != 4){
+			criteria.add(Restrictions.isNull("parentStore.chain_id"));
+		}
 		return criteria;
 	}
 

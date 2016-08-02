@@ -7,7 +7,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-<SCRIPT src="<%=request.getContextPath()%>/conf_files/js/datetimepicker_css.js" type=text/javascript></SCRIPT>
 <link href="<%=request.getContextPath()%>/conf_files/css/pagination.css" rel="stylesheet" type="text/css"/>
 <SCRIPT src="<%=request.getContextPath()%>/conf_files/js/pagenav1.1.js" type=text/javascript></SCRIPT>
 <script>
@@ -74,6 +73,8 @@ function changeChainStore(chainId){
 </head>
 <body>
     <s:form id="financeBillSearchForm" name="financeBillSearchForm" action="/actionChain/inventoryFlowAction!searchInvenOrder" theme="simple" method="POST"> 
+     <input type="hidden" id="isAll" name="formBean.isAll" value="1"/>
+	 <input type="hidden" id="indicator" name="formBean.indicator" value="0"/>
      <%@ include file="../../common/pageForm.jsp"%>
      <table width="95%" align="center"  class="OuterTable">
 	    <tr><td>
@@ -92,7 +93,10 @@ function changeChainStore(chainId){
 						      <td width="267">开始日期 ：
 						      	<s:textfield id="startDate" name="formBean.searchStartTime" cssClass="easyui-datebox" data-options="width:100,editable:false"/>
 						      <td width="72"><strong>连锁店</strong></td>
-						      <td width="393"><%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>	</td>
+						      <td width="393">
+						      		<%@ include file="../include/SearchChainStore.jsp"%>
+
+							 	</td>
 						      <td width="193">&nbsp;</td>
 						    </tr>
 							<tr class="InnerTableContent">

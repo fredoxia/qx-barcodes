@@ -204,7 +204,7 @@ public class InventoryOrderJSPAction  extends InventoryOrderAction {
 	}
 
 	/**
-	 * the accountant read the inventory order
+	 * 会计保存单据
 	 * @return
 	 */
 	public String acctSave(){

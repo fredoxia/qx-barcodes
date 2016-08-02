@@ -108,6 +108,33 @@ public class ChainMgmtJSPAction extends ChainMgmtAction {
 	}
 	
 	/**
+	 * 总部获取所有可能成为父亲连锁店
+	 * @return
+	 */
+	public String listParentStore(){
+    	UserInfor userInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+    	loggerLocal.info(userInfor.getUser_name() + "," + this.getClass().getName()+ "."+"listChainStoreHQ");
+    	
+		Response response = new Response();
+		
+		try {
+		     response = chainStoreService.getChainStoreListHQ(userInfor, formBean.getPager(), formBean.getIsAll(),formBean.getIndicator());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setQuickValue(Response.ERROR, response.getMessage());
+		}
+		
+		if (response.getReturnCode() == response.SUCCESS || response.getReturnCode() == response.WARNING){
+			List<ChainStore> chainStores = (List<ChainStore>)response.getReturnValue();
+			uiBean.setChainStores(chainStores);
+		} else {
+			addActionError("发生错误 : " + response.getMessage());
+		}
+		
+		return "listParentSotres";
+	}
+	
+	/**
 	 * 总部获取连锁店列表
 	 * @return
 	 */
@@ -118,7 +145,7 @@ public class ChainMgmtJSPAction extends ChainMgmtAction {
 		Response response = new Response();
 		
 		try {
-		     response = chainStoreService.getChainStoreListHQ(userInfor, formBean.getPager(), true,formBean.getIndicator());
+		     response = chainStoreService.getChainStoreListHQ(userInfor, formBean.getPager(), formBean.getIsAll(),formBean.getIndicator());
 		} catch (Exception e) {
 			loggerLocal.error(e);
 			response.setQuickValue(Response.ERROR, response.getMessage());

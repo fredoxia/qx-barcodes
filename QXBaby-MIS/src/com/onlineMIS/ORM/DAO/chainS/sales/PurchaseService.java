@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,7 @@ public class PurchaseService {
 	 * when user search through the search page。
 	 * 1. Only those complete order can be searched
 	 * 2. Only search the order belongs to the login user
+	 * 3. 包括当前连锁店的子连锁店的单据
 	 * @param searchBean
 	 * @return
 	 */
@@ -132,7 +134,11 @@ public class PurchaseService {
 		    criteria.add(Restrictions.eq("order_type", searchBean.getOrder().getOrder_type()));
 		
 		if (searchBean.getChainStore().getChain_id() != Common_util.ALL_RECORD){
+
 		   ChainStore store = chainStoreDaoImpl.get(searchBean.getChainStore().getChain_id(), true);
+		   
+//		   Set<Integer> clientIds = chainStoreDaoImpl.getStoreAndChildrenClientIds(searchBean.getChainStore().getChain_id());
+
 		   criteria.add(Restrictions.eq("client_id", store.getClient_id()));
 		} else {
 		   Set<Integer> clientIds = chainStoreDaoImpl.getAllClientIds();
@@ -181,7 +187,7 @@ public class PurchaseService {
 	}
 	
 	/**
-	 * to validate the access right of the inventory order and the chain user
+	 * 验证当前用户如果不是总部管理人员，就只能看当前连锁店和子连锁店单据
 	 * @param order
 	 * @param userInfor
 	 * @return
@@ -192,10 +198,13 @@ public class PurchaseService {
 		} else {
 			if (ChainUserInforService.isMgmtFromHQ(userInfor))
 				return true;
-			else if (order.getClient_id() != userInfor.getMyChainStore().getClient_id())
-				return false;
-			else 
-				return true;
+			else {
+				Set<Integer> clientIds = chainStoreDaoImpl.getStoreAndChildrenClientIds(userInfor.getMyChainStore().getChain_id());
+				if (!clientIds.contains(order.getClient_id()))
+					return false;
+				else 
+					return true;
+			}
 		}
 	}
 
@@ -321,7 +330,7 @@ public class PurchaseService {
 	/**
 	 * 更新订单的状态
 	 * 1. 如果订单以前的总部状态不是会计完成就要报错， 或者以前连锁店状态是确认收货也要报错
-	 * 2. 如果登录用户跟当前订单不是同一个连锁店，报错
+	 * 2. 如果登录用户跟当前订单不是同一个连锁店或者登陆连锁店不是订单的父连锁店，报错
 	 * @param order
 	 * @param loginUser
 	 * @return
@@ -335,45 +344,50 @@ public class PurchaseService {
 			response.setFail("无法找到单据");
 		} else if (oldOrder.getOrder_Status() != InventoryOrder.STATUS_ACCOUNT_COMPLETE || oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM || oldOrder.getChainConfirmStatus() == InventoryOrder.STATUS_SYSTEM_CONFIRM ){
 			response.setFail("单据更新状态出现错误，请联系管理员");
-		} else if (oldOrder.getClient_id() != loginUser.getMyChainStore().getClient_id()){
-			response.setFail("没有权限更新其他连锁店单据状态");
 		} else {
-			String message = "";
+			int myChainId = loginUser.getMyChainStore().getChain_id();
+			Set<Integer> childrenClientIds = chainStoreDaoImpl.getStoreAndChildrenClientIds(myChainId);
 			
-			//1. 修改连锁店确认信息
-			oldOrder.setChainConfirmStatus(order.getChainConfirmStatus());
-			oldOrder.setChainConfirmComment(order.getChainConfirmComment());
-			oldOrder.setChainConfirmDate(new Date());
-			
-			//2. 确认单据的库存
-			//   在exception之前的date过账的单子，库存已经自动导入了
-			if (order.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM){
-				Date exceptionDate = null;
-				try {
-					exceptionDate = Common_util.dateFormat.parse(SystemParm.getParm("CHAIN_INVENTORY_CONFIRM_EXCEPTION_DATE"));
-				} catch (ParseException e) {
-					response.setFail(e.getMessage());
-					return;
-				}
-				
-				Response updateInventoryResponse = new Response();
-				if (oldOrder.getOrder_EndTime().after(exceptionDate)){
-					updateChainInOutStock(oldOrder, false, updateInventoryResponse);
-					List<Integer> inventoryData = (List<Integer>)updateInventoryResponse.getReturnValue();
-					message = "已经成功更新单据状态。";
-					message += "\n单据总数量 : " + inventoryData.get(0);
-					message += "\n更新进库存的数量 : "+ inventoryData.get(1);
-					message += "\n不更新进库存的数量(饰品,口袋等) : "+ inventoryData.get(2);
-				} else {
-					message = "已经成功更新单据状态。此单据发生在 " + exceptionDate.toString() + " 之前,总部已经成功导入库存.";
-				}
-				
+			if (!childrenClientIds.contains(oldOrder.getClient_id())){
+				response.setFail("没有权限更新其他连锁店单据状态");
 			} else {
-				message = "已经成功更新单据状态";
+				String message = "";
+				
+				//1. 修改连锁店确认信息
+				oldOrder.setChainConfirmStatus(order.getChainConfirmStatus());
+				oldOrder.setChainConfirmComment(order.getChainConfirmComment());
+				oldOrder.setChainConfirmDate(new Date());
+				
+				//2. 确认单据的库存
+				//   在exception之前的date过账的单子，库存已经自动导入了
+				if (order.getChainConfirmStatus() == InventoryOrder.STATUS_CHAIN_CONFIRM){
+					Date exceptionDate = null;
+					try {
+						exceptionDate = Common_util.dateFormat.parse(SystemParm.getParm("CHAIN_INVENTORY_CONFIRM_EXCEPTION_DATE"));
+					} catch (ParseException e) {
+						response.setFail(e.getMessage());
+						return;
+					}
+					
+					Response updateInventoryResponse = new Response();
+					if (oldOrder.getOrder_EndTime().after(exceptionDate)){
+						updateChainInOutStock(oldOrder, false, updateInventoryResponse);
+						List<Integer> inventoryData = (List<Integer>)updateInventoryResponse.getReturnValue();
+						message = "已经成功更新单据状态。";
+						message += "\n单据总数量 : " + inventoryData.get(0);
+						message += "\n更新进库存的数量 : "+ inventoryData.get(1);
+						message += "\n不更新进库存的数量(饰品,口袋等) : "+ inventoryData.get(2);
+					} else {
+						message = "已经成功更新单据状态。此单据发生在 " + exceptionDate.toString() + " 之前,总部已经成功导入库存.";
+					}
+					
+				} else {
+					message = "已经成功更新单据状态";
+				}
+				
+				inventoryOrderDAOImpl.update(oldOrder, true);
+				response.setSuccess(message);
 			}
-			
-			inventoryOrderDAOImpl.update(oldOrder, true);
-			response.setSuccess(message);
 		}
 		    
 	}
@@ -412,7 +426,15 @@ public class PurchaseService {
 	 * @param order
 	 */
     private void updateChainInOutStock(InventoryOrder order, boolean isCancel,Response updateInventoryResponse) {
-		int clientId = order.getClient_id();
+		int orderClientId = order.getClient_id();
+		//检查当前clientId是否有父连锁店
+		ChainStore store = chainStoreDaoImpl.getByClientId(orderClientId);
+		
+		int clientId = orderClientId;
+		if (store.getParentStore() != null){
+			clientId = store.getParentStore().getClient_id();
+		}
+		
 		//更新库存数据
 		//1. 总共多少库存， 2. 有多少更新进去 3.有多少是不需要更新的数据
 		int updatedInventory = 0;

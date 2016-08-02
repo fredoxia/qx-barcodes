@@ -74,4 +74,46 @@ public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 		
 		return this.getByCritera(criteria, true);
 	}
+
+	/**
+	 * 获取当前连锁店包括他的子连锁店
+	 * @param chain_id
+	 */
+	public List<ChainStore> getStoreAndChildren(int chain_id) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
+		criteria.add(Restrictions.or(Restrictions.eq("chain_id", chain_id), Restrictions.eq("parentStore.chain_id", chain_id)));
+		
+		return this.getByCritera(criteria, true);
+	}
+	
+	public Set<Integer> getStoreAndChildrenClientIds(int chainId) {
+		List<ChainStore> stores = getStoreAndChildren(chainId);
+		Set<Integer> clientIds = new HashSet<Integer>();
+		
+		for (ChainStore store : stores){
+			clientIds.add(store.getClient_id());
+		}
+		
+		return clientIds;
+	}
+	
+	public Set<Integer> getStoreAndChildrenChainIds(int chainId) {
+		List<ChainStore> stores = getStoreAndChildren(chainId);
+		Set<Integer> chainIds = new HashSet<Integer>();
+		
+		for (ChainStore store : stores){
+			chainIds.add(store.getChain_id());
+		}
+		
+		return chainIds;
+	}
+
+	public List<ChainStore> getAllParentStores() {
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
+		criteria.add(Restrictions.isNull("parentStore.chain_id"));
+		
+		return this.getByCritera(criteria, true);
+	}
 }

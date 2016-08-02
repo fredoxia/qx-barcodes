@@ -36,7 +36,7 @@ function backProcessEditChainStore(data){
     }
 }
 function deleteChainStore(){
-	$.messager.prompt("密码验证","一旦删除这个连锁店，所有当前连锁店的信息将会被永久删除.输入密码:", function(password){
+	$.messager.prompt("密码验证","一旦删除这个连锁店，所有当前连锁店和他子连锁店的信息将会被永久删除.输入密码:", function(password){
 		if (password == "vj7683c688"){
 			var params="formBean.chainStore.chain_id=" + $("#chainStoreId").val();
 			$.post("<%=request.getContextPath()%>/action/chainSMgmtJSON!deleteChainStore",params, backProcessDeleteChainStore,"json");
@@ -85,6 +85,16 @@ function backProcessGetChainStore(data){
         	priceIncreTF.attr("value", priceIncrement.id);
         }
         $("#allowAddBarcode").attr("value", chainStore.allowAddBarcode);
+        
+        var parentStore = chainStore.parentStore;
+
+        if (parentStore != undefined && parentStore.chain_id != undefined){
+        	$("#parentChainName").attr("value", parentStore.chain_name);
+        	$("#parentChainId").attr("value", parentStore.chain_id);
+        } else {
+        	$("#parentChainName").attr("value","");
+        	$("#parentChainId").attr("value", 0);
+        }
 	}
 
 }
@@ -102,6 +112,9 @@ function clearChainStore(){
 	$("#clientId").removeAttr("readonly");
 	$("#priceIncrement").attr("value", 0);
 	$("#allowAddBarcode").attr("value", 0);
+	
+	$("#parentChainName").attr("value", "");
+	$("#parentChainId").attr("value", 0);
 }
 
 
@@ -142,7 +155,7 @@ function validateChainStore(){
 	    <tr class="InnerTableContent">
 	      <td width="90" height="25">
 	         <strong>连锁店</strong></td>
-	      <td> <%@ include file="../include/SearchChainStore.jsp"%>
+	      <td> <%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" id="isAll" name="formBean.isAll" value="1"/>
 	      <input type="button" value="清空数据,准备新增连锁店" onclick="clearChainStore();"/>
 	      </td>
 	      <td width="68">&nbsp;</td>
@@ -219,6 +232,49 @@ function validateChainStore(){
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
+	    </tr>
+	    <tr class="InnerTableContent">
+	      <td height="25"><strong>父连锁店名字</strong></td>
+	      <td colspan="5">
+	          <!-- 父亲连锁店选择 -->
+	      <script>
+			 function searchParentStore(){
+				 var param = "";
+				 var indicator = $("#indicator2").val();
+				 var isAll = $("#isAll2").val();
+				 
+				 if (isAll != undefined)
+					 param = "formBean.isAll=" + isAll;
+			
+				 if (indicator != undefined){
+					 if (param != "")
+						 param += "&";
+					 param = "formBean.indicator=" + indicator;
+				 }
+				 
+				 var url = "chainSMgmtJSP!listParentStore" + "?" + param;
+				 
+				 window.open(url,'新窗口','height=400, width=400, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, status=no');  
+			}
+			 
+			function clearParentStore(){
+				$("#parentChainId").attr("value", 0);
+				$("#parentChainName").attr("value", "");
+			}
+			
+			function selectParentStore(chainId, chainName){
+				$("#parentChainId").attr("value", chainId);
+				$("#parentChainName").attr("value", chainName);
+			}
+			</script>
+			<s:hidden name="formBean.chainStore.parentStore.chain_id" id="parentChainId"/>
+			<input type="hidden" id="isAll2" name="formBean.isAll" value="0"/>
+			<s:textfield name="formBean.chainStore.parentStore.chain_name" id="parentChainName" size="18" readonly="true"/>
+			<input type="button" id="checkChainStoreBt" value="..." onclick="searchParentStore();"/>
+			<input type="button" id="clearParentStoreBt" value="清空" onclick="clearParentStore();"/>
+			如果添加的是联营连锁店的鞋子账号，请在这里找到对应的实际连锁店账号
+	          <!-- 父亲连锁店选择  -->
+	      </td>
 	    </tr>
 	    <tr class="InnerTableContent">
 	      <td height="25"></td>

@@ -87,6 +87,7 @@ function changeChainStore(chainId){
 	<div class="easyui-layout" data-options="fit : true,border : false">
 		<div data-options="region:'north',border:false" style="height: 145px;">
                <s:form id="SalesOrderSearchForm" action="/actionChain/salesAction!searchOrders" theme="simple" method="POST"> 
+                 <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/>
                 <table width="100%" border="0">
 			    <tr class="PBAOuterTableTitale">
 		          <td height="30" colspan="7">

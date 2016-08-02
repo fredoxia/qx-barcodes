@@ -215,7 +215,8 @@
             <result name="uploadInitialStock">/jsp/chainStore/inventoryFlow/UploadFile.jsp</result>
             <result name="listChainPriceIncre">/jsp/headQ/chain/ListChainPriceIncrement.jsp</result>
             <result name="editChainPriceIncre">/jsp/headQ/chain/EditChainPriceIncrement.jsp</result>
-            
+            <result name="listParentSotres">/jsp/headQ/chain/ListParentStores.jsp</result> 
+                        
         </action>    
         
         <!-- the preorder JSP Action -->

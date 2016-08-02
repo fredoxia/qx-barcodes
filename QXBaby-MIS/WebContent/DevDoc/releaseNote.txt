@@ -175,4 +175,4 @@ Release Summary
 		
 Release Date
 Release Summary
-		DB	:		         	                  
+		DB	: 1. add parent_chain_id in chain_store	         	                  

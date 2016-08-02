@@ -56,6 +56,8 @@ public class ChainStore implements Serializable {
 	 */
 	private int allowAddBarcode;
 	private Date activeDate;
+	
+	private ChainStore parentStore;
 
 	
 	public int getAllowAddBarcode() {
@@ -149,6 +151,14 @@ public class ChainStore implements Serializable {
 
 	public void setActiveDate(Date activeDate) {
 		this.activeDate = activeDate;
+	}
+
+	public ChainStore getParentStore() {
+		return parentStore;
+	}
+
+	public void setParentStore(ChainStore parentStore) {
+		this.parentStore = parentStore;
 	}
 
 	@Override

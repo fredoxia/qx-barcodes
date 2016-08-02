@@ -40,32 +40,38 @@ public class ChainStoreGroupDaoImpl extends BaseDAO<ChainStoreGroup> {
 	public List<ChainStore> getChainGroupStoreList(int myChainId, ChainUserInfor loginUser, int accessLevel){
 		List<ChainStore> chainStores = new ArrayList<ChainStore>();
 		
-		ChainStoreGroup chainGroup = null;
-		
-		if (accessLevel == Common_util.CHAIN_ACCESS_LEVEL_3 || (accessLevel == Common_util.CHAIN_ACCESS_LEVEL_2  && loginUser.getRoleType().getChainRoleTypeId() == ChainRoleType.CHAIN_OWNER)){
-			chainGroup = this.getChainStoreBelongGroup(myChainId);
-		}
-		
-		if (chainGroup != null){
-			this.initialize(chainGroup.getChainStoreGroupElementSet());
-			Set<ChainStoreGroupElement> chainGroupElements = chainGroup.getChainStoreGroupElementSet();
-			if (chainGroupElements != null){
-				for (ChainStoreGroupElement ele : chainGroupElements){
-					int chainId = ele.getChainId();
-					ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-					if (chainStore != null)
-						chainStores.add(chainStore);
-				}
-			}
+		if (accessLevel == Common_util.CHAIN_ACCESS_LEVEL_4){
+			chainStores = chainStoreDaoImpl.getStoreAndChildren(myChainId);
 			return chainStores;
-		} 
-
+		} else {
 		
-		ChainStore chainStore = chainStoreDaoImpl.get(myChainId, true);
-		if (chainStore != null)
-			chainStores.add(chainStore);
-
-		return chainStores;
+			ChainStoreGroup chainGroup = null;
+			
+			if (accessLevel == Common_util.CHAIN_ACCESS_LEVEL_3 || (accessLevel == Common_util.CHAIN_ACCESS_LEVEL_2  && loginUser.getRoleType().getChainRoleTypeId() == ChainRoleType.CHAIN_OWNER)){
+				chainGroup = this.getChainStoreBelongGroup(myChainId);
+			}
+			
+			if (chainGroup != null){
+				this.initialize(chainGroup.getChainStoreGroupElementSet());
+				Set<ChainStoreGroupElement> chainGroupElements = chainGroup.getChainStoreGroupElementSet();
+				if (chainGroupElements != null){
+					for (ChainStoreGroupElement ele : chainGroupElements){
+						int chainId = ele.getChainId();
+						ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
+						if (chainStore != null)
+							chainStores.add(chainStore);
+					}
+				}
+				return chainStores;
+			} 
+	
+			
+			ChainStore chainStore = chainStoreDaoImpl.get(myChainId, true);
+			if (chainStore != null)
+				chainStores.add(chainStore);
+	
+			return chainStores;
+		}
 	}
 
 	public Set<Integer> getChainGroupStoreIdList(int myChainId,

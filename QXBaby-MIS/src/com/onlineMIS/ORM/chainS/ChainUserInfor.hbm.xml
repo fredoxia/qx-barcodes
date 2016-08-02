@@ -36,6 +36,7 @@
 		<property name="allowAddBarcode" column="allow_add_barcode" type="integer"/>
 		
 		<property name="activeDate" column="active_date" type="date"/>
+		<many-to-one name="parentStore" fetch="join" column="parent_chain_id" class="ChainStore" not-null="false" lazy="false"/>
     </class>
     
     <class name="ChainUserFunctionality" table="chain_user_functionality">

@@ -209,6 +209,8 @@ function changeChainStore(chainId){
 											      <img src="<%=request.getContextPath()%>/conf_files/web-image/cal.gif" width="16" height="16" alt="Pick a date" border="0"/>
 											  </a></td>
 							 <td width="400">连锁店 ： <%@ include file="../include/SearchChainStore.jsp"%>
+							 				  <input type="hidden" id="isAll" name="formBean.isAll" value="1"/>
+							 				  <input type="hidden" id="indicator" name="formBean.indicator" value="0"/>
 								              <div style="display:block;" id="currentFinance"></div>
 						     </td>
 					       </tr>

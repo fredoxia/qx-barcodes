@@ -114,11 +114,14 @@ public class PreOrderChainService {
 		List<CustPreorderIdentity> identityList = preOrderIdentityDaoImpl.getTop(20);
 		uiBean.setIdentities(identityList);
 		
+		if (identityList.size() > 0){
+			formBean.getOrder().setOrderIdentity(identityList.get(0).getOrderIdentity());
+		}
+		
 		if (ChainUserInforService.isMgmtFromHQ(loginUser)){
 			formBean.getOrder().setClient_name("所有客户");
 			formBean.getOrder().setClient_id(Common_util.ALL_RECORD);
 		} else {
-			
 			int clientId = loginUser.getMyChainStore().getClient_id();
 			String clientName = loginUser.getMyChainStore().getChain_name();
 			formBean.getOrder().setClient_id(clientId);

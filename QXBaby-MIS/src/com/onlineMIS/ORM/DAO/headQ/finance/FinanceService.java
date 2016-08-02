@@ -74,8 +74,7 @@ public class FinanceService {
 		
 //		List<ChainStore> chainStores = chainStoreDaoImpl.getAll(true);
 //		uiBean.setChainStores(chainStores);
-		
-		formBean.setChainStore(ChainStoreDaoImpl.getAllChainStoreObject());
+
 	}
 	
 	/**
@@ -178,6 +177,10 @@ public class FinanceService {
 	 */
 	private boolean validateFHQBill(FinanceBill financeBill, Response response) {
 		int chainId = financeBill.getChainStore().getChain_id();
+		if (chainId == 0){
+	    	response.setFail("请选择一个连锁店再继续操作");
+	    	return false;
+		}
 		
 		List<FinanceBillItem> items = financeBill.getFinanceBillItemList();
 		for (FinanceBillItem item: items){

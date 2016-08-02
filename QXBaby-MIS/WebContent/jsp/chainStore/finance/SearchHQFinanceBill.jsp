@@ -72,18 +72,13 @@ function searchBillsBackProcess(data){
 			    <tr>
 			       <td height="50" colspan="7">
 			            <div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
-				   		<table width="100%" border="0">
-						    <tr class="PBAOuterTableTitale">
-					          <td height="64" colspan="7">搜索财务单据<br />
-				         		- 连锁客户通过此功能可以查看与总部之间的往来财务单据</td>
-						    </tr>
-						    
+				   		<table width="100%" border="0">				    
 						    <tr class="InnerTableContent">
 						      <td width="40" height="25">&nbsp;</td>
 						      <td width="82"><strong>连锁店</strong></td>
 						      <td width="220"><%@ include file="../include/SearchChainStore.jsp"%>
 						      <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
-						      <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="1"/>	
+						      <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/>	
 						      <td width="82"><strong>单据种类</strong></td>
 						      <td width="165"><s:select name="formBean.financeBill.type"  list="formBean.financeBill.typeChainMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" /></td>
 						      <td>&nbsp;</td>

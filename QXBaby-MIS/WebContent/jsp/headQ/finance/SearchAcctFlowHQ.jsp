@@ -86,7 +86,10 @@ function changeChainStore(chainId){
 			    <tr class="InnerTableContent">
 			      <td width="45" height="25">&nbsp;</td>
 			      <td width="76"><strong>连锁店</strong></td>
-			      <td width="284"><%@ include file="../include/SearchChainStore.jsp"%></td>
+			      <td width="284"><%@ include file="../include/SearchChainStore.jsp"%>
+			      				  <input type="hidden" id="isAll" name="formBean.isAll" value="1"/>
+							 	  <input type="hidden" id="indicator" name="formBean.indicator" value="0"/>
+			      </td>
 			      <td width="71"></td>
 			      <td width="200"></td>
 			      <td></td>

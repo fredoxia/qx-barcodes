@@ -8,6 +8,7 @@ import java.util.Map;
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.headQ.finance.FinanceService;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBill;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBillItem;
@@ -151,6 +152,12 @@ public class FinanceJSONAction extends FinanceAction {
 	 */
 	private boolean validateFinanceHQBill(Response response){
 		FinanceBill bill = formBean.getFinanceBill();
+		ChainStore chainStore =  formBean.getChainStore();
+		if (chainStore == null || chainStore.getChain_id() == 0){
+			response.setFail("请选择一个连锁店再继续");
+			return false;
+		}
+		
 		for (FinanceBillItem billItem: bill.getFinanceBillItemList()){
 			if (billItem.getTotal() < 0){
 				response.setQuickValue(Response.FAIL,"金额必须是大于或等于零的数字");

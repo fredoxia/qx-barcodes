@@ -72,6 +72,8 @@ function changeChainStore(chainId){
 </head>
 <body>
     <s:form id="purchaseOrderSearch" name="purchaseOrderSearch" action="/actionChain/purchaseAction!searchOrders" theme="simple" method="POST">
+		   <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
+			<input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/>			
 		   <%@ include file="../../common/pageForm.jsp"%>
 		   <s:hidden id="chainStore" name="formBean.chainSalesOrder.chainStore.chain_id" value="-1"/>
 		   <table width="100%" align="center"  class="OuterTable">
@@ -85,8 +87,7 @@ function changeChainStore(chainId){
 						      <td width="44" height="25">&nbsp;</td>
 						      <td width="82"><strong>连锁店</strong></td>
 						      <td width="220"><%@ include file="../include/SearchChainStore.jsp"%>
-						      <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
-						      <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="1"/>		
+
 						      </td>
 						      <td width="70"><strong>单据种类</strong></td>
 						      <td width="130"><s:select name="formBean.order.order_type" list="uiBean.typesMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" />		

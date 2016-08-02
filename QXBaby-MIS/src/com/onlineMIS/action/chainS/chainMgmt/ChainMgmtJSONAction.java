@@ -136,7 +136,7 @@ public class ChainMgmtJSONAction extends ChainMgmtAction {
 		try{
 			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
 			} catch (Exception e){
-//				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"");
+				e.printStackTrace();
 				loggerLocal.error(e);
 			}	
 			
