@@ -34,7 +34,7 @@ public class PreOrderChainJSONAction extends PreOrderAction {
 		
 		Response response = new Response();
 		try {
-		    response = preOrderChainService.searchOrders(formBean.getOrder().getClient_id(), formBean.getOrder().getOrderIdentity(), this.getPage(), this.getRows(), this.getSort(), this.getOrder());
+		    response = preOrderChainService.searchOrders(formBean.getChainStore().getChain_id(), formBean.getOrder().getOrderIdentity(), this.getPage(), this.getRows(), this.getSort(), this.getOrder());
 		} catch (Exception e) {
 			loggerLocal.error(e);
 			response.setReturnCode(Response.FAIL);

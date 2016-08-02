@@ -88,6 +88,7 @@ function openOrder(){
 		href : 'preorderChainJSP!getOrderById?' + param
 	});
 }
+function changeChainStore(chainId){}
 </script>
 </head>
 <body>
@@ -99,8 +100,7 @@ function openOrder(){
 			      <td width="45" height="25">&nbsp;</td>
 			      <td width="76"><strong>客户名字</strong></td>
 			      <td width="284" colspan="3">
-			        <s:hidden id="clientID" name="formBean.order.client_id"/>
-					<s:textfield id="clientName" name="formBean.order.client_name" size="20" readonly="true"/>
+					<%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
 			      </td>
 			    </tr>
 				<tr class="InnerTableContent">

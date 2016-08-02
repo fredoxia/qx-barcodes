@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.DAO.headQ.SQLServer.ClientDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
@@ -62,12 +63,19 @@ public class PreOrderChainService {
 	
 	@Autowired
 	private ClientDAOImpl clientDAOImpl;
+	
+	@Autowired
+	private ChainStoreDaoImpl chainStoreDaoImpl;
 
 	
 	@Transactional
-	public Response searchOrders(int clientId, String preOrderIdentity, Integer page, Integer rowPerPage, String sortName, String sortOrder){
+	public Response searchOrders(int chainId, String preOrderIdentity, Integer page, Integer rowPerPage, String sortName, String sortOrder){
 		Response response = new Response();
 		Map data = new HashMap<String, Object>();
+		
+		int clientId = chainId;
+		if (chainId !=  Common_util.ALL_RECORD)
+			clientId = chainStoreDaoImpl.get(chainId, true).getClient_id();
 		
 		//1.计算总条数
 		DetachedCriteria criteria = buildSearchOrdersCriteria(clientId, preOrderIdentity);
@@ -119,8 +127,7 @@ public class PreOrderChainService {
 		}
 		
 		if (ChainUserInforService.isMgmtFromHQ(loginUser)){
-			formBean.getOrder().setClient_name("所有客户");
-			formBean.getOrder().setClient_id(Common_util.ALL_RECORD);
+			formBean.setChainStore(chainStoreDaoImpl.getAllChainStoreObject());
 		} else {
 			int clientId = loginUser.getMyChainStore().getClient_id();
 			String clientName = loginUser.getMyChainStore().getChain_name();
