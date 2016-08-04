@@ -163,7 +163,7 @@ public class ChainDailySalesService{
 		    	chainIdSet.add(chainId);
 		    }
 		}
-		List<ChainStore> availableChainStores = chainStoreService.getAvailableClientChainstores();
+		List<ChainStore> availableChainStores = chainStoreService.getAvailableParentChainstores();
 		for (ChainStore store: availableChainStores){
 			//需要补充数据
 			if (!chainIdSet.contains(store.getChain_id())){
@@ -489,7 +489,7 @@ public class ChainDailySalesService{
 		 * 2. 把每个连锁店分品牌查询出来
 		 */
 		loggerLocal.infoB(new Date() + " 查找每个连锁店的 *周* 热销品牌销售");
-		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableClientChainstores();
+		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableParentChainstores();
 		for (ChainStore chainStore : noDisabledChainStores){
 			Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
 			
@@ -688,7 +688,7 @@ public class ChainDailySalesService{
 		 * 2. 把每个连锁店分品牌查询出来
 		 */
 		loggerLocal.infoB(new Date() + " 查找每个连锁店的 " +  startDate +  " 月* 热销品牌销售");
-		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableClientChainstores();
+		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableParentChainstores();
 		for (ChainStore chainStore : noDisabledChainStores){
 			Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
 			
@@ -853,7 +853,7 @@ public class ChainDailySalesService{
 			    	chainIdSet.add(chainId);
 			    }
 			}
-			List<ChainStore> availableChainStores = chainStoreService.getAvailableClientChainstores();
+			List<ChainStore> availableChainStores = chainStoreService.getAvailableParentChainstores();
 			for (ChainStore store: availableChainStores){
 				//需要补充数据
 				if (!chainIdSet.contains(store.getChain_id())){

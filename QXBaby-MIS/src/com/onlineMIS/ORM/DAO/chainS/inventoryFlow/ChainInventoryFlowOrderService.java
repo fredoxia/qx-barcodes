@@ -322,7 +322,7 @@ public class ChainInventoryFlowOrderService {
 		}
 		
 		DetachedCriteria criteria2 = buildSearchInvenFlowCriter(formBean);
-		criteria2.addOrder(Order.asc("chainStore.chain_id")).addOrder(Order.asc("orderDate"));
+		criteria2.addOrder(Order.asc("orderDate")).addOrder(Order.asc("chainStore.chain_id"));
 		
 		List<ChainInventoryFlowOrder> chainOrders = chainInventoryFlowOrderDaoImpl.getByCritera(criteria2, pager.getFirstResult(), pager.getRecordPerPage(), cache);
 		

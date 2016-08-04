@@ -10,10 +10,10 @@ import com.onlineMIS.common.loggerLocal;
 public 	class ChainDailySalesSorter implements java.util.Comparator<Object>{
 		 public int compare(Object obj1,Object obj2){
 	         Object[] arrayObj1 =  (Object[])obj1;
-	         double netSale1 = Common_util.getDouble(arrayObj1[13]);
+	         double netSale1 = Common_util.getDouble(arrayObj1[13]) - Common_util.getDouble(arrayObj1[7]);
 	         
 	         Object[] arrayObj2 =  (Object[])obj2;
-	         double netSale2 = Common_util.getDouble(arrayObj2[13]);		
+	         double netSale2 = Common_util.getDouble(arrayObj2[13]) - Common_util.getDouble(arrayObj2[7]);		
 	         
 	         return Double.compare(netSale1, netSale2) * (-1);
 		 }
