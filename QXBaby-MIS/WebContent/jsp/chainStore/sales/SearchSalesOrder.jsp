@@ -125,6 +125,8 @@ function backProcessChangeChainStore(data){
 </head>
 <body>
    <s:form id="SalesOrderSearchForm" action="/actionChain/salesAction!searchOrders" theme="simple" method="POST"> 
+     <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
+	 <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/>	
      <%@ include file="../../common/pageForm.jsp"%>
      <table width="98%" align="center"  class="OuterTable">
 	    <tr><td>

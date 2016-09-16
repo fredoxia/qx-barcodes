@@ -71,7 +71,7 @@ $(document).ready(function(){
 							    percentage =  (row.qxAmount).toFixed(0) + "  (" + ((row.qxAmount / row.netAmtSum * 100).toFixed(0)) + "%)" ;
 							return percentage;
 						}},	
-					{field:'receiveAmtSum', width:58,title:'现金刷卡',sortable:true,order:'desc',
+					{field:'receiveAmtSum', width:58,title:'现金等',sortable:true,order:'desc',
 							formatter: function (value, row, index){
 								return (row.receiveAmtSum).toFixed(0);
 						}},	

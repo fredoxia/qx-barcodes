@@ -28,6 +28,7 @@ import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreGroupDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderService;
+import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
@@ -987,8 +988,7 @@ public class ChainStoreSalesService {
 		int chainId = 0;
 		ChainStore chainStore = null;
 		if (ChainUserInforService.isMgmtFromHQ(userInfor)){
-			chainId = ChainStore.CHAIN_ID_TEST_ID;
-			chainStore = chainStoreService.getChainStoreByID(ChainStore.CHAIN_ID_TEST_ID);
+			chainStore = ChainStoreDaoImpl.getAllChainStoreObject();
 		} else {
 			chainId = userInfor.getMyChainStore().getChain_id();
 			chainStore = chainStoreService.getChainStoreByID(chainId);
@@ -1081,11 +1081,15 @@ public class ChainStoreSalesService {
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
 		
 		int chainStoreId = formBean.getChainStore().getChain_id();
-		criteria.add(Restrictions.eq("chainStore.chain_id", chainStoreId));
+		ChainUserInfor saler = formBean.getChainSalesOrder().getSaler();
+		if (chainStoreId != Common_util.ALL_RECORD)
+		   criteria.add(Restrictions.eq("chainStore.chain_id", chainStoreId));
 		
-		int salerId = formBean.getChainSalesOrder().getSaler().getUser_id();
-		if (salerId != Common_util.ALL_RECORD)
-		   criteria.add(Restrictions.eq("saler.user_id", salerId));
+		if (saler != null) {
+			int salerId = saler.getUser_id();
+			if (salerId != Common_util.ALL_RECORD)
+				criteria.add(Restrictions.eq("saler.user_id", salerId));
+		}
 		
 		int status = formBean.getChainSalesOrder().getStatus();
 		if (status != Common_util.ALL_RECORD)

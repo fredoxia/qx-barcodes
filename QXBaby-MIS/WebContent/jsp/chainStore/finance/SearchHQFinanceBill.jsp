@@ -65,7 +65,10 @@ function searchBillsBackProcess(data){
 <body>
 
     <s:form id="financeBillSearchForm" name="financeBillSearchForm" action="" theme="simple" method="POST"> 
-     <%@ include file="../../common/pageForm.jsp"%>
+     
+     <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
+	 <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/>
+	 <%@ include file="../../common/pageForm.jsp"%>	
      <table width="90%" align="center"  class="OuterTable">
 	    <tr><td>
 			 <table width="100%" border="0">
@@ -77,8 +80,7 @@ function searchBillsBackProcess(data){
 						      <td width="40" height="25">&nbsp;</td>
 						      <td width="82"><strong>连锁店</strong></td>
 						      <td width="220"><%@ include file="../include/SearchChainStore.jsp"%>
-						      <input type="hidden" id="indicator" name="formBean.indicator" value="-1"/>
-						      <input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/>	
+
 						      <td width="82"><strong>单据种类</strong></td>
 						      <td width="165"><s:select name="formBean.financeBill.type"  list="formBean.financeBill.typeChainMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" /></td>
 						      <td>&nbsp;</td>

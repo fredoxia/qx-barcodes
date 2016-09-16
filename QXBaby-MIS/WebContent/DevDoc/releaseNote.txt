@@ -173,6 +173,11 @@ Release Date 11 10
 Release Summary
 		DB	: 1. 添加	chain_confirm_status,chain_confirm_comment,chain_confirm_date,delivery_date,delivery_comment 在表 INVENTORY_ORDER	         
 		
-Release Date
+Release Date 8 1
 Release Summary
-		DB	: 1. add parent_chain_id in chain_store	         	                  
+		DB	: 1. add parent_chain_id in chain_store	
+		
+Release Date
+Release Summary       
+		DB	: 1. add wechat_amount, alipay_amount columns in chain_sales_order
+		  	                  

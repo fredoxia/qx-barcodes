@@ -397,17 +397,19 @@ function checkDiscountType(){
 
 
 /**
- * change the cash amount
+ * 改变现金，卡，微信支付，支付宝金额的输入框
  */
 function changeCashCardAmountValue(){
 	var cash = $("#cashAmount").val(); 
 	var card = $("#cardAmount").val();
+	var wechat = $("#wechatAmount").val();
+	var alipay =  $("#alipayAmount").val();
 
 	var amountAfterDC = $("#amountAfterDC").val(); 
 
 
-	if ((card != 0 && card != "") || (cash!=0 && cash!="")   ){
-        var returnValue = cash - (amountAfterDC - card );	
+	if ((card != 0 && card != "") || (cash!=0 && cash!="") || (wechat!=0 && wechat!="") || (alipay!=0 && alipay!="")   ){
+        var returnValue = cash - (amountAfterDC - card - wechat - alipay);	
 	    $("#returnAmount").attr("value", (returnValue).toFixed(P_NUMBER));
 	} else 
 		$("#returnAmount").attr("value", 0.0);
@@ -772,11 +774,13 @@ function validateSalesOrder(orderType){
 
 	var cash = $("#cashAmount").val(); 
 	var card = $("#cardAmount").val();
+	var wechat = $("#wechatAmount").val();
+	var alipay =  $("#alipayAmount").val();
 	
 	var amountAfterDC = $("#amountAfterDC").val(); 
 	var returnAmount = (parseFloat($("#returnAmount").val())).toFixed(P_NUMBER);
 
-	var returnValue = (cash - (amountAfterDC - card)).toFixed(P_NUMBER);
+	var returnValue = (cash - (amountAfterDC - card - wechat - alipay)).toFixed(P_NUMBER);
 	
 	if (amountAfterDC >= 0){
 		if (returnAmount != returnValue || returnAmount < 0){

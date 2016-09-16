@@ -137,7 +137,7 @@ public class ChainDailySalesService{
 		
 		String dailyBatchSelect = "SELECT sum(totalQuantity), sum(netAmount), sum(totalQuantityR), " +
 				"sum(netAmountR), sum(totalCost), sum(totalQuantityF) ,sum(totalCostF), sum(discountAmount), " +
-				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), chainStore.chain_id, sum(netAmount - netAmountR), sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost)  from ChainStoreSalesOrder where orderDate = ? and status = ?";
+				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), chainStore.chain_id, sum(netAmount - netAmountR), sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost), sum(wechatAmount), sum(alipayAmount)  from ChainStoreSalesOrder where orderDate = ? and status = ?";
 		/**
 		 * @1. 运行当天的销售情况
 		 */
@@ -248,14 +248,16 @@ public class ChainDailySalesService{
 			double qxCost = Common_util.getDouble(sales3[16]);
 			int myQ = Common_util.getInt(sales3[17]);
 			double myAmount = Common_util.getDouble(sales3[18]);
-			double myCost = Common_util.getDouble(sales3[19]);			
+			double myCost = Common_util.getDouble(sales3[19]);		
+			double wechatAmt = Common_util.getDouble(sales3[20]);	
+			double alipayAmt = Common_util.getDouble(sales3[21]);	
 			ChainStore store = chainStoreDaoImpl.get(chainId, true);
 			
 			if (store == null)
 				return false;
 			
 			dailySales = new ChainDailySales(store, reportDate, totalQ, totalQR, totalQ - totalQR, totalQF, netAmt, netAmtR, netAmt - netAmtR, totalCost, 
-			    		   netAmt - netAmtR - totalCost, totalCostF, discountAmt, coupon, vipScoreAmt, cardAmt, cashAmt, rank, qxQ, qxAmount, qxCost, myQ, myAmount, myCost);
+			    		   netAmt - netAmtR - totalCost, totalCostF, discountAmt, coupon, vipScoreAmt, cardAmt, cashAmt, rank, qxQ, qxAmount, qxCost, myQ, myAmount, myCost, wechatAmt, alipayAmt);
 		} else {
 			ChainStore store = chainStoreDaoImpl.get(chainId, true);
 			

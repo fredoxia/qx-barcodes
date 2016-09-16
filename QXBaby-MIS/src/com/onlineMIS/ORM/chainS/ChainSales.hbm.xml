@@ -34,6 +34,8 @@
         <property name="vipScore" column="vip_score" type="double"/>
         <property name="extralVipScore" column="extral_vip_score" type="double"/>
         <property name="cardAmount" column="card_amount" type="double"/>
+        <property name="alipayAmount" column="alipay_amount" type="double"/>
+        <property name="wechatAmount" column="wechat_amount" type="double"/>
         <property name="discountAmount" column="discount_amount" type="double"/>
         <property name="netAmount" column="net_amount" type="double"/>
         <property name="netAmountR" column="net_amount_r" type="double"/>

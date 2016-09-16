@@ -23,3 +23,4 @@ function renderPaginationBar(currentPage, totalPage){
 <!-- list chain的时候需要这个 -->
 <s:hidden id="isAll" name="formBean.isAll"/>
 <s:hidden id="indicator" name="formBean.indicator"/>
+<s:hidden id="accessLevel" name="formBean.accessLevel"/>

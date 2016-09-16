@@ -60,7 +60,7 @@ $(document).ready(function(){
 							return (row.netAmtSum).toFixed(0);
 
 						}},
-					{field:'receiveAmtSum', width:55,title:'刷卡+现金',sortable:true,order:'desc',
+					{field:'receiveAmtSum', width:55,title:'刷卡+现金等',sortable:true,order:'desc',
 							formatter: function (value, row, index){
 								return (row.receiveAmtSum).toFixed(0);
 						}},					

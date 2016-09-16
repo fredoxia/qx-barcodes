@@ -359,7 +359,7 @@ public class ChainReportService {
 
 		String hql_sale = "select sum(totalQuantity), sum(netAmount),  sum(totalQuantityR), " +
 				"sum(netAmountR), sum(totalCost), sum(totalQuantityF) ,sum(totalCostF), sum(discountAmount), " +
-				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), sum(totalAmount - netAmount), sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost), sum(chainPrepaidAmt) from ChainStoreSalesOrder where orderDate between ? and ? and status = ? and " + chainCriteria;
+				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), sum(totalAmount - netAmount), sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost), sum(chainPrepaidAmt), sum(wechatAmount), sum(alipayAmount) from ChainStoreSalesOrder where orderDate between ? and ? and status = ? and " + chainCriteria;
 
 		Object[] sales = (Object[])chainSalesOrderDaoImpl.executeHQLSelect(hql_sale, value_sale,null, true).get(0);
 
@@ -383,6 +383,8 @@ public class ChainReportService {
 		double myAmount = Common_util.getDouble(sales[17]);
 		double myCost = Common_util.getDouble(sales[18]);
 		double vipPrepaidAmt = Common_util.getDouble(sales[19]);
+		double wechatAmt = Common_util.getDouble(sales[20]);
+		double alipayAmt = Common_util.getDouble(sales[21]);
 		
 		//2. 计算vip的数量
 		String hql_sale_vipString = "SELECT SUM(totalQuantity - totalQuantityR), SUM(netAmount - netAmountR)   FROM ChainStoreSalesOrder WHERE orderDate between ? and ? and status = ? AND vipCard IS NOT NULL AND " + chainCriteria; 
@@ -427,7 +429,7 @@ public class ChainReportService {
 		chainStore.setChain_id(chainId);
 		ChainSalesReport chainReport = new ChainSalesReport(ChainReport.TYPE_SALES_REPORT, totalQ, totalQR,
 				totalQF, netAmt,totalSalesDiscountAmt, netAmtR,totalCost, totalCostF, discountAmt,
-				coupon, cardAmt, cashAmt, vipScoreAmt, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,vipQ, vipAmt,vipPrepaidAmt,vipPrepaidDepositCash, vipPrepaidDepositCard,prepaidTotal);
+				coupon, cardAmt, cashAmt, vipScoreAmt, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,vipQ, vipAmt,vipPrepaidAmt,vipPrepaidDepositCash, vipPrepaidDepositCard,prepaidTotal, wechatAmt, alipayAmt);
 		chainReport.setChainStore(chainStore);
 		
 		return chainReport;
@@ -496,7 +498,7 @@ public class ChainReportService {
 		
 		String hql_sale2 = "SELECT sum(totalQuantity), sum(netAmount), sum(totalQuantityR), " +
 				"sum(netAmountR), sum(totalCost), sum(totalQuantityF) ,sum(totalCostF), sum(discountAmount), " +
-				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), chainStore.chain_id, sum(totalAmount - netAmount), sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost),sum(chainPrepaidAmt)  " + criteria;
+				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), chainStore.chain_id, sum(totalAmount - netAmount), sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost),sum(chainPrepaidAmt), sum(wechatAmount), sum(alipayAmount)  " + criteria;
 
 		Integer[] pagerArray = null;
 		if (page != null && rowPerPage != null)
@@ -529,12 +531,14 @@ public class ChainReportService {
 			double myAmount = Common_util.getDouble(sales3[18]);
 			double myCost = Common_util.getDouble(sales3[19]);
 			double vipPrepaidAmt = Common_util.getDouble(sales3[20]);
+			double wechatAmt =  Common_util.getDouble(sales3[21]);
+			double alipayAmt =  Common_util.getDouble(sales3[22]);
 			
 			ChainStore store = chainStoreDaoImpl.get(chainStoreId, true);
 			
 			ChainSalesReport chainReport2 = new ChainSalesReport(ChainReport.TYPE_SALES_REPORT, totalQ2, totalQR2,
 					totalQF2, netAmt2,totalSalesDiscountAmt2, netAmtR2,totalCost2, totalCostF2, discountAmt2,
-					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost, 0, 0,vipPrepaidAmt,0,0,0,store);
+					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost, 0, 0,vipPrepaidAmt,0,0,0,store,wechatAmt, alipayAmt);
 			reports.add(chainReport2);
 		}
 		
@@ -797,7 +801,7 @@ public class ChainReportService {
 			else if (sortName.equals("netProfit"))
 				orderBy = " ORDER BY sum(netAmount - netAmountR - totalCost - totalCostF - discountAmount) " + sortOrder;
 			else if (sortName.equals("receiveAmtSum"))
-				orderBy = " ORDER BY sum(cardAmount + cashAmount - returnAmount) " + sortOrder;
+				orderBy = " ORDER BY sum(cardAmount + cashAmount - returnAmount + alipayAmount + wechatAmount) " + sortOrder;
 			else if (sortName.equals("qxAmount"))
 				orderBy = " ORDER BY sum(qxAmount) " + sortOrder;
 		}
@@ -3152,7 +3156,7 @@ public class ChainReportService {
 		
 		String hql_sale2 = "SELECT sum(totalQuantity), sum(netAmount), sum(totalQuantityR), " +
 				"sum(netAmountR), sum(totalCost), sum(totalQuantityF) ,sum(totalCostF), sum(discountAmount), " +
-				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), chainStore.chain_id, sum(totalAmount - netAmount),  saler.user_id, sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost),sum(chainPrepaidAmt)  " + criteria;
+				"sum(coupon), sum (cardAmount), sum(cashAmount - returnAmount), sum(vipScore), chainStore.chain_id, sum(totalAmount - netAmount),  saler.user_id, sum(qxQuantity), sum(qxAmount), sum(qxCost), sum(myQuantity), sum(myAmount), sum(myCost),sum(chainPrepaidAmt), sum(wechatAmount), sum(alipayAmount)   " + criteria;
 
 		Integer[] pagerArray = null;
 		if (page != null && rowPerPage != null)
@@ -3183,14 +3187,16 @@ public class ChainReportService {
 			int myQuantity = Common_util.getInt(sales3[18]);
 			double myAmount = Common_util.getDouble(sales3[19]);
 			double myCost = Common_util.getDouble(sales3[20]);	
-			double vipPrepaidAmt = Common_util.getDouble(sales3[21]);	
+			double vipPrepaidAmt = Common_util.getDouble(sales3[21]);
+			double wechatAmt =  Common_util.getDouble(sales3[22]);
+			double alipayAmt =  Common_util.getDouble(sales3[23]);
 
 			ChainStore store = chainStoreDaoImpl.get(chainStoreId, true);
 			ChainUserInfor user = chainUserInforDaoImpl.get(salerId, true);
 			
 			ChainSalesReport chainReport2 = new ChainSalesReport(ChainReport.TYPE_SALES_REPORT, totalQ2, totalQR2,
 					totalQF2, netAmt2,totalSalesDiscountAmt2, netAmtR2,totalCost2, totalCostF2, discountAmt2,
-					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,0 ,0,vipPrepaidAmt,0,0,0, store,user);
+					coupon2, cardAmt2, cashAmt2, vipScoreAmt2, qxQuantity,qxAmount, qxCost, myQuantity, myAmount, myCost,0 ,0,vipPrepaidAmt,0,0,0, store,user, wechatAmt, alipayAmt);
 			
 			if (!ChainUserInforService.isMgmtFromHQ(loginUser) && loginUser.getRoleType().getChainRoleTypeId() != ChainRoleType.CHAIN_OWNER){
 				chainReport2.setFreeCostSum(0);

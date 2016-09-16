@@ -36,7 +36,9 @@ public class ChainDailySales  implements Serializable {
 	private double qxCost;
 	private int myQuantity;
 	private double myAmount;
-	private double myCost;  
+	private double myCost; 
+	private double wechatAmt;
+	private double alipayAmt;
 	
     public ChainDailySales(){
     	
@@ -54,8 +56,8 @@ public class ChainDailySales  implements Serializable {
 			int freeQuantity, double salesAmount, double returnAmount,
 			double netSalesAmount, double netCost, double netProfit,
 			double freeCost, double discountAmount, double coupon,
-			double vipScoreCash, double card, double cash, int rank, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost) {
-        this(chainStore, reportDate, salesQuantity, returnQuantity, netSalesQuantity, freeQuantity, salesAmount, returnAmount, netSalesAmount, netCost, netProfit, freeCost, discountAmount, coupon, vipScoreCash, card, cash, qxQ, qxAmount, qxCost, myQ, myAmount, myCost);
+			double vipScoreCash, double card, double cash, int rank, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost, double wechatAmt, double alipayAmt) {
+        this(chainStore, reportDate, salesQuantity, returnQuantity, netSalesQuantity, freeQuantity, salesAmount, returnAmount, netSalesAmount, netCost, netProfit, freeCost, discountAmount, coupon, vipScoreCash, card, cash, qxQ, qxAmount, qxCost, myQ, myAmount, myCost, wechatAmt, alipayAmt);
         this.rank = rank;
     }
 
@@ -64,7 +66,7 @@ public class ChainDailySales  implements Serializable {
 			int freeQuantity, double salesAmount, double returnAmount,
 			double netSalesAmount, double netCost, double netProfit,
 			double freeCost, double discountAmount, double coupon,
-			double vipScoreCash, double card, double cash, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost) {
+			double vipScoreCash, double card, double cash, int qxQ, double qxAmount, double qxCost, int myQ, double myAmount, double myCost, double wechatAmt, double alipayAmt) {
 		super();
 		this.chainStore = chainStore;
 		this.reportDate = reportDate;
@@ -90,9 +92,27 @@ public class ChainDailySales  implements Serializable {
 		this.myQuantity = myQ;
 		this.myAmount = myAmount;
 		this.myCost = myCost;
+		this.wechatAmt = wechatAmt;
+		this.alipayAmt = alipayAmt;
 	}
 
 
+
+	public double getWechatAmt() {
+		return wechatAmt;
+	}
+
+	public void setWechatAmt(double wechatAmt) {
+		this.wechatAmt = wechatAmt;
+	}
+
+	public double getAlipayAmt() {
+		return alipayAmt;
+	}
+
+	public void setAlipayAmt(double alipayAmt) {
+		this.alipayAmt = alipayAmt;
+	}
 
 	public int getQxQuantity() {
 		return qxQuantity;

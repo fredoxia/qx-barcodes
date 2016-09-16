@@ -44,6 +44,14 @@ public class ChainStoreSalesOrder extends BaseOrder {
 	 */
 	private double cardAmount;
 	/**
+	 * 微信金额
+	 */
+	private double wechatAmount;
+	/**
+	 * 支付宝金额
+	 */
+	private double alipayAmount;
+	/**
 	 * 使用vip预付现金
 	 */
 	private double chainPrepaidAmt;
@@ -417,6 +425,19 @@ public class ChainStoreSalesOrder extends BaseOrder {
 	}
 	public void setVipPrepaidOrderId(int vipPrepaidOrderId) {
 		this.vipPrepaidOrderId = vipPrepaidOrderId;
+	}
+	
+	public double getWechatAmount() {
+		return wechatAmount;
+	}
+	public void setWechatAmount(double wechatAmount) {
+		this.wechatAmount = wechatAmount;
+	}
+	public double getAlipayAmount() {
+		return alipayAmount;
+	}
+	public void setAlipayAmount(double alipayAmount) {
+		this.alipayAmount = alipayAmount;
 	}
 	/**
      * 1. to build the index for each order product

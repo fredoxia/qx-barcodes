@@ -104,6 +104,8 @@ function generateReportBackProcess2(data){
 		pazu.TPrinter.printToDefaultPrinter("积分换现金 ：  " + (report.vipScoreSum).toFixed(1));
 		pazu.TPrinter.printToDefaultPrinter("刷卡 ：  " + (report.cardAmtSum).toFixed(1));
 		pazu.TPrinter.printToDefaultPrinter("现金 ：  " + (report.cashNetSum).toFixed(1));
+		pazu.TPrinter.printToDefaultPrinter("微信 ：  " + (report.wechatAmtSum).toFixed(1));
+		pazu.TPrinter.printToDefaultPrinter("支付宝 ：  " + (report.alipaySum).toFixed(1));
 		pazu.TPrinter.printToDefaultPrinter("销售折扣 ：  " + (report.salesDiscountAmtSum).toFixed(1));
 		dfPrinter.EndDoc();
 	} else {
@@ -151,11 +153,11 @@ function showSalesReport(report){
 			   "<td>&nbsp;</td>"+
 			   "<td>刷卡总额<br/>&nbsp;</td>"+
 			   "<td>现金总额<br/>&nbsp;</td>"+
-			   "<td></td>"+
+			   "<td>微信金额<br/>&nbsp;</td>"+
+			   "<td>支付宝金额<br/>&nbsp;</td>"+
 			   "<td>VIP净销售量<br/>&nbsp;</td>"+
 			   "<td>VIP净销售额<br/>&nbsp;</td>"+
 			   "<td>VIP销售额占比<br/>&nbsp;</td>"+
-			   "<td></td>"+
 			   "</tr>").appendTo("#reportTable");
 			
     $("<tr class='InnerTableContent'><td>"+
@@ -165,11 +167,13 @@ function showSalesReport(report){
 	          (report.vipPrepaidAmt).toFixed(1) +"</td><td>"+
 	          "&nbsp;</td><td>"+
 	          (report.cardAmtSum).toFixed(2) +"</td><td>"+
-	          (report.cashNetSum).toFixed(2) +"</td><td></td><td>"+
+	          (report.cashNetSum).toFixed(2) +"</td><td>"+
+	          (report.wechatAmtSum).toFixed(2) +"</td><td>"+
+	          (report.alipaySum).toFixed(2) +"</td><td>"+
 	          report.vipSaleQ +"</td><td>"+
 	          (report.vipSaleAmt).toFixed(2) +"</td><td>"+
-	          (report.vipPercentage).toFixed(2) +"%</td><td>"+
-	          "</td></tr>").appendTo("#reportTable");
+	          (report.vipPercentage).toFixed(2) +"%</td>"+
+	          "</tr>").appendTo("#reportTable");
 	$("<tr class='PBAInnerTableTitale'>"+
 		       "<td height='20'>千禧货品<br/>净销售量</td>"+
 			   "<td>千禧货品<br/>净销售额</td>"+

@@ -9,14 +9,27 @@
 				           </tr>
 					       <tr class="PBAOuterTableTitale">
 					         <td width="30"></td>
-					         <td width="95">预存金</td>
-					         <td width="93"><s:textfield name="formBean.chainSalesOrder.chainPrepaidAmt" id="chainPrepaidAmt" size="14" disabled="true"  onkeyup="changeDiscountCoupon();" title="当vip使用预付金付款时"/></td>
-					         <td width="70">优惠金额</td>
-					         <td width="93"><s:textfield name="formBean.chainSalesOrder.discountAmount" id="discountAmount" size="14" onkeyup="changeDiscountCoupon();"/></td>
-					         <td width="110">代金券</td>
-					         <td width="85"><s:textfield name="formBean.chainSalesOrder.coupon" id="coupon" size="14"  onkeyup="changeDiscountCoupon();"/></td>
+					         <td width="95"></td>
+					         <td width="93"></td>
+					         <td>优惠金额</td>
+					         <td><s:textfield name="formBean.chainSalesOrder.discountAmount" id="discountAmount" size="14" onkeyup="changeDiscountCoupon();"/></td>
+					         <td>代金券</td>
+					         <td><s:textfield name="formBean.chainSalesOrder.coupon" id="coupon" size="14"  onkeyup="changeDiscountCoupon();"/></td>					         
 					         <td width="95">应收+/应付-</td>
 					         <td width="95"><input type="text" id="amountAfterDC" size="14" readonly value="<s:property value="formBean.chainSalesOrder.netAmount - formBean.chainSalesOrder.discountAmount - formBean.chainSalesOrder.coupon - formBean.chainSalesOrder.netAmountR"/>"/></td>
+					         <td>&nbsp;</td>
+					       </tr>				           
+					       <tr class="PBAOuterTableTitale">
+					         <td></td>
+					         <td>预存金</td>
+					         <td><s:textfield name="formBean.chainSalesOrder.chainPrepaidAmt" id="chainPrepaidAmt" size="14" disabled="true"  onkeyup="changeDiscountCoupon();" title="当vip使用预付金付款时"/></td>
+							 <td width="70">微信金额</td>
+					         <td width="93"><s:textfield name="formBean.chainSalesOrder.wechatAmount" id="wechatAmount" size="14" onkeyup="changeCashCardAmountValue();"/></td>
+					         <td width="110">支付宝金额</td>
+					         <td width="85"><s:textfield name="formBean.chainSalesOrder.alipayAmount" id="alipayAmount" size="14"  onkeyup="changeCashCardAmountValue();"/></td>
+					         
+					         <td></td>
+					         <td></td>
 					         <td>&nbsp;</td>
 					       </tr>
 						   <tr class="PBAOuterTableTitale">

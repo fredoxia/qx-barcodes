@@ -10,6 +10,8 @@ import com.onlineMIS.common.loggerLocal;
 public 	class ChainDailySalesSorter implements java.util.Comparator<Object>{
 		 public int compare(Object obj1,Object obj2){
 	         Object[] arrayObj1 =  (Object[])obj1;
+	         
+	         //sum(netAmount - netAmountR) - sum(discountAmount)
 	         double netSale1 = Common_util.getDouble(arrayObj1[13]) - Common_util.getDouble(arrayObj1[7]);
 	         
 	         Object[] arrayObj2 =  (Object[])obj2;

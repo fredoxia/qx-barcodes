@@ -97,7 +97,7 @@ function downloadReport(){
 						  <tbody id="orderTablebody">
 						      <s:iterator value="uiBean.saleStatisLevelThree" status = "st" id="sLeveThree" >
 						  		<tr class="InnerTableContent" id="orderRow0" class="InnerTableContent" style='<s:if test="#st.odd">background-color: rgb(255, 250, 208);</s:if><s:if test="#sLeveThree.brand.chainStore != null">color: blue;</s:if>'>   
-							      <td height="25"><s:property value="#st.index +1"/></td>							      
+							      <td height="25"><s:property value="#st.index +1"/> </td>							      
 							      <td align="right"><s:property value="#sLeveThree.brand.brand_Name"/></td>						      
 							      <td align="right"><s:property value="#sLeveThree.salesQ"/></td>
 							      <td align="right"><s:property value="#sLeveThree.returnQ"/></td>
