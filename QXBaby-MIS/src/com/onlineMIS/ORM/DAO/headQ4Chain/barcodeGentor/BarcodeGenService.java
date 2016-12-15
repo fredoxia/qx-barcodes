@@ -535,6 +535,7 @@ public class BarcodeGenService {
 					brandDaoImpl.evict(brand2);
 					brand.setBrand_Code(String.valueOf(brandId).substring(0,1));
 					brand.setPinyin(Common_util.getPinyinCode(brandName, true));
+					brand.setChainStore(myChainStore);
 					brandDaoImpl.saveOrUpdate(brand, true);
 					response.setReturnCode(Response.SUCCESS);
 				}

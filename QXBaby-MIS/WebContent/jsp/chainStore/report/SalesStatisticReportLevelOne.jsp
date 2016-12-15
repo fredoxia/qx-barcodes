@@ -16,6 +16,10 @@ $(document).ready(function(){
 		$(this).removeClass("over");});
 });
 function getLevelTwo(yearId){
+	parent.$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#yearId").attr("value", yearId);
     document.chainSalesStatisticReportForm.action="chainReportJSPAction!generateSalesStatisticReport";
     document.chainSalesStatisticReportForm.submit();

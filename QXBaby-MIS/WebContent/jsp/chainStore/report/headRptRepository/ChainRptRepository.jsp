@@ -22,6 +22,42 @@ function generateAccumulatedSalesReport(){
 	$("#id").attr("value",rptId);
     document.preGenReportForm.submit();
 }
+
+function triggerRptBkprocess(data){
+	var returnCode = data.returnCode;
+	var returnMsg = data.message;
+	if (returnCode == SUCCESS){		   
+		alert("运行报表成功");
+		window.location.reload();
+	} else {
+		$.messager.progress('close'); 
+    	alert("错误 : " + returnMsg);
+ 	}
+}
+
+function triggerBatchReport(rptType){
+	var myDate = new Date();
+	var hr = myDate.getHours();   
+	
+	if (hr >= 8 && hr <= 20){
+    	alert("此功能只能在早上八点前或者晚上九点之后才能使用");
+    	return false;
+	} else {
+		$.messager.prompt("输入","请输入运行密码，才能运行", function(passwords){
+	        if (passwords == "vj7683c6"){
+	          var params = "formBean.reportType=" + rptType;
+	  		  $.messager.progress({
+					title : '提示',
+					text : '报表运行中,请勿关闭窗口.需要等待大约20分钟....'
+				   });
+			  $.post("<%=request.getContextPath()%>/actionChain/chainReportJSON!triggerCurrentAnalysis",params, triggerRptBkprocess,"json");
+		   } else {
+	        	alert("密码错误");
+	        	return false;
+	        }
+		});
+	}
+}
 </script>
 </head>
 <body>
@@ -42,13 +78,17 @@ function generateAccumulatedSalesReport(){
 			      <td height="32" >每周当季货品分析报表</td>
 			      <td ><s:select id="rptId" name="formBean.id"  list="uiBean.currentSalesDates" listKey="id" listValue="rptDes" />
 			      </td>
-			      <td><input type="button" value="下载报表" onclick="generateCurrentSalesReport();"/></td>
+			      <td><input type="button" value="下载报表" onclick="generateCurrentSalesReport();"/>
+			          <input type="button" value="运行报表" onclick="triggerBatchReport(1);"/>
+			      </td>
 		        </tr>
 			    <tr class="InnerTableContent">
 			      <td height="32" >每周当季货品累计销售分析报表</td>
 			      <td ><s:select id="rptId2" name="formBean.id"  list="uiBean.accumulatedSalesDates" listKey="id" listValue="rptDes" />
 			      </td>
-			      <td><input type="button" value="下载报表" onclick="generateAccumulatedSalesReport();"/></td>
+			      <td><input type="button" value="下载报表" onclick="generateAccumulatedSalesReport();"/>
+			      	  <input type="button" value="运行报表" onclick="triggerBatchReport(2);"/>
+			      </td>
 		        </tr>		        
 			</table>
 		</td></tr>

@@ -1521,6 +1521,10 @@ public class ChainInventoryFlowOrderService {
 		//1. 准备前四年的年份
 		Date today = new Date();
 		int thisYear = 1900 + today.getYear();
+		
+		//2. 新增一年
+		thisYear++;
+		
 		List<String> years = new ArrayList<String>();
 		for (int i = 0; i <4; i++)
 			years.add(String.valueOf(thisYear - i));
@@ -1818,7 +1822,7 @@ public class ChainInventoryFlowOrderService {
 			
 			Integer[] page = new Integer[]{pager.getFirstResult(), pager.getRecordPerPage()};
 			List<Object> in_out = new ArrayList<Object>();
-			String sql_in_out = "SELECT c.productBarcode.product.year.year, c.productBarcode.product.quarter.quarter_Name,c.productBarcode.product.brand.brand_Name,c.productBarcode.id, c.productBarcode.barcode,c.productBarcode.product.productCode,c.productBarcode.color.id, SUM(c.quantity), SUM(c.costTotal), SUM(chainSalePriceTotal) "+ chainCriteria +" GROUP BY c.productBarcode.id";
+			String sql_in_out = "SELECT c.productBarcode.product.year.year, c.productBarcode.product.quarter.quarter_Name,c.productBarcode.product.brand.brand_Name,c.productBarcode.id, c.productBarcode.barcode,c.productBarcode.product.productCode,c.productBarcode.color.id,c.productBarcode.product.category.category_Name, SUM(c.quantity), SUM(c.costTotal), SUM(chainSalePriceTotal) "+ chainCriteria +" GROUP BY c.productBarcode.id";
 			
 			in_out = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out, values,page,true);
 
@@ -2202,15 +2206,20 @@ public class ChainInventoryFlowOrderService {
 						color = colorDaoImpl.get(Integer.parseInt(colorIdObj.toString()), true);
 					}
 					
+					String categoryName = object2[7].toString();
+					Category category = new Category();
+					category.setCategory_Name(categoryName);
+					product.setCategory(category);
+					
 					ProductBarcode productBarcode = new ProductBarcode();
 					productBarcode.setBarcode(barcode);
 					productBarcode.setProduct(product);
 					productBarcode.setId(pbId);
 					productBarcode.setColor(color);
 
-					int quantity = Integer.parseInt(object2[7].toString());
-					double costTotal = Double.parseDouble(object2[8].toString());
-					double salesTotal = Double.parseDouble(object2[9].toString());
+					int quantity = Integer.parseInt(object2[8].toString());
+					double costTotal = Double.parseDouble(object2[9].toString());
+					double salesTotal = Double.parseDouble(object2[10].toString());
 					
 					ChainLevelFourInventoryItem levelFourInventoryItem = new ChainLevelFourInventoryItem();
 					levelFourInventoryItem.setChainStore(chainStore);

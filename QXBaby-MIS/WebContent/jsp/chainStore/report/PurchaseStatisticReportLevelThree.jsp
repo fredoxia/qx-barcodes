@@ -25,12 +25,20 @@ pageNav.fn = function(page,totalPage){
     document.chainPurchaseStatisForm.submit();
 };
 function getLevelFour(brandId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#brandId").attr("value", brandId);
 	pageNav.clearPager();
     document.chainPurchaseStatisForm.action="chainReportJSPAction!generatePurchaseStatisticReport";
     document.chainPurchaseStatisForm.submit();
 }
 function getLevelTwo(){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#quarterId").attr("value", ALL_RECORD);
     document.chainPurchaseStatisForm.action="chainReportJSPAction!generatePurchaseStatisticReport";
     document.chainPurchaseStatisForm.submit();

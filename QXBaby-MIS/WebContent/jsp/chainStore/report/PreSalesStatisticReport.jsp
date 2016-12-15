@@ -72,6 +72,10 @@ function backProcessChangeChainStore(data){
 
 function generateReport(){
 	if (validateReportForm()){
+		$.messager.progress({
+			title : '提示',
+			text : '数据处理中，请稍后....'
+		});
 		$("#quarter").attr("disabled",false);
 	    document.preGenReportForm.action="chainReportJSPAction!generateSalesStatisticReport";
 	    document.preGenReportForm.submit();

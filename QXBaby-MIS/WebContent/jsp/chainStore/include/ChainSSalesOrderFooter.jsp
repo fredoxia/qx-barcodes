@@ -3,11 +3,6 @@
 <!-- this Footer is used by the sales out order and sales exchange order for create/edit -->
 				  	<table width="100%" border="0">
 					       <tr class="PBAOuterTableTitale">
-					         <td></td>
-					         <td>备注</td>
-					         <td colspan="8"><s:textfield name="formBean.chainSalesOrder.memo" id="orderMemo" size="100"/></td>
-				           </tr>
-					       <tr class="PBAOuterTableTitale">
 					         <td width="30"></td>
 					         <td width="95"></td>
 					         <td width="93"></td>
@@ -74,4 +69,9 @@
 					           </s:if>
 					         </td>
 			               </tr>
+			               <tr class="PBAOuterTableTitale">
+					         <td></td>
+					         <td>备注</td>
+					         <td colspan="8"><s:textfield name="formBean.chainSalesOrder.memo" id="orderMemo" size="100"/></td>
+				           </tr>
 					  </table>

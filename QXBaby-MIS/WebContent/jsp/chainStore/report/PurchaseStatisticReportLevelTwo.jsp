@@ -17,11 +17,19 @@ $(document).ready(function(){
 });
 var baseurl = "<%=request.getContextPath()%>";
 function getLevelThree(quarterId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#quarterId").attr("value", quarterId);
     document.chainPurchaseStatisForm.action="chainReportJSPAction!generatePurchaseStatisticReport";
     document.chainPurchaseStatisForm.submit();
 }
 function getLevelOne(){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#yearId").attr("value", ALL_RECORD);
     document.chainPurchaseStatisForm.action="chainReportJSPAction!generatePurchaseStatisticReport";
     document.chainPurchaseStatisForm.submit();

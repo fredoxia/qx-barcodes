@@ -27,6 +27,10 @@ pageNav.fn = function(page,totalPage){
     document.chainPurchaseStatisForm.submit();
 };
 function getLevelThree(brandId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#brandId").attr("value", ALL_RECORD);
 	pageNav.clearPager();
     document.chainPurchaseStatisForm.action="chainReportJSPAction!generatePurchaseStatisticReport";
@@ -67,26 +71,29 @@ function getLevelThree(brandId){
 			            <!-- table to display the product information -->
 						<table width="100%"  align="left" class="OuterTable" id="org_table">
 						  <tr class="PBAInnerTableTitale" align='left'>
-						    <th width="3%" height="35">&nbsp;</th>
+						    <th width="2%" height="35">&nbsp;</th>
 						    <th width="8%">货号</th>
-						    <th width="11%">条码</th>
-						    <th width="8%">采购数量</th>
-						    <th width="8%">退货数量</th>
-						    <th width="8%">净采购量</th>
+						    <th width="8%">货品类别</th>
+						    <th width="7%">采购数量</th>
+						    <th width="7%">退货数量</th>
+						    <th width="7%">净采购量</th>
 						    <th width="9%">采购单价</th>
 						    <th width="9%">净采购金额</th>
+						    <th width="11%">条码</th>
 						  </tr>
 						  <tbody id="orderTablebody">
 						      <s:iterator value="uiBean.purchaseStatisLevelFour" status = "st" id="ci" >
 						  		<tr class="InnerTableContent" id="orderRow0" class="InnerTableContent" <s:if test="#st.odd">style='background-color: rgb(255, 250, 208);'</s:if>>   
 							      <td height="25"><s:property value="#st.index +1"/></td>							      
 							      <td align="center"><s:property value="#ci.productBarcode.product.productCode"/> <s:property value="#ci.productBarcode.color.name"/></td>						      
-							      <td align="right"><a href="#" onclick="traceInventory('<s:property value="#ci.productBarcode.barcode"/>', '')"><s:property value="#ci.productBarcode.barcode"/><img src="<%=request.getContextPath()%>/conf_files/web-image/search.png" border="0"/></a></td>
+							      <td align="center"><s:property value="#ci.productBarcode.product.category.category_Name"/></td>						      
 							      <td align="right"><s:property value="#ci.purchaseQuantity"/></td>
 							      <td align="right"><s:property value="#ci.returnQuantity"/></td>
 							      <td align="right"><s:property value="#ci.netQuantity"/></td>
 							      <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#ci.avgPrice"/></s:text></s:if><s:else>-</s:else></td>
 							      <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#ci.purchaseTotalAmt"/></s:text></s:if><s:else>-</s:else></td>
+							      <td align="right"><a href="#" onclick="traceInventory('<s:property value="#ci.productBarcode.barcode"/>', '')"><s:property value="#ci.productBarcode.barcode"/><img src="<%=request.getContextPath()%>/conf_files/web-image/search.png" border="0"/></a></td>
+							      
 							     </tr>
 							   </s:iterator>  
 						  </tbody>
@@ -98,13 +105,14 @@ function getLevelThree(brandId){
 							    <td align="right"><s:property value="uiBean.purchaseTotalItem.netQuantity"/></td>
 							    <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="uiBean.purchaseTotalItem.avgPrice"/></s:text></s:if><s:else>-</s:else></td>
 							    <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="uiBean.purchaseTotalItem.purchaseTotalAmt"/></s:text></s:if><s:else>-</s:else></td>
+							    <td></td>
 							  </tr>
 							  <tr class="InnerTableContent">	      
-						           <td colspan="8"><div id="pageNav"></div></td>
+						           <td colspan="9"><div id="pageNav"></div></td>
 						      </tr>	
 						  </s:if><s:else>
 							  <tr class="InnerTableContent">
-							    <th colspan="8" align="left">无法找到库存信息</th>
+							    <th colspan="9" align="left">无法找到库存信息</th>
 							  </tr>						  
 						  </s:else>
 					     </table>

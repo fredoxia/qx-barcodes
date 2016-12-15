@@ -349,7 +349,15 @@ public class ChainBatchRptService {
 		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
 		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT);;
 		chainBatchRptRepositoty.setRptDate(endDate);
+		chainBatchRptRepositoty.setRptName(year.getYear_ID(), quarter.getQuarter_ID());
 		chainBatchRptRepositoty.setRptDes(startDate, endDate, quarter);
+		
+		ChainBatchRptRepositoty chainBatchRptRepositoty2 = chainBatchRptRepositotyDaoImpl.getUniqueRepository(chainBatchRptRepositoty.getRptId(), chainBatchRptRepositoty.getRptDate(), chainBatchRptRepositoty.getRptName());
+		if (chainBatchRptRepositoty2 != null){
+			chainBatchRptRepositoty.setId(chainBatchRptRepositoty2.getId());
+			chainBatchRptRepositotyDaoImpl.evict(chainBatchRptRepositoty2);
+		}
+			
 		
 	   /**
 	    * 9.2 所有连锁店的数据
@@ -653,7 +661,14 @@ public class ChainBatchRptService {
 		ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
 		chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT);
 		chainBatchRptRepositoty.setRptDate(rptDate);
+		chainBatchRptRepositoty.setRptName(year.getYear_ID(), quarter.getQuarter_ID());
 		chainBatchRptRepositoty.setRptDes(startDate, endDate, quarter);
+		
+		ChainBatchRptRepositoty chainBatchRptRepositoty2 = chainBatchRptRepositotyDaoImpl.getUniqueRepository(chainBatchRptRepositoty.getRptId(), chainBatchRptRepositoty.getRptDate(), chainBatchRptRepositoty.getRptName());
+		if (chainBatchRptRepositoty2 != null){
+			chainBatchRptRepositoty.setId(chainBatchRptRepositoty2.getId());
+			chainBatchRptRepositotyDaoImpl.evict(chainBatchRptRepositoty2);
+		}
 		
 	   /**
 	    * 9.2 所有连锁店的数据

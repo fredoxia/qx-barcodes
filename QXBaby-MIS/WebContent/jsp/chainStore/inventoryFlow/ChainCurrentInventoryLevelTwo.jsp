@@ -16,6 +16,10 @@ $(document).ready(function(){
 });
 var baseurl = "<%=request.getContextPath()%>";
 function getLevelThree(yearId, quarterId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#yearId").attr("value", yearId);
 	$("#quarterId").attr("value", quarterId);
     document.chainInventoryFlowForm.action="inventoryFlowJSPAction!getLevelThreeCurrentInventory";
@@ -33,6 +37,10 @@ function downloadAllInventory(){
     document.chainInventoryFlowForm.submit();
 }
 function getLevelOne(){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
     document.chainInventoryFlowForm.action="inventoryFlowJSPAction!getLevelOneCurrentInventory";
     document.chainInventoryFlowForm.submit();
 }

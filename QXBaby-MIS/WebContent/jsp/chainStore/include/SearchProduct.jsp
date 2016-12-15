@@ -6,7 +6,7 @@
  */
 function searchProductsProductCode(){
 	var productCode = $("#productCode").val();
-	var chainId = $("#chainStore").val();
+	var chainId = $("#chainId").val();
 
 	if (validateProductCodeInput(productCode)){
 	    var url = encodeURI(encodeURI("actionChain/chainSalesJSPAction!scanByProductCode?formBean.productCode=" + productCode + "&formBean.chainId=" + chainId))  ; 

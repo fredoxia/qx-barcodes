@@ -34,9 +34,10 @@ public class ChainInventoryReportTemplate  extends ExcelTemplate{
 	private int colour_column = 4;
 	private int unit_column = 5;
 	private int barcode_column =6;
-	private int quantity_column = 7;
-	private int totalCost_column = 8;
-	private int totalSales_column = 9;
+	private int category_column = 7;
+	private int quantity_column = 8;
+	private int totalCost_column = 9;
+	private int totalSales_column = 10;
 	private int data_row = 3;
 
 
@@ -96,6 +97,8 @@ public class ChainInventoryReportTemplate  extends ExcelTemplate{
 				row.createCell(colour_column).setCellValue(color.getName());
 			
 			row.createCell(unit_column).setCellValue(product.getUnit());
+			
+			row.createCell(category_column).setCellValue(product.getCategory().getCategory_Name());
 
 			row.createCell(quantity_column).setCellValue(levelFourItem.getTotalQuantity());
 			

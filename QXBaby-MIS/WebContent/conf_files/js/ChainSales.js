@@ -524,7 +524,7 @@ function addNewRow(){
     				"<option value='2'>特价</option> "+  
     				"</select></td>";
 
-    str += "<td><div id='delIcon"+index+"' style='display:none'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0'  onclick='deleteRow(\"orderRow"+index +"\");' style='cursor:pointer;'/></div></td>";  
+    str += "<td><div id='delIcon"+index+"' style='display:none'><a href='javascript:deleteRow(\"orderRow"+index +"\");'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' style='cursor:pointer;'/></a></div></td>";  
     str += "</tr>";   
 
     $("#orderTablebody").append(str);
@@ -563,7 +563,7 @@ function addNewRowR(){
     str += "<td><input type='text' id='discountAmountR"+indexR+"'  size='4' readonly/></td>";  
     str += "<td><input type='text' id='inventoryR"+indexR+"'  size='1' readonly/></td>"; 
     str += "<td></td>";
-    str += "<td><div id='delIconR"+indexR+"' style='display:none'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0'  onclick='deleteRow(\"orderRowR"+indexR +"\");' style='cursor:pointer;'/></div></td>";  
+    str += "<td><div id='delIconR"+indexR+"' style='display:none'><a href='javascript:deleteRow(\"orderRowR"+indexR +"\");'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' style='cursor:pointer;'/></a></div></td>";  
     str += "</tr>";   
 
     $("#orderTablebodyR").append(str);
@@ -596,7 +596,7 @@ function addNewRowF(){
     str += "<td><input type='text' name='formBean.chainSalesOrder.productListF["+indexF+"].productBarcode.product.unit' id='unitF"+indexF+"' size='4' readonly/></td>";  
     str += "<td><input type='text' name='formBean.chainSalesOrder.productListF["+indexF+"].quantity' id='quantityF"+indexF+"'  size='2' onfocus='this.select();' onchange='changeRowValue(\"F\","+indexF+")' onkeypress='return is_number(event);'/></td>";  
     str += "<td><input type='text' id='inventoryF"+indexF+"'  size='1' readonly/></td>"; 
-    str += "<td><div id='delIconF"+indexF+"' style='display:none'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0'  onclick='deleteRow(\"orderRowF"+indexF +"\");' style='cursor:pointer;'/></div></td>";  
+    str += "<td><div id='delIconF"+indexF+"' style='display:none'><a href='javascript:deleteRow(\"orderRowF"+indexF +"\");'><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' style='cursor:pointer;'/></a></div></td>";  
     str += "</tr>";   
 
     $("#orderTablebodyF").append(str);

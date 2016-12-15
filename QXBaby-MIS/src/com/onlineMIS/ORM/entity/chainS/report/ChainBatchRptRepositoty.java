@@ -73,6 +73,10 @@ public class ChainBatchRptRepositoty implements Serializable {
 		this.rptName = rptName;
 	}
 	
+	public void setRptName(int yearId, int quarterId) {
+		this.rptName = yearId + "_" + quarterId;
+	}
+	
 	public String getRptPath() {
 		return rptPath;
 	}
@@ -92,9 +96,9 @@ public class ChainBatchRptRepositoty implements Serializable {
 	public String getDownloadRptName(){
 		switch (this.rptId) {
 		case TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT:
-			return "当季货品销售报表" + rptDate + ".zip";
+			return "当季货品销售报表" + rptDate + "_" + rptName + ".zip";
 		case TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT:
-			return "当季销售分析报表" + rptDate + ".zip";
+			return "当季销售分析报表" + rptDate + "_" + rptName + ".zip";
 		default:
 			return "download.zip";
 		}

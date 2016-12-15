@@ -26,6 +26,10 @@ pageNav.fn = function(page,totalPage){
 };
 
 function getLevelFour(brandId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#brandId").attr("value", brandId);
 	pageNav.clearPager();
     document.chainInventoryFlowForm.action="inventoryFlowJSPAction!getLevelFourCurrentInventory";
@@ -43,6 +47,10 @@ function downloadAllInventory(){
     document.chainInventoryFlowForm.submit();
 }
 function getLevelTwo(){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
     document.chainInventoryFlowForm.action="inventoryFlowJSPAction!getLevelTwoCurrentInventory";
     document.chainInventoryFlowForm.submit();
 }

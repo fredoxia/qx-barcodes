@@ -43,7 +43,7 @@ public class SecurityFilterHeadQ implements Filter {
 			    if (requestFunction.equalsIgnoreCase("loginJSON!login4Chain") || requestFunction.equalsIgnoreCase("loginJSON!login") || requestFunction.equalsIgnoreCase("userJSON!checkSession") || requestFunction.equalsIgnoreCase("loginJSON!reLogin") || requestFunction.equalsIgnoreCase("loginJSON!PDALogin") || requestFunction.equalsIgnoreCase("userJSP!logoff4Chain"))
 			    	chain.doFilter(request, response);
 			    else{
-		            res.sendRedirect(req.getContextPath() + "/indexHeadQ.jsp");
+		            res.sendRedirect(req.getContextPath() + "/1.jsp");
 		           
 			    }
 		    }

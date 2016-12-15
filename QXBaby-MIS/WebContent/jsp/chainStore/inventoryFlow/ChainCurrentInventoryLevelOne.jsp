@@ -16,6 +16,10 @@ $(document).ready(function(){
 });
 var baseurl = "<%=request.getContextPath()%>";
 function getLevelTwo(yearId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#yearId").attr("value", yearId);
     document.chainInventoryFlowForm.action="inventoryFlowJSPAction!getLevelTwoCurrentInventory";
     document.chainInventoryFlowForm.submit();
@@ -30,6 +34,13 @@ function downloadAllInventory(){
 	$("#reportType").attr("value", 0);
     document.chainInventoryFlowForm.action="inventoryFlowJSPAction!generateChainInventoryExcelReport";
     document.chainInventoryFlowForm.submit();
+}
+function getPreCurrentInventory(){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
+	window.location.href = "inventoryFlowJSPAction!preGetCurrentInventory";
 }
 </script>
 </head>
@@ -104,7 +115,7 @@ function downloadAllInventory(){
 			    </tr>
 			    <tr class="InnerTableContent">
 			      <td height="10" colspan="7">
-
+						<input type="button" value="返回上层" onclick="getPreCurrentInventory()"/>
 				  </td>
 			    </tr>
 			  </table>

@@ -63,7 +63,7 @@ function searchOrdersBackProcess(data){
 					          orders[i].totalQuantityR+"</td><td>"+
 					          orders[i].netAmountR+"</td><td>"+
 					          orders[i].totalQuantityF +"</td><td>"+
-					          orders[i].memo+"</td><td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainSalesJSPAction!getSalesOrderById')"><a href='#' onclick='addTab3(\""+urlLink+"\",\""+nodeTitle+"\")'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#salesOrders");
+					          orders[i].memo+"</td><td><s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainSalesJSPAction!getSalesOrderById')"><a href='javascript:addTab3(\""+urlLink+"\",\""+nodeTitle+"\");'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#salesOrders");
 		        }
 		    }
 		    
@@ -162,7 +162,11 @@ function backProcessChangeChainStore(data){
 						<tr class="InnerTableContent">
 					      <td height="30">&nbsp;</td>
 					      <td><strong>包含货品</strong></td>
-					      <td colspan="5"><%@ include file="../include/SearchProduct.jsp"%></td>
+					      <td><%@ include file="../include/SearchProduct.jsp"%></td>
+					      <td><strong>单据号</strong></td>
+					      <td><s:textfield id="orderId" name="formBean.chainSalesOrder.id" cssClass="easyui-numberbox" value="0" data-options="min:0,precision:0"/></td>
+						  <td></td>
+					      <td></td>	    
 					    </tr>					    
 	                    <tr class="InnerTableContent">
 					      <td height="25">&nbsp;</td>

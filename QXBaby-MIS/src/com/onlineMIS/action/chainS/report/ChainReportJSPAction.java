@@ -373,6 +373,7 @@ public class ChainReportJSPAction extends ChainReportAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"generateSalesReportToExcel : " + formBean);
     	
+    	//1. 获取现在的销售数据
 		Response response = new Response();
 		try {
 		    response = chainReportService.generateSalesReport(formBean, null, null, this.getSort(), this.getOrder());
@@ -382,11 +383,17 @@ public class ChainReportJSPAction extends ChainReportAction {
 		}
 		
 		if (response.getReturnCode() == Response.SUCCESS){
+			//2. 获取去年的销售和千禧，千禧净销售
+			Map lastYearData = null;
+			Response response2 = chainReportService.generateLastYearSalesReport(formBean);
+			if (response2.isSuccess())
+				lastYearData = (Map)response2.getReturnValue();
+			
 			HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
 			String contextPath= request.getRealPath("/");
 			Map dataMap = (Map)response.getReturnValue();
 			
-			Map<String,Object> map= chainReportService.generateSalesRptExcel(dataMap,contextPath + "WEB-INF\\template\\" + templateFileName, formBean.getStartDate(), formBean.getEndDate());   
+			Map<String,Object> map= chainReportService.generateSalesRptExcel(dataMap, lastYearData, contextPath + "WEB-INF\\template\\" + templateFileName, formBean.getStartDate(), formBean.getEndDate());   
 			excelStream=(InputStream)map.get("stream");  
 			
 			return "report";

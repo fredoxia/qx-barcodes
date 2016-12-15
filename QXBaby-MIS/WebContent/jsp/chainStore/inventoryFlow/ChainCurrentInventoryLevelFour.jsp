@@ -28,6 +28,10 @@ pageNav.fn = function(page,totalPage){
 };
 
 function getLevelThree(yearId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	pageNav.clearPager();
     document.chainInventoryFlowForm.action="inventoryFlowJSPAction!getLevelThreeCurrentInventory";
     document.chainInventoryFlowForm.submit();
@@ -70,11 +74,12 @@ function getLevelThree(yearId){
 						    <th width="2%" height="35">&nbsp;</th>
 						    <th width="5%">年份</th>
 						    <th width="7%">品牌</th>
-						    <th width="6%">货号</th>
-						    <th width="8%">条码</th>
+						    <th width="8%">货号</th>
+						    <th width="6%">货品类别</th>
 						    <th width="5%">库存量</th>
-						    <th width="9%">库存成本金额</th>
-						    <th width="9%">估算销售金额</th>
+						    <th width="8%">库存成本金额</th>
+						    <th width="8%">估算销售金额</th>
+						    <th width="8%">条码</th>
 						  </tr>
 						  <tbody id="orderTablebody">
 						      <s:iterator value="uiBean.levelFourInventoryItem" status = "st" id="ci" >
@@ -83,10 +88,11 @@ function getLevelThree(yearId){
 							      <td align="center"><s:property value="#ci.productBarcode.product.year.year"/> <s:property value="#ci.productBarcode.product.quarter.quarter_Name"/></td>		
 							      <td align="center"><s:property value="#ci.productBarcode.product.brand.brand_Name"/></td>
 							      <td align="center"><s:property value="#ci.productBarcode.product.productCode"/> <s:property value="#ci.productBarcode.color.name"/></td>
-							      <td align="center"><a href="#" onclick="traceInventory('<s:property value="#ci.productBarcode.barcode"/>', '')"><s:property value="#ci.productBarcode.barcode"/><img src="<%=request.getContextPath()%>/conf_files/web-image/search.png" border="0"/></a></td>					      
+							      <td align="center"><s:property value="#ci.productBarcode.product.category.category_Name"/></td>
 							      <td align="right"><s:property value="#ci.totalQuantity"/></td>
 							      <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#ci.totalCostAmt"/></s:text></s:if><s:else>-</s:else></td>
 							      <td align="right"><s:text name="format.price"><s:param value="#ci.totalSalesAmt"/></s:text></td>
+							      <td align="center"><a href="#" onclick="traceInventory('<s:property value="#ci.productBarcode.barcode"/>', '')"><s:property value="#ci.productBarcode.barcode"/><img src="<%=request.getContextPath()%>/conf_files/web-image/search.png" border="0"/></a></td>					      
 							     </tr>
 							   </s:iterator>  
 						  </tbody>
@@ -99,13 +105,14 @@ function getLevelThree(yearId){
 							    				  </s:if><s:else>-</s:else>
 							    </td>
 							    <td align="right"><s:property value="uiBean.inventoryItem.totalSalesAmt"/></td>
+							    <td></td>
 							  </tr>
 						      <tr class="InnerTableContent">	      
-						           <td colspan="8"><div id="pageNav"></div></td>
+						           <td colspan="9"><div id="pageNav"></div></td>
 						      </tr>					        
 						  </s:if><s:else>
 							  <tr class="InnerTableContent">
-							    <th colspan="8" align="left">无法找到库存信息</th>
+							    <th colspan="9" align="left">无法找到库存信息</th>
 							  </tr>						  
 						  </s:else>
 					     </table>

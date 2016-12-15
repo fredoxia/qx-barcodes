@@ -6,6 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@ include file="jsp/common/Style.jsp"%>
 <title>千禧宝贝管理信息系统</title>	
+<!-- 连锁店登录页面 -->
 <script>
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 

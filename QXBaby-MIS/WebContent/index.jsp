@@ -11,9 +11,9 @@
 function login(typeOfRole){
 	
     if (typeOfRole == 1)
-	    window.location.href = 'indexHeadQ.jsp';
+	    window.location.href = '1.jsp';
 	else if (typeOfRole == 0)
-	    window.location.href = 'indexChainS.jsp';
+	    window.location.href = '2.jsp';
 	else if (typeOfRole == 2)
 	    window.location.href = 'indexHeadQPDA.jsp';
 	else if (typeOfRole == 3)

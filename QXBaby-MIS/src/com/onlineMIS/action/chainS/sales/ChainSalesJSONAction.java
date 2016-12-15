@@ -93,7 +93,7 @@ public class ChainSalesJSONAction extends ChainSalesAction {
     	Response response = new Response();
     	
     	try {
-		     response = chainStoreSalesService.searchSalesOrders(formBean);
+		     response = chainStoreSalesService.searchSalesOrders(formBean, userInfor);
     	} catch (Exception e) {
 			 response.setQuickValue(Response.FAIL, e.getMessage());
 			 loggerLocal.error(e);

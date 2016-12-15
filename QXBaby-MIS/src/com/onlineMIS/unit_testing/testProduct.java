@@ -41,13 +41,15 @@ public class testProduct {
 		Session session = sFactory.openSession();
 		Transaction transaction = session.beginTransaction();
 		
-		String ids = "SELECT pb.id FROM ProductBarcode pb JOIN pb.product p WHERE p.year.year_ID =1 AND p.quarter.quarter_ID =1 AND p.brand.brand_ID=100";
+		String hql = "SELECT DISTINCT category.category_ID FROM Product";
+		//String ids = "SELECT pb.id FROM ProductBarcode pb JOIN pb.product p WHERE p.year.year_ID =1 AND p.quarter.quarter_ID =1 AND p.brand.brand_ID=100";
 		
 //		Criteria criteria = session.createCriteria(ProductBarcode.class);
 		
-		Query criteria = session.createQuery(ids);
+		Query criteria = session.createQuery(hql);
 		List<Object> result = criteria.list();
-		
+		for (Object object : result)
+			System.out.println(object);
 
 		transaction.commit();
 		session.close();

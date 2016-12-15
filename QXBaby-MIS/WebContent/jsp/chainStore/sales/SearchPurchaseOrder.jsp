@@ -52,7 +52,7 @@ function searchOrdersBackProcess(data){
 				          orders[i].comment+"</td><td>"+
 				          orders[i].chainStatusS+"</td><td>"+
 				          orders[i].chainConfirmComment+"</td><td>"+
-				          "<s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!getPurchase')"><a href='#' onclick = 'getPurchaseDetail(" + orders[i].id+ ")'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orders");
+				          "<s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!getPurchase')"><a href='javascript:getPurchaseDetail(" + orders[i].id+ ")'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orders");
 	    }
 	    renderPaginationBar(pager.currentPage, pager.totalPage);
 	    

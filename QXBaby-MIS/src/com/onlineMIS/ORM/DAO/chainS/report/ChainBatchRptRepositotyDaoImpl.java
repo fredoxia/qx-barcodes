@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -30,5 +31,19 @@ public class ChainBatchRptRepositotyDaoImpl   extends BaseDAO<ChainBatchRptRepos
 		}
 		
 		return resultMap;
+	}
+
+	public ChainBatchRptRepositoty getUniqueRepository(int rptId,
+			java.sql.Date rptDate, String rptName) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainBatchRptRepositoty.class);
+		criteria.add(Restrictions.eq("rptId", rptId));
+		criteria.add(Restrictions.eq("rptDate", rptDate));
+		criteria.add(Restrictions.eq("rptName", rptName));
+		List<ChainBatchRptRepositoty> rptRepositoties = this.getByCritera(criteria, false);
+		
+		if (rptRepositoties.size() == 0)
+			return null;
+		else 
+			return rptRepositoties.get(0);
 	}
 }

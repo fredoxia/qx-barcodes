@@ -20,7 +20,13 @@ pageNav.fn = function(page,totalPage){
     document.chainListForm.action="inventoryFlowJSPAction!preGetCurrentInventory";
     document.chainListForm.submit();
 };
-
+function getLevelOne(chainId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
+	window.location.href = "inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.chainId=" + chainId;
+}
 </script>
 </head>
 <body>
@@ -51,7 +57,7 @@ pageNav.fn = function(page,totalPage){
 						      <td><s:property value="#chainStore.pinYin.substring(0,1) "/></td>
 						      <td><s:property value="#chainStore.chain_name"/></td>
 						      <td><s:property value="#chainStore.owner_name"/></td>
-						      <td><a href='inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.chainId=<s:property value="#chainStore.chain_id"/>'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
+						      <td><a href='javascript:getLevelOne(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
 						    </tr>
 				       </s:iterator>	
 				       <s:if test="uiBean.chainStores.size == 0">

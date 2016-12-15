@@ -321,6 +321,7 @@ public class ChainReportService {
 			generateSalesReportByHQ(data, chainId, salerId, startDate, endDate, page, rowPerPage, sortName, sortOrder);
 			response.setReturnCode(Response.SUCCESS);
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.setReturnCode(Response.FAIL);
 		}
 		response.setReturnValue(data);
@@ -544,14 +545,18 @@ public class ChainReportService {
 		
 		//4. 将prepaid deposit 计算出来
 		Map<Integer, Double> prepaidMap = new HashMap<Integer, Double>();
-		String chainCriteriaPrepaid = "c.chainStore.chain_id IN (";
-		for (int i = 0; i < chainIdList.size(); i++){
-			if (i == chainIdList.size() -1)
-				chainCriteriaPrepaid += chainIdList.get(i) + ")";
-			else 
-				chainCriteriaPrepaid += chainIdList.get(i) + ",";
+		String chainCriteriaPrepaid = "";
+		
+		if (chainIdList.size() > 0){
+			chainCriteriaPrepaid = " AND c.chainStore.chain_id IN (";
+			for (int i = 0; i < chainIdList.size(); i++){
+				if (i == chainIdList.size() -1)
+					chainCriteriaPrepaid += chainIdList.get(i) + ")";
+				else 
+					chainCriteriaPrepaid += chainIdList.get(i) + ",";
+			}
 		}
-		String hql = "SELECT c.chainStore.chain_id, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.status = "+ ChainVIPPrepaidFlow.STATUS_SUCCESS+" AND "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.chainStore.chain_id";
+		String hql = "SELECT c.chainStore.chain_id, sum(amount) FROM ChainVIPPrepaidFlow c WHERE c.operationType = ? AND c.status = "+ ChainVIPPrepaidFlow.STATUS_SUCCESS+" "+ chainCriteriaPrepaid +" AND c.dateD BETWEEN ? AND ? GROUP BY c.chainStore.chain_id";
 	    Object[] values = new Object[]{ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT,startDate, endDate };
 	    List<Object> prepaid = chainVIPPrepaidImpl.executeHQLSelect(hql, values,null, true);
 	    
@@ -2107,7 +2112,7 @@ public class ChainReportService {
 	 * @param string
 	 * @return
 	 */
-	public Map<String, Object> generateSalesRptExcel(Map dataMap, String path, Date startDate, Date endDate) {
+	public Map<String, Object> generateSalesRptExcel(Map dataMap, Map lastYearMap,String path, Date startDate, Date endDate) {
 		Map<String,Object> returnMap=new HashMap<String, Object>();   
 
 		ByteArrayInputStream byteArrayInputStream;   
@@ -2118,7 +2123,7 @@ public class ChainReportService {
 			List<ChainSalesReport> rptEles = (List<ChainSalesReport>)dataMap.get("rows");
 			List<ChainSalesReport> footer =  (List<ChainSalesReport>)dataMap.get("footer");
 			
-			ChainSalesReportTemplate rptTemplate = new ChainSalesReportTemplate(rptEles, footer.get(0), startDate, endDate, path);
+			ChainSalesReportTemplate rptTemplate = new ChainSalesReportTemplate(rptEles, lastYearMap, footer.get(0), startDate, endDate, path);
 			wb = rptTemplate.process();
 
 			ByteArrayOutputStream os = new ByteArrayOutputStream();   
@@ -3518,6 +3523,56 @@ public class ChainReportService {
 		else {
 			response.setReturnValue(vipRpt);
 		}
+		return response;
+	}
+
+	/**
+	 * 根据今年日期获取去年的销售数据
+	 * @param formBean
+	 * @return
+	 */
+	public Response generateLastYearSalesReport(
+			ChainReportActionFormBean formBean) {
+		Response response = new Response();
+		
+		int chainId = formBean.getChainStore().getChain_id();
+		Date startDate = Common_util.formStartDate(Common_util.getDateOfLastYear(formBean.getStartDate()));
+		Date endDate = Common_util.formEndDate(Common_util.getDateOfLastYear(formBean.getEndDate()));
+		int salerId = Common_util.ALL_RECORD;
+		
+		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
+		
+		ChainReport report = new ChainReport();
+		report.setChainStore(formBean.getChainStore());
+		
+		Map qxDataMap = new HashMap<Integer, Double>();
+
+		try {
+			String criteria = " FROM ChainStoreSalesOrder WHERE orderDate BETWEEN ? AND ? AND status = ? GROUP BY chainStore.chain_id ";
+			
+			String hql_sale2 = "SELECT chainStore.chain_id, sum(qxQuantity), sum(qxAmount) " + criteria;
+
+			List<Object> sales2 = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(hql_sale2, value_sale,null, true);
+
+			double totalAmt = 0;
+			for (Object resultObject : sales2){
+				Object[] sales3 = (Object[])resultObject;
+				int chainStoreId =  Common_util.getInt(sales3[0]);
+			
+				int qxQuantity = Common_util.getInt(sales3[1]);
+				double qxAmount = Common_util.getDouble(sales3[2]);
+				totalAmt += qxAmount;
+				
+				qxDataMap.put(chainStoreId, qxAmount);
+			}
+			
+			qxDataMap.put(Common_util.ALL_RECORD, totalAmt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setReturnCode(Response.FAIL);
+		}
+		response.setReturnValue(qxDataMap);
+		
 		return response;
 	}
 

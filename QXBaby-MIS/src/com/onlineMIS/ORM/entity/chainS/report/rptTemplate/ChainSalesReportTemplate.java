@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -40,18 +41,22 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 	private final int coupon_column = 13;
 	private final int card_amt_column = 14;
 	private final int cash_amt_column= 15;
+	private final int qx_net_amt_column = 16;
+	private final int qx_net_amt_lastYear_column = 17;
 	
 	private List<ChainSalesReport> salesRptEle = new ArrayList<ChainSalesReport>();
+	private Map<Integer, Double> lastYearMap = null;
 	private ChainSalesReport salesRptFooter = null;
 	private Date startDate;
 	private Date endDate;
 
-	public ChainSalesReportTemplate(List<ChainSalesReport> salesRptEle, ChainSalesReport salesRptFooter, Date startDate, Date endDate, String templateWorkbookPath) throws IOException{
+	public ChainSalesReportTemplate(List<ChainSalesReport> salesRptEle, Map lastYearMap, ChainSalesReport salesRptFooter, Date startDate, Date endDate, String templateWorkbookPath) throws IOException{
 		super(templateWorkbookPath);		
 		this.salesRptEle = salesRptEle;
 		this.salesRptFooter = salesRptFooter;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.lastYearMap = lastYearMap;
 	}
 	
 	public HSSFWorkbook process(){
@@ -81,6 +86,15 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 			row.createCell(coupon_column).setCellValue(saleReport.getCouponSum());
 			row.createCell(card_amt_column).setCellValue(saleReport.getCardAmtSum());
 			row.createCell(cash_amt_column).setCellValue(saleReport.getCashNetSum());
+			row.createCell(qx_net_amt_column).setCellValue(saleReport.getQxAmount());
+			
+			int chainId = saleReport.getChainStore().getChain_id();
+			Double lastYearData = lastYearMap.get(chainId);
+			
+			if (lastYearData == null)
+			   row.createCell(qx_net_amt_lastYear_column).setCellValue("-");
+			else 
+			   row.createCell(qx_net_amt_lastYear_column).setCellValue(lastYearData);
 		}
 		
 		if (salesRptFooter != null){
@@ -102,6 +116,13 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 			row.createCell(coupon_column).setCellValue(saleReport.getCouponSum());
 			row.createCell(card_amt_column).setCellValue(saleReport.getCardAmtSum());
 			row.createCell(cash_amt_column).setCellValue(saleReport.getCashNetSum());
+			row.createCell(qx_net_amt_column).setCellValue(saleReport.getQxAmount());
+			Double lastYearData = lastYearMap.get(Common_util.ALL_RECORD);
+			
+			if (lastYearData == null)
+			   row.createCell(qx_net_amt_lastYear_column).setCellValue("-");
+			else 
+			   row.createCell(qx_net_amt_lastYear_column).setCellValue(lastYearData);
 		}
 
 		return templateWorkbook;

@@ -27,6 +27,10 @@ pageNav.fn = function(page,totalPage){
     document.chainSalesStatisticReportForm.submit();
 };
 function getLevelThree(brandId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	$("#brandId").attr("value", ALL_RECORD);
 	pageNav.clearPager();
     document.chainSalesStatisticReportForm.action="chainReportJSPAction!generateSalesStatisticReport";
@@ -74,7 +78,7 @@ function downloadReport(){
 						  <tr class="PBAInnerTableTitale" align='left'>
 						    <th width="2%" height="35">&nbsp;</th>
 						    <th width="9%">货号<br/>&nbsp;</th>
-						    <th width="10%">条码<br/>&nbsp;</th>
+						    <th width="7%">货品类别<br/>&nbsp;</th>
 						    <th width="4%">销售量<br/> A</th>
 						    <th width="4%">退货量<br/> B</th>
 						    <th width="5%">净销售量<br/> A-B</th>
@@ -86,14 +90,14 @@ function downloadReport(){
 						    <th width="6%">净销售成本<br/> E</th>
 						    <th width="5%">赠品成本<br/> F</th>
 						    <th width="6%">商品利润<br/> C-D-E-F</th>
-						    <th width="1%">-</th>
+						    <th width="10%">条码<br/>&nbsp;</th>
 						  </tr>
 						  <tbody id="orderTablebody">
 						      <s:iterator value="uiBean.saleStatisLevelFour" status = "st" id="sLeveFour" >
 						  		<tr class="InnerTableContent" id="orderRow0" class="InnerTableContent" <s:if test="#st.odd">style='background-color: rgb(255, 250, 208);'</s:if>>   
 							      <td height="25"><s:property value="#st.index +1"/></td>							      
 							      <td align="right"><s:property value="#sLeveFour.productBarcode.product.productCode"/> <s:property value="#sLeveFour.productBarcode.color.name"/></td>	
-							      <td align="right"><a href="#" onclick="traceInventory('<s:property value="#sLeveFour.productBarcode.barcode"/>', '')"><s:property value="#sLeveFour.productBarcode.barcode"/><img src="<%=request.getContextPath()%>/conf_files/web-image/search.png" border="0"/></a></td>						      
+							      <td align="right"><s:property value="#sLeveFour.productBarcode.product.category.category_Name"/></td>
 							      <td align="right"><s:property value="#sLeveFour.salesQ"/></td>
 							      <td align="right"><s:property value="#sLeveFour.returnQ"/></td>
 							      <td align="right"><s:property value="#sLeveFour.netQ"/></td>
@@ -105,7 +109,8 @@ function downloadReport(){
 							      <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#sLeveFour.netCost"/></s:text></s:if><s:else>-</s:else></td>
 							      <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#sLeveFour.freeCost"/></s:text></s:if><s:else>-</s:else></td>
 							      <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#sLeveFour.netProfit"/></s:text></s:if><s:else>-</s:else></td>
-							      <td></td>
+							      <td align="right"><a href="#" onclick="traceInventory('<s:property value="#sLeveFour.productBarcode.barcode"/>', '')"><s:property value="#sLeveFour.productBarcode.barcode"/><img src="<%=request.getContextPath()%>/conf_files/web-image/search.png" border="0"/></a></td>						      
+							      
 							     </tr>
 							   </s:iterator>  
 						  </tbody>

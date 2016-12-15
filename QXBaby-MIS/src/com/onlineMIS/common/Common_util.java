@@ -634,6 +634,15 @@ public class Common_util {
 	       return (int) (intervalMilli / (24 * 60 * 60 * 1000));
 
 	}
+	
+	public static Date getDateOfLastYear(Date date){
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(date.getTime());
+		calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - 1);
+		
+		Date dateOfLastYear = new Date(calendar.getTimeInMillis());
+		return dateOfLastYear;
+	}
 
 
 	static String[] weekdays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
@@ -642,7 +651,8 @@ public class Common_util {
 	}
 
 	public static void main(String[] args){
-		System.out.println(Common_util.getLastWeekDays());
+		Date date = Common_util.getToday();
+		System.out.println(Common_util.getDateOfLastYear(date));
 	}
 
 	public static Object correctFileName(String custName) {

@@ -1020,7 +1020,7 @@ public class ChainStoreSalesService {
 	 * @return
 	 */
 	public Response searchSalesOrders(
-			ChainSalesActionFormBean formBean) {
+			ChainSalesActionFormBean formBean, ChainUserInfor loginUser) {
 		Response response = new Response();
 		
 		boolean cache = false;
@@ -1028,7 +1028,7 @@ public class ChainStoreSalesService {
 		List<ChainStoreSalesOrder> chainStoreSalesOrders = new ArrayList<ChainStoreSalesOrder>();
 		
 		if (pager.getTotalPage() == 0){
-		    DetachedCriteria criteria = buildSearchSalesCriteria(formBean);
+		    DetachedCriteria criteria = buildSearchSalesCriteria(formBean, loginUser);
 			criteria.setProjection(Projections.rowCount());
 			int totalRecord = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(criteria, false));
 			pager.initialize(totalRecord);
@@ -1036,7 +1036,7 @@ public class ChainStoreSalesService {
 			pager.calFirstResult();
 		}
 		
-		DetachedCriteria criteria2 = buildSearchSalesCriteria(formBean);
+		DetachedCriteria criteria2 = buildSearchSalesCriteria(formBean, loginUser);
 		
 	    //1. 搜索单据
 	    criteria2.addOrder(Order.asc("chainStore.chain_id"));
@@ -1047,7 +1047,7 @@ public class ChainStoreSalesService {
 	    //2. 汇总单据信息
 	    ChainStoreSalesOrder totalRecord = new ChainStoreSalesOrder();
 	    if (chainStoreSalesOrders != null && chainStoreSalesOrders.size() >0){
-			DetachedCriteria criteriaTotal = buildSearchSalesCriteria(formBean);
+			DetachedCriteria criteriaTotal = buildSearchSalesCriteria(formBean, loginUser);
 			ProjectionList projectionList = Projections.projectionList();
 			projectionList.add(Projections.sum("totalQuantity"));			
 			projectionList.add(Projections.sum("netAmount"));
@@ -1077,10 +1077,24 @@ public class ChainStoreSalesService {
 		return response;
 	}
 	
-	private DetachedCriteria buildSearchSalesCriteria(ChainSalesActionFormBean formBean){
+	private DetachedCriteria buildSearchSalesCriteria(ChainSalesActionFormBean formBean, ChainUserInfor loginUser){
 		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
 		
+		int orderId = formBean.getChainSalesOrder().getId();
 		int chainStoreId = formBean.getChainStore().getChain_id();
+		
+		//在Orderid > 0, 情况下， 只需要看连锁店这一个关键条件
+		if (orderId > 0){
+			criteria.add(Restrictions.eq("id", orderId));
+			
+			if (!ChainUserInforService.isMgmtFromHQ(loginUser)){
+			    criteria.add(Restrictions.eq("chainStore.chain_id", chainStoreId));
+			}
+			
+			return criteria;
+		}
+		
+		
 		ChainUserInfor saler = formBean.getChainSalesOrder().getSaler();
 		if (chainStoreId != Common_util.ALL_RECORD)
 		   criteria.add(Restrictions.eq("chainStore.chain_id", chainStoreId));

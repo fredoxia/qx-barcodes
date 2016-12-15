@@ -40,10 +40,10 @@
         <action name="login" class="com.onlineMIS.action.headQ.user.LoginAction">
         	
             <result name="myTasks">/jsp/headQ/MyTasks.jsp</result>
-            <result name="error">/indexHeadQ.jsp</result>
+            <result name="error">/1.jsp</result>
             <result name="pdaLoginSuccess" type="redirect">/jsp/headQ/PDA/PDACreateOrder.jsp</result>
             <result name="pdaLoginError">/indexHeadQPDA.jsp</result>
-            <result name="input">/indexHeadQ.jsp</result>
+            <result name="input">/1.jsp</result>
             <result name="adminLogin" type="chain">
         		<param name="actionName">userJSP</param>
                 <param name="namespace">/action</param>
@@ -52,7 +52,7 @@
         </action>
         <action name="userJSP" class="com.onlineMIS.action.headQ.user.UserJSPAction">
             <result name="success">/jsp/headQ/user/UserInfor.jsp</result>
-            <result name="login">/indexHeadQ.jsp</result>
+            <result name="login">/1.jsp</result>
             <result name="pdaLogin">/indexHeadQPDA.jsp</result>
             <result name="preEdit"  type="redirect">action/userJSP!preEdit</result>
             <result name="EditFunctionality">/jsp/headQ/user/EditUserFunctionality.jsp</result>
@@ -318,12 +318,12 @@
    <package name="chainSJSPPackage" extends="super-package" namespace="/actionChain">
        <global-results>
 	       <result name="ChainUserInforList">/jsp/chainStore/user/ChainUserList.jsp</result>
-	       <result name="login_chain">/indexChainS.jsp</result>
+	       <result name="login_chain">/2.jsp</result>
 	   </global-results>
 
        
        <action name="chainUserJSP" class="com.onlineMIS.action.chainS.user.ChainUserJSPAction">
-            <result name="error">/indexChainS.jsp</result>
+            <result name="error">/2.jsp</result>
             <result name="loginSuccess" type="redirect">chainUserJSP!getNews</result>
             <result name="ChainUserInforWindow">/jsp/chainStore/user/UpdateChainUser.jsp</result>
             <result name="updateSuccess">/jsp/headQ/common/SuccessWithUpdate.jsp?location=close</result>
