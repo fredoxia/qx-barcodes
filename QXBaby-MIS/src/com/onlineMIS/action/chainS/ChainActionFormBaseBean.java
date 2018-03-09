@@ -13,7 +13,22 @@ public class ChainActionFormBaseBean{
     private boolean canEdit = false;
     private boolean canCopy = false;
     private boolean canEditOrderDate = false;
+    private boolean canConfirm = false;
+    private boolean canReject = false;
 
+    
+	public boolean isCanConfirm() {
+		return canConfirm;
+	}
+	public void setCanConfirm(boolean canConfirm) {
+		this.canConfirm = canConfirm;
+	}
+	public boolean isCanReject() {
+		return canReject;
+	}
+	public void setCanReject(boolean canReject) {
+		this.canReject = canReject;
+	}
 	public boolean isCanSaveDraft() {
 		return canSaveDraft;
 	}

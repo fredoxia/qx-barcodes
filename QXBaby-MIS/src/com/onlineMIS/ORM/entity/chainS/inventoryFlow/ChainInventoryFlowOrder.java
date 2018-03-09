@@ -37,14 +37,14 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 		typeChainMap.put(OVER_FLOW_ORDER, "连锁店报溢单据	");
 		typeChainMap.put(FLOW_LOSS_ORDER, "连锁店报损单据");
 		typeChainMap.put(INVENTORY_ORDER, "连锁店库存单据");
-		typeChainMap.put(INVENTORY_TRANSFER_ORDER, "连锁店调货单据");
+		typeChainMap.put(INVENTORY_TRANSFER_ORDER, "旧系统调货单据");
 	}
 	
 	private int id;
 	private int totalQuantity;
 	private int totalInventoryQ;
 	private int totalQuantityDiff;
-	private double totalWholePrice;
+	private double totalWholeSalesPrice = 0;
 	private double totalSalesPrice = 0;
 	private Date orderDate;
 	private String comment;
@@ -122,12 +122,14 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 		this.totalQuantity = totalQuantity;
 	}
 
-	public double getTotalWholePrice() {
-		return totalWholePrice;
+	
+
+	public double getTotalWholeSalesPrice() {
+		return totalWholeSalesPrice;
 	}
 
-	public void setTotalWholePrice(double totalWholePrice) {
-		this.totalWholePrice = totalWholePrice;
+	public void setTotalWholeSalesPrice(double totalWholeSalesPrice) {
+		this.totalWholeSalesPrice = totalWholeSalesPrice;
 	}
 
 	public Date getOrderDate() {
@@ -231,7 +233,7 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 	@Override
 	public String toString() {
 		return "ChainInventoryFlowOrder [id=" + id + ", totalQuantity="
-				+ totalQuantity + ", totalWholePrice=" + totalWholePrice
+				+ totalQuantity + ", totalWholePrice=" + totalWholeSalesPrice
 				+ ", orderDate=" + orderDate + ", orderType=" + type
 				+ ", comment=" + comment + ", creator=" + creator
 				+ ", chainStore=" + chainStore + ", status=" + status

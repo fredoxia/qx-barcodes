@@ -334,7 +334,7 @@ public class UserInforService {
 	public ChainUserInfor transferHeadUserToChainUser(UserInfor loginUserInfor) {
 		ChainUserInfor chainUserInfor = new ChainUserInfor();
 		chainUserInfor.setMobilePhone(loginUserInfor.getMobilePhone());
-		chainUserInfor.setName(loginUserInfor.getName());
+		chainUserInfor.setName("总部" + loginUserInfor.getName());
 		chainUserInfor.setUser_name(loginUserInfor.getUser_name());
 		
 		int chainFunctionType = getUserChainRoleType(loginUserInfor);

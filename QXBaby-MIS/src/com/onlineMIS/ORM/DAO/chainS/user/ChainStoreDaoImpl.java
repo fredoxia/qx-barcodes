@@ -17,6 +17,8 @@ import com.onlineMIS.common.Common_util;
 public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 	public static final boolean cached = true;
 	
+	public static final int OUTSIDE_STORE_ID = -2;
+	
 	/**
 	 * to get the chainStore information by client Id, it is used in the headQ part
 	 * @param clientId
@@ -60,6 +62,15 @@ public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 		return chainStore;
 	}
 	
+	public static ChainStore getOutsideStore2(){
+		ChainStore chainStore = new ChainStore();
+		chainStore.setChain_id(-2);
+		chainStore.setClient_id(-2);
+		chainStore.setChain_name("非连锁店");
+		return chainStore;
+	}
+	
+	@Deprecated
 	public static ChainStore getOutsideStore(){
 		ChainStore chainStore = new ChainStore();
 		chainStore.setChain_id(0);
@@ -85,6 +96,18 @@ public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 		criteria.add(Restrictions.or(Restrictions.eq("chain_id", chain_id), Restrictions.eq("parentStore.chain_id", chain_id)));
 		
 		return this.getByCritera(criteria, true);
+	}
+	
+	/**
+	 * 获取子账户信息
+	 */
+	public List<ChainStore> getChildChainstore(int chainId) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
+		criteria.add(Restrictions.ne("status", ChainStore.STATUS_DELETE));
+		criteria.add(Restrictions.eq("parentStore.chain_id", chainId));
+		
+		return this.getByCritera(criteria, true);
+		
 	}
 	
 	public Set<Integer> getStoreAndChildrenClientIds(int chainId) {
@@ -116,4 +139,5 @@ public class ChainStoreDaoImpl extends  BaseDAO<ChainStore>{
 		
 		return this.getByCritera(criteria, true);
 	}
+
 }

@@ -219,7 +219,7 @@ function changeFunction14(){
       <td>总部用户权限管理:<input type="checkbox" name="functionalities" id="function90" value="90"/></td>
       <td>连锁系统管理员:<input type="checkbox" name="functionalities" id="function91" value="91"/></td>
       <td>连锁经理:<input type="checkbox" name="functionalities" id="function92" value="92"/></td>
-      <td></td>
+      <td>品牌价格调整:<input type="checkbox" name="functionalities" id="function32" value="32"/></td>
       <td></td>
     </tr>
     <tr class="InnerTableContent">

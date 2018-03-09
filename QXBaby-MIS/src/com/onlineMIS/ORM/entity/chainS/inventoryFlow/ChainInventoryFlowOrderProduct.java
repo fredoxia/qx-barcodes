@@ -18,7 +18,22 @@ public class ChainInventoryFlowOrderProduct  extends BaseProduct  {
 	private int quantityDiff;
 	private String comment = "";
 	private double totalSalesPrice = 0;
+	private double wholeSalesPrice = 0;
+	private double totalWholeSalesPrice = 0;
 
+	
+	public double getWholeSalesPrice() {
+		return wholeSalesPrice;
+	}
+	public void setWholeSalesPrice(double wholeSalesPrice) {
+		this.wholeSalesPrice = wholeSalesPrice;
+	}
+	public double getTotalWholeSalesPrice() {
+		return totalWholeSalesPrice;
+	}
+	public void setTotalWholeSalesPrice(double totalWholeSalesPrice) {
+		this.totalWholeSalesPrice = totalWholeSalesPrice;
+	}
 	public int getId() {
 		return id;
 	}

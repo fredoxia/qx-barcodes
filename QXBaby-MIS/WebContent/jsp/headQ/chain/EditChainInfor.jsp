@@ -76,6 +76,7 @@ function backProcessGetChainStore(data){
 		$("#allowEdit").attr("value", chainStore.allowChangeSalesPrice);
 		$("#initialAcctAmt").attr("readonly", "readonly");
         $("#clientId").attr("readonly", "readonly");
+        $("#printHeader").attr("value", chainStore.printHeader);
 
         var priceIncrement = chainStore.priceIncrement;
         var priceIncreTF = $("#priceIncrement");
@@ -115,6 +116,7 @@ function clearChainStore(){
 	
 	$("#parentChainName").attr("value", "");
 	$("#parentChainId").attr("value", 0);
+	$("#printHeader").attr("value", "");
 }
 
 
@@ -233,6 +235,13 @@ function validateChainStore(){
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
 	    </tr>
+	    <tr class="InnerTableContent">
+	      <td height="25"><strong>小票抬头</strong></td>
+	      <td colspan="2"><s:textfield id="printHeader" name="formBean.chainStore.printHeader" size="25"/></td>
+	      <td>&nbsp;</td>
+	      <td>&nbsp;</td>
+	      <td>&nbsp;</td>
+	    </tr>	    
 	    <tr class="InnerTableContent">
 	      <td height="25"><strong>父连锁店名字</strong></td>
 	      <td colspan="5">

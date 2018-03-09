@@ -19,6 +19,7 @@ import com.onlineMIS.converter.JSONSQLDateConverter;
 import com.onlineMIS.converter.JSONUtil2SQLDateConverter;
 import com.onlineMIS.converter.JSONUtilDateConverter;
 import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.inject.util.Function;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
@@ -103,6 +104,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		}		
 		return SUCCESS;
 	}
+
 	
 	/**
 	 * trigger by user entering the VIP number and search it
@@ -127,7 +129,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		
 		//to excludes the set and list inforamtion
 		JsonConfig jsonConfig = new JsonConfig();
-		jsonConfig.setExcludes( new String[]{"issueChainStore"} );
+		jsonConfig.setExcludes( new String[]{"priceIncrement"} );
 		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
 		jsonConfig.registerJsonValueProcessor(java.sql.Date.class, new JSONSQLDateConverter());  
 		try{

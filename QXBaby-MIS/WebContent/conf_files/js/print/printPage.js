@@ -1,6 +1,7 @@
 
 function printSalesOrder(order){
 
+	
 	dfPrinter=pazu.TPrinter.getDefaultPrinter();
 
 	if (dfPrinter == null){
@@ -187,10 +188,13 @@ function printAcctFooter(order){
 	var cashAmount =  order.cashAmount ;
 	var returnAmount =  order.returnAmount ;
 	var vipPrepaid = order.chainPrepaidAmt ;
+	var wechat=  order.wechatAmount ;
+	var alipay =  order.alipayAmount ;
 	
 	pazu.TPrinter.printToDefaultPrinter("优惠 : " + discount + " , " + "代金券 : " + coupon);
 	pazu.TPrinter.printToDefaultPrinter("应收 : " + amountAfterDC  + " , " + "积分换现金 : " + vipScore );
 	pazu.TPrinter.printToDefaultPrinter("刷卡 : " + cardAmount + " , " + "现金 : " + cashAmount);
+	pazu.TPrinter.printToDefaultPrinter("微信 : " + wechat + " , " + "支付宝 : " + alipay);
 	pazu.TPrinter.printToDefaultPrinter("预存金消费 : " + vipPrepaid + " , " + "找零 : " + returnAmount);
 }
 
@@ -203,7 +207,9 @@ function printFooter(order){
 	dfPrinter.FontSize=fontSize;
     var content = "此小票是七日换货凭证，请妥善保管";
       pazu.TPrinter.printToDefaultPrinter(content);
-    content = "(洗涤,人为原因,特价商品概不调换)";
+    content = "(洗涤,人为原因,特价商品概不调换,";
+      pazu.TPrinter.printToDefaultPrinter(content);
+    content = "特价商品不在三包范围之内)";
       pazu.TPrinter.printToDefaultPrinter(content);
     content = "服务热线:400-688-5581";
       pazu.TPrinter.printToDefaultPrinter(content);

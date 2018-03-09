@@ -8,10 +8,7 @@ $(function() {
 				if (node.attributes && node.attributes.url) {
 					var url;
 					url = node.attributes.url;
-					/*parent.$.messager.progress({
-								title : '提示',
-								text : '数据处理中，请稍后....'
-							});*/
+		
 
      				addTab({
 						url : url,
@@ -87,7 +84,23 @@ $(function() {
 					</ul>
 				  </li>
 			  </s:if>
-				
+	          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!createTransferOrder') || #session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!preSearchTransferOrder') || #session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!preSearchTransferAcctFlow')">
+			  <li data-options="iconCls:'icon-database',state:'closed'">
+				    <span>调货管理</span>
+					<ul>
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!createTransferOrder')">
+							<li data-options="iconCls:'icon-database',attributes:{url:'chainTransferJSPAction!createTransferOrder'}">调货单</li>
+						</s:if>	
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!preSearchTransferOrder')">
+							<li data-options="iconCls:'icon-database',attributes:{url:'chainTransferJSPAction!preSearchTransferOrder'}">搜索调货单据</li>
+						</s:if>								
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!preSearchTransferAcctFlow')">
+							<li data-options="iconCls:'icon-database',attributes:{url:'chainTransferJSPAction!preSearchTransferAcctFlow'}">调货流水</li>
+						</s:if>
+
+					</ul>
+				  </li>
+			  </s:if>  			
 			  <li data-options="iconCls:'icon-database',state:'closed'">
 				    <span>库存管理</span>
 					<ul>
@@ -98,9 +111,8 @@ $(function() {
 							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCreateflowLossOrder'}">报损单</li>
 						</s:if>
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preCreateInventoryTransferOrder')">
-							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCreateInventoryTransferOrder'}">调货单</li>
-						</s:if>			
-
+							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCreateInventoryTransferOrder'}">老调货单</li>
+						</s:if>		
 							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!checkInvenTrace'}">商品库存跟踪</li>
 							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCheckChainInven'}">连锁店商品库存查询</li>
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preCreateInventoryOrder')">
@@ -192,6 +204,9 @@ $(function() {
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainMgmtJSP!preCreateConf')">	
 	        		         <li data-options="iconCls:'icon-cog',attributes:{url:'chainMgmtJSP!preCreateConf'}">修改系统配置</li>
 	        		    </s:if>
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('newsJSPAction!preEditNews')">	
+	        		         <li data-options="iconCls:'icon-cog',attributes:{url:'newsJSPAction!preEditNews'}">修改系统新闻</li>
+	        		    </s:if>	        		    
 					</ul>
 				   </li>
 				</s:if>

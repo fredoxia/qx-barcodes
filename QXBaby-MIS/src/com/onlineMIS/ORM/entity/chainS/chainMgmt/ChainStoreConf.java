@@ -40,6 +40,7 @@ public class ChainStoreConf implements Serializable {
 	//0: 严格使用预存款,只能在当前连锁店使用当前vip
 	//1. 我的vip卡可以在关联连锁店消费/充值，
 	private int allowMyPrepaidCrossStore = 0;
+	private String shippingAddress = "";
 	public static final int PREPAID_ALL_PREPAID_CROSS_STORE = 1;
 	
 	/**
@@ -49,15 +50,39 @@ public class ChainStoreConf implements Serializable {
 	public static final int PREPAID_CALCULATION_TYPE_1 = 1;
 	public static final int PREPAID_CALCULATION_TYPE_NORMAL = 0;
 	
+	/**
+	 * 0:'只能自己连锁店vip兑换积分',
+	 * 1:'关联连锁店的vip也可以在本店铺消费积分',
+	 * 2:'所有其他连锁店的vip都可以在本店兑换积分'
+	 */
+	private int allowOtherVIPUseVIPScore = 0;
+	public static final int VIPSCORE_USAGE_RESTRICTED= 0;
+	public static final int VIPSCORE_USAGE_GROUPCHAIN = 1;
+	public static final int VIPSCORE_USAGE_ALL = 2;
+	
 	public ChainStoreConf(){
 		
 	}
 
-	
+	public int getAllowOtherVIPUseVIPScore() {
+		return allowOtherVIPUseVIPScore;
+	}
+
+
+	public void setAllowOtherVIPUseVIPScore(int allowOtherVIPUseVIPScore) {
+		this.allowOtherVIPUseVIPScore = allowOtherVIPUseVIPScore;
+	}
+	public String getShippingAddress() {
+		return shippingAddress;
+	}
+
+	public void setShippingAddress(String shippingAddress) {
+		this.shippingAddress = shippingAddress;
+	}
+
 	public int getPrepaidCalculationType() {
 		return prepaidCalculationType;
 	}
-
 
 	public void setPrepaidCalculationType(int prepaidCalculationType) {
 		this.prepaidCalculationType = prepaidCalculationType;
@@ -68,21 +93,17 @@ public class ChainStoreConf implements Serializable {
 		return allowMyPrepaidCrossStore;
 	}
 
-
 	public void setAllowMyPrepaidCrossStore(int allow_my_prepaid_cross_store) {
 		this.allowMyPrepaidCrossStore = allow_my_prepaid_cross_store;
 	}
-
 
 	public int getHideDiscountPrint() {
 		return hideDiscountPrint;
 	}
 
-
 	public void setHideDiscountPrint(int hideDiscountPrint) {
 		this.hideDiscountPrint = hideDiscountPrint;
 	}
-
 
 	public int getDefaultVipScoreMultiple() {
 		return defaultVipScoreMultiple;

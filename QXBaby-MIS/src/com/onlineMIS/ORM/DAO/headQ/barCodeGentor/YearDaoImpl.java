@@ -9,6 +9,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -49,6 +50,14 @@ public class YearDaoImpl extends BaseDAO<Year>{
 		}
 		
 		return yearMap;
+	}
+
+	public List<Year> getLatestYears() {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Year.class);
+		criteria.addOrder(Order.desc("year"));
+
+		
+		return this.getByCritera(criteria, 0, 3, true);
 	}
 
 }

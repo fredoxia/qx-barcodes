@@ -163,6 +163,7 @@ function updateTabWithSaler(){
     <s:hidden name="uiBean.chainStoreConf.lowThanCostAlert" id="lowThanCostAlert"/>
     <s:hidden name="uiBean.chainStoreConf.defaultDiscount" id="defaultDiscount"/>
     <s:hidden name="uiBean.chainStoreConf.address" id="address"/>
+    <s:hidden name="uiBean.chainStore.printHeader" id="printHeader"/>
     <s:hidden name="uiBean.chainStoreConf.hideDiscountPrint" id="hideDiscountPrint"/>
 	<s:hidden name="formBean.token"/>
     <div data-options="region:'north',split:false,border:false,noheader:true" style="height:65px;overflow:hidden;">

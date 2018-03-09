@@ -301,9 +301,26 @@ public class ChainDailySalesService{
 			loggerLocal.infoB("DailyOrderCheck: 今天日期在避免注入日期之前");
 			return ;
 		} else {
-			Date twoMonthDate = Common_util.calcualteDate(today, -interval);
-			Date startDate = Common_util.formStartDate(twoMonthDate);
-			Date endDate = Common_util.formEndDate(twoMonthDate);
+			
+			Date startDate = Common_util.calcualteDate(today, -interval);
+			startDate = Common_util.formStartDate(startDate);
+			
+			Date endDate = Common_util.calcualteDate(today, -interval + 20);
+			endDate = Common_util.formEndDate(endDate);
+			
+			//1.1 如果是4月5好，就要特别处理一些
+			Date specialDate = null;
+			try {
+			    specialDate = Common_util.dateFormat.parse("2017-04-05");
+			    
+			    if (today.getYear() == specialDate.getYear() && today.getMonth()==specialDate.getMonth() && today.getDate() == specialDate.getDate()){
+			    	startDate = Common_util.dateFormat.parse("2016-01-01");
+			    }
+			} catch (ParseException e) {
+				loggerLocal.errorB(e);
+				return;
+			}
+			
 			loggerLocal.infoB("DailyOrderCheck: 查找之前单据，日期   " + startDate.toString() + " 到  " + endDate.toString());
 			
 			DetachedCriteria criteria = DetachedCriteria.forClass(InventoryOrder.class,"order");

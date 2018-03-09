@@ -68,9 +68,20 @@ public class ChainReportActionUIBean {
 	private List<ChainBatchRptRepositoty> currentSalesDates = new ArrayList<ChainBatchRptRepositoty>();
 	//销售分析报表日期
 	private List<ChainBatchRptRepositoty> accumulatedSalesDates = new ArrayList<ChainBatchRptRepositoty>();
+	//调货账目流水报表日期
+	private List<ChainBatchRptRepositoty> chainTransferAcctFlowDates = new ArrayList<ChainBatchRptRepositoty>();
 	
 	
 	
+	public List<ChainBatchRptRepositoty> getChainTransferAcctFlowDates() {
+		return chainTransferAcctFlowDates;
+	}
+
+	public void setChainTransferAcctFlowDates(
+			List<ChainBatchRptRepositoty> chainTransferAcctFlowDates) {
+		this.chainTransferAcctFlowDates = chainTransferAcctFlowDates;
+	}
+
 	public List<ChainBatchRptRepositoty> getAccumulatedSalesDates() {
 		return accumulatedSalesDates;
 	}

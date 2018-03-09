@@ -12,7 +12,7 @@ public class News implements Serializable {
 	public static final int TYPE_CHAIN_S = 2;
 	
 	private int id;
-	private int type;
+	private int type = TYPE_ALL;
 	private String title;
 	private String content;
 	

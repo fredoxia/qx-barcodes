@@ -166,5 +166,14 @@
         </id>
         <property name="year" column="year" type="integer"/>
         <property name="quarter" column="quarter" type="integer"/>
-    </class>         
+    </class>     
+    <class name="BrandPriceIncrease" table="headq_brand_price_increase">
+        <cache usage="read-write" region="qxbabyConstant"/>
+        <composite-id>
+             <key-many-to-one name="year" column="year_id" class="Year" lazy="false"/>           
+             <key-many-to-one name="quarter" column="quarter_id" class="Quarter" lazy="false"/>           
+             <key-many-to-one name="brand" column="brand_id" class="Brand" lazy="false"/>           
+        </composite-id>
+        <property name="increase" column="increase" type="double"/>
+    </class>           
 </hibernate-mapping>

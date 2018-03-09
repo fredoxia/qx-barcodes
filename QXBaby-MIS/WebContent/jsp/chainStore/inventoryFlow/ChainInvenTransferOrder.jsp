@@ -7,8 +7,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js?v3.8"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTransfer.js?v3.7"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js?v4.9"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTransfer.js?v1.17"></script>
 
 <script>
 $(document).ready(function(){

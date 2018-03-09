@@ -14,8 +14,7 @@ $(document).ready(function(){
 	});
 	
 var refreshURL = "chainVIPJSPAction";
-
-function update(){
+function validateUpdate(){
 	var error ="";
  	var vipCardNo = $.trim($("#vipCardNo").val());
  	var vipCardType = $.trim($("#vipCardType").val());
@@ -50,9 +49,27 @@ function update(){
  	if (telephone == "")
  	 	error += "VIP卡客户电话 - 不能为空\n";
 	
-	if (error != "")
+	if (error != ""){
 		alert(error);
-	else {
+		return false;
+	} else {
+		return true
+	}
+}
+
+function updateContinue(){
+	if (validateUpdate() == true){
+		var vipCardNo = $.trim($("#vipCardNo").val());
+		var confirmMsg = "你确认VIP卡号是: " + vipCardNo;
+		if (confirm(confirmMsg)){
+	       var params=$("#editVIPCardForm").serialize();  
+	       $.post("chainVIPJSONAction!saveUpdateVIPCard",params, editContinueBKProcess,"json");
+		}
+	}
+}
+function update(){
+	if (validateUpdate() == true){
+		var vipCardNo = $.trim($("#vipCardNo").val());
 		var confirmMsg = "你确认VIP卡号是: " + vipCardNo;
 		if (confirm(confirmMsg)){
 	       var params=$("#editVIPCardForm").serialize();  
@@ -60,7 +77,22 @@ function update(){
 		}
 	}
 }
-
+function editContinueBKProcess(data){
+	var isSuccess = data.isSuccess;
+	if (isSuccess == 1){
+        alert("成功更新");
+        
+        window.location.href = "chainVIPJSPAction!preAddVIPCard";
+        var url  = window.opener.location.toString();
+        if (url.indexOf(refreshURL) >=0) {
+        	window.opener.vipCardListForm.action="chainVIPJSPAction!searchVIPCards";
+            window.opener.vipCardListForm.submit();
+        }
+	} else{
+		var error = data.error;
+		$("#errorDiv").html(error);
+	}
+}
 function editBKProcess(data){
 	var isSuccess = data.isSuccess;
 	if (isSuccess == 1){
@@ -174,6 +206,7 @@ function useTelAsVIPNum(){
 	       </tr> 	      
 	       <tr class="InnerTableContent">
 	          <td colspan="2"> <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainVIPJSONAction!saveUpdateVIPCard')"><input type="button" value="添加/更新" onclick="update();"/>&nbsp;&nbsp;</s:if>
+	                           <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainVIPJSONAction!saveUpdateVIPCard')"><input type="button" value="添加/更新后,继续添加" onclick="updateContinue();"/>&nbsp;&nbsp;</s:if>
 	                           <input type="button" value="取消" onclick="window.close();"/></td>
 	       </tr>
 	    </table>

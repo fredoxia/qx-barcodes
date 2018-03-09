@@ -128,6 +128,7 @@ public class ChainStoreService {
 			storeInDB.setStatus(chainStore.getStatus());
 			storeInDB.setClient_id(chainStore.getClient_id());
 			storeInDB.setAllowAddBarcode(chainStore.getAllowAddBarcode());
+			storeInDB.setPrintHeader(chainStore.getPrintHeader());
 
 			int priceIncrementId = chainStore.getPriceIncrement().getId();
 			if (priceIncrementId == 0)
@@ -404,5 +405,7 @@ public class ChainStoreService {
 			
 		return chainStores;
 	}
+
+
 	
 }

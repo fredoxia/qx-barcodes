@@ -52,13 +52,16 @@ $(function() {
 <div id="menuAccordian" class="easyui-accordion" style="width:auto;height:auto;">  
     <div title="系统菜单" data-options="selected:true" style="overflow:false">
         <ul id="treeMenu" class="easyui-tree"  lines="true" >  
-		      <s:if test="#session.LOGIN_USER.containFunction('basicData!preMaintainBasic') || #session.LOGIN_USER.containFunction('productJSPAction!preCreateProduct') || #session.LOGIN_USER.containFunction('productJSPAction!preSearch')">
+		      <s:if test="#session.LOGIN_USER.containFunction('basicData!preMaintainBasic') || #session.LOGIN_USER.containFunction('productJSPAction!preCreateProduct') || #session.LOGIN_USER.containFunction('productJSPAction!preSearch')||#session.LOGIN_USER.containFunction('productJSPAction!preCreateProduct') || #session.LOGIN_USER.containFunction('productJSPAction!preBrandPriceIncrease')">
 			  	<li data-options="iconCls:'icon-text_1',state:'open',border:false">
 			  	    <span>条型码管理</span>
 			  		<ul>
 			  			<s:if test="#session.LOGIN_USER.containFunction('basicData!preMaintainBasic')"><li data-options="iconCls:'icon-text_1',attributes:{url:'basicData!preMaintainBasic'}">条型码基础资料管理</li></s:if>
 			    		<s:if test="#session.LOGIN_USER.containFunction('productJSPAction!preCreateProduct')"><li data-options="iconCls:'icon-text_1',attributes:{url:'productJSPAction!preCreateProduct'}">新建条型码</li></s:if>
 						<s:if test="#session.LOGIN_USER.containFunction('productJSPAction!preSearch')"><li data-options="iconCls:'icon-text_1',attributes:{url:'productJSPAction!preSearch'}">查询修改条型码</li></s:if>
+						<s:if test="#session.LOGIN_USER.containFunction('productJSPAction!preBatchDeleteBarcode')"><li data-options="iconCls:'icon-text_1',attributes:{url:'productJSPAction!preBatchDeleteBarcode'}">批量删除条型码</li></s:if>
+						<s:if test="#session.LOGIN_USER.containFunction('productJSPAction!preBatchInsertBarcode')"><li data-options="iconCls:'icon-text_1',attributes:{url:'productJSPAction!preBatchInsertBarcode'}">批量导入条型码</li></s:if>
+						<s:if test="#session.LOGIN_USER.containFunction('productJSPAction!preBrandPriceIncrease')"><li data-options="iconCls:'icon-text_1',attributes:{url:'productJSPAction!preBrandPriceIncrease'}">品牌调价</li></s:if>
 			    	</ul>  
 			    </li>
 			    </s:if>

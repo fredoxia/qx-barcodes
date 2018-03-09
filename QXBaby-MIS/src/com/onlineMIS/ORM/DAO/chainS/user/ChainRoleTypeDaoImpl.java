@@ -30,6 +30,8 @@ public class ChainRoleTypeDaoImpl extends BaseDAO<ChainRoleType> {
 	   roleTypeIds.add(ChainRoleType.CHAIN_STAFF);
 	   roleTypeIds.add(ChainRoleType.CHAIN_LEAD);
 	   roleTypeIds.add(ChainRoleType.CHAIN_OWNER);
+	   roleTypeIds.add(ChainRoleType.SELF_CHAIN_OWNER);
+	   roleTypeIds.add(ChainRoleType.SELE_CHAIN_STAFF);
 	   
 	   DetachedCriteria criteria = DetachedCriteria.forClass(ChainRoleType.class);
 	   criteria.addOrder(Order.asc("chainRoleTypeId"));

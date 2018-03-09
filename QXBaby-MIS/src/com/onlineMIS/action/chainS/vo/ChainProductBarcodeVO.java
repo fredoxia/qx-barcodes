@@ -43,6 +43,7 @@ public class ChainProductBarcodeVO implements Serializable {
 	private String mySalesPricePercentage = "";
 	private double cost = 0;
 	private int inventoryLevel = 0;
+	private double discount = 1;
 
 	public ChainProductBarcodeVO(){
 		
@@ -74,6 +75,14 @@ public class ChainProductBarcodeVO implements Serializable {
 	}
 
 	
+	public double getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(double discount) {
+		this.discount = discount;
+	}
+
 	public int getBarcodeBelong() {
 		return barcodeBelong;
 	}

@@ -41,10 +41,12 @@ function backProcessGetChainStore(data){
 			 var vipScoreCashRatio = chainStoreConf.vipScoreCashRatio;
 			 var printTemplate = chainStoreConf.printTemplate;
 			 var address = chainStoreConf.address;
+			 var shippingAddress = chainStoreConf.shippingAddress;
 			 var hideDiscountPrint = chainStoreConf.hideDiscountPrint;
 			 var prepaidUsage = chainStoreConf.allowMyPrepaidCrossStore;
 			 var prepaidType = chainStoreConf.prepaidCalculationType;
 			 var defaultVipScoreMultiple = chainStoreConf.defaultVipScoreMultiple;
+			 var allowVIPScore = chainStoreConf.allowOtherVIPUseVIPScore;
 			 
 			 $("#amtType").val(discountAmtType).attr("selected", true);
 			 $("#printCopy").attr("value", printCopy);
@@ -53,10 +55,12 @@ function backProcessGetChainStore(data){
 			 $("#vipScoreCashRatio").attr("value", vipScoreCashRatio);
 			 $("#printTemplate").attr("value", printTemplate);
 			 $("#address").attr("value",address);
+			 $("#shippingAddress").attr("value",shippingAddress);
 			 $("#hideDiscountPrint").attr("value",hideDiscountPrint);
 			 $("#prepaidUsage").attr("value",prepaidUsage);
 			 $("#prepaidType").attr("value",prepaidType);
 			 $("#defaultVipScoreMultiple").attr("value",defaultVipScoreMultiple);
+			 $("#vipScoreUsage").attr("value",allowVIPScore);
 		}
 	}
 }
@@ -128,16 +132,16 @@ function clearChainStoreConf(){
     <tr><td>
 		 <table width="100%" border="0">
 	    <tr class="PBAOuterTableTitale">
-	       <td height="48" colspan="8">
+	       <td height="48" colspan="6">
            - 通过这个界面管理员可以修改连锁店一些配置管理信息<br/>
            </td>
 	    </tr>
 	    <tr class="InnerTableContent">
-	      <td width="150" height="32">
+	      <td width="180" height="32">
 	         <strong>连锁店</strong></td>
-	      <td colspan="3"><%@ include file="../include/SearchChainStore.jsp"%></td>
+	      <td width="250"><%@ include file="../include/SearchChainStore.jsp"%></td>
 	      <td width="78">&nbsp;</td>
-	      <td width="314">&nbsp;</td>
+	      <td width="78">&nbsp;</td>
 	      <td width="182">&nbsp;</td>
 	      <td width="137">&nbsp;</td>
 	    </tr>
@@ -146,8 +150,6 @@ function clearChainStoreConf(){
 	      <td><s:select id="amtType" name="formBean.chainStoreConf.discountAmtType"  list="uiBean.amtTypeMap" listKey="key" listValue="value" /></td>
 	      <td></td>
 	      <td></td>
-	      <td>&nbsp;</td>
-	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
 	      <td>&nbsp;</td>
    	    </tr>
@@ -159,8 +161,6 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>
    	    <tr class="InnerTableContent">
    	      <td height="25"><strong>小票打印份数</strong></td>
@@ -169,8 +169,6 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>
    	    <tr class="InnerTableContent">
    	      <td height="25"><strong>小票折扣打印</strong></td>
@@ -179,23 +177,21 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>       
        <tr class="InnerTableContent">
    	      <td height="25"><strong>销售最低折扣</strong></td>
    	      <td><s:textfield id="minDiscountRate" name="formBean.chainStoreConf.minDiscountRate" size="5"/></td>
-   	      <td colspan="6">*当设置最低折扣为0.9，营业员输入货品折扣为0.8的时候，就不能过账.<br/>'0'表示可以任意折扣卖;'1'表示所有产品不打折</td>
+   	      <td colspan="4">*当设置最低折扣为0.9，营业员输入货品折扣为0.8的时候，就不能过账.<br/>'0'表示可以任意折扣卖;'1'表示所有产品不打折</td>
        </tr>
        <tr class="InnerTableContent">
    	      <td height="25"><strong>销售默认折扣</strong></td>
    	      <td><s:textfield id="defaultDiscount" name="formBean.chainStoreConf.defaultDiscount" size="5"/></td>
-   	      <td colspan="6">*在开单时，系统会自动使用默认折扣打折，比如在开张，做活动期间。之后请修改回'1'。</td>
+   	      <td colspan="4">*在开单时，系统会自动使用默认折扣打折，比如在开张，做活动期间。之后请修改回'1'。</td>
        </tr>
        <tr class="InnerTableContent">
    	      <td height="25"><strong>VIP默认积分</strong></td>
    	      <td><s:select id="defaultVipScoreMultiple" name="formBean.chainStoreConf.defaultVipScoreMultiple"  list="#{1:'正常积分',2:'活动期间,两倍积分'}" listKey="key" listValue="value" /></td>
-   	      <td colspan="6">*在活动期间,比如在开张，国庆，可以给所有vip客户设置双倍积分。之后请修改回正常积分体系。</td>
+   	      <td colspan="4">*在活动期间,比如在开张，国庆，可以给所有vip客户设置双倍积分。之后请修改回正常积分体系。</td>
        </tr>       
        <tr class="InnerTableContent">
    	      <td height="25"><strong>VIP积分换现金</strong></td>
@@ -205,33 +201,36 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>
        <tr class="InnerTableContent">
-   	      <td height="25"><strong>跨连锁店使用预付金 </strong></td>
+   	      <td height="35"><strong>跨连锁店使用vip积分兑换 </strong></td>
+   	      <td><s:select id="vipScoreUsage" name="formBean.chainStoreConf.allowOtherVIPUseVIPScore"  list="#{0:'只能自己连锁店vip兑换积分',1:'关联连锁店的vip也可以在本店铺消费积分',2:'所有其他连锁店的vip都可以在本店兑换积分'}" listKey="key" listValue="value" />
+   	      </td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+       </tr>          
+       <tr class="InnerTableContent">
+   	      <td height="35"><strong>跨连锁店使用预付金 </strong></td>
    	      <td><s:select id="prepaidUsage" name="formBean.chainStoreConf.allowMyPrepaidCrossStore"  list="#{0:'不允许我的vip的预存金在其他连锁店使用',1:'允许我的vip在关联连锁店充值/使用预存金'}" listKey="key" listValue="value" />
    	      </td>
    	      <td></td>
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>        
        <tr class="InnerTableContent">
-   	      <td height="25"><strong>预存金 使用计划</strong></td>
+   	      <td height="35"><strong>预存金 使用计划</strong></td>
    	      <td><s:select id="prepaidType" name="formBean.chainStoreConf.prepaidCalculationType"  list="#{0:'正常预存 - 预存100抵用100',1:'1.1倍 - 预存500抵用550,预存1000抵用1100'}" listKey="key" listValue="value" />
    	      </td>
    	      <td></td>
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>       
        <tr class="InnerTableContent">
-   	      <td height="25"><strong>连锁店地址 打印于小票</strong></td>
+   	      <td height="35"><strong>连锁店地址 打印于小票</strong></td>
    	      <td>
    	           <s:textfield id="address" name="formBean.chainStoreConf.address" maxLength="28" size="35"/>
    	      </td>
@@ -239,9 +238,17 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>
+       <tr class="InnerTableContent">
+   	      <td height="35"><strong>调货联系地址和电话</strong></td>
+   	      <td>
+   	           <s:textfield id="shippingAddress" name="formBean.chainStoreConf.shippingAddress" maxLength="80" size="80"/>
+   	      </td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+       </tr>       
        <tr class="InnerTableContent">
    	      <td height="25"></td>
    	      <td></td>
@@ -249,8 +256,6 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td></td>
    	      <td></td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>
 
    	    <tr class="InnerTableContent">
@@ -260,8 +265,6 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td>&nbsp;</td>
    	      <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
        </tr>
 	  </table>
    </td>

@@ -497,7 +497,11 @@ public class ChainReportJSPAction extends ChainReportAction {
 			fileName = (String)result.get("name");           
 			this.setExcelFileName(fileName);
 
-		    return "zipReport"; 
+			String type = (String)result.get("Type");
+			if (type.equals("zip"))
+		         return "zipReport"; 
+			else 
+				return "report";
 		} else 
 			return ERROR;	
 	}

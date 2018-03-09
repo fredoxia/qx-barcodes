@@ -92,8 +92,14 @@
                     attachment;filename=${excelFileName}   
                  </param>  
                 <param name="bufferSize">1024</param>  
-               </result>  
+               </result> 
+               <result name="batchDeleteBarcode">/jsp/headQ/barcodeGentor/BatchDeleteBarcode.jsp</result> 
+               <result name="batchInsertBarcode">/jsp/headQ/barcodeGentor/BatchInsertBarcode.jsp</result> 
+               
                <result name="ProductCodeSearchProducts">/jsp/headQ/barcodeGentor/SearchByProductCodeList.jsp</result>
+               <result name="brandPriceIncrease">/jsp/headQ/barcodeGentor/BrandPriceIncrease.jsp</result>
+               <result name="editBrandPriceIncrease">/jsp/headQ/barcodeGentor/EditBrandPriceIncrease.jsp</result>
+               
         </action>
         
         <action name="basicData" class="com.onlineMIS.action.headQ.barCodeGentor.BasicDataJSPAction">
@@ -513,7 +519,32 @@
                  </param>  
                 <param name="bufferSize">1024</param>  
             </result> 
-        </action>       
+        </action>  
+        
+        <action name="chainTransferJSPAction" class="com.onlineMIS.action.chainS.chainTransfer.ChainTransferJSPAction">
+            <result name="input">/jsp/common/error.jsp</result>
+            <result name="createTransferOrder">/jsp/chainStore/chainTransfer/EditChainTransferOrder.jsp</result>
+            <result name="displayTransferOrder">/jsp/chainStore/chainTransfer/DisplayChainTransferOrder.jsp</result>
+            <result name="searchTransferOrder">/jsp/chainStore/chainTransfer/SearchTransferOrder.jsp</result>
+            
+            <result name="searchTransferAcctFlow">/jsp/chainStore/chainTransfer/SearchTransferAcctFlow.jsp</result>
+            <result name="listFromChainStores">/jsp/chainStore/chainTransfer/ListFromChainStores.jsp</result>
+            <result name="listToChainStores">/jsp/chainStore/chainTransfer/ListToChainStores.jsp</result>
+            <result type="stream" name="download">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">formBean.fileStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${formBean.fileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result>  
+        </action>    
+        
+        <action name="newsJSPAction" class="com.onlineMIS.action.chainS.chainOtherMgmt.ChainOtherMgmtJSPAction">
+            <result name="newsEditPage">/jsp/chainStore/chainOtherMgmt/NewsEditPage.jsp</result> 
+        </action>            
     </package>
     
     
@@ -594,7 +625,17 @@
             <result type="json">
                  <param name="root">jsonObject</param>
             </result>
-        </action>          
+        </action>    
+        <action name="chainTransferActionJSON" class="com.onlineMIS.action.chainS.chainTransfer.ChainTransferJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>   
+        <action name="newsActionJSON" class="com.onlineMIS.action.chainS.chainOtherMgmt.ChainOtherMgmtJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>               
      </package>
      
      <!-- package for the Head4Chain -->

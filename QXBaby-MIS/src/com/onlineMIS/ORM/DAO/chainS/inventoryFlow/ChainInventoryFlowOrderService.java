@@ -1526,7 +1526,7 @@ public class ChainInventoryFlowOrderService {
 		thisYear++;
 		
 		List<String> years = new ArrayList<String>();
-		for (int i = 0; i <4; i++)
+		for (int i = 0; i <5; i++)
 			years.add(String.valueOf(thisYear - i));
 		
 		//2. 获取前四年的year

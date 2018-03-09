@@ -1,0 +1,242 @@
+package com.onlineMIS.ORM.entity.headQ.barcodeGentor;
+
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.CategoryDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ColorDaoImpl;
+import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.ExcelTemplate;
+import com.onlineMIS.common.ExcelUtil;
+
+public class BarcodeImportTemplate extends ExcelTemplate{
+	private boolean isSuccess = true;
+	private String validateMsg = "";
+	
+	private final int data_row = 2;
+
+	private final int productCode_column= 1;
+	private final int category_column= 2;
+	private final int recCost_column= 4;
+	private final int color_column= 18;
+	private final int factorySalesPrice_column= 25;
+	private final int discount_column= 26;
+	private final int wholePrice_column= 28;
+	private final int salePrice_column= 27;	
+	private Area area = null;
+	private Year year = null;
+	private Quarter quarter = null;
+	private Brand brand = null;
+	
+	private List<Object> wsData = new ArrayList<Object>();
+	
+	/**
+	 * 传入文件，生出条码
+	 */
+	public BarcodeImportTemplate(File file, Year year, Quarter quarter, Brand brand, Area area){
+		super();
+		try {
+		  templateWorkbook = new HSSFWorkbook(new FileInputStream(file));
+			this.brand = brand;
+			this.year = year;
+			this.quarter = quarter;
+			this.area = area;
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 验证所有信息正确
+	 * @param categoryDaoImpl
+	 * @param colorDaoImpl
+	 * @return
+	 */
+	private void validate(CategoryDaoImpl categoryDaoImpl, ColorDaoImpl colorDaoImpl){
+		StringBuilder errorMsg = new StringBuilder();
+		boolean validate = true;
+		
+		if (templateWorkbook == null){
+			isSuccess = false;
+			validateMsg = "上传的文件是空文件";
+			return ;
+		}
+		
+		HSSFSheet sheet = templateWorkbook.getSheetAt(0);
+
+		int rowDisplay = 0;
+		boolean rowError = true;
+		for (int i = data_row; ;i++){
+			rowError = true;
+			rowDisplay = i +1;
+			HSSFRow row = sheet.getRow(i);
+			if (row == null)
+				break;
+			
+			String productCode = ExcelUtil.getPuzzleString(row.getCell(productCode_column));
+			
+
+			if (productCode.equals("")){
+				rowError = false;
+				errorMsg.append("行" + rowDisplay + ": 产品货号为空. ");
+			}
+			
+			HSSFCell categoryCell = row.getCell(category_column);
+			HSSFCell colourCell = row.getCell(color_column);
+			if (categoryCell == null){
+				rowError = false;
+				errorMsg.append("行" + rowDisplay + ": 产品种类为空. ");
+			} else {
+				String categoryString = categoryCell.getStringCellValue().trim();
+				if (!categoryDaoImpl.checkCategoryExist(categoryString)){
+					rowError = false;
+					errorMsg.append("行" + rowDisplay + ": 产品种类 (" + categoryString + ") 不存在. ");
+				}
+			}
+			
+			if (colourCell == null){
+				rowError = false;
+				errorMsg.append("行" + rowDisplay + ": 颜色为空. ");
+			} else {
+				String colorsString = colourCell.getStringCellValue().trim();
+				if (colorsString.equals(""))
+					continue;
+				else {
+					String colorStringArray[] = colorsString.split(",");
+					for (String colorString: colorStringArray){
+						if (!colorDaoImpl.checkColorExist(colorString)){
+							rowError = false;
+							errorMsg.append("行" + rowDisplay + ": 颜色(" + colorString + ") 不存在. ");
+						}
+					}
+				}
+			}
+			
+			try {
+			   double recCost = row.getCell(recCost_column).getNumericCellValue();
+			   if (recCost <= 0) {
+			     rowError = false;
+				 errorMsg.append("行" + rowDisplay + ": 进价("+ recCost+")错误. ");
+			   }
+			} catch (Exception e){
+				rowError = false;
+				errorMsg.append("行" + rowDisplay + ": 进价错误. ");
+			}
+			
+			try {
+				   double salePrice = row.getCell(salePrice_column).getNumericCellValue();
+				   if (salePrice <= 0) {
+				     rowError = false;
+					 errorMsg.append("行" + rowDisplay + ": 发价("+ salePrice+")错误. ");
+				   }
+				} catch (Exception e){
+					rowError = false;
+					errorMsg.append("行" + rowDisplay + ": 发价错误. ");
+				}
+			
+			
+			if (rowError == false){
+				validate = false;
+				errorMsg.append("<br>");
+			}
+		}
+		
+		isSuccess = validate;
+		
+		validateMsg =  errorMsg.toString();
+	}
+	
+	/**
+	 * 通过文件读出条码，返回
+	 * @return
+	 */
+	public void proccess(CategoryDaoImpl categoryDaoImpl, ColorDaoImpl colorDaoImpl){
+		validate(categoryDaoImpl, colorDaoImpl);
+		
+		if (!isSuccess)
+			return ;
+
+		HSSFSheet sheet = templateWorkbook.getSheetAt(0);
+
+		for (int i = data_row; ;i++){
+
+			HSSFRow row = sheet.getRow(i);
+			if (row == null)
+				break;
+			
+			HSSFCell categoryCell = row.getCell(category_column);
+			HSSFCell colourCell = row.getCell(color_column);
+			String categoryString = categoryCell.getStringCellValue().trim();
+			Category category = categoryDaoImpl.getCategoryByName(categoryString);
+			
+			double salePrice = row.getCell(salePrice_column).getNumericCellValue();
+			double recCost = row.getCell(recCost_column).getNumericCellValue();
+			double factorySalePrice = row.getCell(factorySalesPrice_column).getNumericCellValue();
+			double discount = row.getCell(discount_column).getNumericCellValue();
+			double wholePrice = row.getCell(wholePrice_column).getNumericCellValue();
+			String productCode = ExcelUtil.getPuzzleString(row.getCell(productCode_column));
+			
+			Product product = new Product();
+			product.setArea(area);
+			product.setBrand(brand);
+			product.setYear(year);
+			product.setQuarter(quarter);
+			product.setCategory(category);
+			product.setChainStore(null);
+			product.setCreateDate(Common_util.getToday());
+			product.setProductCode(productCode);
+			product.setDiscount(discount);
+			product.setSalesPrice(salePrice);
+			product.setWholeSalePrice(wholePrice);
+			product.setUnit("无");
+			product.setNumPerHand(1);
+			product.setSalesPriceFactory(factorySalePrice);
+			product.setRecCost(recCost);
+			
+			
+			String colorsString = colourCell.getStringCellValue().trim();
+			List<Integer> colorIds = new ArrayList<Integer>();
+			if (!colorsString.equals("")){
+				String colorStringArray[] = colorsString.split(",");
+				
+				for (String colorString: colorStringArray){
+					Color color = colorDaoImpl.getColorByName(colorString);
+					colorIds.add(color.getColorId());
+				}
+			}
+		
+			List<Object> rowData = new ArrayList<Object>();
+			rowData.add(product);
+			rowData.add(colorIds);
+			
+			wsData.add(rowData);
+		}
+	}
+
+	public boolean isSuccess() {
+		return isSuccess;
+	}
+
+
+	public String getValidateMsg() {
+		return validateMsg;
+	}
+
+
+	public List<Object> getWsData() {
+		return wsData;
+	}
+
+
+
+}

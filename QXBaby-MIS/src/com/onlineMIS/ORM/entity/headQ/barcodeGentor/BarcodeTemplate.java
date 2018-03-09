@@ -1,12 +1,19 @@
 package com.onlineMIS.ORM.entity.headQ.barcodeGentor;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+
+import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
 
 public class BarcodeTemplate extends ExcelTemplate{
@@ -19,14 +26,81 @@ public class BarcodeTemplate extends ExcelTemplate{
 	private final int recCost_column= 5;
 	private final int wholePrice_column= 6;
 	private final int salePrice_column= 7;
+	private final int delete_column= 8;
+	
 	
 	private List<ProductBarcode> products = new ArrayList<ProductBarcode>();
+
 	
+	/**
+	 * 传入barcode对象，生成文件
+	 * @param ProductBarcodes
+	 * @param templateWorkbookPath
+	 * @throws IOException
+	 */
 	public BarcodeTemplate(List<ProductBarcode> ProductBarcodes, String templateWorkbookPath) throws IOException{
 		super(templateWorkbookPath);
 		this.products = ProductBarcodes;	
 	}
 	
+	/**
+	 * 传入文件，生出条码
+	 */
+	public BarcodeTemplate(File file){
+		super();
+		try {
+		  templateWorkbook = new HSSFWorkbook(new FileInputStream(file));
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 通过文件读出条码，返回
+	 * @return
+	 */
+	public List<String> proccess(){
+		List<String> barcodeList = new ArrayList<String>();
+		
+		if (templateWorkbook == null)
+			return null;
+		
+		HSSFSheet sheet = templateWorkbook.getSheetAt(0);
+
+		for (int i = data_row; ;i++){
+			HSSFRow row = sheet.getRow(i);
+			if (row == null)
+				break;
+			
+			HSSFCell cell = row.getCell(barcode_column);
+			if (cell == null)
+				break;
+			else {
+				String barcodeValue = cell.getStringCellValue();
+				if (barcodeValue == null || barcodeValue.trim().equals(""))
+					break;
+				else {
+					HSSFCell deleteCell = row.getCell(delete_column);
+					
+					if (deleteCell == null)
+						continue;
+					
+					String deleteValue = deleteCell.getStringCellValue();
+					
+					if (deleteValue != null && deleteValue.trim().equalsIgnoreCase("y")){
+						barcodeList.add(barcodeValue);
+					}
+				}
+			}
+		}
+		
+		return barcodeList;
+	}
+	
+	/**
+	 * 通过条码创建excel下载
+	 * @return
+	 */
 	public HSSFWorkbook process(){
 		HSSFSheet sheet = templateWorkbook.getSheetAt(0);
 

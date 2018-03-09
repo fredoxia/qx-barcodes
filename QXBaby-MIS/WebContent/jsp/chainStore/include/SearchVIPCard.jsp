@@ -38,6 +38,7 @@ function checkVIPCardBackProcess(data){
     		$("#maxVipPrepaid").attr("value",data.totalVipPrepaid);
     		$("#vipInfo").html(vipCard.customerName + " " + vipCard.vipType.vipTypeName + " 积分可换现金 :" + (data.totalCash).toFixed(2) + " 剩余预存金 :" + (data.totalVipPrepaid).toFixed(2));
     		var msg = "VIP 卡主 : " + vipCard.customerName + "\n"+
+    				  "开户连锁店 : " + vipCard.issueChainStore.chain_name + "\n"+
     				  "卡种类 : " + vipCard.vipType.vipTypeName + "\n" + 
     				  "累计积分 : " + (data.totalScore).toFixed(2) + "\n" + 
     		          "积分可换现金 : " + (data.totalCash).toFixed(2)+ "\n" + 
@@ -51,7 +52,7 @@ function checkVIPCardBackProcess(data){
 function clearVIPCard(){
 	$("#vipCardNo").attr("value", "");
 	
-	$("#vipCardNoHidden").attr("value", "");
+	$("#vipCardIdHidden").attr("value", "");
 	$("#vipDiscount").attr("value","");
 	
 	$("#vipCardNo").removeAttr("disabled");

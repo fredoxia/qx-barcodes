@@ -9,6 +9,8 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 
 public class ProductActionUIBean {
 	private ProductBarcode product = new ProductBarcode();
@@ -20,6 +22,7 @@ public class ProductActionUIBean {
 	private List<Color> colors = new ArrayList<Color>();
 	
 	
+
 	public List<Color> getColors() {
 		return colors;
 	}

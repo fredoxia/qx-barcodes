@@ -54,6 +54,10 @@ public class ExcelTemplate {
 	public void setDateStyle(CellStyle dateStyle) {
 		this.dateStyle = dateStyle;
 	}
+	
+	public ExcelTemplate(){
+		
+	}
 
 	public ExcelTemplate(String templateWorkbookPath) throws IOException{
 		this.templateWorkbookPath = templateWorkbookPath;

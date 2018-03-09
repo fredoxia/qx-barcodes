@@ -8,7 +8,7 @@
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenShare.js?v3.7"></script>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js?v3.8"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainInvenFlow.js?v1.17"></script>
 <LINK href="<%=request.getContextPath()%>/conf_files/css/qxbaby_css.css" type=text/css rel=STYLESHEET>
 <script>
 $(document).ready(function(){

@@ -7,14 +7,22 @@ import java.util.Map;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.onlineMIS.ORM.DAO.BaseDAO;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandPriceIncreaseDaoImpl;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainSalesPrice;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainSalesPriceId;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BrandPriceIncrease;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.action.chainS.vo.ChainProductBarcodeVO;
 import com.onlineMIS.common.Common_util;
 
@@ -22,27 +30,52 @@ import com.onlineMIS.common.Common_util;
 @Repository
 public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 	
+	@Autowired
+	BrandPriceIncreaseDaoImpl brandPriceIncreaseDaoImpl;
+	
 	public ChainProductBarcodeVO convertProductBarcodeVO(ProductBarcode barcode, ChainStore chainStore){
 		ChainProductBarcodeVO chainProductBarcodeVO = new ChainProductBarcodeVO();
 		int chainId = 0;
 		
 		if (barcode != null){
 			Double myPrice = null;
+
 			if (chainStore != null){
 				chainId = chainStore.getChain_id();
-				ChainPriceIncrement priceIncre = chainStore.getPriceIncrement();
-				if (priceIncre != null && (barcode.getChainStore() == null || barcode.getChainStore().getChain_id() == 0)){
-					myPrice = ChainSalesPriceDaoImpl.calPriceIncre(barcode.getProduct().getSalesPrice(),priceIncre);
-				}
 				
-				ChainSalesPriceId id = new ChainSalesPriceId(chainId, barcode.getBarcode());
-			
-				ChainSalesPrice chainSalesPrice = this.get(id, true);
-				if (chainSalesPrice != null)
-					myPrice = chainSalesPrice.getChainSalesPrice();
+				//1. 如果是总部设定的涨价的货品
+				Product product = barcode.getProduct();
+				Year year = product.getYear();
+				Quarter quarter = product.getQuarter();
+				Brand brand = product.getBrand();
+				chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, null);
+				
+				BrandPriceIncrease brandPriceIncrease = brandPriceIncreaseDaoImpl.getByPK(year, quarter, brand);
+				if (brandPriceIncrease != null){
+					double increase = brandPriceIncrease.getIncrease();
+					
+					chainProductBarcodeVO.setDiscount(increase/100);
+				} else {
+					//2. 如果连锁店自己设定过价格,优先使用连锁店设定的价格
+					ChainSalesPriceId id = new ChainSalesPriceId(chainId, barcode.getBarcode());
+					ChainSalesPrice chainSalesPrice = this.get(id, true);
+					if (chainSalesPrice != null) {
+						myPrice = chainSalesPrice.getChainSalesPrice();
+//						chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, myPrice);
+						chainProductBarcodeVO.setMySalePrice(myPrice);
+					} else {
+						//1. 获取连锁店涨价
+						ChainPriceIncrement priceIncre = chainStore.getPriceIncrement();
+						if (priceIncre != null && (barcode.getChainStore() == null || barcode.getChainStore().getChain_id() == 0)){
+							myPrice = ChainSalesPriceDaoImpl.calPriceIncre(barcode.getProduct().getSalesPrice(),priceIncre);
+							//chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, myPrice);
+							chainProductBarcodeVO.setMySalePrice(myPrice);
+						}
+					}
+				}
 			}
 			
-			chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, myPrice);
+			
 		}
 		
 		chainProductBarcodeVO.setChainId(chainId);

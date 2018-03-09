@@ -38,8 +38,8 @@
         <property name="initialSize" value="25"/>    
         <property name="minIdle" value="10"/>     
         <property name="logAbandoned" value="false"/>   
-        <property name="removeAbandoned" value="true"/>   
-        <property name="removeAbandonedTimeout" value="3600"/> 
+        <property name="removeAbandoned" value="false"/>   
+ 
         <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
     </bean>    
  
@@ -192,7 +192,7 @@
    		 p:cronExpression="0 2 0 ? * MON"/>
    		 
     <!-- weekly hot brand batch job-->
-    <bean id="weeklyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+ <!-- <bean id="weeklyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainDailySalesService"
    		 p:targetMethod="runWeeklyHotBrandProduct"
    		 p:concurrent="false"/>
@@ -200,14 +200,14 @@
    		 p:jobDetail-ref="weeklyHotBrandBatchJob"
    		 p:cronExpression="0 10 0 ? * MON"/> 
 
-    <!-- monthly hot brand batch job-->
+    monthly hot brand batch job
     <bean id="monthlyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainDailySalesService"
    		 p:targetMethod="runMonthlyHotBrandProduct"
    		 p:concurrent="false"/>
     <bean id="monthlyHotBrandBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="monthlyHotBrandBatchJob"
-   		 p:cronExpression="0 30 0 1 * ?"/> 
+   		 p:cronExpression="0 30 0 1 * ?"/>  --> 
    		 
     <!-- 运行每周报表 ：
          1.每周分析当季货品销售情况-->
@@ -226,7 +226,16 @@
    		 p:concurrent="false"/>
     <bean id="weeklyBatchSalesAnalysisRptTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
    		 p:jobDetail-ref="weeklyBatchSalesAnalysisRptJob"
-   	     p:cronExpression="0 1 2 ? * MON"/> 
+   	     p:cronExpression="0 1 3 ? * MON"/> 
+   	     
+   	<!-- 运行每月 1号和16号，关于调货的扎帐 -->
+     <bean id="biweeklyTransferOrderAcctCalculationJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="chainBatchRptService"
+   		 p:targetMethod="runBiweeklyTransferOrderFlowAcctCalculation"
+   		 p:concurrent="false"/>
+    <bean id="biweeklyTransferOrderAcctCalculationTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="biweeklyTransferOrderAcctCalculationJob"
+   	     p:cronExpression="0 45 0 1,16 * ?"/>    	
    	       		 
     <!-- monthly dummy hot brand batch job -->
     <!--<bean id="monthlyDummyHotBrandBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
@@ -252,13 +261,15 @@
    		 	<list>
    		 		<ref bean="dailySalesBatchTrigger"/>
    		 		<ref bean="weeklyRankBatchTrigger"/>
-   		 		<ref bean="weeklyHotBrandBatchTrigger"/>
-   		 		<ref bean="monthlyHotBrandBatchTrigger"/>
+ <!--    		<ref bean="weeklyHotBrandBatchTrigger"/>
+   		 		<ref bean="monthlyHotBrandBatchTrigger"/>-->
    		 		<ref bean="dailyGenBarcodeTrigger"/>
    		 		<ref bean="dailyCheckInvetoryOrderTrigger"/>
    		 		<ref bean="weeklyBatchProductAnalysisRptTrigger"/>
    		 		<ref bean="weeklyBatchSalesAnalysisRptTrigger"/>
    		 		<ref bean="dailySalesVIPPercentageTrigger"/>
+   		 		<ref bean="biweeklyTransferOrderAcctCalculationTrigger"/>
+   		 		
    		 		<!--<ref bean="monthlyDummyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyDummySalesBatchTrigger"/>-->
    		 	</list>

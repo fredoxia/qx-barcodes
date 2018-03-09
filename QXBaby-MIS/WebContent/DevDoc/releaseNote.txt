@@ -177,7 +177,16 @@ Release Date 8 1
 Release Summary
 		DB	: 1. add parent_chain_id in chain_store	
 		
-Release Date
+Release Date 2016 6 6
 Release Summary       
 		DB	: 1. add wechat_amount, alipay_amount columns in chain_sales_order
+		
+Release Date 2017-1-14
+Release Summary       
+		DB	: 1. add chain_transfer_order，chain_transfer_order_product，  chain_transfer_log，chain_transfer_order_flow_acct
+			  2. add shipping_address to chain_store_conf
+			  
+Release Date 
+Release Summary       
+		DB	: 1. add allow_vip_other_chain_vipscore in chain_store_conf
 		  	                  

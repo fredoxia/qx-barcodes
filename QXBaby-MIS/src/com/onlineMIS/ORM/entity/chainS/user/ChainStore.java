@@ -50,6 +50,9 @@ public class ChainStore implements Serializable {
 	private String pinYin;
 	private ChainPriceIncrement priceIncrement;
 	
+	//小票上的抬头。千禧宝贝和嬉乐仓
+	private String printHeader = "千禧宝贝童装连锁";
+	
 	/**
 	 * 0: not allow
 	 * 1: allow
@@ -60,6 +63,14 @@ public class ChainStore implements Serializable {
 	private ChainStore parentStore;
 
 	
+	public String getPrintHeader() {
+		return printHeader;
+	}
+
+	public void setPrintHeader(String printHeader) {
+		this.printHeader = printHeader;
+	}
+
 	public int getAllowAddBarcode() {
 		return allowAddBarcode;
 	}

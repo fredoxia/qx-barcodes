@@ -19,6 +19,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.omg.CORBA.PRIVATE_MEMBER;
+import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,7 @@ import com.onlineMIS.ORM.DAO.headQ.finance.ChainFinanceTraceImpl;
 import com.onlineMIS.ORM.DAO.headQ.finance.FinanceBillImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.HeadQSalesHisDAOImpl;
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.BatchPriceTemplate;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainInitialStock;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainSalesPrice;
@@ -884,6 +886,51 @@ public class ChainMgmtService {
 			}
 			
 			chainUserInforDaoImpl.executeHQLUpdateDelete("UPDATE ChainUserInfor SET resign =1 WHERE myChainStore.chain_id=?", valuesChainId, true);
+		}
+		
+		return response;
+	}
+
+	/**
+	 * 批量更新价格
+	 * @param chainId
+	 * @param inventory
+	 */
+	@Transactional
+	public Response updateBatchPrice(int chainId, File inventory) throws Exception {
+		Response response = new Response();
+		
+		if (inventory != null && chainId != 0){
+			BatchPriceTemplate batchPriceTemplate = new BatchPriceTemplate(inventory);
+			
+			response = batchPriceTemplate.process();
+			List<Object> returnValues = (List<Object>)response.getReturnValue();
+			Map<String, Double> barcodeMap = (Map<String, Double>)returnValues.get(0);
+			Set<String> barcodes = (Set<String>)returnValues.get(1);
+
+			//2. prepare the data
+			Map<String,ProductBarcode> products = productBarcodeDaoImpl.getProductMapByBarcode(barcodes);
+
+			int i = 0;
+			for (String barcode: barcodes){
+				ProductBarcode product = products.get(barcode);
+				Double price = barcodeMap.get(barcode);
+				
+				if (product == null){
+					throw new Exception("系统中,无法找到 " + barcode);
+				} else if (price == null || price <=0){
+					throw new Exception("条码 " + barcode + " 的价格 " + price + " 不正常无法导入");
+				} else {
+					ChainSalesPrice chainSalesPrice = new ChainSalesPrice(barcode, chainId, product, price);
+					chainSalesPriceDaoImpl.saveOrUpdate(chainSalesPrice, true);
+				}
+				
+			    i++;
+			}
+
+			response.setReturnValue(i);
+		} else {
+			response.setFail("无法导入文件或者找到连锁店");
 		}
 		
 		return response;

@@ -2,7 +2,9 @@ package com.onlineMIS.ORM.DAO.headQ.barCodeGentor;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +50,7 @@ import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.PriceMS;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.ProductsMS;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Area;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeImportTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
@@ -72,6 +75,7 @@ import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.ORM.entity.headQ.inventory.JinSuanOrderTemplate;
 import com.onlineMIS.action.headQ.barCodeGentor.BarcodeGenBasicData;
 import com.onlineMIS.action.headQ.barCodeGentor.ProductActionFormBean;
+import com.onlineMIS.action.headQ.barCodeGentor.ProductActionUIBean;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.converter.JSONUtilDateConverter;
@@ -1188,6 +1192,106 @@ public class ProductBarcodeService {
 			formBean.getProductBarcode().getProduct().getYear().setYear_ID(headQInputHelp.getYear());
 			formBean.getProductBarcode().getProduct().getQuarter().setQuarter_ID(headQInputHelp.getQuarter());
 		}
+		
+	}
+
+	/**
+	 * 批量删除条码
+	 * @param inventory
+	 */
+	@Transactional
+	public Response batchDeleteBarcode(File inventory) {
+		Response response = new Response();
+		
+		BarcodeTemplate barcodeTemplate = new BarcodeTemplate(inventory);
+		List<String> barcodes = barcodeTemplate.proccess();
+		
+		if (barcodes == null){
+			response.setFail("读取文件出现问题,请检查文件系统");
+		} else {
+			if (barcodes.size() > 0){
+				String queryString = "UPDATE ProductBarcode p SET p.status = "+ProductBarcode.STATUS_DELETE+" where p.barcode in ";
+				
+				String variables = "(" + barcodes.get(0) ;
+				
+				for (int i =1; i < barcodes.size(); i++){
+					variables += "," + barcodes.get(i);
+				}
+				
+				queryString += variables + ")";
+				
+		        int numberOfDelete =  productBarcodeDaoImpl.executeHQLUpdateDelete(queryString, null, true);
+		        
+		        response.setSuccess("文件上需要删除 " + barcodes.size() + " 个条码. 实际删除了 " + numberOfDelete+ " 个条码");
+		        
+			} else {
+				response.setFail("没有条码需要删除，请检查文件");
+			}
+		}
+		
+		return response;
+		
+	}
+
+	/**
+	 * 批量新增条码
+	 * @param inventory
+	 */
+	@Transactional
+	public Response batchInsertBarcode(File inventory, Product product) {
+		Response response = new Response();
+		
+		/**
+		 * 1. 服务器端验证, 年份, 季度，品牌不能为空，并且 品牌不能是连锁店自己新增品牌
+		 */
+		Area area = areaDaoImpl.get(Area.CURRENT_AREA, true);
+		Year year = yearDaoImpl.get(product.getYear().getYear_ID(), true);
+		Quarter quarter = quarterDaoImpl.get(product.getQuarter().getQuarter_ID(), true);
+		Brand brand = brandDaoImpl.get(product.getBrand().getBrand_ID(), true);
+		if (year == null)
+			response.setFail("产品年份不能为空, 请检查");
+		else if (quarter == null)
+			response.setFail("产品季度不能为空, 请检查");
+		else if (brand == null)
+			response.setFail("产品品牌不能为空, 请检查");
+		else if (brand.getChainStore() != null){
+			response.setFail("产品品牌不能是连锁店品牌, 请检查");
+		}
+		
+		BarcodeImportTemplate barcodeTemplate = new BarcodeImportTemplate(inventory, year, quarter, brand, area);
+		barcodeTemplate.proccess(categoryDaoImpl, colorDaoImpl);
+		
+		if (!barcodeTemplate.isSuccess()){
+			response.setFail(barcodeTemplate.getValidateMsg());
+		} else {
+			List<Object> wsData = barcodeTemplate.getWsData();
+			if (wsData == null|| wsData.size()==0){
+				response.setFail("这个表格无数据");
+			} else {
+				
+				for (Object rowData: wsData){
+					List<Object> rowDataList = (List<Object>)rowData;
+					Product product2 = (Product)rowDataList.get(0);
+					List<Integer> colorIds = (List<Integer>)rowDataList.get(1);
+					
+					saveProduct(product2, colorIds, null);
+				}
+		
+				response.setSuccess("成功导入 "+ wsData.size() +"个 条码 . 条码信息 : " + year.getYear() + quarter.getQuarter_Name() + " " + brand.getBrand_Name());
+			}
+			
+		}
+		
+		return response;
+	}
+
+	public void prepareBatchInsertBarcodeUI(ProductActionFormBean formBean,
+			ProductActionUIBean uiBean) {
+		List<Year> years = yearDaoImpl.getLatestYears();
+		List<Quarter> quarters = quarterDaoImpl.getAll(true);
+		
+		uiBean.getBasicData().setQuarterList(quarters);
+		uiBean.getBasicData().setYearList(years);
 		
 	}
 	

@@ -8,9 +8,11 @@ import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.common.Common_util;
@@ -52,13 +54,18 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 		ChainStoreSalesOrderProduct chainProduct = chainStoreSalesService.scanProductsByBarcode(barcode, formBean.getChainId());
 		
 		double discount = 1;
-		double discountFM = formBean.getDiscount();
-		if (discountFM > 0)
-			discount = discountFM;
 		
 		if (chainProduct == null)
 			jsonMap.put("error", true);
 		else{
+			if (chainProduct.getDiscountRate() != 1)
+				discount = chainProduct.getDiscountRate();
+			else {
+				double discountFM = formBean.getDiscount();
+				if (discountFM > 0)
+					discount = discountFM;
+			}
+			
 			jsonMap.put("error", false);
 	        jsonMap.put("productBarcode", chainProduct.getProductBarcode());	
 	        jsonMap.put("inventory", chainProduct.getInventoryLevel());
@@ -135,13 +142,15 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 		//get the user list
 		List<ChainUserInfor> users = (List<ChainUserInfor>)uiList.get(0);
 		ChainStoreConf chainStoreConf = (ChainStoreConf)uiList.get(1);
+		ChainStore chainStore = (ChainStore)uiList.get(2);
 
 	    jsonMap.put("chainUsers", users);
 	    jsonMap.put("chainStoreConf", chainStoreConf);
+	    jsonMap.put("chainStore", chainStore);
 		
 		//to excludes the set and list inforamtion
 		JsonConfig jsonConfig = new JsonConfig();
-		jsonConfig.setExcludes( new String[]{"myChainStore","roleType", "chainUserFunctions"} );
+		jsonConfig.setExcludes( new String[]{"myChainStore","roleType", "chainUserFunctions","priceIncrement","parentStore","activeDate"} );
 		
 		try{
 			   jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
@@ -176,7 +185,6 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 			//set the data
 			ChainStoreSalesOrder salesOrder = formBean.getChainSalesOrder();
 	
-			
 			try {
 			    response = chainStoreSalesService.saveSaleOrders(salesOrder,userInfor,ChainStoreSalesOrder.SALES, ChainStoreSalesOrder.STATUS_DRAFT);
 			} catch (Exception e) {
@@ -253,7 +261,7 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 		if (productInfor == null){
 			response.setQuickValue(Response.ERROR, "无法找到对应的产品信息");
 		} else {
-			if (chainUserInforService.isMgmtFromHQ(userInfor) || userInfor.getRoleType().isOwner() || isBoss != null){
+			if (ChainUserInforService.isMgmtFromHQ(userInfor) || userInfor.getRoleType().isOwner() || isBoss != null){
 				response.setReturnCode(Response.SUCCESS);
 			} else {
 				response.setQuickValue(Response.NO_AUTHORITY,"用户没有权限查看产品详细信息");

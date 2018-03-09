@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javassist.expr.NewArray;
+
 import org.apache.naming.java.javaURLContextFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
@@ -32,6 +34,8 @@ import com.hp.hpl.sparta.xpath.ThisNodeTest;
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.QxbabyConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainTransferFlowAcctDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainTransferOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.report.ChainBatchRptRepositotyDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.report.ChainMonthlyActiveNumDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.report.ChainMonthlyHotBrandDaoImpl;
@@ -58,10 +62,14 @@ import com.onlineMIS.ORM.entity.chainS.batchRpt.batchRptTemplate.ChainCurrentSea
 import com.onlineMIS.ORM.entity.chainS.batchRpt.batchRptTemplate.ChainCurrentSeasonSalesAnalysisTemplate;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainTransferOrderFlowAcct;
 import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
+import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesVIPPercentageItem;
+import com.onlineMIS.ORM.entity.chainS.report.ChainTransferAcctFlowItem;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;
+import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainTransferAcctFlowTemplate;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
@@ -119,6 +127,12 @@ public class ChainBatchRptService {
 	
 	@Autowired
 	private ChainStoreSalesOrderDaoImpl chainStoreSalesOrderDaoImpl;
+	
+	@Autowired
+	private ChainTransferFlowAcctDaoImpl chainTransferFlowAcctDaoImpl;
+	
+	@Autowired
+	private ChainTransferOrderDaoImpl chainTransferOrderDaoImpl;
 
 	private Calendar today = Calendar.getInstance();
 	
@@ -419,6 +433,7 @@ public class ChainBatchRptService {
 		salesCriteria.add(Restrictions.between("orderDate", startDate, endDate));
 		List<ChainStoreSalesOrder> salesOrders = chainStoreSalesOrderDaoImpl.getByCritera(salesCriteria, false);
 		for (ChainStoreSalesOrder order : salesOrders){
+			loggerLocal.infoB("" + startDate + " " + endDate + " : " + order.getId());
 			Set<ChainStoreSalesOrderProduct> orderProducts = order.getProductSet();
 			Iterator<ChainStoreSalesOrderProduct> orderProductIterator = orderProducts.iterator();
 			
@@ -499,7 +514,7 @@ public class ChainBatchRptService {
 	
 		Response response = new Response();
 		
-		loggerLocal.infoB(new Date() + " 开始 *周* 当季销售分析报表 :  ChainBatchRptService.runWeeklyRptBatch()");
+		loggerLocal.infoB(new Date() + " 开始 *周* 当季销售分析报表 :  ChainBatchRptService.runWeeklyCurrentSeasonSalesAnalysisRpt()");
 		
 		QxbabyConf qxbabyConf = qxbabyConfDaoImpl.getConf();
 		Year year = yearDaoImpl.get(qxbabyConf.getYearId(), true);
@@ -516,7 +531,7 @@ public class ChainBatchRptService {
 		 * 1. 获取当季所有的连锁店
 		 */
 		int numOfStores = 0;
-		List<ChainStore> stores =  chainStoreService.getAvailableClientChainstores();
+		List<ChainStore> stores =  chainStoreService.getActiveChainstoresWithOrder();
 		
 		
 		loggerLocal.infoB("销售分析: 总计多少连锁店:" + stores.size());
@@ -598,6 +613,7 @@ public class ChainBatchRptService {
 			try {
 				calculateSalesMapForSalesAnalysis(dates.get(0), dates.get(1), salesAccumulatedMap, year, quarter);
 			} catch (Exception e){
+				e.printStackTrace();
 				loggerLocal.errorB("获取累计销售件数出错 : " + dates.get(0) + ", " + dates.get(1));
 				loggerLocal.errorB(e);
 				
@@ -710,6 +726,7 @@ public class ChainBatchRptService {
 		salesCriteria.add(Restrictions.between("orderDate", startDate, endDate));
 		List<ChainStoreSalesOrder> salesOrders = chainStoreSalesOrderDaoImpl.getByCritera(salesCriteria, false);
 		for (ChainStoreSalesOrder order : salesOrders){
+			//loggerLocal.infoB("" + startDate + " " + endDate + " : " + order.getId());
 			Set<ChainStoreSalesOrderProduct> orderProducts = order.getProductSet();
 			Iterator<ChainStoreSalesOrderProduct> orderProductIterator = orderProducts.iterator();
 			
@@ -787,6 +804,9 @@ public class ChainBatchRptService {
 						}
 						purchaseAmt += orderProduct.getWholeSalePrice() * quantity;
 					} else {
+						if (chainConfirmStatus == InventoryOrder.STATUS_CHAIN_NOT_CONFIRM){
+							inDeliveryAmt -= orderProduct.getWholeSalePrice() * quantity;
+						}
 						returnAmt += orderProduct.getWholeSalePrice() * quantity;
 					}
 				}
@@ -962,7 +982,147 @@ public class ChainBatchRptService {
 				return 0;
 			
 		}
-	}	
+	}
+	
+	/**
+	 * 每个月16号凌晨运行前 1-15号之间的 transfer-order flow acct
+	 * 
+	 * 每个月1号运行前16号到月底的pre-order flow acct
+	 */
+	public void runBiweeklyTransferOrderFlowAcctCalculation(){
+		Date today = Common_util.getToday();
+		
+		loggerLocal.infoB(today + " 开始 运行调货单的流水  :  ChainBatchRptService.runBiweeklyTransferOrderFlowAcctCalculation()");
+		int date = today.getDate();
+		
+		Date startDate = null;
+		Date endDate = Common_util.getYestorday();
+		
+		Calendar thisMonth = Calendar.getInstance();
+		if (date == 1){
+			int lastMonthInt = thisMonth.get(Calendar.MONTH);
+			thisMonth.set(Calendar.MONTH, lastMonthInt - 1);
+			thisMonth.set(Calendar.DATE, 16);
+			
+			startDate = new Date(thisMonth.getTimeInMillis());
+		} else if (date == 16){
+			thisMonth.set(Calendar.DATE, 1);
+			startDate = new Date(thisMonth.getTimeInMillis());
+		}
+		
+		startDate = Common_util.formStartDate(startDate);
+		endDate = Common_util.formEndDate(endDate);
+		
+		Object[] values = {startDate, endDate};
+		String hql = "SELECT acctChainStoreId, sum(totalQuantity), sum(totalWholeSalesPrice), sum(totalSalesPrice), sum(flowAcctAmt), sum(transportationFee) FROM ChainTransferOrderFlowAcct WHERE orderId>0 AND acctFlowDate BETWEEN ? AND ? GROUP BY acctChainStoreId";
+		
+		Map<Integer, ChainTransferOrderFlowAcct> flowAcctMap = new HashMap<Integer, ChainTransferOrderFlowAcct>();
+		
+		String comment = Common_util.dateFormat.format(startDate) +" 至 " + Common_util.dateFormat.format(endDate) +" 调货费用总计";
+		List<Object> resultValues = chainTransferFlowAcctDaoImpl.executeHQLSelect(hql, values, null, false);
+		
+		if (resultValues != null){
+			for (Object record : resultValues ){
+				Object[] records = (Object[])record;
+				int chainId = Common_util.getInt(records[0]);
+				int quantity = Common_util.getInt(records[1]);
+				double wholePrice = Common_util.getDouble(records[2]);
+				double salesPrice = Common_util.getDouble(records[3]);
+				double acctFlow = Common_util.getDouble(records[4]);
+				double transportationFee = Common_util.getDouble(records[5]);
+				
+				ChainTransferOrderFlowAcct flowAcct = new ChainTransferOrderFlowAcct();
+				flowAcct.setAcctChainStoreId(chainId);
+				flowAcct.setAcctFlowDate(today);
+				flowAcct.setFromChainStore(comment);
+				flowAcct.setTotalQuantity(quantity);
+//				flowAcct.setTotalWholeSalesPrice(wholePrice);
+//				flowAcct.setTotalSalesPrice(salesPrice);
+				flowAcct.setFlowAcctAmt(acctFlow);
+				flowAcct.setTransportationFee(transportationFee);
+				
+				flowAcctMap.put(chainId, flowAcct);
+			}
+		}
+		
+		String getMinOrderId = "SELECT MIN(orderId) FROM ChainTransferOrderFlowAcct";
+		List<Object> objectResult = chainTransferFlowAcctDaoImpl.executeHQLSelect(getMinOrderId, null, null, false);
+		int minOrderId = 0;
+		if (objectResult != null){
+			minOrderId = (Integer)objectResult.get(0);
+		} 
+		if (minOrderId > 0)
+			minOrderId *= -1;
+		
+		List<ChainStore> allParentsStores = chainStoreDaoImpl.getAllParentStores();
+		for (ChainStore store : allParentsStores){
+			minOrderId--;
+			int id = store.getChain_id();
+			ChainTransferOrderFlowAcct flowAcct = flowAcctMap.get(id);
+			if (flowAcct == null){
+				flowAcct = new ChainTransferOrderFlowAcct();
+				flowAcct.setAcctChainStoreId(id);
+				flowAcct.setAcctFlowDate(today);
+				flowAcct.setFromChainStore(comment);
+				flowAcctMap.put(id, flowAcct);
+			} 
+			flowAcct.setOrderId(minOrderId);
+
+			chainTransferFlowAcctDaoImpl.saveOrUpdate(flowAcct, false);
+		}
+		
+		List<ChainTransferAcctFlowItem> acctFlowItems = new ArrayList<ChainTransferAcctFlowItem>();
+		Iterator<ChainTransferOrderFlowAcct> chainIterator = flowAcctMap.values().iterator();
+		while (chainIterator.hasNext()){
+			ChainTransferOrderFlowAcct flowAcct = chainIterator.next();
+			if (flowAcct.getFlowAcctAmt() == 0)
+				continue;
+			
+			int chainId = flowAcct.getAcctChainStoreId();
+			ChainStore store = chainStoreDaoImpl.get(chainId, true);
+			
+			ChainTransferAcctFlowItem item = new ChainTransferAcctFlowItem(store.getChain_name() + " " +store.getOwner_name(), flowAcct.getFlowAcctAmt());
+			acctFlowItems.add(item);
+		}
+		
+		String fromToDate = Common_util.dateFormat.format(startDate) +" 至 " + Common_util.dateFormat.format(endDate);
+		
+		String webInf = this.getClass().getClassLoader().getResource("").getPath();
+		String contextPath = webInf.substring(1, webInf.indexOf("classes")).replaceAll("%20", " ");  
+		ChainTransferAcctFlowTemplate acctFlowTemplate = null;
+		try {
+			acctFlowTemplate = new ChainTransferAcctFlowTemplate(acctFlowItems, contextPath, today, fromToDate);
+			
+			HSSFWorkbook workbook = acctFlowTemplate.process();
+			
+			ChainBatchRptRepositoty rptRepository = new ChainBatchRptRepositoty();
+			rptRepository.setRptId(ChainBatchRptRepositoty.TYPE_CHAIN_TRANSFER_ACCT_FLOW_RPT);
+			rptRepository.setRptDate(new java.sql.Date(today.getTime()));
+			
+			String rptPath = rptRepository.getRptPathByType() + rptRepository.getDownloadRptName();
+			
+			File fileOuputFile = new File(rptPath);
+			FileOutputStream fileOutputStream = new FileOutputStream(fileOuputFile);
+			workbook.write(fileOutputStream);
+			fileOutputStream.close();
+			
+			ChainBatchRptRepositoty chainBatchRptRepositotyOld = chainBatchRptRepositotyDaoImpl.getUniqueRepository(ChainBatchRptRepositoty.TYPE_CHAIN_TRANSFER_ACCT_FLOW_RPT, new java.sql.Date(today.getTime()), "调货");
+			if (chainBatchRptRepositotyOld == null){
+				ChainBatchRptRepositoty chainBatchRptRepositoty = new ChainBatchRptRepositoty();
+				chainBatchRptRepositoty.setRptId(ChainBatchRptRepositoty.TYPE_CHAIN_TRANSFER_ACCT_FLOW_RPT);
+				chainBatchRptRepositoty.setRptDate(new java.sql.Date(today.getTime()));
+				chainBatchRptRepositoty.setRptName("调货");
+				chainBatchRptRepositoty.setRptDes(fromToDate);
+				chainBatchRptRepositotyDaoImpl.saveOrUpdate(chainBatchRptRepositoty, true);
+			}
+			
+		} catch (Exception e) {
+			loggerLocal.error("生成调货流水报表出现错误 : " + today);
+			loggerLocal.errorB(e);
+			e.printStackTrace();
+			return;
+		}
+	}
 }
 
 

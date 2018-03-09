@@ -5,12 +5,15 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.struts2.ServletActionContext;
 import org.springframework.stereotype.Controller;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BrandPriceIncrease;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
@@ -210,5 +213,99 @@ public class ProductJSPAction extends ProductAction {
 		
 		return "ColorList";	
 	}
+	
+	/**
+	 * 进入批量删除条码的页面
+	 * @return
+	 */
+	public String preBatchDeleteBarcode(){
+		loggerLocal.info("ProductJSPAction - preBatchDeleteBarcode");
+		
+		return "batchDeleteBarcode";	
+	}
 
+	/**
+	 * 批量删除条码
+	 * @return
+	 */
+	public String batchDeleteBarcode(){
+		loggerLocal.info("ProductJSPAction - preBatchDeleteBarcode");
+		
+		Response response = productService.batchDeleteBarcode(formBean.getInventory());
+		
+		if (response.isSuccess())
+			addActionMessage(response.getMessage());
+		else 
+			addActionError(response.getMessage());
+		
+		return "batchDeleteBarcode";	
+	}
+	
+	/**
+	 * 进入 brand price 提价的页面
+	 * @return
+	 */
+	public String preBrandPriceIncrease(){
+		loggerLocal.info("ProductJSPAction - preBrandPriceIncrease");
+	
+		return "brandPriceIncrease";
+	}
+	
+	public String preEditBrandPriceIncrease(){
+		loggerLocal.info("ProductJSPAction - preEditBrandPriceIncrease");
+		
+		BrandPriceIncrease bpIncrease = formBean.getBpi();
+		int yearId = bpIncrease.getYear().getYear_ID();
+		int quarterId = bpIncrease.getQuarter().getQuarter_ID();
+		int brandId = bpIncrease.getBrand().getBrand_ID();
+		
+		
+		Response response = brandPriceIncreaseService.getBPI(yearId, quarterId, brandId);
+		
+		if (response.isSuccess()){
+			bpIncrease = (BrandPriceIncrease)response.getReturnValue();
+		} else 
+			addActionError(response.getMessage());
+		
+		brandPriceIncreaseService.prepareEditBrandPriceIncreaseUI(formBean, uiBean);
+		
+		return "editBrandPriceIncrease";
+	}
+	
+	/**
+	 * 进入批量插入条码页面
+	 * @return
+	 */
+	public String preBatchInsertBarcode(){
+		loggerLocal.info("ProductJSPAction - preBatchInsertBarcode");
+		
+		productService.prepareBatchInsertBarcodeUI(formBean, uiBean);
+		
+		return "batchInsertBarcode";
+	}
+	
+	/**
+	 * 批量插入页面
+	 * @return
+	 */
+	public String batchInsertBarcode(){
+		loggerLocal.info("ProductJSPAction - batchInsertBarcode");
+		
+		productService.prepareBatchInsertBarcodeUI(formBean, uiBean);
+		
+		Response response = new Response();
+		try {
+		   response = productService.batchInsertBarcode(formBean.getInventory(), formBean.getProductBarcode().getProduct());
+		} catch (Exception e){
+			response.setFail("保存条码出现错误  : " + e.getMessage());
+			
+		}
+		
+		if (response.isSuccess())
+			addActionMessage(response.getMessage());
+		else 
+			addActionError(response.getMessage());
+		
+		return "batchInsertBarcode";
+	}
 }

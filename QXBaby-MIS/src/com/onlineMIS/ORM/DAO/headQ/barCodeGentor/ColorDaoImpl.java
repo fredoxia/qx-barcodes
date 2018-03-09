@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.common.loggerLocal;
 
@@ -48,5 +49,25 @@ public class ColorDaoImpl extends BaseDAO<Color> {
 		return getByCritera(criteria, true);
 	}
 
+	public boolean checkColorExist(String color){
+		DetachedCriteria criteria = DetachedCriteria.forClass(Color.class);
+		criteria.add(Restrictions.eq("name", color));
+		
+		List<Color> colors = this.getByCritera(criteria, true);
+		
+		if (colors == null || colors.size() != 1)
+			return false;
+		else 
+			return true;
+	}
+
+	public Color getColorByName(String colorString) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Color.class);
+		criteria.add(Restrictions.eq("name", colorString));
+		
+		List<Color> colors = this.getByCritera(criteria, true);
+		
+		return colors.get(0);
+	}
 
 }

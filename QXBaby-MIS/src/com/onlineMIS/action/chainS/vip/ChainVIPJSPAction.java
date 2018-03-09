@@ -380,7 +380,7 @@ public class ChainVIPJSPAction extends ChainVIPAction {
 
 		Date today = Common_util.getToday();
 		Calendar todayCalendar = Calendar.getInstance();
-		todayCalendar.add(Calendar.MONTH, -6);
+		todayCalendar.add(Calendar.MONTH, -12);
 		Date lastTwoMonth = new Date(todayCalendar.getTimeInMillis());
 		
 		Response response = chainVIPService.getVIPConsumptionHis(formBean.getChainStore().getChain_id(), formBean.getVipCard(), lastTwoMonth,today,   this.getPage(), this.getRows(), false);

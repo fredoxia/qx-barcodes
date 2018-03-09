@@ -17,7 +17,7 @@ public class testSQLServer {
 	 */
 	public static void main(String[] args) {
 		String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"; 
-		String dbURL = "jdbc:sqlserver://localhost:1433; DatabaseName=QXBABY20130305"; 
+		String dbURL = "jdbc:sqlserver://localhost:1433; DatabaseName=QXBB2015"; 
 		String userName = "program"; 
 		String userPwd = "vj7683c6"; 
 		Connection dbConn ;

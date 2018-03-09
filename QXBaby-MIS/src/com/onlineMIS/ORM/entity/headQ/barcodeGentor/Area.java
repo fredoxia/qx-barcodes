@@ -3,6 +3,7 @@ package com.onlineMIS.ORM.entity.headQ.barcodeGentor;
 import java.io.Serializable;
 
 public class Area  implements Serializable{
+	public static final int CURRENT_AREA = 1;
     private int area_ID;
     private String area_Name;
     private String area_Code;

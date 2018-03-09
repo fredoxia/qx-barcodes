@@ -20,7 +20,7 @@ $(document).ready(function(){
 	});
 
 function openCardWin(url){
-	window.open(url,'cardWindow','height=600, width=440, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
+	window.open(url,'cardWindow','height=640, width=460, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
 }
 function validateSubmit(){
 	var vipTypeId = $("input:radio[name='formBean.selectedCardId']:checked").val();

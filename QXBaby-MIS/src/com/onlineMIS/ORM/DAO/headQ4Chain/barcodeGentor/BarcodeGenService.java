@@ -541,6 +541,7 @@ public class BarcodeGenService {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.setFail(e.getMessage());
 		}
 		

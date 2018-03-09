@@ -31,8 +31,10 @@
         <property name="defaultVipScoreMultiple" column="default_vip_score_multiple" type="integer"/> 
         <property name="hideDiscountPrint" column="hide_discount_print" type="integer"/> 
         
+        <property name="shippingAddress" column="shipping_address" type="string"/> 
         <property name="allowMyPrepaidCrossStore" column="allow_my_prepaid_cross_store" type="integer"/> 
         <property name="prepaidCalculationType" column="prepaid_calculation_type" type="integer"/> 
+        <property name="allowOtherVIPUseVIPScore" column="allow_vip_other_chain_vipscore" type="integer"/>
       </class>
       
       <class name="ChainStoreGroupElement" table="chain_store_group_element">

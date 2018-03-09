@@ -41,8 +41,10 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 	private final int coupon_column = 13;
 	private final int card_amt_column = 14;
 	private final int cash_amt_column= 15;
-	private final int qx_net_amt_column = 16;
-	private final int qx_net_amt_lastYear_column = 17;
+	private final int alipay_amt_column = 16;
+	private final int wechat_amtr_column = 17;
+	private final int qx_net_amt_column = 18;
+	private final int qx_net_amt_lastYear_column = 19;
 	
 	private List<ChainSalesReport> salesRptEle = new ArrayList<ChainSalesReport>();
 	private Map<Integer, Double> lastYearMap = null;
@@ -86,6 +88,10 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 			row.createCell(coupon_column).setCellValue(saleReport.getCouponSum());
 			row.createCell(card_amt_column).setCellValue(saleReport.getCardAmtSum());
 			row.createCell(cash_amt_column).setCellValue(saleReport.getCashNetSum());
+
+			row.createCell(alipay_amt_column).setCellValue(saleReport.getAlipaySum());
+			row.createCell(wechat_amtr_column).setCellValue(saleReport.getWechatAmtSum());
+			
 			row.createCell(qx_net_amt_column).setCellValue(saleReport.getQxAmount());
 			
 			int chainId = saleReport.getChainStore().getChain_id();
@@ -116,6 +122,10 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 			row.createCell(coupon_column).setCellValue(saleReport.getCouponSum());
 			row.createCell(card_amt_column).setCellValue(saleReport.getCardAmtSum());
 			row.createCell(cash_amt_column).setCellValue(saleReport.getCashNetSum());
+			
+			row.createCell(alipay_amt_column).setCellValue(saleReport.getAlipaySum());
+			row.createCell(wechat_amtr_column).setCellValue(saleReport.getWechatAmtSum());
+			
 			row.createCell(qx_net_amt_column).setCellValue(saleReport.getQxAmount());
 			Double lastYearData = lastYearMap.get(Common_util.ALL_RECORD);
 			

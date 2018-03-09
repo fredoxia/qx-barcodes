@@ -1,9 +1,12 @@
 package com.onlineMIS.action.headQ.barCodeGentor;
 
 import java.util.ArrayList;
+import java.io.File;
 import java.sql.Date;
 import java.util.List;
+
 import com.onlineMIS.ORM.entity.base.Pager;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BrandPriceIncrease;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 
 public class ProductActionFormBean {
@@ -19,7 +22,14 @@ public class ProductActionFormBean {
     protected int orderType;
     private String colorNames;
     private Pager pager = new Pager();
-
+    
+    //file upload
+    private File inventory = null;
+    private String inventoryContentType;
+    private String inventoryFileName;
+    
+    private BrandPriceIncrease bpi = new BrandPriceIncrease();
+    
     
     /**
      * 来至哪里
@@ -27,6 +37,40 @@ public class ProductActionFormBean {
      * 1: productCode
      */
     private int fromSrc = 0;
+
+    
+    
+	public BrandPriceIncrease getBpi() {
+		return bpi;
+	}
+
+	public void setBpi(BrandPriceIncrease bpi) {
+		this.bpi = bpi;
+	}
+
+	public File getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(File inventory) {
+		this.inventory = inventory;
+	}
+
+	public String getInventoryContentType() {
+		return inventoryContentType;
+	}
+
+	public void setInventoryContentType(String inventoryContentType) {
+		this.inventoryContentType = inventoryContentType;
+	}
+
+	public String getInventoryFileName() {
+		return inventoryFileName;
+	}
+
+	public void setInventoryFileName(String inventoryFileName) {
+		this.inventoryFileName = inventoryFileName;
+	}
 
 	public int getFromSrc() {
 		return fromSrc;

@@ -109,6 +109,15 @@ function clearAllData(){
       <td></td>
     </tr>
     <tr class="InnerTableContent">
+      <td height="25"><strong>调货管理:</strong></td>
+      <td>新建/查询单据/流水
+      <input type="checkbox" name="formBean.functions" id="function23" value="23"/></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>    
+    <tr class="InnerTableContent">
       <td height="25"><strong>库存管理:</strong></td>
       <td>新建/修改/删除库存单据
       <input type="checkbox" name="formBean.functions" id="function5" value="5"/></td>

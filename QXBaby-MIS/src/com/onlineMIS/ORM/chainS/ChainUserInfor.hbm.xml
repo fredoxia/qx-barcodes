@@ -34,7 +34,7 @@
 		<many-to-one name="priceIncrement" column="price_increment" fetch="select" class="com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement" not-null="false"  lazy="false"/>
 		<property name="pinYin" column="pin_yin" type="string"/>
 		<property name="allowAddBarcode" column="allow_add_barcode" type="integer"/>
-		
+		<property name="printHeader" column="print_header" type="string"/>
 		<property name="activeDate" column="active_date" type="date"/>
 		<many-to-one name="parentStore" fetch="join" column="parent_chain_id" class="ChainStore" not-null="false" lazy="false"/>
     </class>

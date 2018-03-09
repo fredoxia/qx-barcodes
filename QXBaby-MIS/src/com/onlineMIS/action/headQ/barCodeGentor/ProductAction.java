@@ -2,8 +2,11 @@ package com.onlineMIS.action.headQ.barCodeGentor;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandPriceIncreaseService;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.action.BaseAction;
 
@@ -18,9 +21,9 @@ public class ProductAction extends BaseAction {
 	protected ProductActionFormBean formBean = new ProductActionFormBean();
     
 	@Autowired
-	protected ProductBarcodeService barcodeService;
-	@Autowired
 	protected ProductBarcodeService productService;
+	@Autowired
+	protected BrandPriceIncreaseService brandPriceIncreaseService;
 
 	protected List<String> selectedBarcodes = new ArrayList<String>();
 

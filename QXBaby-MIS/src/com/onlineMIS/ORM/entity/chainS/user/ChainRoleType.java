@@ -15,6 +15,8 @@ public class ChainRoleType implements Serializable{
     public static final int CHAIN_OWNER= 3;
     public static final int CHAIN_LEAD= 4;
     public static final int CHAIN_STAFF= 5;
+    public static final int SELF_CHAIN_OWNER= 6;
+    public static final int SELE_CHAIN_STAFF= 7;
 	
 	private int chainRoleTypeId;
 	private String chainRoleTypeName;

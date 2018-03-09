@@ -15,7 +15,11 @@ import net.sf.json.JsonConfig;
 
 
 
+
+
+
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandPriceIncreaseService;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
@@ -199,7 +203,7 @@ public class ProductJSONAction extends ProductAction {
 			 */
 			Response response = new Response();
 			try {
-			     barcodeService.saveProduct(formBean.getProductBarcode().getProduct(), formBean.getColorIds(), formBean.getSizeIds());
+				productService.saveProduct(formBean.getProductBarcode().getProduct(), formBean.getColorIds(), formBean.getSizeIds());
 			
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -213,7 +217,7 @@ public class ProductJSONAction extends ProductAction {
 			    jsonMap.put("msg", response.getMessage());
 			} else {
 				
-				List<ProductBarcode> barcodes = barcodeService.getSameGroupProductBarcodes(formBean.getProductBarcode().getProduct());
+				List<ProductBarcode> barcodes = productService.getSameGroupProductBarcodes(formBean.getProductBarcode().getProduct());
 	
 			    jsonMap.put("msg", response.getMessage());
 				jsonMap.put("barcodes", barcodes);
@@ -242,7 +246,7 @@ public class ProductJSONAction extends ProductAction {
 		Response response = new Response();
 		
 		try {
-		    response = barcodeService.getProductInforBySerialNum(formBean.getProductBarcode().getProduct().getSerialNum());
+		    response = productService.getProductInforBySerialNum(formBean.getProductBarcode().getProduct().getSerialNum());
 		} catch (Exception e) {
 			response.setMessage(e.getMessage());
 			response.setReturnCode(Response.FAIL);
@@ -263,7 +267,7 @@ public class ProductJSONAction extends ProductAction {
 	
 	public String checkProductCodeSerialNum(){
 
-		Response response = barcodeService.checkErrorBeforeGenerateBarcode(formBean.getProductBarcode().getProduct());
+		Response response = productService.checkErrorBeforeGenerateBarcode(formBean.getProductBarcode().getProduct());
 		
 		String tip ="";
 		int returnCode = response.getReturnCode();
@@ -281,6 +285,87 @@ public class ProductJSONAction extends ProductAction {
 		
 		jsonMap.put("tip", tip);
 		jsonObject = JSONObject.fromObject(jsonMap);
+		
+		return SUCCESS;
+	}
+	
+	/**
+	 * 获取所有品牌价格变动的记录
+	 * @return
+	 */
+	public String getAllBrandPriceIncrease(){
+		Response response = new Response();
+		try {
+		    response = brandPriceIncreaseService.getAllBrandPriceIncrease();
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		if (response.getReturnCode() == Response.SUCCESS){
+			jsonMap = (Map)response.getReturnValue();
+			JsonConfig jsonConfig = new JsonConfig();
+			jsonConfig.setExcludes( new String[]{"chainStore"} );
+			
+			try {
+				jsonObject = JSONObject.fromObject(jsonMap,jsonConfig);
+			} catch (Exception e) {
+				loggerLocal.error(e);
+				response.setReturnCode(Response.FAIL);
+			}
+		}
+		
+		return SUCCESS;
+	}
+	
+	/**
+	 * 保存 brand price increase
+	 * @return
+	 */
+	public String saveBrandPriceIncrease(){
+		Response response = new Response();
+		try {
+			
+		    response = brandPriceIncreaseService.saveBrandPriceIncrease(formBean.getBpi(), formBean.getProductBarcode().getProduct().getBrand());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		try {
+				jsonObject = JSONObject.fromObject(response);
+			} catch (Exception e) {
+				loggerLocal.error(e);
+				response.setReturnCode(Response.FAIL);
+			}
+
+		
+		return SUCCESS;
+	}
+	
+	/**
+	 * 删除 brand price increase
+	 * @return
+	 */
+	public String deleteBrandPriceIncrease(){
+		Response response = new Response();
+		try {
+			
+		    response = brandPriceIncreaseService.deleteBrandPriceIncrease(formBean.getBpi());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		if (response.getReturnCode() == Response.SUCCESS){
+
+			try {
+				jsonObject = JSONObject.fromObject(response);
+			} catch (Exception e) {
+				loggerLocal.error(e);
+				response.setReturnCode(Response.FAIL);
+			}
+		}
 		
 		return SUCCESS;
 	}

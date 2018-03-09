@@ -28,12 +28,6 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
-import org.apache.naming.java.javaURLContextFactory;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.hibernate.hql.ast.tree.Case2Node;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.format.number.PercentFormatter;
 
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
@@ -414,6 +408,13 @@ public class Common_util {
 	public static java.sql.Date getYestorday(){
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		java.sql.Date today = new java.sql.Date(calendar.getTimeInMillis());
+		return today;
+	}
+	
+	public static java.sql.Date getLastYearDate(){
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -1);
 		java.sql.Date today = new java.sql.Date(calendar.getTimeInMillis());
 		return today;
 	}

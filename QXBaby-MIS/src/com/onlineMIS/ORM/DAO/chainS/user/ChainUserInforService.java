@@ -3,9 +3,11 @@ package com.onlineMIS.ORM.DAO.chainS.user;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.naming.java.javaURLContextFactory;
 import org.hibernate.criterion.Criterion;
@@ -20,11 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainTransferOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.finance.FinanceBillImpl;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforService;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainTransferOrder;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.user.ChainLoginStatisticInforVO;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
@@ -52,6 +56,9 @@ public class ChainUserInforService {
 	private final boolean cached = true;
 	
 	@Autowired
+	private ChainStoreDaoImpl chainStoreDaoImpl;
+	
+	@Autowired
 	private ChainUserInforDaoImpl chainUserInforDaoImpl;
 	
 	@Autowired
@@ -71,6 +78,9 @@ public class ChainUserInforService {
 	
 	@Autowired
 	private FinanceBillImpl financeBillImpl;
+	
+	@Autowired
+	private ChainTransferOrderDaoImpl chainTransferOrderDaoImpl;
 	
 	@Transactional
 	public Response validateUser(String userName, String password, boolean addFunction){
@@ -464,6 +474,8 @@ public class ChainUserInforService {
 	 * 5. 多少调货调入单
 	 * 6. 多少采购单据未确认
 	 * 7. 多少总部财务单据
+	 * 需要考虑他的子连锁店统计数据
+	 * 
 	 * @param userInfor
 	 * @param response
 	 */
@@ -479,6 +491,7 @@ public class ChainUserInforService {
 		java.util.Date startDate = Common_util.formStartDate(Common_util.calcualteDate(today, statisDays * -1));
 		java.util.Date endDate = Common_util.formEndDate(today);
 		
+
 		statisDays++;
 		
 		//1. 获草稿零售单未过账的
@@ -501,7 +514,62 @@ public class ChainUserInforService {
 //		ChainLoginStatisticInforVO prepaidOrderVo = new ChainLoginStatisticInforVO("近"+ statisDays + "天未过账的草稿零售单", draftOrderCount);
 //		statisEle.add(draftOrderVo);
 		
-		//3. 获取报损单报益单
+ 		//2. 获取未确认的采购单
+		Date lastYear = Common_util.getLastYearDate();
+		
+		DetachedCriteria purchaseOrderCriteria = DetachedCriteria.forClass(InventoryOrder.class);
+		purchaseOrderCriteria.add(Restrictions.eq("order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
+		purchaseOrderCriteria.add(Restrictions.ne("chainConfirmStatus", InventoryOrder.STATUS_CHAIN_CONFIRM));
+		purchaseOrderCriteria.add(Restrictions.gt("order_EndTime", lastYear));
+		purchaseOrderCriteria.add(Restrictions.eq("client_id", clientId));
+		purchaseOrderCriteria.setProjection(Projections.rowCount());
+		int purchaseOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(purchaseOrderCriteria, true));
+		ChainLoginStatisticInforVO purchaseOrderVO = new ChainLoginStatisticInforVO("千禧宝贝未确认收货的采购单", purchaseOrderCount);
+		statisEle.add(purchaseOrderVO);
+		
+		//3. 子账户的采购单
+		List<ChainStore> childStores = chainStoreDaoImpl.getChildChainstore(chainId);
+		int purchaseClientOrderCount = 0;
+		if (childStores != null && childStores.size() > 0){
+			Set<Integer> clientIds = new HashSet<Integer>();
+			for (ChainStore chainStore : childStores){
+				clientIds.add(chainStore.getClient_id());
+			}
+			
+			DetachedCriteria purchaseClientOrderCriteria = DetachedCriteria.forClass(InventoryOrder.class);
+			purchaseClientOrderCriteria.add(Restrictions.eq("order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
+			purchaseClientOrderCriteria.add(Restrictions.ne("chainConfirmStatus", InventoryOrder.STATUS_CHAIN_CONFIRM));
+			purchaseClientOrderCriteria.add(Restrictions.gt("order_EndTime", lastYear));
+			purchaseClientOrderCriteria.add(Restrictions.in("client_id", clientIds));
+			purchaseClientOrderCriteria.setProjection(Projections.rowCount());
+			purchaseClientOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(purchaseClientOrderCriteria, true));
+		} 
+		ChainLoginStatisticInforVO purchaseClientOrderVO = new ChainLoginStatisticInforVO("禧乐仓未确认收货的采购单", purchaseClientOrderCount);
+		statisEle.add(purchaseClientOrderVO);
+		
+	    //4. 获取三方调货单
+ 		int newTransferIn = 0 ;
+ 		int newTransferOut = 0;
+		DetachedCriteria transferOrderCriteria = DetachedCriteria.forClass(ChainTransferOrder.class);
+		//transferOrderCriteria.add(Restrictions.between("orderDate", startDate, endDate));
+		transferOrderCriteria.add(Restrictions.and(Restrictions.ne("status", ChainTransferOrder.STATUS_DRAFT), Restrictions.ne("status", ChainTransferOrder.STATUS_CONFIRMED)));
+		transferOrderCriteria.add(Restrictions.or(Restrictions.eq("fromChainStore.chain_id", chainId), Restrictions.eq("toChainStore.chain_id", chainId)));
+		List<ChainTransferOrder> transferOrders = chainTransferOrderDaoImpl.getByCritera(transferOrderCriteria, true);
+		for (ChainTransferOrder order : transferOrders){
+			//int fromChainId = order.getFromChainStore().getChain_id();
+			int toChainId = order.getToChainStore().getChain_id();
+			
+			if (toChainId == chainId)
+				newTransferIn++;
+			else 
+				newTransferOut++;
+		}
+		ChainLoginStatisticInforVO newTansferInVO = new ChainLoginStatisticInforVO("未完成的(新)调货单 (调入)", newTransferIn);
+		statisEle.add(newTansferInVO);
+		ChainLoginStatisticInforVO newTransferOutVO = new ChainLoginStatisticInforVO("未完成的(新)调货单 (调出)", newTransferOut);
+		statisEle.add(newTransferOutVO);
+		
+		//5. 获取报损单报益单
 		//以后可能有性能问题
  		int overFlow = 0;
  		int flowLoss = 0;
@@ -536,25 +604,12 @@ public class ChainUserInforService {
 		statisEle.add(overFlowOrderVO);
 		ChainLoginStatisticInforVO flowLossOrderVO = new ChainLoginStatisticInforVO("近"+ statisDays + "天 创建的报损单", flowLoss);
 		statisEle.add(flowLossOrderVO);
-		ChainLoginStatisticInforVO tansferInVO = new ChainLoginStatisticInforVO("近"+ statisDays + "天 创建的调货单(调入)", transferIn);
+		ChainLoginStatisticInforVO tansferInVO = new ChainLoginStatisticInforVO("近"+ statisDays + "天 创建的(老)调货单 (调入)", transferIn);
 		statisEle.add(tansferInVO);
-		ChainLoginStatisticInforVO transferOutVO = new ChainLoginStatisticInforVO("近"+ statisDays + "天  创建的调货单(调出)", transferOut);
+		ChainLoginStatisticInforVO transferOutVO = new ChainLoginStatisticInforVO("近"+ statisDays + "天  创建的(老)调货单 (调出)", transferOut);
 		statisEle.add(transferOutVO);
-		
- 		
- 		
- 		//4. 获取未确认的采购单
-		DetachedCriteria purchaseOrderCriteria = DetachedCriteria.forClass(InventoryOrder.class);
-		purchaseOrderCriteria.add(Restrictions.eq("order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
-		purchaseOrderCriteria.add(Restrictions.ne("chainConfirmStatus", InventoryOrder.STATUS_CHAIN_CONFIRM));
-		purchaseOrderCriteria.add(Restrictions.eq("client_id", clientId));
-		purchaseOrderCriteria.add(Restrictions.between("order_EndTime", startDate, endDate));
-		purchaseOrderCriteria.setProjection(Projections.rowCount());
-		int purchaseOrderCount = Common_util.getProjectionSingleValue(chainStoreSalesOrderDaoImpl.getByCriteriaProjection(purchaseOrderCriteria, true));
-		ChainLoginStatisticInforVO purchaseOrderVO = new ChainLoginStatisticInforVO("近"+ statisDays + "天总部下账,但未确认收货的采购单", purchaseOrderCount);
-		statisEle.add(purchaseOrderVO);
-		
- 		//5. 获取财务单据
+
+ 		//6. 获取财务单据
 		DetachedCriteria financeOrderCriteria = DetachedCriteria.forClass(FinanceBill.class);
 		financeOrderCriteria.add(Restrictions.eq("status", FinanceBill.STATUS_COMPLETE));
 		financeOrderCriteria.add(Restrictions.eq("chainStore.chain_id", chainId));
@@ -563,7 +618,7 @@ public class ChainUserInforService {
 		int financeOrderCount = Common_util.getProjectionSingleValue(financeBillImpl.getByCriteriaProjection(financeOrderCriteria, true));
 		ChainLoginStatisticInforVO financeOrderVO = new ChainLoginStatisticInforVO("近"+ statisDays + "天总部下账的财务单据", financeOrderCount);
 		statisEle.add(financeOrderVO);
-		
+
 		statisMap.put("rows", statisEle);
 		
 		response.setReturnValue(statisMap);

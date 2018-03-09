@@ -25,7 +25,7 @@ function viewLog(){
 <body>
    <%@ include file="Style.jsp"%>
    <br/>
-      你所访问的资源不存在，请检查。<p/>
+      你所访问的资源不存在或者存在错误，请检查。<p/>
    <div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
    	     
 </body>

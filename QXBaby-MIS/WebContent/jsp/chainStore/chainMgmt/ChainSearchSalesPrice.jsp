@@ -177,13 +177,18 @@ function showLastUpdtDate(){
 	else
 		$("#updtDateDiv").hide();
 }
+function updateBatch(){
+    document.barcodeSearchForm.action="chainMgmtJSP!updateBatchPrice";
+    document.barcodeSearchForm.submit();
+}
 </script>
 </head>
 <body>
  	<div class="easyui-layout"  data-options="fit : true,border : false">
 		<div data-options="region:'north',border:false" style="height: 155px;">
-		  <s:form id="barcodeSearchForm" action="" method="POST" theme="simple">
+		  <s:form id="barcodeSearchForm" name="barcodeSearchForm" action="" method="POST" theme="simple" enctype="multipart/form-data" >
 		    <!--<s:hidden name="formBean.isAdmin" id="isAdmin"/>-->
+		    <div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
     		<table width="65%" border="0">
 				    <tr class="InnerTableContent">
 				      <td height="30" width="160"><strong>年份</strong>
@@ -221,8 +226,12 @@ function showLastUpdtDate(){
 				    </tr>
                     <tr class="InnerTableContent">
 				      <td><input type="button" value="搜索货品" onclick="searchProducts();"/></td>
-				      <td></td>
-				      <td>&nbsp;</td>
+				      <td>|</td>
+				      <td>
+				         <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainMgmtJSP!updateBatchPrice')">
+				           <input type="file" name="formBean.inventory" id="salePrices"/> <input type="button" value="批量导入修改价格" onclick="updateBatch();" />
+				         </s:if>
+				      </td>
 				    </tr>
 			</table>
 		   </s:form>

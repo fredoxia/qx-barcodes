@@ -3469,6 +3469,9 @@ public class ChainReportService {
 				case ChainBatchRptRepositoty.TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT:
 				    uiBean.setAccumulatedSalesDates(dataMap.get(id));
 					break;
+				case ChainBatchRptRepositoty.TYPE_CHAIN_TRANSFER_ACCT_FLOW_RPT:
+				    uiBean.setChainTransferAcctFlowDates(dataMap.get(id));
+					break;					
 				default:
 					break;
 			}
@@ -3492,6 +3495,12 @@ public class ChainReportService {
 		if (rptRepository == null){
 			response.setFail("无法找到报表");
 		} else {
+			int typeId = rptRepository.getRptId();
+			if (typeId == ChainBatchRptRepositoty.TYPE_ACCU_SALES_AWEEKLY_NALYSIS_RPT || typeId == ChainBatchRptRepositoty.TYPE_WEEKLY_PRODUCT_ANALYSIS_RPT)
+				result.put("Type", "zip");
+			else 
+				result.put("Type", "excel");
+			
 			File file = new File(rptRepository.getRptPathByType() + rptRepository.getDownloadRptName());
 			InputStream inputStream = null;
 			try {

@@ -47,8 +47,16 @@ public class ChainSalesActionUIBean {
     private ProductBarcode product = new ProductBarcode();
     private boolean canViewRecCost = false;
     private boolean canViewMyRecCost = false;
+    private ChainStore chainStore = null;
 
-    private String msg;
+    
+    public ChainStore getChainStore() {
+		return chainStore;
+	}
+	public void setChainStore(ChainStore chainStore) {
+		this.chainStore = chainStore;
+	}
+	private String msg;
     
 	public String getMsg() {
 		return msg;

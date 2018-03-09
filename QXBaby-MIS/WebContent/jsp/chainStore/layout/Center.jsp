@@ -47,7 +47,7 @@ function reloadStatis(){
 			<tr valign="top">
 			   <td>
 			    <div id="p" class="easyui-panel" title="消息栏"  
-			 			style="width:450px;height:250px;padding:10px;background:#fafafa;"  
+			 			style="width:450px;height:320px;padding:10px;background:#fafafa;"  
 	        			data-options="collapsible:false">  
 				        <table style="width: 100%" border="0">	 
 							  <s:iterator value="uiBean.news" status="st" id="news" >	
@@ -65,7 +65,7 @@ function reloadStatis(){
 			   </td>
 			   <td>
 			   		<div id="p2" class="easyui-panel" title="单据统计"  
-			 			style="width:450px;height:250px;padding:10px;background:#fafafa;"  
+			 			style="width:450px;height:320px;padding:10px;background:#fafafa;"  
 	        			data-options="collapsible:false,tools: [{  
         					iconCls:'icon-reload',  
        						 handler:function(){reloadStatis();}  
@@ -93,6 +93,12 @@ function reloadStatis(){
 							 	<tr height="10">
 									<td><hr/></td>
 								</tr>
+								<tr class="InnerTableContent">
+									<td><a href="/docs/QXBaby-MIS-Docs/contact.xls" target="_blank">连锁店联系电话</a></td>
+							 	</tr>
+							 	<tr height="10">
+									<td><hr/></td>
+								</tr>								
 						</table>
 			    </div> 
 			   </td>

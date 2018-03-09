@@ -843,6 +843,11 @@ function backProcessChangeChainStore(data){
 	    $("#lowThanCostAlert").attr("value",chainConf.lowThanCostAlert);
 	    $("#defaultDiscount").attr("value", chainConf.defaultDiscount);
 	}
+	
+	var chainStore = data.chainStore;
+	if (chainStore != undefined){
+		$("#printHeader").attr("value",chainStore.printHeader);
+	}
 }
 
 

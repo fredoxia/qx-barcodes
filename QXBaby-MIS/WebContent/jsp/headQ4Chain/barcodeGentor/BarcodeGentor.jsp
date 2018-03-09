@@ -74,16 +74,16 @@ function saveProduct(){
 
 	} 
 	var priceValue = $("#salesPrice").val();
-	if (priceValue == "" || (priceValue != "" && !isPositiveDouble(priceValue)) || priceValue > 800){
-		alert("零售价 - 必须是大于零小于800的数字");
+	if (priceValue == "" || (priceValue != "" && !isPositiveDouble(priceValue)) || priceValue > 900){
+		alert("零售价 - 必须是大于零小于900的数字");
         $("#salesPrice").focus();
         $("#saveButton").attr("disabled", false);
         return ;
 	}
 
 	var wholePriceValue = $("#wholeSalePrice").val();
-	if (wholePriceValue == "" || (wholePriceValue != "" && !isPositiveDouble(wholePriceValue))|| priceValue > 800){
-		alert("进价 - 必须是大于零小于800的数字");;
+	if (wholePriceValue == "" || (wholePriceValue != "" && !isPositiveDouble(wholePriceValue))|| priceValue > 900){
+		alert("进价 - 必须是大于零小于900的数字");;
         $("#wholeSalePrice").focus();
         $("#saveButton").attr("disabled", false);
         return ;

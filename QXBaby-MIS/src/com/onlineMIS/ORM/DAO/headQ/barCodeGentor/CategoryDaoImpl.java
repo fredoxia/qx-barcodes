@@ -10,6 +10,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Repository;
+
 import com.onlineMIS.ORM.DAO.BaseDAO;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.common.loggerLocal;
@@ -28,6 +29,27 @@ public class CategoryDaoImpl extends BaseDAO<Category> {
 		criteria.add(Restrictions.eq("chainId", Category.TYPE_CHAIN));
 		return this.getByCritera(criteria, cached);
 	}	
+	
+	public boolean checkCategoryExist(String category){
+		DetachedCriteria criteria = DetachedCriteria.forClass(Category.class);
+		criteria.add(Restrictions.eq("category_Name", category));
+		criteria.add(Restrictions.eq("chainId", Category.TYPE_HEAD));
+		List<Category> categories = this.getByCritera(criteria, true);
+		
+		if (categories == null || categories.size() != 1)
+			return false;
+		else 
+			return true;
+	}
+
+	public Category getCategoryByName(String categoryString) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Category.class);
+		criteria.add(Restrictions.eq("category_Name", categoryString));
+		criteria.add(Restrictions.eq("chainId", Category.TYPE_HEAD));
+		List<Category> categories = this.getByCritera(criteria, true);
+		
+		return categories.get(0);
+	}
 	
 	
 //	@SuppressWarnings("unchecked")

@@ -176,6 +176,12 @@ public class ChainStoreSalesService {
 			chainStoreConf = new ChainStoreConf();
 		uiBean.setChainStoreConf(chainStoreConf);
 		
+		//7.准备chain store的信息
+		ChainStore chainStore = null;
+		if (stores.size() > 0)
+		    chainStore = chainStoreService.getChainStoreByID(stores.get(0).getChain_id());
+		uiBean.setChainStore(chainStore);
+		
 		//7. 准备vip信息
 		ChainVIPCard vipCard = formBean.getChainSalesOrder().getVipCard();
 		if (vipCard != null && vipCard.getId() != 0){
@@ -258,13 +264,15 @@ public class ChainStoreSalesService {
 		ChainStoreSalesOrderProduct chainOrderProduct = new ChainStoreSalesOrderProduct();
 		
 		if (product!= null){
-		   //1. 获取连锁店自己的零售价
 		   ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
 		   
 		   //2. 获取涨价
 		   ChainProductBarcodeVO vo = chainSalesPriceDaoImpl.convertProductBarcodeVO(product, chainStore);
 		   if (vo.getMySalePrice() != 0)
 			   product.getProduct().setSalesPrice(vo.getMySalePrice());
+		   if (vo.getDiscount() != 1)
+			   chainOrderProduct.setDiscountRate(vo.getDiscount());
+		   
 			
 		   productBarcodeDaoImpl.evict(product);
 			
@@ -613,6 +621,7 @@ public class ChainStoreSalesService {
 	 *    - 计算单据的totalQuantityA, totalAmountA， qxQuantity, qxAmount, myQuantity, myAmount
 	 *    - 如果不是总部管理员工和老板账户，不能跨日期过账
 	 *    - 非总部管理人员不能跨连锁店过账
+	 *    - 使用积分策略验证
 	 * @param salesOrder
 	 * @return
 	 */
@@ -630,6 +639,41 @@ public class ChainStoreSalesService {
 			response.setQuickValue(Response.ERROR, errorMsg);
 			return response;
   	  	}
+		
+		//2. 使用积分策略验证
+		if (salesOrder.getVipCard() != null && salesOrder.getVipScore() != 0){
+			int vipCardId = salesOrder.getVipCard().getId();
+			ChainVIPCard vipCard = chainVIPCardImpl.get(vipCardId, true);
+			
+			if (vipCard != null){
+		        int vipIssuedChainStore = vipCard.getIssueChainStore().getChain_id();
+		        int salesOrderChainStore = salesOrder.getChainStore().getChain_id();
+		        
+		        if (vipIssuedChainStore != salesOrderChainStore){
+		        	int VIPSCORE_STRATEGY = conf.getAllowOtherVIPUseVIPScore();
+		        	
+		        	if (VIPSCORE_STRATEGY == ChainStoreConf.VIPSCORE_USAGE_RESTRICTED){
+						String errorMsg = "当前vip的开户连锁店是 : " + vipCard.getIssueChainStore().getChain_name() + "\n";
+						       errorMsg += "当前连锁店设置 : 只能自己连锁店vip兑换积分";
+						response.setQuickValue(Response.ERROR, errorMsg);
+						return response;
+		        	} else if (VIPSCORE_STRATEGY == ChainStoreConf.VIPSCORE_USAGE_GROUPCHAIN){
+		        		Set<Integer> groupChainIdSet = chainStoreGroupDaoImpl.getChainGroupStoreIdList(salesOrder.getChainStore().getChain_id(),loginUser,Common_util.CHAIN_ACCESS_LEVEL_3);
+		        		if (!groupChainIdSet.contains(vipIssuedChainStore)){
+							String errorMsg = "当前vip的开户连锁店是 : " + vipCard.getIssueChainStore().getChain_name() + "\n";
+						       errorMsg += "当前连锁店设置 : 只能关联连锁店vip兑换积分";
+						response.setQuickValue(Response.ERROR, errorMsg);
+						return response;
+		        		}
+		        	}
+					
+		        }
+			} else {
+				String errorMsg = "无法找到vip 卡信息";
+				response.setQuickValue(Response.ERROR, errorMsg);
+				return response;
+			}
+		}
 				
 		
 		if (conf != null ){
@@ -779,8 +823,8 @@ public class ChainStoreSalesService {
 			 * 1.2. to calculate the coupon
 			 */
 			double salesValue = salesOrder.getNetAmount() - salesOrder.getNetAmountR();
-			double coupon = (salesValue - salesOrder.getDiscountAmount() - salesOrder.getCoupon()) * offset * couponRatio;
-			
+//			double coupon = (salesValue - salesOrder.getDiscountAmount() - salesOrder.getCoupon()) * offset * couponRatio;
+			double coupon = (salesOrder.getAlipayAmount() + salesOrder.getWechatAmount() + salesOrder.getCardAmount() + salesOrder.getCashAmount() + salesOrder.getChainPrepaidAmt() - salesOrder.getReturnAmount()) * offset * couponRatio;
 			/**
 			 * 1.3. calcualte the order vip score
 			 */
@@ -793,10 +837,10 @@ public class ChainStoreSalesService {
 			int multiple = 1;
 			String comment = "";
 			Date orderDate = salesOrder.getOrderDate();
-			if (orderDate.getDate() == Common_util.VIP_DATE){
-				multiple = 2;
-				comment = "会员日双倍积分";
-			} else {
+//			if (orderDate.getDate() == Common_util.VIP_DATE){
+//				multiple = 2;
+//				comment = "会员日双倍积分";
+//			} else {
 				Date vipBirthDate = vipCard.getCustomerBirthday();
 				if (orderDate.getMonth() == vipBirthDate.getMonth() && orderDate.getDate() == vipBirthDate.getDate()){
 					multiple = 2;
@@ -809,7 +853,7 @@ public class ChainStoreSalesService {
 							comment = "连锁店活动,加倍积分";
 						}
 				}
-			}
+//			}
 			
 			int orderId = salesOrder.getId();
 			String commentScore = "";
@@ -821,7 +865,7 @@ public class ChainStoreSalesService {
 			chainVIPScoreImpl.save(vipScoreObj, false);
 			
 			/**
-			 * 1.4 calculate the extral vip score
+			 * 1.4 calculate the extra vip score
 			 */
 			double extralVip = salesOrder.getExtralVipScore();
 			if (extralVip != 0){
@@ -1284,9 +1328,13 @@ public class ChainStoreSalesService {
 		if (chainStoreConf == null)
 			chainStoreConf = new ChainStoreConf();
 		
+		//3. get the chainStore
+		ChainStore chainStore = chainStoreService.getChainStoreByID(chainStoreId);
+		
 		List<Object> uiList = new ArrayList<Object>();
 		uiList.add(users);
 		uiList.add(chainStoreConf);
+		uiList.add(chainStore);
 
 		return uiList;
 	}

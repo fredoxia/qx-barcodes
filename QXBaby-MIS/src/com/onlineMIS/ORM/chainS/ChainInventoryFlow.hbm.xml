@@ -75,4 +75,70 @@
         <property name="archiveDate" column="archive_date" type="timestamp"/>
       </class>      
 
+      <class name="ChainTransferOrder" table="chain_transfer_order">
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <property name="creator" column="creator" type="string"/>
+        <property name="confirmedBy" column="confirmed_by" type="string"/>
+        <many-to-one name="fromChainStore" fetch="select" column="from_chain_store_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="false"/>
+        <many-to-one name="toChainStore" fetch="select" column="to_chain_store_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="false"/>
+        <property name="totalQuantity" column="total_quantity" type="integer"/>
+        <property name="totalSalesPrice" column="total_sales_price" type="double"/> 
+        <property name="totalWholeSalesPrice" column="total_whole_sales_price" type="double"/> 
+        <property name="status" column="status" type="integer"/>
+        <property name="comment" column="comment" type="string"/>
+        <property name="userComment" column="user_comment" type="string"/>
+		<property name="orderDate" column="order_date" type="timestamp"/>
+		
+		<property name="transportationFee" column="transportation_fee" type="double"/> 
+        <set name="productSet" cascade="all-delete-orphan" inverse="true" lazy="true" fetch="subselect" batch-size="15">
+             <key column="order_id"/>
+             <one-to-many class="ChainTransferOrderProduct"/>
+        </set>
+      </class>  
+      
+      <class name="ChainTransferOrderProduct" table="chain_transfer_order_product">
+        <composite-id>
+             <key-many-to-one name="productBarcode" column="product_id" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" lazy="false"/>     
+             <key-many-to-one name="transferOrder" column="order_id" class="ChainTransferOrder" lazy="false"/>   
+        </composite-id>
+        <property name="quantity" column="quantity" type="integer"/>    
+        <property name="salesPrice" column="sales_price" type="double"/> 
+        <property name="totalSalesPrice" column="total_sales_price" type="double"/> 
+        <property name="wholeSalesPrice" column="whole_sales_price" type="double"/> 
+        <property name="totalWholeSalesPrice" column="total_whole_sales_price" type="double"/> 
+        <property name="productTypeFlag" column="product_type_flag" type="integer"/>
+		<property name="index" column="index_num" type="integer"/>   
+      </class> 
+      
+      <class name="ChainTransferLog" table="chain_transfer_log">
+         <composite-id>
+         	<key-property name="orderId" column="order_id" type="integer"/>
+         	<key-property name="logTime" column="log_time" type="timestamp"/>
+         </composite-id>
+
+		<property name="log" column="log" type="string"/>
+		
+      </class>  
+      
+      <class name="ChainTransferOrderFlowAcct" table="chain_transfer_order_flow_acct">
+         <composite-id>
+         	<key-property name="orderId" column="order_id" type="integer"/>
+         	<key-property name="acctChainStoreId" column="acct_chain_store_id" type="integer"/>
+         </composite-id>        
+        <property name="fromChainStore" column="from_chain_store" type="string"/>
+        <property name="toChainStore" column="to_chain_store" type="string"/>
+        <property name="creator" column="creator" type="string"/>
+        <property name="confirmedBy" column="confirmed_by" type="string"/>       
+        <property name="totalQuantity" column="total_quantity" type="integer"/>
+        <property name="totalSalesPrice" column="total_sales_price" type="double"/> 
+        <property name="totalWholeSalesPrice" column="total_whole_sales_price" type="double"/> 
+        <property name="flowAcctAmt" column="flow_acct_amount" type="double"/>
+        <property name="comment" column="comment" type="string"/>
+        <property name="userComment" column="user_comment" type="string"/>
+		<property name="acctFlowDate" column="acct_flow_date" type="timestamp"/>
+		<property name="orderDate" column="order_date" type="timestamp"/>
+		<property name="transportationFee" column="transportation_fee" type="double"/>
+      </class>  
 </hibernate-mapping>

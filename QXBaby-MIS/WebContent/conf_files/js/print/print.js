@@ -4,7 +4,7 @@ function testPrintF(){
 	if (dfPrinter == null){
         alert("还未设置默认小票打印机，请设置后打印小票");
 	} else {
-		//alert(dfPrinter.TextWidth(space) + "," + dfPrinter.ScaleWidth);
+		//alert($("#printHeader").val());
 		pageMargin=dfPrinter.TextWidth("   ");        
 		maxLength = dfPrinter.ScaleWidth; 
 
@@ -246,7 +246,7 @@ function printChainFreeOrder(){
 function printHeader(){
 	 dfPrinter.FontSize=fontSizeHead;
 	 dfPrinter.FontBold=true;
-     var content = "千禧宝贝童装连锁";
+     var content = $("#printHeader").val();
        pazu.TPrinter.printToDefaultPrinter(content);
 	 var obj = document.getElementById("chainStore");
 	 var chainName = obj.options[obj.selectedIndex].text;
@@ -271,10 +271,13 @@ function printAcctFooter(){
 	var cashAmount = $("#cashAmount").val();
 	var returnAmount = $("#returnAmount").val();
 	var vipPrepaid = $("#chainPrepaidAmt").val();
+	var alipay = $("#alipayAmount").val();
+	var wechat = $("#wechatAmount").val();
 	
 	pazu.TPrinter.printToDefaultPrinter("优惠 : " + discount + " , " + "代金券 : " + coupon);
 	pazu.TPrinter.printToDefaultPrinter("应收 : " + amountAfterDC  + " , " + "积分换现金 : " + vipScore );
 	pazu.TPrinter.printToDefaultPrinter("刷卡 : " + cardAmount + " , " + "现金 : " + cashAmount);
+	pazu.TPrinter.printToDefaultPrinter("微信 : " + wechat + " , " + "支付宝 : " + alipay);
 	pazu.TPrinter.printToDefaultPrinter("预存金消费 : " + vipPrepaid + " , " + "找零 : " + returnAmount);
 }
 
@@ -296,8 +299,10 @@ function printFooter(vipInfor){
 	dfPrinter.FontSize=fontSize;
     var content = "此小票是七日换货凭证，请妥善保管";
       pazu.TPrinter.printToDefaultPrinter(content);
-    content = "(洗涤,人为原因,特价商品概不调换)";
+    content = "(洗涤,人为原因,特价商品概不调换,";
       pazu.TPrinter.printToDefaultPrinter(content);
+    content = "特价商品不在三包范围之内)";
+      pazu.TPrinter.printToDefaultPrinter(content);	
     content = "服务热线:400-688-5581";
       pazu.TPrinter.printToDefaultPrinter(content);
     content = "微信号：QXbaby-HK";

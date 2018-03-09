@@ -23,6 +23,10 @@ function saveToDraft(){
 	calculateTotal();
 	
 	if (validateForm()){
+		$.messager.progress({
+			title : '提示',
+			text : '数据处理中，请稍后....'
+		});
 	   document.inventoryOrderForm.action = "<%=request.getContextPath()%>/action/inventoryOrder!saveToDraft";
 	   document.inventoryOrderForm.submit();
 	}
@@ -34,6 +38,10 @@ function saveToDraft(){
 function save(){
 	calculateTotal();
 	if (validateForm()){
+		$.messager.progress({
+			title : '提示',
+			text : '数据处理中，请稍后....'
+		});
 	   document.inventoryOrderForm.action = "<%=request.getContextPath()%>/action/inventoryOrder!acctSave";
 	   document.inventoryOrderForm.submit();
 	}
@@ -45,7 +53,10 @@ function save(){
 function preview(){
 	calculateTotal();
 	if (validateForm()){
-		 
+		$.messager.progress({
+			title : '提示',
+			text : '数据处理中，请稍后....'
+		});
 		   document.inventoryOrderForm.action = "<%=request.getContextPath()%>/action/inventoryOrder!previewOrder";
 		   document.inventoryOrderForm.submit();
 	}
@@ -57,6 +68,10 @@ function preview(){
 function submitOrder(){
 	calculateTotal();
 	if (validateForm()){
+		$.messager.progress({
+			title : '提示',
+			text : '数据处理中，请稍后....'
+		});
 		   document.inventoryOrderForm.action = "<%=request.getContextPath()%>/action/inventoryOrder!save";
 		   document.inventoryOrderForm.submit();
 	}
@@ -103,7 +118,7 @@ $(document).ready(function(){
 </head>
 <body>
 
-<s:form action="/action/inventoryOrder!previewOrder" method="POST" name="inventoryOrderForm"  id="inventoryOrderForm" theme="simple">
+<s:form action="/action/inventoryOrder!previewOrder" method="POST" name="inventoryOrderForm"  id="inventoryOrderForm" theme="simple" enctype="multipart/form-data">
  <s:hidden name="formBean.order.order_ID"  id="orderId"/>
  <s:hidden name="formBean.order.order_type" id="orderType"/>
  <s:hidden name="formBean.order.order_Status"/>

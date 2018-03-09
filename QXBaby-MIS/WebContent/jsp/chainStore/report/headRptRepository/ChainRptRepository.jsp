@@ -23,6 +23,11 @@ function generateAccumulatedSalesReport(){
     document.preGenReportForm.submit();
 }
 
+function generateChainTransferAcctFlowReport(){
+	var rptId = $("#rptId3").val();
+	$("#id").attr("value",rptId);
+    document.preGenReportForm.submit();
+}
 function triggerRptBkprocess(data){
 	var returnCode = data.returnCode;
 	var returnMsg = data.message;
@@ -89,7 +94,15 @@ function triggerBatchReport(rptType){
 			      <td><input type="button" value="下载报表" onclick="generateAccumulatedSalesReport();"/>
 			      	  <input type="button" value="运行报表" onclick="triggerBatchReport(2);"/>
 			      </td>
-		        </tr>		        
+		        </tr>	
+			    <tr class="InnerTableContent">
+			      <td height="32" >每两周调货账目流水</td>
+			      <td ><s:select id="rptId3" name="formBean.id"  list="uiBean.chainTransferAcctFlowDates" listKey="id" listValue="rptDes" />
+			      </td>
+			      <td><input type="button" value="下载报表" onclick="generateChainTransferAcctFlowReport();"/>
+			      	  
+			      </td>
+		        </tr>		        	        
 			</table>
 		</td></tr>
 	</table>

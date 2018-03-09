@@ -319,4 +319,25 @@ public class ChainMgmtJSPAction extends ChainMgmtAction {
 		
 		return "preCreateConf";
 	}
+	
+	/**
+	 * 批量上传价格
+	 * @return
+	 */
+	public String updateBatchPrice(){
+		
+		try {
+			Response response = chainMgmtService.updateBatchPrice(formBean.getChainId(),formBean.getInventory());
+			
+			if (response.isSuccess())
+			    addActionMessage("已经全部成功更新价格, 共 " + response.getReturnValue() + " 个条码");
+			else 
+				addActionError(response.getMessage());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			addActionError("批量修改价格错误，请联系系统管理员 ： " + e.getMessage());
+		}
+		
+		return preEditChainProductPrice();
+	}
 }
