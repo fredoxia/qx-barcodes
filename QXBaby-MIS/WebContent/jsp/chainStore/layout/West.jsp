@@ -223,13 +223,7 @@ $(function() {
 	        			<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainDailySalesAction!preGenChart')">
 	        				<li data-options="iconCls:'icon-money_yen',attributes:{url:'chainDailySalesAction!preGenChart'}">日销售比较</li>
 	        			</s:if>
-	        			<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainDailySalesAction!preGenWeeklyHotBrand')">
-	        				<li data-options="iconCls:'icon-money_yen',attributes:{url:'chainDailySalesAction!preGenWeeklyHotBrand'}">每周热销货品</li>
-	        			</s:if>
-	        			<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainDailySalesAction!preGenMonthlyHotBrand')">
-	        				<li data-options="iconCls:'icon-money_yen',attributes:{url:'chainDailySalesAction!preGenMonthlyHotBrand'}">月/季度热销货品</li>
-	        			</s:if>	        			
-	        			
+		
 	        		</ul> 
 	            </li>
 	            <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preChainAutoRptRepository')">

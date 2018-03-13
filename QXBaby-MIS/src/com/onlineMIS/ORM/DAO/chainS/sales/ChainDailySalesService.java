@@ -449,168 +449,168 @@ public class ChainDailySalesService{
 	 * 每周一早上运行上周的热销品牌和热销款式
 	 * 
 	 */
-	public void runWeeklyHotBrandProduct(){
-		loggerLocal.infoB(new Date() + " 开始 *周* 热销品牌 Batch job :  ChainDailySalesService.runWeeklyHotBrandProduct()");
-		
-		List<java.sql.Date> lastWeekDays = Common_util.getLastWeekDays();
-		java.sql.Date startDate = lastWeekDays.get(0);
-		java.sql.Date endDate = lastWeekDays.get(6);
-		
-		int numOfActiveChain = chainStoreService.getNumOfActiveChainStore();
-		
-		/**
-		 * 1. 查找所有连锁店热销品牌,
-		 */
-		loggerLocal.infoB(new Date() + " 查找所有连锁店 *周* 热销品牌");
-		Object[] value_sale = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate};
-		
-		String selectHotBrand = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? GROUP BY productBarcode.product.brand.brand_ID, type";
-		List<Object> sales2 = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrand, value_sale,null, false);
-
-		Map<Integer, Integer> brandMap = putListToChainMap(sales2);
-
-		List<Map.Entry<Integer, Integer>> hotBrands = new ArrayList<Map.Entry<Integer,Integer>>(brandMap.entrySet());
-		Collections.sort(hotBrands, new Comparator<Map.Entry<Integer,Integer>>(){ 
-			   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
-			     return mapping2.getValue() - mapping1.getValue(); 
-			   } 
-			  }); 
-		List<Brand> hotBrandList = new ArrayList<Brand>();
-		for (int i = 0; i < hotBrands.size() && i < Common_util.HOT_BRAND_NUM; i++){
-			Map.Entry<Integer, Integer> hotBrand = hotBrands.get(i);
-			int brandId = hotBrand.getKey();
-			int sumQ = hotBrand.getValue();
-			
-			ChainStore allStore = new ChainStore();
-			allStore.setChain_id(Common_util.ALL_RECORD);
-			
-			Brand brand = new Brand();
-			brand.setBrand_ID(brandId);
-			
-			hotBrandList.add(brand);
-			
-			double avgQ = ((double)sumQ)/numOfActiveChain;
-			ChainWeeklyHotBrand chainWeeklyHotBrand = new ChainWeeklyHotBrand(startDate, allStore, brand, i+1, avgQ);
-			chainWeeklyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
-		}
-		
-		loggerLocal.infoB(new Date() + "  *周* 热销品牌数量 : " + hotBrandList.size());
-		
-		if (hotBrandList.size() == 0)
-			return ;
-		
-		String brands = "(";
-		for (Brand brand: hotBrandList)
-			brands += brand.getBrand_ID() + ",";
-		brands += hotBrandList.get(0).getBrand_ID() + ")";
-		
-		/**
-		 * 2. 把每个连锁店分品牌查询出来
-		 */
-		loggerLocal.infoB(new Date() + " 查找每个连锁店的 *周* 热销品牌销售");
-		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableParentChainstores();
-		for (ChainStore chainStore : noDisabledChainStores){
-			Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
-			
-			String selectHotBrandChain = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.product.brand.brand_ID IN " + brands +" GROUP BY productBarcode.product.brand.brand_ID, type";
-			List<Object> salesChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrandChain, value_saleChain,null, false);
-
-			Map<Integer, Integer> brandMapChain = putListToChainMap(salesChain);
-			for (Brand brand: hotBrandList){
-				int brandId = brand.getBrand_ID();
-				int salesQ = 0;
-				Integer salesQObj = brandMapChain.get(brandId);
-				if (salesQObj != null)
-					salesQ = salesQObj.intValue();
-				
-				ChainWeeklyHotBrand chainWeeklyHotBrand = new ChainWeeklyHotBrand(startDate, chainStore, brand, 0, salesQ);
-				chainWeeklyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
-				loggerLocal.infoB(new Date() + " 查找每个连锁店的 *周* 热销品牌销售 " + chainStore.getChain_id() + "," + brandId + "," + salesQ);
-			}
-			
-		}
-		
-		/**
-		 * 3. 把每个牌子下面的hot产品查出来
-		 *    以及每个连锁店的hot产品销量
-		 */
-		loggerLocal.infoB(new Date() + " 把每个牌子下面的 *周* hot产品查出来");
-		for (Brand brand : hotBrandList){
-			/**
-			 * 3.1 每个牌子的hot产品
-			 */
-			int brandId = brand.getBrand_ID();
-			Object[] valueByBrand = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, brandId};
-			
-			String selectHotProduct = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND productBarcode.product.brand.brand_ID =? GROUP BY productBarcode.id, type";
-			List<Object> salesProduct = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProduct, valueByBrand,null, false);
-
-			Map<Integer, Integer> productMap = putListToChainMap(salesProduct);
-
-			List<Map.Entry<Integer, Integer>> hotProducts = new ArrayList<Map.Entry<Integer,Integer>>(productMap.entrySet());
-			Collections.sort(hotProducts, new Comparator<Map.Entry<Integer,Integer>>(){ 
-				   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
-				     return mapping2.getValue() - mapping1.getValue(); 
-				   } 
-				  });
-			
-			List<ProductBarcode> hotProduct = new ArrayList<ProductBarcode>();
-			for (int i = 0; i < hotProducts.size() && i < Common_util.HOT_PRODUCT_NUM; i++){
-				Map.Entry<Integer, Integer> hotProductEntry = hotProducts.get(i);
-				int productId = hotProductEntry.getKey();
-				int sumQ = hotProductEntry.getValue();
-				
-				ChainStore allStore = new ChainStore();
-				allStore.setChain_id(Common_util.ALL_RECORD);
-				
-				ProductBarcode productBarcode = new ProductBarcode();
-				productBarcode.setId(productId);
-				
-				hotProduct.add(productBarcode);
-				
-				double avgQ = ((double)sumQ)/numOfActiveChain;
-				ChainWeeklyHotProduct chainWeeklyHotProduct = new ChainWeeklyHotProduct(startDate, allStore, brandId, productBarcode, i+1, avgQ);
-				chainWeeklyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
-			}
-			
-			loggerLocal.infoB(new Date() + " 每个牌子下面的 *周* hot产品数量 : " + brandId + "," + hotProduct.size());
-			/**
-			 * 3.2 每个连锁店的Hot product销量
-			 */
-			if (hotProduct.size() == 0)
-				return ;
-			
-			String products = "(";
-			for (ProductBarcode productBarcode: hotProduct)
-				products += productBarcode.getId() + ",";
-			products += hotProduct.get(0).getId() + ")";
-			
-			for (ChainStore chainStore : noDisabledChainStores){
-				Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
-				
-				String selectHotProductChain = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.id IN " + products +" GROUP BY productBarcode.id, type";
-				List<Object> salesProductChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProductChain, value_saleChain,null, false);
-
-				Map<Integer, Integer> productMapChain = putListToChainMap(salesProductChain);
-				for (ProductBarcode product: hotProduct){
-					int productId = product.getId();
-					int salesQ = 0;
-					Integer salesQObj = productMapChain.get(productId);
-					if (salesQObj != null)
-						salesQ = salesQObj.intValue();
-					
-					ChainWeeklyHotProduct chainWeeklyHotProduct = new ChainWeeklyHotProduct(startDate, chainStore, brandId, product, 0, salesQ);
-					chainWeeklyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
-					
-					loggerLocal.infoB(new Date() + " 每个连锁店下面的 *周* hot产品销量 : " + brandId + "," + productId + "," + salesQ);
-				}
-				
-			}
-		}
-		
-		loggerLocal.infoB(new Date() + " 完成  *周* 热销品牌 Batch job :  ChainDailySalesService.runWeeklyHotBrandProduct()");
-		
-	}
+//	public void runWeeklyHotBrandProduct(){
+//		loggerLocal.infoB(new Date() + " 开始 *周* 热销品牌 Batch job :  ChainDailySalesService.runWeeklyHotBrandProduct()");
+//		
+//		List<java.sql.Date> lastWeekDays = Common_util.getLastWeekDays();
+//		java.sql.Date startDate = lastWeekDays.get(0);
+//		java.sql.Date endDate = lastWeekDays.get(6);
+//		
+//		int numOfActiveChain = chainStoreService.getNumOfActiveChainStore();
+//		
+//		/**
+//		 * 1. 查找所有连锁店热销品牌,
+//		 */
+//		loggerLocal.infoB(new Date() + " 查找所有连锁店 *周* 热销品牌");
+//		Object[] value_sale = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate};
+//		
+//		String selectHotBrand = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? GROUP BY productBarcode.product.brand.brand_ID, type";
+//		List<Object> sales2 = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrand, value_sale,null, false);
+//
+//		Map<Integer, Integer> brandMap = putListToChainMap(sales2);
+//
+//		List<Map.Entry<Integer, Integer>> hotBrands = new ArrayList<Map.Entry<Integer,Integer>>(brandMap.entrySet());
+//		Collections.sort(hotBrands, new Comparator<Map.Entry<Integer,Integer>>(){ 
+//			   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
+//			     return mapping2.getValue() - mapping1.getValue(); 
+//			   } 
+//			  }); 
+//		List<Brand> hotBrandList = new ArrayList<Brand>();
+//		for (int i = 0; i < hotBrands.size() && i < Common_util.HOT_BRAND_NUM; i++){
+//			Map.Entry<Integer, Integer> hotBrand = hotBrands.get(i);
+//			int brandId = hotBrand.getKey();
+//			int sumQ = hotBrand.getValue();
+//			
+//			ChainStore allStore = new ChainStore();
+//			allStore.setChain_id(Common_util.ALL_RECORD);
+//			
+//			Brand brand = new Brand();
+//			brand.setBrand_ID(brandId);
+//			
+//			hotBrandList.add(brand);
+//			
+//			double avgQ = ((double)sumQ)/numOfActiveChain;
+//			ChainWeeklyHotBrand chainWeeklyHotBrand = new ChainWeeklyHotBrand(startDate, allStore, brand, i+1, avgQ);
+//			chainWeeklyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
+//		}
+//		
+//		loggerLocal.infoB(new Date() + "  *周* 热销品牌数量 : " + hotBrandList.size());
+//		
+//		if (hotBrandList.size() == 0)
+//			return ;
+//		
+//		String brands = "(";
+//		for (Brand brand: hotBrandList)
+//			brands += brand.getBrand_ID() + ",";
+//		brands += hotBrandList.get(0).getBrand_ID() + ")";
+//		
+//		/**
+//		 * 2. 把每个连锁店分品牌查询出来
+//		 */
+//		loggerLocal.infoB(new Date() + " 查找每个连锁店的 *周* 热销品牌销售");
+//		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableParentChainstores();
+//		for (ChainStore chainStore : noDisabledChainStores){
+//			Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
+//			
+//			String selectHotBrandChain = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.product.brand.brand_ID IN " + brands +" GROUP BY productBarcode.product.brand.brand_ID, type";
+//			List<Object> salesChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrandChain, value_saleChain,null, false);
+//
+//			Map<Integer, Integer> brandMapChain = putListToChainMap(salesChain);
+//			for (Brand brand: hotBrandList){
+//				int brandId = brand.getBrand_ID();
+//				int salesQ = 0;
+//				Integer salesQObj = brandMapChain.get(brandId);
+//				if (salesQObj != null)
+//					salesQ = salesQObj.intValue();
+//				
+//				ChainWeeklyHotBrand chainWeeklyHotBrand = new ChainWeeklyHotBrand(startDate, chainStore, brand, 0, salesQ);
+//				chainWeeklyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
+//				loggerLocal.infoB(new Date() + " 查找每个连锁店的 *周* 热销品牌销售 " + chainStore.getChain_id() + "," + brandId + "," + salesQ);
+//			}
+//			
+//		}
+//		
+//		/**
+//		 * 3. 把每个牌子下面的hot产品查出来
+//		 *    以及每个连锁店的hot产品销量
+//		 */
+//		loggerLocal.infoB(new Date() + " 把每个牌子下面的 *周* hot产品查出来");
+//		for (Brand brand : hotBrandList){
+//			/**
+//			 * 3.1 每个牌子的hot产品
+//			 */
+//			int brandId = brand.getBrand_ID();
+//			Object[] valueByBrand = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, brandId};
+//			
+//			String selectHotProduct = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND productBarcode.product.brand.brand_ID =? GROUP BY productBarcode.id, type";
+//			List<Object> salesProduct = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProduct, valueByBrand,null, false);
+//
+//			Map<Integer, Integer> productMap = putListToChainMap(salesProduct);
+//
+//			List<Map.Entry<Integer, Integer>> hotProducts = new ArrayList<Map.Entry<Integer,Integer>>(productMap.entrySet());
+//			Collections.sort(hotProducts, new Comparator<Map.Entry<Integer,Integer>>(){ 
+//				   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
+//				     return mapping2.getValue() - mapping1.getValue(); 
+//				   } 
+//				  });
+//			
+//			List<ProductBarcode> hotProduct = new ArrayList<ProductBarcode>();
+//			for (int i = 0; i < hotProducts.size() && i < Common_util.HOT_PRODUCT_NUM; i++){
+//				Map.Entry<Integer, Integer> hotProductEntry = hotProducts.get(i);
+//				int productId = hotProductEntry.getKey();
+//				int sumQ = hotProductEntry.getValue();
+//				
+//				ChainStore allStore = new ChainStore();
+//				allStore.setChain_id(Common_util.ALL_RECORD);
+//				
+//				ProductBarcode productBarcode = new ProductBarcode();
+//				productBarcode.setId(productId);
+//				
+//				hotProduct.add(productBarcode);
+//				
+//				double avgQ = ((double)sumQ)/numOfActiveChain;
+//				ChainWeeklyHotProduct chainWeeklyHotProduct = new ChainWeeklyHotProduct(startDate, allStore, brandId, productBarcode, i+1, avgQ);
+//				chainWeeklyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
+//			}
+//			
+//			loggerLocal.infoB(new Date() + " 每个牌子下面的 *周* hot产品数量 : " + brandId + "," + hotProduct.size());
+//			/**
+//			 * 3.2 每个连锁店的Hot product销量
+//			 */
+//			if (hotProduct.size() == 0)
+//				return ;
+//			
+//			String products = "(";
+//			for (ProductBarcode productBarcode: hotProduct)
+//				products += productBarcode.getId() + ",";
+//			products += hotProduct.get(0).getId() + ")";
+//			
+//			for (ChainStore chainStore : noDisabledChainStores){
+//				Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
+//				
+//				String selectHotProductChain = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.id IN " + products +" GROUP BY productBarcode.id, type";
+//				List<Object> salesProductChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProductChain, value_saleChain,null, false);
+//
+//				Map<Integer, Integer> productMapChain = putListToChainMap(salesProductChain);
+//				for (ProductBarcode product: hotProduct){
+//					int productId = product.getId();
+//					int salesQ = 0;
+//					Integer salesQObj = productMapChain.get(productId);
+//					if (salesQObj != null)
+//						salesQ = salesQObj.intValue();
+//					
+//					ChainWeeklyHotProduct chainWeeklyHotProduct = new ChainWeeklyHotProduct(startDate, chainStore, brandId, product, 0, salesQ);
+//					chainWeeklyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
+//					
+//					loggerLocal.infoB(new Date() + " 每个连锁店下面的 *周* hot产品销量 : " + brandId + "," + productId + "," + salesQ);
+//				}
+//				
+//			}
+//		}
+//		
+//		loggerLocal.infoB(new Date() + " 完成  *周* 热销品牌 Batch job :  ChainDailySalesService.runWeeklyHotBrandProduct()");
+//		
+//	}
 	
 	/**
 	 * 所有连锁店的数据的map
@@ -642,186 +642,186 @@ public class ChainDailySalesService{
 	/**
 	 * 每个月第一天运行当月热销品牌，和当月的active chain
 	 */
-	public void runMonthlyHotBrandProduct(){
-        today = Calendar.getInstance();
-        today.add(Calendar.MONTH, -1);
-        today.set(Calendar.DAY_OF_MONTH,1);//设置为1号,当前日期既为本月第一天  
-		java.sql.Date startDate = new java.sql.Date(today.getTime().getTime());
-		
-		today.set(Calendar.DAY_OF_MONTH, today.getActualMaximum(Calendar.DAY_OF_MONTH));
-		java.sql.Date endDate = new java.sql.Date(today.getTime().getTime());
-		
-		loggerLocal.infoB(new Date() + ": 开始 " +  startDate +  " *月* 热销品牌 Batch job :  ChainDailySalesService.runMonthlyHotBrandProduct()");
-				
-		int numOfActiveChain = chainStoreService.getNumOfActiveChainStore();
-		
-		ChainMonthlyActiveNum monthlyActiveNum = new ChainMonthlyActiveNum(startDate, numOfActiveChain);
-		chainMonthlyActiveNumDaoImpl.saveOrUpdate(monthlyActiveNum, true);
-		
-		/**
-		 * 1. 查找所有连锁店热销品牌,
-		 */
-		loggerLocal.infoB(new Date() + " 查找所有连锁店 " +  startDate +  "月* 热销品牌");
-		Object[] value_sale = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate};
-		
-		String selectHotBrand = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? GROUP BY productBarcode.product.brand.brand_ID, type";
-		List<Object> sales2 = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrand, value_sale,null, false);
-
-		Map<Integer, Integer> brandMap = putListToChainMap(sales2);
-
-		List<Map.Entry<Integer, Integer>> hotBrands = new ArrayList<Map.Entry<Integer,Integer>>(brandMap.entrySet());
-		Collections.sort(hotBrands, new Comparator<Map.Entry<Integer,Integer>>(){ 
-			   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
-			     return mapping2.getValue() - mapping1.getValue(); 
-			   } 
-			  }); 
-		List<Brand> hotBrandList = new ArrayList<Brand>();
-		for (int i = 0; i < hotBrands.size() && i < Common_util.HOT_BRAND_NUM; i++){
-			Map.Entry<Integer, Integer> hotBrand = hotBrands.get(i);
-			int brandId = hotBrand.getKey();
-			int sumQ = hotBrand.getValue();
-			
-			ChainStore allStore = new ChainStore();
-			allStore.setChain_id(Common_util.ALL_RECORD);
-			
-			Brand brand = new Brand();
-			brand.setBrand_ID(brandId);
-			
-			hotBrandList.add(brand);
-
-			ChainMonthlyHotBrand chainWeeklyHotBrand = new ChainMonthlyHotBrand(startDate, allStore, brand, i+1, sumQ);
-			chainMonthlyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
-		}
-		
-		loggerLocal.infoB(new Date() + "  " +  startDate +  " 月* 热销品牌数量 : " + hotBrandList.size());
-		
-		if (hotBrandList.size() == 0)
-			return ;
-		
-		String brands = "(";
-		for (Brand brand: hotBrandList)
-			brands += brand.getBrand_ID() + ",";
-		brands += hotBrandList.get(0).getBrand_ID() + ")";
-		
-		/**
-		 * 2. 把每个连锁店分品牌查询出来
-		 */
-		loggerLocal.infoB(new Date() + " 查找每个连锁店的 " +  startDate +  " 月* 热销品牌销售");
-		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableParentChainstores();
-		for (ChainStore chainStore : noDisabledChainStores){
-			Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
-			
-			String selectHotBrandChain = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.product.brand.brand_ID IN " + brands +" GROUP BY productBarcode.product.brand.brand_ID, type";
-			List<Object> salesChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrandChain, value_saleChain,null, false);
-
-			Map<Integer, Integer> brandMapChain = putListToChainMap(salesChain);
-			for (Brand brand: hotBrandList){
-				int brandId = brand.getBrand_ID();
-				int salesQ = 0;
-				Integer salesQObj = brandMapChain.get(brandId);
-				if (salesQObj != null)
-					salesQ = salesQObj.intValue();
-				
-				ChainMonthlyHotBrand chainWeeklyHotBrand = new ChainMonthlyHotBrand(startDate, chainStore, brand, 0, salesQ);
-				chainMonthlyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
-				loggerLocal.infoB(new Date() + " 查找每个连锁店的  " +  startDate +  " 月* 热销品牌销售 " + chainStore.getChain_id() + "," + brandId + "," + salesQ);
-			}
-			
-		}
-		
-		/**
-		 * 3. 把每个牌子下面的hot产品查出来
-		 *    以及每个连锁店的hot产品销量
-		 */
-		loggerLocal.infoB(new Date() + " 把每个牌子下面的  " +  startDate +  " 月* hot产品查出来");
-		for (Brand brand : hotBrandList){
-			/**
-			 * 3.1 每个牌子的hot产品
-			 */
-			int brandId = brand.getBrand_ID();
-			Object[] valueByBrand = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, brandId};
-			
-			String selectHotProduct = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND productBarcode.product.brand.brand_ID =? GROUP BY productBarcode.id, type";
-			List<Object> salesProduct = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProduct, valueByBrand,null, false);
-
-			Map<Integer, Integer> productMap = putListToChainMap(salesProduct);
-
-			List<Map.Entry<Integer, Integer>> hotProducts = new ArrayList<Map.Entry<Integer,Integer>>(productMap.entrySet());
-			Collections.sort(hotProducts, new Comparator<Map.Entry<Integer,Integer>>(){ 
-				   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
-				     return mapping2.getValue() - mapping1.getValue(); 
-				   } 
-				  });
-			
-			List<ProductBarcode> hotProduct = new ArrayList<ProductBarcode>();
-			for (int i = 0; i < hotProducts.size() && i < Common_util.MONTHLY_HOT_PRODUCT_NUM; i++){
-				Map.Entry<Integer, Integer> hotProductEntry = hotProducts.get(i);
-				int productId = hotProductEntry.getKey();
-				int sumQ = hotProductEntry.getValue();
-				
-				ChainStore allStore = new ChainStore();
-				allStore.setChain_id(Common_util.ALL_RECORD);
-				
-				ProductBarcode productBarcode = new ProductBarcode();
-				productBarcode.setId(productId);
-				
-				hotProduct.add(productBarcode);
-
-				ChainMonthlyHotProduct chainWeeklyHotProduct = new ChainMonthlyHotProduct(startDate, allStore, brandId, productBarcode, i+1, sumQ);
-				chainMonthlyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
-			}
-			
-			loggerLocal.infoB(new Date() + " 每个牌子下面的  " +  startDate +  " 月* hot产品数量 : " + brandId + "," + hotProduct.size());
-			/**
-			 * 3.2 每个连锁店的Hot product销量
-			 */
-			if (hotProduct.size() == 0)
-				return ;
-			
-			String products = "(";
-			for (ProductBarcode productBarcode: hotProduct)
-				products += productBarcode.getId() + ",";
-			products += hotProduct.get(0).getId() + ")";
-			
-			for (ChainStore chainStore : noDisabledChainStores){
-				Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
-				
-				String selectHotProductChain = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.id IN " + products +" GROUP BY productBarcode.id, type";
-				List<Object> salesProductChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProductChain, value_saleChain,null, false);
-
-				Map<Integer, Integer> productMapChain = putListToChainMap(salesProductChain);
-				for (ProductBarcode product: hotProduct){
-					int productId = product.getId();
-					int salesQ = 0;
-					Integer salesQObj = productMapChain.get(productId);
-					if (salesQObj != null)
-						salesQ = salesQObj.intValue();
-					
-					if (salesQ != 0){
-						ChainMonthlyHotProduct chainWeeklyHotProduct = new ChainMonthlyHotProduct(startDate, chainStore, brandId, product, 0, salesQ);
-						chainMonthlyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
-					}
-					
-					loggerLocal.infoB(new Date() + " 每个连锁店下面的  " +  startDate +  " 月* hot产品销量 : " + brandId + "," + productId + "," + salesQ);
-				}
-				
-			}
-		}
-		
-		loggerLocal.infoB(new Date() + " 完成  " +  startDate +  " 月* 热销品牌 Batch job :  ChainDailySalesService.runMonthlyHotBrandProduct()");
-				
-	}
+//	public void runMonthlyHotBrandProduct(){
+//        today = Calendar.getInstance();
+//        today.add(Calendar.MONTH, -1);
+//        today.set(Calendar.DAY_OF_MONTH,1);//设置为1号,当前日期既为本月第一天  
+//		java.sql.Date startDate = new java.sql.Date(today.getTime().getTime());
+//		
+//		today.set(Calendar.DAY_OF_MONTH, today.getActualMaximum(Calendar.DAY_OF_MONTH));
+//		java.sql.Date endDate = new java.sql.Date(today.getTime().getTime());
+//		
+//		loggerLocal.infoB(new Date() + ": 开始 " +  startDate +  " *月* 热销品牌 Batch job :  ChainDailySalesService.runMonthlyHotBrandProduct()");
+//				
+//		int numOfActiveChain = chainStoreService.getNumOfActiveChainStore();
+//		
+//		ChainMonthlyActiveNum monthlyActiveNum = new ChainMonthlyActiveNum(startDate, numOfActiveChain);
+//		chainMonthlyActiveNumDaoImpl.saveOrUpdate(monthlyActiveNum, true);
+//		
+//		/**
+//		 * 1. 查找所有连锁店热销品牌,
+//		 */
+//		loggerLocal.infoB(new Date() + " 查找所有连锁店 " +  startDate +  "月* 热销品牌");
+//		Object[] value_sale = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate};
+//		
+//		String selectHotBrand = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? GROUP BY productBarcode.product.brand.brand_ID, type";
+//		List<Object> sales2 = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrand, value_sale,null, false);
+//
+//		Map<Integer, Integer> brandMap = putListToChainMap(sales2);
+//
+//		List<Map.Entry<Integer, Integer>> hotBrands = new ArrayList<Map.Entry<Integer,Integer>>(brandMap.entrySet());
+//		Collections.sort(hotBrands, new Comparator<Map.Entry<Integer,Integer>>(){ 
+//			   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
+//			     return mapping2.getValue() - mapping1.getValue(); 
+//			   } 
+//			  }); 
+//		List<Brand> hotBrandList = new ArrayList<Brand>();
+//		for (int i = 0; i < hotBrands.size() && i < Common_util.HOT_BRAND_NUM; i++){
+//			Map.Entry<Integer, Integer> hotBrand = hotBrands.get(i);
+//			int brandId = hotBrand.getKey();
+//			int sumQ = hotBrand.getValue();
+//			
+//			ChainStore allStore = new ChainStore();
+//			allStore.setChain_id(Common_util.ALL_RECORD);
+//			
+//			Brand brand = new Brand();
+//			brand.setBrand_ID(brandId);
+//			
+//			hotBrandList.add(brand);
+//
+//			ChainMonthlyHotBrand chainWeeklyHotBrand = new ChainMonthlyHotBrand(startDate, allStore, brand, i+1, sumQ);
+//			chainMonthlyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
+//		}
+//		
+//		loggerLocal.infoB(new Date() + "  " +  startDate +  " 月* 热销品牌数量 : " + hotBrandList.size());
+//		
+//		if (hotBrandList.size() == 0)
+//			return ;
+//		
+//		String brands = "(";
+//		for (Brand brand: hotBrandList)
+//			brands += brand.getBrand_ID() + ",";
+//		brands += hotBrandList.get(0).getBrand_ID() + ")";
+//		
+//		/**
+//		 * 2. 把每个连锁店分品牌查询出来
+//		 */
+//		loggerLocal.infoB(new Date() + " 查找每个连锁店的 " +  startDate +  " 月* 热销品牌销售");
+//		List<ChainStore> noDisabledChainStores = chainStoreService.getAvailableParentChainstores();
+//		for (ChainStore chainStore : noDisabledChainStores){
+//			Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
+//			
+//			String selectHotBrandChain = "SELECT SUM(quantity), productBarcode.product.brand.brand_ID, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.product.brand.brand_ID IN " + brands +" GROUP BY productBarcode.product.brand.brand_ID, type";
+//			List<Object> salesChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotBrandChain, value_saleChain,null, false);
+//
+//			Map<Integer, Integer> brandMapChain = putListToChainMap(salesChain);
+//			for (Brand brand: hotBrandList){
+//				int brandId = brand.getBrand_ID();
+//				int salesQ = 0;
+//				Integer salesQObj = brandMapChain.get(brandId);
+//				if (salesQObj != null)
+//					salesQ = salesQObj.intValue();
+//				
+//				ChainMonthlyHotBrand chainWeeklyHotBrand = new ChainMonthlyHotBrand(startDate, chainStore, brand, 0, salesQ);
+//				chainMonthlyHotBrandDaoImpl.saveOrUpdate(chainWeeklyHotBrand, false);
+//				loggerLocal.infoB(new Date() + " 查找每个连锁店的  " +  startDate +  " 月* 热销品牌销售 " + chainStore.getChain_id() + "," + brandId + "," + salesQ);
+//			}
+//			
+//		}
+//		
+//		/**
+//		 * 3. 把每个牌子下面的hot产品查出来
+//		 *    以及每个连锁店的hot产品销量
+//		 */
+//		loggerLocal.infoB(new Date() + " 把每个牌子下面的  " +  startDate +  " 月* hot产品查出来");
+//		for (Brand brand : hotBrandList){
+//			/**
+//			 * 3.1 每个牌子的hot产品
+//			 */
+//			int brandId = brand.getBrand_ID();
+//			Object[] valueByBrand = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, brandId};
+//			
+//			String selectHotProduct = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND productBarcode.product.brand.brand_ID =? GROUP BY productBarcode.id, type";
+//			List<Object> salesProduct = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProduct, valueByBrand,null, false);
+//
+//			Map<Integer, Integer> productMap = putListToChainMap(salesProduct);
+//
+//			List<Map.Entry<Integer, Integer>> hotProducts = new ArrayList<Map.Entry<Integer,Integer>>(productMap.entrySet());
+//			Collections.sort(hotProducts, new Comparator<Map.Entry<Integer,Integer>>(){ 
+//				   public int compare(Map.Entry<Integer,Integer> mapping1,Map.Entry<Integer,Integer> mapping2){
+//				     return mapping2.getValue() - mapping1.getValue(); 
+//				   } 
+//				  });
+//			
+//			List<ProductBarcode> hotProduct = new ArrayList<ProductBarcode>();
+//			for (int i = 0; i < hotProducts.size() && i < Common_util.MONTHLY_HOT_PRODUCT_NUM; i++){
+//				Map.Entry<Integer, Integer> hotProductEntry = hotProducts.get(i);
+//				int productId = hotProductEntry.getKey();
+//				int sumQ = hotProductEntry.getValue();
+//				
+//				ChainStore allStore = new ChainStore();
+//				allStore.setChain_id(Common_util.ALL_RECORD);
+//				
+//				ProductBarcode productBarcode = new ProductBarcode();
+//				productBarcode.setId(productId);
+//				
+//				hotProduct.add(productBarcode);
+//
+//				ChainMonthlyHotProduct chainWeeklyHotProduct = new ChainMonthlyHotProduct(startDate, allStore, brandId, productBarcode, i+1, sumQ);
+//				chainMonthlyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
+//			}
+//			
+//			loggerLocal.infoB(new Date() + " 每个牌子下面的  " +  startDate +  " 月* hot产品数量 : " + brandId + "," + hotProduct.size());
+//			/**
+//			 * 3.2 每个连锁店的Hot product销量
+//			 */
+//			if (hotProduct.size() == 0)
+//				return ;
+//			
+//			String products = "(";
+//			for (ProductBarcode productBarcode: hotProduct)
+//				products += productBarcode.getId() + ",";
+//			products += hotProduct.get(0).getId() + ")";
+//			
+//			for (ChainStore chainStore : noDisabledChainStores){
+//				Object[] value_saleChain = new Object[]{ChainStoreSalesOrder.STATUS_COMPLETE,startDate,endDate, chainStore.getChain_id()};
+//				
+//				String selectHotProductChain = "SELECT SUM(quantity), productBarcode.id, type FROM ChainStoreSalesOrderProduct sp WHERE sp.chainSalesOrder.status =? AND sp.chainSalesOrder.orderDate BETWEEN ? AND ? AND sp.chainSalesOrder.chainStore.chain_id=? AND productBarcode.id IN " + products +" GROUP BY productBarcode.id, type";
+//				List<Object> salesProductChain = (List<Object>)chainSalesOrderDaoImpl.executeHQLSelect(selectHotProductChain, value_saleChain,null, false);
+//
+//				Map<Integer, Integer> productMapChain = putListToChainMap(salesProductChain);
+//				for (ProductBarcode product: hotProduct){
+//					int productId = product.getId();
+//					int salesQ = 0;
+//					Integer salesQObj = productMapChain.get(productId);
+//					if (salesQObj != null)
+//						salesQ = salesQObj.intValue();
+//					
+//					if (salesQ != 0){
+//						ChainMonthlyHotProduct chainWeeklyHotProduct = new ChainMonthlyHotProduct(startDate, chainStore, brandId, product, 0, salesQ);
+//						chainMonthlyHotProductDaoImpl.saveOrUpdate(chainWeeklyHotProduct, false);
+//					}
+//					
+//					loggerLocal.infoB(new Date() + " 每个连锁店下面的  " +  startDate +  " 月* hot产品销量 : " + brandId + "," + productId + "," + salesQ);
+//				}
+//				
+//			}
+//		}
+//		
+//		loggerLocal.infoB(new Date() + " 完成  " +  startDate +  " 月* 热销品牌 Batch job :  ChainDailySalesService.runMonthlyHotBrandProduct()");
+//				
+//	}
 	
 	/**
 	 * 补充前几个月的月热销品牌
 	 */
-	public void runMontlyDummyHotBrandProduct(){
-		for (int i = 0; i < 1; i++){
-			Calendar date2 = Calendar.getInstance();
-			date2.add(Calendar.MONTH, -1*i);
-			runMonthlyHotBrandProduct();
-		}
-	}
+//	public void runMontlyDummyHotBrandProduct(){
+//		for (int i = 0; i < 1; i++){
+//			Calendar date2 = Calendar.getInstance();
+//			date2.add(Calendar.MONTH, -1*i);
+//			runMonthlyHotBrandProduct();
+//		}
+//	}
 	
 	/**
 	 * 补齐之前排名

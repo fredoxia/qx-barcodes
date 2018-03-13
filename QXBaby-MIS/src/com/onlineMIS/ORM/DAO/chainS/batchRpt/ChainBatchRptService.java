@@ -165,7 +165,7 @@ public class ChainBatchRptService {
 		DetachedCriteria productCriteria = pbCriteria.createCriteria("product");
 		productCriteria.add(Restrictions.eq("year.year_ID", year.getYear_ID()));
 		productCriteria.add(Restrictions.eq("quarter.quarter_ID", quarter.getQuarter_ID()));
-		//productCriteria.add(Restrictions.isNull("chainStore.chain_id"));
+		productCriteria.add(Restrictions.isNull("chainStore.chain_id"));
 		List<ProductBarcode> productBarcodes = productBarcodeDaoImpl.getByCritera(pbCriteria, false);
 		loggerLocal.infoB("总计多少当季货品:" + productBarcodes.size());
 		
@@ -731,10 +731,18 @@ public class ChainBatchRptService {
 			Iterator<ChainStoreSalesOrderProduct> orderProductIterator = orderProducts.iterator();
 			
 			double salesCost = 0;
+			int chainId = 0;
 			ChainStore store = order.getChainStore();
 			if (store == null)
 				continue;
-			int chainId = store.getChain_id();
+			else {
+			    chainId = store.getChain_id();
+			    store = chainStoreDaoImpl.get(chainId, true);
+			    
+			    //如果是子连锁店就过略掉
+			    if (store.getParentStore() != null)
+			    	continue;
+			}
 			
 			while (orderProductIterator.hasNext()){
 				ChainStoreSalesOrderProduct orderProduct = orderProductIterator.next();
