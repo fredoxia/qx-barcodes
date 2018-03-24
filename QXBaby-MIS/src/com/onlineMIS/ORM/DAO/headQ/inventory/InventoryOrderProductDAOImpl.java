@@ -7,11 +7,15 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
+import com.onlineMIS.ORM.entity.headQ.preOrder.CustPreorderIdentity;
 import com.onlineMIS.common.loggerLocal;
 
 @Repository
@@ -40,6 +44,18 @@ public class InventoryOrderProductDAOImpl extends BaseDAO<InventoryOrderProduct>
 		    return false;
 		}
 		return true;
+	}
+	
+	public InventoryOrderProduct getByOrderIdProductId(int orderId, int productId){
+		DetachedCriteria criteria = DetachedCriteria.forClass(InventoryOrderProduct.class);
+		criteria.add(Restrictions.eq("order.order_ID", orderId));
+		criteria.add(Restrictions.eq("productBarcode.id", productId));
+		
+		List<InventoryOrderProduct> products = this.getByCritera(criteria, true); 
+		if (products.size() > 0)
+			return products.get(0);
+		else 
+			return null;
 	}
 	
 	@SuppressWarnings("unchecked")

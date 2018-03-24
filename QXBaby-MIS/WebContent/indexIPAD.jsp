@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@taglib prefix="s" uri="/struts-tags" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content ="width=device-width, initial-scale=1">
-<%@ include file="/jsp/commonJQM/JQMStyle.jsp"%>
+<%@ include file="jsp/headQ/ipad/JQMStyle.jsp"%>
 </head>
 <body>
 	<div id="loginPage" data-role="page">
@@ -19,49 +19,46 @@
 			<p style="">
 				员工登录系统
 			</p>
-			<form method="post" id="loginform">
+			<s:form id="loginForm" name="loginForm" method="post" theme="simple">
 				<div data-role="fieldcontainer">
-					<label for="userName">员工号 : </label> <input type="number"
-						id="id" name="id" placeholder="员工PDA登录账号" />
+					<label for="userName">员工ID号 : </label> <s:textfield name="user.user_id"
+						id="id"  placeholder="你的员ID登录账号" />
 				</div>
 				<div data-role="fieldcontainer">
-					<label for="password">密码 : </label> <input type="number"
-						id="password" name="password" required placeholder="数字密码" />
+					<label for="password">密码 : </label> <s:password name="user.password"
+						id="password" placeholder="系统数字密码" />
 				</div>
 				<div data-role="fieldcontainer">
 					<input type="button" id="submitBt" data-theme="b" onclick ="login();" value="登录"/>
 				</div>
-			</form>
+			</s:form>
 		</div>
 
 		<footer data-role="footer" data-theme="a">
-			<h1>©2017 千禧宝贝科技</h1>
+			<h1>所有选货自动保存草稿 ©2018 千禧宝贝科技</h1>
 		</footer>
 
-		<jsp:include  page="/jsp/commonJQM/Popup.jsp"/>
+		<jsp:include  page="jsp/headQ/ipad/Popup.jsp"/>
 		
 		<script>
-			function login() {
+			function login(){
+	
 				if (validateLoginForm()){
-					$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
-					var params=$("#loginform").serialize();
-
-					$.post('<%=request.getContextPath()%>/userController/login/mobile', params, 
-					function(result) {
-						$.mobile.loading("hide");
-						if (result.success) {
-							$("#password").attr("value","");
-							$("#id").attr("value","");
-							window.location.href = "<%=request.getContextPath()%>/orderController/StartOrder/mobile"
-
-						} else {
-							$("#password").attr("value","");
-							renderPopup("登录错误",result.msg)
-						}
-					}, 'JSON');
+				    var params=$("#loginForm").serialize(); 
+			
+				    var url = "<%=request.getContextPath()%>/action/loginJSON!PDALogin";
+				    $.post(url,params, loginBackProcess,"json");
 				}
 			}
-			
+			function loginBackProcess(data){
+				var response = data.response;
+				var returnCode = response.returnCode;
+				if (returnCode != SUCCESS)
+					renderPopup("验证错误  " , response.message);
+				else{
+					window.location.href = '<%=request.getContextPath()%>/action/ipadJSP!goToEditCust';  
+				}
+			}
 			function validateLoginForm(){
 				var userName = $("#id").val();
 				var password = $("#password").val();

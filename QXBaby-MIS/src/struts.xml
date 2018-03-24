@@ -240,7 +240,15 @@
                 <param name="bufferSize">1024</param>  
             </result> 
         </action>              
-          
+       
+       <!-- ipad 订货 -->
+        <action name="ipadJSP" class="com.onlineMIS.action.headQ.ipad.IpadJSPAction">
+        	
+        	<result name="listDraftOrder">/jsp/headQ/ipad/ListDraftOrders.jsp</result>
+        	<result name="viewCurrentOrder">/jsp/headQ/ipad/ViewCurrentOrder.jsp</result>
+        	<result name="ipadIndex">/indexIPAD.jsp</result>
+            <result name="EditCust">/jsp/headQ/ipad/EditCust.jsp</result>
+        </action>   
     </package>
     
     <package name="headQJSONPackage" extends="json-default" namespace="/action">
@@ -312,6 +320,12 @@
             </result>
         </action>
         <action name="preOrderActionJSON" class="com.onlineMIS.action.headQ.preOrder.PreOrderJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>
+        
+        <action name="ipadJSON" class="com.onlineMIS.action.headQ.ipad.IpadJSONAction">
             <result type="json">
                  <param name="root">jsonObject</param>
             </result>
