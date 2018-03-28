@@ -1,5 +1,6 @@
 package com.onlineMIS.action.headQ.ipad;
 
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
@@ -14,15 +15,18 @@ public class ProductBarcodeVO {
 	private String color;
 	private String size;
 	private String wholeSalePrice;
+	private int inventory;
+	private int orderHis;
+	private int orderCurrent;
 	
-	public ProductBarcodeVO(ProductBarcode pb){
+	public ProductBarcodeVO(ProductBarcode pb, int inventory, int orderHis, int orderCurrent){
 		this.setId(pb.getId());
 		this.setBarcode(pb.getBarcode());
 		
 		Product product = pb.getProduct();
 		this.setProductCode(product.getProductCode());
 		this.setNumPerHand(product.getNumPerHand());
-		this.setWholeSalePrice(String.valueOf((int)product.getWholeSalePrice()));
+		this.setWholeSalePrice(String.valueOf((int)ProductBarcodeDaoImpl.getWholeSalePrice(pb)));
 		this.setBrand(product.getBrand().getBrand_Name());
 		
 		Color color = pb.getColor();
@@ -30,6 +34,10 @@ public class ProductBarcodeVO {
 			this.setColor("");
 		else 
 			this.setColor(color.getName());
+		
+		this.setInventory(inventory);
+		this.setOrderCurrent(orderCurrent);
+		this.setOrderHis(orderHis);
 	}
 	
 	public ProductBarcodeVO(){
@@ -37,6 +45,30 @@ public class ProductBarcodeVO {
 	}
 	
 	
+	public int getInventory() {
+		return inventory;
+	}
+
+	public void setInventory(int inventory) {
+		this.inventory = inventory;
+	}
+
+	public int getOrderHis() {
+		return orderHis;
+	}
+
+	public void setOrderHis(int orderHis) {
+		this.orderHis = orderHis;
+	}
+
+	public int getOrderCurrent() {
+		return orderCurrent;
+	}
+
+	public void setOrderCurrent(int orderCurrent) {
+		this.orderCurrent = orderCurrent;
+	}
+
 	public String getBrand() {
 		return brand;
 	}

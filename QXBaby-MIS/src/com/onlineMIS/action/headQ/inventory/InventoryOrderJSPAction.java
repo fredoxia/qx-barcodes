@@ -121,35 +121,35 @@ public class InventoryOrderJSPAction  extends InventoryOrderAction {
 	}
 
 
-	public String previewOrder(){
-		
-		int orderId = formBean.getOrder().getOrder_ID();
-		String uuid = Common_util.getUUID();
-		String log = logInventory("previewOrder", formBean.getOrder().getClient_id(), orderId, uuid);
-		loggerLocal.info(log);
-		
-		if (formBean.getOrder().getClient_id() == 0){
-			addFieldError("clientID.empty", "客户名字必填");
-			return INPUT;
-		} else if (formBean.getOrder().getOrder_Keeper() == null){
-			addFieldError("orderKeeper.empty", "订单输入人员必填");
-			return INPUT;
-		} else if (formBean.getOrder().getOrder_Counter() == null){
-			addFieldError("orderCounter.empty", "订单点数人员必填");
-			return INPUT;
-		} else if (formBean.getOrder().getOrder_scanner() == null){
-			addFieldError("orderScanner.empty", "订单扫描人员必填");
-			return INPUT;
-		} 
-		
-		inventoryService.previewOrder(formBean);
-
-		uiBean = inventoryService.prepareUIBean();
-
-		loggerLocal.infoR(log);
-		
-		return "preview";
-	}
+//	public String previewOrder(){
+//		
+//		int orderId = formBean.getOrder().getOrder_ID();
+//		String uuid = Common_util.getUUID();
+//		String log = logInventory("previewOrder", formBean.getOrder().getClient_id(), orderId, uuid);
+//		loggerLocal.info(log);
+//		
+//		if (formBean.getOrder().getClient_id() == 0){
+//			addFieldError("clientID.empty", "客户名字必填");
+//			return INPUT;
+//		} else if (formBean.getOrder().getOrder_Keeper() == null){
+//			addFieldError("orderKeeper.empty", "订单输入人员必填");
+//			return INPUT;
+//		} else if (formBean.getOrder().getOrder_Counter() == null){
+//			addFieldError("orderCounter.empty", "订单点数人员必填");
+//			return INPUT;
+//		} else if (formBean.getOrder().getOrder_scanner() == null){
+//			addFieldError("orderScanner.empty", "订单扫描人员必填");
+//			return INPUT;
+//		} 
+//		
+//		inventoryService.previewOrder(formBean);
+//
+//		uiBean = inventoryService.prepareUIBean();
+//
+//		loggerLocal.infoR(log);
+//		
+//		return "preview";
+//	}
 	
 	/**
 	 * pre create the new inventory sales order
@@ -231,7 +231,23 @@ public class InventoryOrderJSPAction  extends InventoryOrderAction {
 		String uuid = Common_util.getUUID();
 		loggerLocal.info(logInventory("save", formBean.getOrder().getClient_id(), formBean.getOrder().getOrder_ID(), uuid));
 		
-		boolean isSuccess = inventoryService.inventoryComplsave(formBean);
+		if (formBean.getOrder().getClient_id() == 0){
+			addFieldError("clientID.empty", "客户名字必填");
+			return INPUT;
+		} else if (formBean.getOrder().getOrder_Keeper() == null){
+			addFieldError("orderKeeper.empty", "订单输入人员必填");
+			return INPUT;
+		} else if (formBean.getOrder().getOrder_Counter() == null){
+			addFieldError("orderCounter.empty", "订单点数人员必填");
+			return INPUT;
+		} else if (formBean.getOrder().getOrder_scanner() == null){
+			addFieldError("orderScanner.empty", "订单扫描人员必填");
+			return INPUT;
+		} 
+		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		
+		
+		boolean isSuccess = inventoryService.inventoryComplsave(formBean, loginUserInfor);
 		
 		loggerLocal.infoR(logInventory("save", formBean.getOrder().getClient_id(), formBean.getOrder().getOrder_ID(), uuid) + "," + isSuccess);
 		

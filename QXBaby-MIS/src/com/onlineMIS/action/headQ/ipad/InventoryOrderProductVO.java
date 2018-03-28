@@ -28,7 +28,7 @@ public class InventoryOrderProductVO {
 		Product product = pb.getProduct();
 		this.setProductCode(product.getProductCode());
 
-		this.setWholeSalePrice(String.valueOf((int)product.getWholeSalePrice()));
+		this.setWholeSalePrice(String.valueOf((int)orderProduct.getWholeSalePrice()));
 		this.setBrand(product.getBrand().getBrand_Name());
 		
 		Color color = pb.getColor();

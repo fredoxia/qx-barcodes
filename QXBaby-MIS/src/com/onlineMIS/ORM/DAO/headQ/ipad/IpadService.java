@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
 import net.sf.json.JSONObject;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
@@ -33,11 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.headQ.SQLServer.ClientDAOImpl;
+import com.onlineMIS.ORM.DAO.headQ.SQLServer.SaleHistoryDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderProductDAOImpl;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.ClientsMS;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.RegionMS;
+import com.onlineMIS.ORM.entity.headQ.SQLServer.SaleHistory;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
@@ -61,6 +66,12 @@ public class IpadService {
 	
 	@Autowired
 	private InventoryOrderProductDAOImpl inventoryOrderProductDAOImpl;
+	
+	@Autowired
+	private ProductBarcodeService pbService;
+	
+	@Autowired
+	private SaleHistoryDAOImpl saleHistoryDAOImpl;
 
 	/**
 	 * when people type the pinyin, this service will search the client infroamtion from the jinsuan database
@@ -68,49 +79,49 @@ public class IpadService {
 	 * @return
 	 */
 	public List<ClientsMS> getClients(String pinyin) {
-//		pinyin = pinyin.replaceAll(" ", "_");
-//		return clientDAOImpl.getClientByPinyin(pinyin);
-		RegionMS region1 = new RegionMS();
-		region1.setName("四川连锁店");
+		pinyin = pinyin.replaceAll(" ", "_");
+		return clientDAOImpl.getClientByPinyin(pinyin);
+//		RegionMS region1 = new RegionMS();
+//		region1.setName("四川连锁店");
+//		
+//		ClientsMS client1 = new ClientsMS();
+//		client1.setName("夏林");
+//		client1.setClient_id(1);
+//		client1.setPinyin("XiaLin");
+//		client1.setRegion(region1);
+//		
+//		RegionMS region2 = new RegionMS();
+//		region2.setName("乐山连锁店");
+//		
+//		ClientsMS client2 = new ClientsMS();
+//		client2.setName("夏林2");
+//		client2.setClient_id(1);
+//		client2.setPinyin("XiaLin");
+//		client2.setRegion(region2);
 		
-		ClientsMS client1 = new ClientsMS();
-		client1.setName("夏林");
-		client1.setClient_id(1);
-		client1.setPinyin("XiaLin");
-		client1.setRegion(region1);
+//		List<ClientsMS> clientsMSs = new ArrayList<ClientsMS>();
+//		
+//		clientsMSs.add(client1);
+//		clientsMSs.add(client2);
 		
-		RegionMS region2 = new RegionMS();
-		region2.setName("乐山连锁店");
-		
-		ClientsMS client2 = new ClientsMS();
-		client2.setName("夏林2");
-		client2.setClient_id(1);
-		client2.setPinyin("XiaLin");
-		client2.setRegion(region2);
-		
-		List<ClientsMS> clientsMSs = new ArrayList<ClientsMS>();
-		
-		clientsMSs.add(client1);
-		clientsMSs.add(client2);
-		
-	    return clientsMSs;
+//	    return clientsMSs;
 	}
 
 	public ClientsMS getClientById(int clientId) {
-		//return clientDAOImpl.getClientsByID(clientId);
+		return clientDAOImpl.getClientsByID(clientId);
 		
-		RegionMS region1 = new RegionMS();
-		region1.setName("四川连锁店");
-		
-		ClientsMS client1 = new ClientsMS();
-		client1.setName("夏林");
-		client1.setClient_id(1);
-		client1.setPinyin("XiaLin");
-		client1.setRegion(region1);
-		return client1;
+//		RegionMS region1 = new RegionMS();
+//		region1.setName("四川连锁店");
+//		
+//		ClientsMS client1 = new ClientsMS();
+//		client1.setName("夏林");
+//		client1.setClient_id(1);
+//		client1.setPinyin("XiaLin");
+//		client1.setRegion(region1);
+//		return client1;
 	}
 
-	public Response searchByProductCode(String productCode) {
+	public Response searchByProductCode(String productCode, Integer clientId, Integer orderId) {
 		productCode = productCode.replaceAll("\\.", "_");
 		//System.out.println("-----------" + productCode);
 		Response response = new Response();
@@ -132,7 +143,28 @@ public class IpadService {
 		} else {
 			List<ProductBarcodeVO> productBarcodeVOs = new ArrayList<ProductBarcodeVO>();
 			for (ProductBarcode pb: productBarcodes){
-				ProductBarcodeVO productBarcodeVO = new ProductBarcodeVO(pb);
+				String barcode = pb.getBarcode();
+
+				int inventory = pbService.getProductInven(barcode);
+				
+				SaleHistory orderSalesHis = null;
+				if (clientId != null)
+				   orderSalesHis = saleHistoryDAOImpl.getSaleHistory(clientId.intValue(), barcode);
+				
+				int orderHis = 0;
+				if (orderSalesHis != null){
+					orderHis = Math.abs((int)orderSalesHis.getQuantity());
+				}
+				
+				int orderCurrent = 0 ;
+				if (orderId != null){
+					InventoryOrderProduct orderProduct = inventoryOrderProductDAOImpl.getByOrderIdProductId(orderId.intValue(), pb.getId());
+				    if(orderProduct != null)
+					  orderCurrent = orderProduct.getQuantity();
+				}
+				
+				
+				ProductBarcodeVO productBarcodeVO = new ProductBarcodeVO(pb, inventory, orderHis, orderCurrent);
 				productBarcodeVOs.add(productBarcodeVO);
 			}
 			response.setReturnValue(productBarcodeVOs);
@@ -144,6 +176,9 @@ public class IpadService {
 	@Transactional
 	public Response orderProduct(Object clientIdObj, Object orderIdObj, int pbId, int quantity, UserInfor orderScanner) {
 		Response response = new Response();
+		Map<String, Integer> result = new HashMap<String, Integer>();
+	
+		
 		if (clientIdObj == null){
 		   response.setFail("输入客户信息后再选择货品");
 		   return response;
@@ -151,70 +186,19 @@ public class IpadService {
 		
 		int client_id = Integer.valueOf(String.valueOf(clientIdObj));
 		
-		if (orderIdObj == null){
-//			ClientsMS clientsMS = clientDAOImpl.getClientsByID(client_id);
-			
-			InventoryOrder order = new InventoryOrder();
-			order.setClient_id(client_id);
-			order.setClient_name("test");
-//			order.setClient_name(clientsMS.getName());
-			
-			order.setOrder_StartTime(Common_util.getToday());
-			order.setOrder_Status(InventoryOrder.STATUS_PDA_DRAFT);
-			order.setOrder_type(InventoryOrder.TYPE_SALES_ORDER_W);
-			order.setPdaScanner(orderScanner);
-			
-			ProductBarcode pBarcode = productBarcodeDaoImpl.get(pbId, true);
-			Product p = pBarcode.getProduct();
-			
-			InventoryOrderProduct inventoryOrderProduct= new InventoryOrderProduct();
-			inventoryOrderProduct.setIndex(0);
-			inventoryOrderProduct.setProductBarcode(pBarcode);
-			inventoryOrderProduct.setQuantity(quantity * p.getNumPerHand());
-			
-			double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pBarcode);
-			
-			
-			double totalWholeSalePrice = wholePrice * p.getNumPerHand() * quantity;
-			order.setTotalWholePrice(totalWholeSalePrice);
-			order.setTotalQuantity(quantity * p.getNumPerHand());
-			
-			List<InventoryOrderProduct> orderProducts = new ArrayList<InventoryOrderProduct>();
-			orderProducts.add(inventoryOrderProduct);
-			
-			order.setProduct_List(orderProducts);
-			order.putListToSet();
-			
-			inventoryOrderDAOImpl.save(order, true);
-			
-			response.setReturnValue(order.getOrder_ID());
-		} else {
-			int orderId = Integer.valueOf(String.valueOf(orderIdObj));
-			InventoryOrderProduct orderProduct = inventoryOrderProductDAOImpl.getByOrderIdProductId(orderId, pbId);
-			if (orderProduct != null){
-				ProductBarcode pBarcode = orderProduct.getProductBarcode();
-				Product p = pBarcode.getProduct();
+		if (quantity > 0){
+			if (orderIdObj == null){
+				ClientsMS clientsMS = clientDAOImpl.getClientsByID(client_id);
 				
-				int moreQ = p.getNumPerHand() * quantity;
-				int newQ = moreQ + orderProduct.getQuantity();
+				InventoryOrder order = new InventoryOrder();
+				order.setClient_id(client_id);
+	//			order.setClient_name("test");
+				order.setClient_name(clientsMS.getName() +" " + clientsMS.getRegion().getName());
 				
-				if (newQ ==0)
-					inventoryOrderProductDAOImpl.delete(orderProduct, true);
-				else {
-					orderProduct.setQuantity(newQ);
-					inventoryOrderProductDAOImpl.update(orderProduct, true);
-				}
-				
-				InventoryOrder order = inventoryOrderDAOImpl.get(orderId, true);
-				double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pBarcode);
-				
-				double totalWholeSalePrice = wholePrice * p.getNumPerHand() * quantity;
-				order.setTotalWholePrice(totalWholeSalePrice + order.getTotalWholePrice());
-				order.setTotalQuantity(moreQ + order.getTotalQuantity());
-				inventoryOrderDAOImpl.save(order, true);
-				
-			} else {
-				InventoryOrder order = inventoryOrderDAOImpl.get(orderId, true);
+				order.setOrder_StartTime(Common_util.getToday());
+				order.setOrder_Status(InventoryOrder.STATUS_PDA_DRAFT);
+				order.setOrder_type(InventoryOrder.TYPE_SALES_ORDER_W);
+				order.setPdaScanner(orderScanner);
 				
 				ProductBarcode pBarcode = productBarcodeDaoImpl.get(pbId, true);
 				Product p = pBarcode.getProduct();
@@ -223,19 +207,125 @@ public class IpadService {
 				inventoryOrderProduct.setIndex(0);
 				inventoryOrderProduct.setProductBarcode(pBarcode);
 				inventoryOrderProduct.setQuantity(quantity * p.getNumPerHand());
-				inventoryOrderProduct.setOrder(order);
-								
-				inventoryOrderProductDAOImpl.saveOrUpdate(inventoryOrderProduct, true);
 				
 				double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pBarcode);
+				inventoryOrderProduct.setWholeSalePrice(wholePrice);
+				
 				double totalWholeSalePrice = wholePrice * p.getNumPerHand() * quantity;
+				order.setTotalWholePrice((int)totalWholeSalePrice);
+				order.setTotalQuantity(quantity * p.getNumPerHand());
 				
-				inventoryOrderProduct.setWholeSalePrice(totalWholeSalePrice);
+				List<InventoryOrderProduct> orderProducts = new ArrayList<InventoryOrderProduct>();
+				orderProducts.add(inventoryOrderProduct);
 				
+				order.setProduct_List(orderProducts);
+				order.putListToSet();
 				
-				order.setTotalWholePrice(totalWholeSalePrice + order.getTotalWholePrice());
-				order.setTotalQuantity(p.getNumPerHand() * quantity + order.getTotalQuantity());
 				inventoryOrderDAOImpl.save(order, true);
+				result.put("orderId", order.getOrder_ID());
+				result.put("pbId", pBarcode.getId());
+				result.put("cq", p.getNumPerHand());
+				
+				response.setReturnValue(result);
+			} else {
+				int orderId = Integer.valueOf(String.valueOf(orderIdObj));
+				InventoryOrderProduct orderProduct = inventoryOrderProductDAOImpl.getByOrderIdProductId(orderId, pbId);
+				if (orderProduct != null){
+					ProductBarcode pBarcode = orderProduct.getProductBarcode();
+					Product p = pBarcode.getProduct();
+					
+					int moreQ = p.getNumPerHand() * quantity;
+					int newQ = moreQ + orderProduct.getQuantity();
+					
+					if (newQ ==0)
+						inventoryOrderProductDAOImpl.delete(orderProduct, true);
+					else {
+						orderProduct.setQuantity(newQ);
+						inventoryOrderProductDAOImpl.update(orderProduct, true);
+					}
+					
+					InventoryOrder order = inventoryOrderDAOImpl.get(orderId, true);
+					double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pBarcode);
+					
+					double totalWholeSalePrice = wholePrice * p.getNumPerHand() * quantity;
+					order.setTotalWholePrice((int)(totalWholeSalePrice + order.getTotalWholePrice()));
+					order.setTotalQuantity(moreQ + order.getTotalQuantity());
+					inventoryOrderDAOImpl.save(order, true);
+					
+					result.put("orderId", orderId);
+					result.put("pbId", pBarcode.getId());
+					result.put("cq", newQ);
+					
+					response.setReturnValue(result);
+					
+				} else {
+					InventoryOrder order = inventoryOrderDAOImpl.get(orderId, true);
+					
+					ProductBarcode pBarcode = productBarcodeDaoImpl.get(pbId, true);
+					Product p = pBarcode.getProduct();
+					
+					InventoryOrderProduct inventoryOrderProduct= new InventoryOrderProduct();
+					inventoryOrderProduct.setIndex(0);
+					inventoryOrderProduct.setProductBarcode(pBarcode);
+					inventoryOrderProduct.setQuantity(quantity * p.getNumPerHand());
+					inventoryOrderProduct.setOrder(order);
+					
+					double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pBarcode);
+					inventoryOrderProduct.setWholeSalePrice(wholePrice);
+									
+					inventoryOrderProductDAOImpl.saveOrUpdate(inventoryOrderProduct, true);
+					
+					
+					double totalWholeSalePrice = wholePrice * p.getNumPerHand() * quantity;
+					
+					order.setTotalWholePrice((int)(totalWholeSalePrice + order.getTotalWholePrice()));
+					order.setTotalQuantity(p.getNumPerHand() * quantity + order.getTotalQuantity());
+					inventoryOrderDAOImpl.save(order, true);
+					
+					result.put("orderId", orderId);
+					result.put("pbId", pBarcode.getId());
+					result.put("cq", p.getNumPerHand());
+					
+					response.setReturnValue(result);
+				}
+			}
+		} else {
+			if (orderIdObj == null){
+				response.setFail("当前货品尚未有数量");
+			} else {
+				int orderId = Integer.valueOf(String.valueOf(orderIdObj));
+				InventoryOrderProduct orderProduct = inventoryOrderProductDAOImpl.getByOrderIdProductId(orderId, pbId);
+				if (orderProduct != null){
+					ProductBarcode pBarcode = orderProduct.getProductBarcode();
+					Product p = pBarcode.getProduct();
+					
+					int moreQ = p.getNumPerHand() * quantity;
+					int newQ = moreQ + orderProduct.getQuantity();
+					
+					if (newQ ==0)
+						inventoryOrderProductDAOImpl.delete(orderProduct, true);
+					else {
+						orderProduct.setQuantity(newQ);
+						inventoryOrderProductDAOImpl.update(orderProduct, true);
+					}
+					
+					InventoryOrder order = inventoryOrderDAOImpl.get(orderId, true);
+					double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pBarcode);
+					
+					double totalWholeSalePrice = wholePrice * p.getNumPerHand() * quantity;
+					order.setTotalWholePrice((int)(totalWholeSalePrice + order.getTotalWholePrice()));
+					order.setTotalQuantity(moreQ + order.getTotalQuantity());
+					inventoryOrderDAOImpl.save(order, true);
+					
+					result.put("orderId", orderId);
+					result.put("pbId", pBarcode.getId());
+					result.put("cq", newQ);
+					
+					response.setReturnValue(result);
+					
+				} else {
+					response.setFail("当前货品尚未有数量");
+				}
 			}
 		}
 		
@@ -279,10 +369,10 @@ public class IpadService {
 		}
 		int client_id = Integer.valueOf(String.valueOf(clientIdObj));
 		ClientsMS client = new ClientsMS();
-//		client = clientDAOImpl.getClientsByID(client_id);
+		client = clientDAOImpl.getClientsByID(client_id);
 		
-		client.setClient_id(client_id);
-		client.setName("test12");
+//		client.setClient_id(client_id);
+//		client.setName("test12");
 		
 		if (orderIdObj == null){
 			   response.setFail("没有订单信息无法提交单据");
@@ -309,9 +399,9 @@ public class IpadService {
 		//1.2 to set the re-cost, selected price, whole price, discount
 		//               totalQ, totalWhole, totalRecost, totalSalePrice
 		int totalQ = 0;
-		double totalWholePrice = 0;
-		double totalCost = 0;
-		double totalSalePrice = 0;
+		int totalWholePrice = 0;
+		int totalCost = 0;
+		int totalSalePrice = 0;
         int index = 0;
 		for (InventoryOrderProduct orderProduct: orderProducts){
 
@@ -379,14 +469,26 @@ public class IpadService {
 		Response response = new Response();
 		
 		DetachedCriteria criteria = DetachedCriteria.forClass(InventoryOrder.class,"order");
-		criteria.add(Restrictions.ne("order.order_Status", InventoryOrder.STATUS_PDA_DRAFT));
+		criteria.add(Restrictions.eq("order.order_Status", InventoryOrder.STATUS_PDA_DRAFT));
 		criteria.add(Restrictions.eq("pdaScanner.user_id", loginUser.getUser_id()));
-		
+	
 		List<InventoryOrder> orders = inventoryOrderDAOImpl.search(criteria);
 		
 		response.setReturnValue(orders);
 		
 		return response;
+	}
+
+	public Response deleteOrder(int orderId) {
+        Response response = new Response();
+		
+        String hql_order = "UPDATE InventoryOrder i set i.order_Status = ? where order_ID = ?";
+		Object[] values = {InventoryOrder.STATUS_DELETED,orderId};
+			
+		inventoryOrderDAOImpl.executeHQLUpdateDelete(hql_order, values, true);
+		response.setReturnCode(Response.SUCCESS);
+        
+        return response;
 	}
 
 }

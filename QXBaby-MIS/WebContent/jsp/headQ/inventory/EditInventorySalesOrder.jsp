@@ -153,7 +153,7 @@ $(document).ready(function(){
     </s:if><s:elseif test="formBean.order.order_Status==0">
 	  <tr height="10">
 	  	     <td>&nbsp;</td>
-			 <td><input type="button" value="导入文件" onclick="importFile();"/>&nbsp; <input type="button" onclick="preview();" value="单据预览"/></td>			 					 		
+			 <td><input type="button" value="导入文件" onclick="importFile();"/>&nbsp; <input type="button" onclick="submitOrder();" value="单据提交"/></td>			 					 		
 			 <td>&nbsp;</td>
 			 <td><input type="button" value="存入草稿" onclick="saveToDraft();"/><input type="button" value="重新计算" onclick="calculateTotal();"/></td>			 					 		
 			 <td>排序<input type="checkbox" name="formBean.sorting" value="true"/></td>			 					 		
@@ -163,7 +163,7 @@ $(document).ready(function(){
 	</s:elseif><s:elseif test="formBean.order.order_Status==9">
 	  <tr height="10">
 	  	     <td>&nbsp;</td>
-			 <td><input type="button" value="导入文件" onclick="importFile();"/>&nbsp; <input type="button" onclick="preview();" value="单据预览"/></td>			 					 		
+			 <td><input type="button" value="导入文件" onclick="importFile();"/>&nbsp; <input type="button" onclick="submitOrder();" value="单据提交"/></td>			 					 		
 			 <td><input type="button" value="条码标签导出" onclick="exportBarcodeToExcel();"/></td>
 			 <td><input type="button" value="存入草稿" onclick="saveToDraft();"/><input type="button" value="重新计算" onclick="calculateTotal();"/></td>			 					 		
 			 <td>排序<input type="checkbox" name="formBean.sorting" value="true"/></td>

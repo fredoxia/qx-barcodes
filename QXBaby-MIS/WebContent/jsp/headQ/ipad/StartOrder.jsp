@@ -29,7 +29,7 @@ function clearProduct(){
 
 }
 function checkSearch(){
-	if ($.trim($("#productCode").val()).length >= 3)
+	if ($.trim($("#productCode").val()).length >= 4)
 		searchProduct();
 }
 function searchProduct(){
@@ -54,11 +54,14 @@ function searchProduct(){
 				        if (cops[i] != "")  {
 					          $("<tr id='pRow"+cops[i].id+"'><td style='vertical-align:middle;'>"+
 					        		  cops[i].brand +"</td><td style='vertical-align:middle;'>"+
-					        		  cops[i].productCode+"</td><td style='vertical-align:middle;'>"+
-					        		  cops[i].color+"</td><td style='vertical-align:middle;'>"+
-					        		  cops[i].wholeSalePrice+"</td><td>"+
+					        		  cops[i].productCode + cops[i].color +"</td><td style='vertical-align:middle;'>"+
+					        		  cops[i].wholeSalePrice+"</td><td style='vertical-align:middle;'>"+
+					        		  cops[i].inventory+"</td><td style='vertical-align:middle;'>"+
+					        		  cops[i].orderHis+"</td><td style='vertical-align:middle;' id='cQ"+cops[i].id+"'>"+
+					        		  cops[i].orderCurrent+"</td><td>"+
 										"<div name='btnGroup' data-role='controlgroup' data-type='horizontal'>"+
 											"<input name='addBtn' type='button' value='加订' data-mini='true'  data-inline='true' onclick='addOrder("+cops[i].id+");'/>"+
+											"<input name='remBtn' type='button' value='退订' data-mini='true'  data-inline='true' onclick='deductOrder("+cops[i].id+");'/>"+
 										"</div>"+
 							          "</td></tr>").appendTo("#productBody");
 				        }
@@ -96,7 +99,13 @@ function myOrder(pbId, quantity){
 	function(result) {
 		$.mobile.loading("hide");
 		if (result.returnCode != 2) {
-			renderPopup("系统错误",result.message)
+			renderPopup("系统错误",result.message);
+		} else {
+			var returnValue = result.returnValue;
+			var quantity = returnValue.cq;
+			var pbId = returnValue.pbId;
+			
+			$("#cQ" + pbId).html(quantity);
 		}
 	}, 'JSON');
 }
@@ -121,7 +130,7 @@ function addOrder(pbId){
 				<table>
 				    <tr>
 						<td><label for="productCode">货号: </label></td> 
-						<td><input id="productCode" name="productCode" placeholder="输入至少三位货号" onkeyup="checkSearch();"/></td>
+						<td><input id="productCode" name="productCode" placeholder="输入至少四位货号" onkeyup="checkSearch();"/></td>
 					</tr>
 
 				</table>
@@ -133,10 +142,12 @@ function addOrder(pbId){
 					<table data-role="table" id="table-column-toggle" class="ui-responsive table-stroke">
 						<thead>
 					       <tr>
-					         <th data-priority="1">品牌</th>
-					         <th width="20%">货号</th>
-					         <th width="15%">颜色</th>
-					         <th width="12%" data-priority="2">零售价</th>
+					         <th width="20%" data-priority="1">品牌</th>
+					         <th width="20%" data-priority="2">货号</th>
+					         <th width="12%">批发价</th>
+					         <th width="10%">库存</th>
+					         <th width="10%">已定</th>
+					         <th width="10%">已选</th> 
 					         <th width="27%"></th>
 					       </tr>
 					     </thead>

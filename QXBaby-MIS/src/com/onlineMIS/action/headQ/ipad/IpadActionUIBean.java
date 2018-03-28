@@ -10,7 +10,7 @@ public class IpadActionUIBean {
     protected List<InventoryOrderProductVO> orderProducts = new ArrayList<InventoryOrderProductVO>();
     protected List<InventoryOrderVO> orders = new ArrayList<InventoryOrderVO>();
     protected int totalQ = 0;
-    protected double totalW = 0;		
+    protected int totalW = 0;		
 
 	public List<InventoryOrderVO> getOrders() {
 		return orders;
@@ -36,11 +36,11 @@ public class IpadActionUIBean {
 		this.totalQ = totalQ;
 	}
 
-	public double getTotalW() {
+	public int getTotalW() {
 		return totalW;
 	}
 
-	public void setTotalW(double totalW) {
+	public void setTotalW(int totalW) {
 		this.totalW = totalW;
 	}
 

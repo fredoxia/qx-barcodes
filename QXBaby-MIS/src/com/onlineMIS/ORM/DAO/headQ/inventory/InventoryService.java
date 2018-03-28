@@ -503,16 +503,18 @@ public class InventoryService {
      * @throws Exception 
      */
 	@Transactional
-    public boolean inventoryComplsave(InventoryOrderActionFormBean formBean){
+    public boolean inventoryComplsave(InventoryOrderActionFormBean formBean, UserInfor auditor){
     	
     	/**
     	 * 1. save the order
     	 */
     	InventoryOrder order = groupInventoryOrder(formBean.getOrder(), formBean.getSorting());
 
-		order.setOrder_Status(InventoryOrder.STATUS_COMPLETE);
+		order.setOrder_Status(InventoryOrder.STATUS_ACCOUNT_PROCESS);
 		
 		order.setOrder_ComplTime(new Date());
+		
+		order.setOrder_Auditor(auditor);
 		
 		boolean saveOrder = false;
 		try{

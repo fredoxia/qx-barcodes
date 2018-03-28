@@ -67,7 +67,7 @@ public class InventoryOrder implements Serializable {
 		orderStatusMap.put(STATUS_PDA_DRAFT, "PDA草稿");
 		orderStatusMap.put(STATUS_PDA_COMPLETE, "PDA完成");
 		orderStatusMap.put(STATUS_DRAFT, "仓库草稿");
-		orderStatusMap.put(STATUS_COMPLETE, "仓库完成");
+//		orderStatusMap.put(STATUS_COMPLETE, "仓库完成");
 		orderStatusMap.put(STATUS_ACCOUNT_PROCESS, "会计录入中");
 		orderStatusMap.put(STATUS_ACCOUNT_COMPLETE, "审核完成");
 		orderStatusMap.put(STATUS_CANCELLED, "单据红冲");

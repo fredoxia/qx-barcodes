@@ -18,6 +18,8 @@ $(document).ready(function(){
 
 })
 function chooseCust(clientId){
+	$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
+	
 	var params = "formBean.clientId=" + clientId;
 	$.post('<%=request.getContextPath()%>/action/ipadJSON!chooseCust', params, 
 			function(result) {
@@ -25,6 +27,7 @@ function chooseCust(clientId){
 					window.location.href = "<%=request.getContextPath()%>/jsp/headQ/ipad/StartOrder.jsp"
 
 				} else {
+					$.mobile.loading("hide");
 					renderPopup("系统错误",result.msg);
 				}
 			}, 'JSON');

@@ -384,6 +384,10 @@ function validateForm(){
 			error += "点数人员 - 必须选!\n";
 			$("#counter_id").focus();
 		}
+
+		if ($("#totalQuantity").val() <= 0){
+			error += "必须录入数据后才能输入\n";
+		}
 		var totalDiscount = $("#totalDiscount").val();
 		if (isNaN(totalDiscount) || totalDiscount < 0){
 			error += "优惠 - 必须是大于或者等于0的数字!\n";
@@ -393,6 +397,7 @@ function validateForm(){
 		var invalid_d = false;
 		var invalid_barcode = false;
 		for (var i =0; i < index; i++){
+
 			var q = $("#quantity" + i).val();
 			var w = $("#wholeSalePrice" + i).val();
 			var d = $("#discount" + i).val();

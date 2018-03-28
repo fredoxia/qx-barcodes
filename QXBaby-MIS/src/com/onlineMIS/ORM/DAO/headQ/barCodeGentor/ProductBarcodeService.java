@@ -469,9 +469,11 @@ public class ProductBarcodeService {
 	 * @param productBarcodeId
 	 * @return
 	 */
-	public int deleteProductBarcode(int productBarcodeId) {
-		
-        return productBarcodeDaoImpl.updateToDelete(productBarcodeId);
+	public void deleteProductBarcode(int productBarcodeId) {
+		ProductBarcode pb = productBarcodeDaoImpl.get(productBarcodeId, true);
+		pb.setCreateDate(Common_util.getToday());
+		pb.setStatus(ProductBarcode.STATUS_DELETE);
+        productBarcodeDaoImpl.update(pb, true);
 	}
 
 	@Transactional
@@ -514,7 +516,15 @@ public class ProductBarcodeService {
         		product.setDiscount(1);
         	else
         	    product.setDiscount(newProduct.getDiscount());
+        	product.setCreateDate(Common_util.getToday());
+
         	productDaoImpl.saveOrUpdate(product,true);
+        	
+        	List<ProductBarcode> pbs = productBarcodeDaoImpl.getBarcodeFromProduct(product.getProductId());
+        	for (ProductBarcode pb: pbs){
+        		pb.setCreateDate(Common_util.getToday());
+        		productBarcodeDaoImpl.update(pb, true);
+        	}
         }
  
 		return response;

@@ -246,7 +246,7 @@
         	
         	<result name="listDraftOrder">/jsp/headQ/ipad/ListDraftOrders.jsp</result>
         	<result name="viewCurrentOrder">/jsp/headQ/ipad/ViewCurrentOrder.jsp</result>
-        	<result name="ipadIndex">/indexIPAD.jsp</result>
+        	<result name="ipadIndex">/3.jsp</result>
             <result name="EditCust">/jsp/headQ/ipad/EditCust.jsp</result>
         </action>   
     </package>

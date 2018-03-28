@@ -29,7 +29,29 @@ function editOrder(orderId){
 	}, 'JSON');
 }
 
+function tryToDeleteOrder(orderId){
+	  $("#confirmPopup").popup("open");
+	  $("#orderId").attr("value", orderId);
+}
 
+function yesToDeleteOrder(){
+	$("#confirmPopup").popup("close");
+	$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
+	
+	var params="formBean.orderId=" + $("#orderId").val();
+
+	$.post('<%=request.getContextPath()%>/action/ipadJSON!deleteOrder', params, 
+	function(result) {
+		$.mobile.loading("hide");
+		if (result.returnCode == 2) {
+			window.location.href = "<%=request.getContextPath()%>/action/ipadJSP!listDraftOrder"
+		} else 
+			renderPopup("系统错误",result.message)
+	}, 'JSON');
+}
+function noToDeleteOrder(){
+	 $("#confirmPopup").popup("close");
+}
 </script>
 </head>
 <body>
@@ -61,7 +83,9 @@ function editOrder(orderId){
 							 		<td><s:property value="#p.createDate"/></td>			 					 		
 							 		<td><s:property value="#p.totalQ"/></td>	
 							 		<td><s:property value="#p.totalW"/></td> 	
-							 		<td><input name='EditBtn' type='button' value='修改' data-mini='true'  data-inline='true' onclick='editOrder(<s:property value="#p.orderId"/>);'/></td>				 		
+							 		<td><input name='EditBtn' type='button' value='修改' data-mini='true'  data-inline='true' onclick='editOrder(<s:property value="#p.orderId"/>);'/>
+							 		    <input name='DeleteBtn' type='button' value='删除' data-mini='true'  data-inline='true' onclick='tryToDeleteOrder(<s:property value="#p.orderId"/>);'/>
+							 		</td>				 		
 							 	</tr>
 						 	</s:iterator>
 					     </tbody>
@@ -81,7 +105,19 @@ function editOrder(orderId){
 		     </div>
 		</div> 
 		<jsp:include  page="Popup.jsp"/>
-
+		<div data-role="popup" id="confirmPopup"
+                    data-dismissible="true" style="max-width: 400px; min-width: 250px"
+                    class="ui-popup ui-body-inherit ui-overlay-shadow ui-corner-all">
+                    <div data-role="header">
+                        <h3 id="errorHeader">是否删除订单</h3>
+                        <a class="ui-btn-right" href="#" data-role="button" data-iconpos="notext" data-icon="delete" data-rel="back" data-theme="a">Close</a>
+                    </div>
+                    <div role="main" class="ui-content">
+                        <input name="orderId" id="orderId" type="hidden"/>
+                        <input name='yesBtn' type='button' value='确认' data-mini='true'  data-inline='true' onclick='yesToDeleteOrder();'/>
+                        <input name='noBtn' type='button' value='取消' data-mini='true'  data-inline='true' onclick='noToDeleteOrder();'/>	
+                    </div>
+          </div> 
 	</div>
 
 </body>

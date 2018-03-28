@@ -18,76 +18,12 @@ $(document).ready(function(){
 	$("#productCode").focus();
 
 })
-function clearProduct(){
-	$("#productCode").focus();
-	$("#productCode").attr("value","");
-	
-    $("#products").hide();
-    
-    $('#productBody tr').each(function () {                
-        $(this).remove();
-    });
-
-}
 function checkSearch(){
-	if ($.trim($("#productCode").val()).length >= 3)
-		searchProduct();
-}
-function searchProduct(){
-	if (validateSearch()){
-		var params = "formBean.productCode=" + $("#productCode").val();
-
-		$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
-		
-		$.post('<%=request.getContextPath()%>/action/ipadJSON!searchByProductCode', params, 
-		function(result) {
-			
-			if (result.returnCode == 2) {
-			    $('#productBody tr').each(function () {                
-			        $(this).remove();
-			    });
-			    
-			    var cops = result.returnValue;
-			    if (cops != null && cops.length != 0){
-				    for (var i = 0; i < cops.length; i++){
-				    	
-				    	var j = i +1;
-				        if (cops[i] != "")  {
-					          $("<tr id='pRow"+cops[i].id+"'><td style='vertical-align:middle;'>"+
-					        		  cops[i].brand +"</td><td style='vertical-align:middle;'>"+
-					        		  cops[i].productCode+"</td><td style='vertical-align:middle;'>"+
-					        		  cops[i].color+"</td><td style='vertical-align:middle;'>"+
-					        		  cops[i].wholeSalePrice+"</td><td>"+
-										"<div name='btnGroup' data-role='controlgroup' data-type='horizontal'>"+
-											"<input name='addBtn' type='button' value='加订' data-mini='true'  data-inline='true' onclick='addOrder("+cops[i].id+");'/>"+
-										"</div>"+
-							          "</td></tr>").appendTo("#productBody");
-				        }
-				    }
-			    } else {
-			    	$("<tr><td colspan=5><font color='red'>没有查询到产品</font> </td></tr>").appendTo("#productBody");
-			    }
-			    
-			    $("#products").show();
-			    $("[name='addBtn']").button();
-			    $("[name='btnGroup']").controlgroup();
-
-			    $.mobile.loading("hide");
-			} else {
-				$.mobile.loading("hide");
-				renderPopup("系统错误",result.msg)
-			}
-		}, 'JSON');
+	if ($.trim($("#productCode").val()).length >= 3){
+		var params="formBean.productCode=" + $("#productCode").val();
+		window.location.href = '<%=request.getContextPath()%>/action/ipadJSP!viewCurrentOrder?' + params; 
 	}
-}
-function validateSearch(){
 
-	if ($.trim($("#productCode").val()).length < 3){
-		renderPopup("查询错误","请输入至少三位货号作为查询条件");
-		$("#productCode").focus();
-		return false;
-	} else 
-		return true;
 }
 function myOrder(pbId, quantity){
 	$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
@@ -98,6 +34,9 @@ function myOrder(pbId, quantity){
 		$.mobile.loading("hide");
 		if (result.returnCode != 2) {
 			renderPopup("系统错误",result.message)
+		} else {
+			var params="formBean.productCode=" + $("#productCode").val();
+			window.location.href = '<%=request.getContextPath()%>/action/ipadJSP!viewCurrentOrder?' + params; 
 		}
 	}, 'JSON');
 }
@@ -119,6 +58,13 @@ function addOrder(pbId){
 		<jsp:include  page="ViewCurrentOrderHeader.jsp"/>
 
 		<div  data-role="content" class="content">
+				<table>
+				    <tr>
+						<td><label for="productCode">货号 : </label></td> 
+						<td><input type="number" id="productCode" name="formBean.productCode"  placeholder="输入三位货号,自动过滤" onkeyup="checkSearch();" value="<s:property value="formBean.productCode"/>"/></td>
+					</tr>
+
+				</table>
 				<div id="products" style="display:show">
 					<table data-role="table" id="table-column-toggle" class="ui-responsive table-stroke">
 						<thead>
@@ -127,7 +73,7 @@ function addOrder(pbId){
 					         <th data-priority="1">品牌</th>
 					         <th width="20%">货号</th>
 					         <th width="15%">数量</th>
-					         <th width="12%" data-priority="2">总批发价</th>
+					         <th width="12%" data-priority="2">批发价</th>
 					         <th width="27%"></th>
 					       </tr>
 					     </thead>
@@ -138,8 +84,12 @@ function addOrder(pbId){
 							 		<td><s:property value="#p.brand"/></td>	
 							 		<td><s:property value="#p.productCode"/> <s:property value="#p.color"/></td>			 					 		
 							 		<td><s:property value="#p.quantity"/></td>	
-							 		<td><s:property value="#p.wholeSalePrice"/></td> 	
-							 		<td></td>				 		
+							 		<td><s:property value="#p.wholeSalePrice"/> </td> 	
+							 		<td><div name='btnGroup' data-role='controlgroup' data-type='horizontal'>
+							 		      <input name='addBtn' type='button' value='加订' data-mini='true'  data-inline='true' onclick='addOrder(<s:property value="#p.id"/>);'/>
+										  <input name='rmvBtn' type='button' value='减订' data-mini='true'  data-inline='true' onclick='deductOrder(<s:property value="#p.id"/>);'/>
+										  </div>
+								    </td>				 		
 							 	</tr>
 						 	</s:iterator>
 					     </tbody>

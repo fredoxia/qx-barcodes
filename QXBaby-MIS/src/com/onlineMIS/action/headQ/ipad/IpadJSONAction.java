@@ -53,6 +53,7 @@ public class IpadJSONAction extends IpadAction {
 		if (clientsMS != null){
 			ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_CUSTNAME, clientsMS.getName() +" " + clientsMS.getRegion().getName());
 			ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_CLIENT_ID, clientId);
+			ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_ORDER_ID, null);
 		} else 
 			response.setFail("无法找到这个客户");
 		
@@ -68,7 +69,20 @@ public class IpadJSONAction extends IpadAction {
 	public String searchByProductCode(){
 		Response response = new Response();
 		
-		response = ipadService.searchByProductCode(formBean.getProductCode());
+		Object clientIdObj = ActionContext.getContext().getSession().get(IpadConf.HQ_SESSION_INFO_CLIENT_ID);
+		Object orderIdObj =  ActionContext.getContext().getSession().get(IpadConf.HQ_SESSION_INFO_ORDER_ID);
+		UserInfor loginUser = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		
+		Integer clientId = null;
+		Integer orderId = null;
+		
+		if (clientIdObj != null)
+			clientId = (Integer)clientIdObj;
+		
+		if (orderIdObj != null)
+			orderId =  (Integer)orderIdObj;
+		
+		response = ipadService.searchByProductCode(formBean.getProductCode(), clientId, orderId);
 		
 		try{
 		    jsonObject = JSONObject.fromObject(response);
@@ -96,8 +110,9 @@ public class IpadJSONAction extends IpadAction {
 		    	   Object returnValue = response.getReturnValue();
 		    	   if (returnValue != null){
 		    		   try {
-		    		      int orderId = Integer.valueOf(String.valueOf(returnValue));
-		    		      ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_ORDER_ID, returnValue);
+		    			  Map<String, Integer> result = (Map)returnValue;
+		    			  Integer orderId = result.get("orderId");
+		    		      ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_ORDER_ID, orderId);
 		    		   } catch (Exception e2){
 		   				response.setFail(e2.getMessage());
 						loggerLocal.error(e2);
@@ -111,6 +126,7 @@ public class IpadJSONAction extends IpadAction {
 		}
 		
 		try{
+			
 		    jsonObject = JSONObject.fromObject(response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -183,6 +199,33 @@ public class IpadJSONAction extends IpadAction {
  		ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_CLIENT_ID,order.getClient_id());
 		ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_CUSTNAME,order.getClient_name()); 
 		
+		response.setReturnValue("");
+		
+		try{
+		    jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String deleteOrder(){
+		Response response = new Response();
+		
+		int orderId = formBean.getOrderId();
+		
+		response = ipadService.deleteOrder(orderId);
+		
+		if (response.isSuccess()){
+		   Object orderIdObjSession = ActionContext.getContext().getSession().get(IpadConf.HQ_SESSION_INFO_ORDER_ID);
+		   if (orderIdObjSession != null && (Integer)orderIdObjSession == orderId){
+				ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_ORDER_ID,null);
+		 		ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_CLIENT_ID,null);
+				ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_CUSTNAME,null); 
+		   }
+		}
+ 		
 		response.setReturnValue("");
 		
 		try{

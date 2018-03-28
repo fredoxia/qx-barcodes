@@ -2,6 +2,7 @@ package com.onlineMIS.action.headQ.ipad;
 
 
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.sorter.InventoryOrderProductSort;
 import com.opensymphony.xwork2.ActionContext;
 
 @Controller
@@ -60,10 +62,23 @@ public class IpadJSPAction extends IpadAction {
 			
 			List<InventoryOrderProduct> orderProducts = order.getProduct_List();
 			
+			Collections.sort(orderProducts, new InventoryOrderProductSort());
+			
+			String productCode = formBean.getProductCode().toUpperCase();
+			if (!productCode.equalsIgnoreCase("")){
+				for (int i=orderProducts.size()-1; i>=0 ; i--){
+					InventoryOrderProduct orderProduct = orderProducts.get(i);
+					String theProductCode = orderProduct.getProductBarcode().getProduct().getProductCode().toUpperCase();
+					if (theProductCode.indexOf(productCode) == -1){
+						orderProducts.remove(i);
+					}
+				}
+			}
+			
 			List<InventoryOrderProductVO> orderProductVOs = InventoryOrderProductVO.parse(orderProducts);
 			uiBean.setOrderProducts(orderProductVOs);
 			uiBean.setTotalQ(order.getTotalQuantity());
-			uiBean.setTotalW(order.getTotalWholePrice());
+			uiBean.setTotalW((int)order.getTotalWholePrice());
 		}
 		
 		return "viewCurrentOrder";

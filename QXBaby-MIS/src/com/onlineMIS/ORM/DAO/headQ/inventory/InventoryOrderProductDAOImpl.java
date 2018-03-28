@@ -80,4 +80,6 @@ public class InventoryOrderProductDAOImpl extends BaseDAO<InventoryOrderProduct>
 		
 		return count;
 	}
+
+
 }
