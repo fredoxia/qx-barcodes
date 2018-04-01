@@ -27,7 +27,7 @@ public class InventoryOrderJSPAction  extends InventoryOrderAction {
 		String uuid = Common_util.getUUID();
 		loggerLocal.info(logInventory("saveToDraft", formBean.getOrder().getClient_id(), formBean.getOrder().getOrder_ID(), uuid));
 
-		inventoryService.saveToDraft(formBean.getOrder());
+		inventoryService.saveToDraft(formBean.getOrder(), formBean.getSorting());
 		
 		loggerLocal.infoR(logInventory("saveToDraft", formBean.getOrder().getClient_id(), formBean.getOrder().getOrder_ID(), uuid));
 		

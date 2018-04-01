@@ -535,10 +535,12 @@ public class InventoryService {
 	 * @throws Exception 
      */
     @Transactional
-    public boolean saveToDraft(InventoryOrder order){
+    public boolean saveToDraft(InventoryOrder order, String sorting){
 
 		order.setOrder_Status(InventoryOrder.STATUS_DRAFT);
 
+		order = groupInventoryOrder(order, sorting);
+		
 		return save(order);
     }
     
