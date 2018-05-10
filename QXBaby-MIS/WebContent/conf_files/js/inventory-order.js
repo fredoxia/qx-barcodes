@@ -82,8 +82,8 @@ function retrieveProductByBarcode(index_trigger, suffix ,currentBarcode, fromSrc
 	var client_id = $("#clientID").val();
 	
 	var orderType = $("#orderType").val();
-
-    var params= "formBean.productBarcode.barcode=" + currentBarcode + "&formBean.client_id=" + client_id + "&formBean.indexPage=" + index_trigger +"&formBean.orderType=" + orderType+"&formBean.fromSrc=" + fromSrc  ; 
+	
+    var params= "formBean.productBarcode.barcode=" + currentBarcode + "&formBean.client_id=" + client_id + "&formBean.indexPage=" + index_trigger +"&formBean.orderType=" + orderType+"&formBean.fromSrc=" + fromSrc ; 
 
     $.post(baseurl +"/action/productJSONAction!search",params, backProcess,"json");
 
@@ -99,7 +99,9 @@ function retrieveProductByBarcode(index_trigger, suffix ,currentBarcode, fromSrc
 }
 
 function backProcess(data){
+	var fullOrSingle = $("#fullOrSingle").val();
 
+	
 	var barcodes = data.barcodes;
 	var preIndex = data.index;
 	var orderType = data.orderType;
@@ -132,7 +134,10 @@ function backProcess(data){
 		unitInput.attr("value",barcodes[0].product.unit);
 		brandInput.attr("value",barcodes[0].product.brand.brand_Name);
 		productCodeInput.attr("value",barcodes[0].product.productCode);
-		quantityInput.attr("value",barcodes[0].product.numPerHand);
+		if (fullOrSingle == 0)
+		   quantityInput.attr("value",barcodes[0].product.numPerHand);
+		else 
+			quantityInput.attr("value",1);
 		yearInput.attr("value", barcodes[0].product.year.year);
 		quarterInput.attr("value", barcodes[0].product.quarter.quarter_Name);
 		var color = barcodes[0].color;

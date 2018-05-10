@@ -40,6 +40,7 @@ import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderProductDAOImpl;
+
 import com.onlineMIS.ORM.entity.headQ.SQLServer.ClientsMS;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.RegionMS;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.SaleHistory;
@@ -80,7 +81,16 @@ public class IpadService {
 	 */
 	public List<ClientsMS> getClients(String pinyin) {
 		pinyin = pinyin.replaceAll(" ", "_");
-		return clientDAOImpl.getClientByPinyin(pinyin);
+		List<ClientsMS> clientsMSs = clientDAOImpl.getClientByPinyin(pinyin);
+		
+		for (int i = clientsMSs.size()-1; i >=0; i--){
+			ClientsMS client= clientsMSs.get(i);
+			String name = client.getName();
+			if (name.contains("不做"))
+				clientsMSs.remove(i);
+		}
+
+		return clientsMSs;
 //		RegionMS region1 = new RegionMS();
 //		region1.setName("四川连锁店");
 //		
@@ -132,6 +142,7 @@ public class IpadService {
 		productCriteria.add(Restrictions.like("productCode", productCode, MatchMode.ANYWHERE));
 		productCriteria.add(Restrictions.isNull("chainStore"));
 
+		productCriteria.addOrder(Order.desc("year.year_ID"));
 		productCriteria.addOrder(Order.desc("quarter.quarter_ID"));
 		productCriteria.addOrder(Order.desc("brand.brand_ID"));
 		productCriteria.addOrder(Order.asc("productCode"));
@@ -403,6 +414,11 @@ public class IpadService {
 		int totalCost = 0;
 		int totalSalePrice = 0;
         int index = 0;
+        
+        List<InventoryOrderProduct> newOrderProducts = new ArrayList<InventoryOrderProduct>();
+		newOrderProducts.addAll(orderProducts);
+		Collections.sort(newOrderProducts, new com.onlineMIS.sorter.SortByBrandProductCode());
+        
 		for (InventoryOrderProduct orderProduct: orderProducts){
 
 			if (orderProduct == null || orderProduct.getProductBarcode()==null )
@@ -455,8 +471,10 @@ public class IpadService {
 	    order.setTotalWholePrice(Common_util.roundDouble(totalWholePrice,2));
 	    order.setOrder_Status(InventoryOrder.STATUS_PDA_COMPLETE);
 		
-//		order.buildIndex();
-//		order.putListToSet();
+	    order.setProduct_List(newOrderProducts);
+	    order.setProduct_Set(new HashSet<InventoryOrderProduct>());
+		order.buildIndex();
+		order.putListToSet();
 		inventoryOrderDAOImpl.saveOrUpdate(order,true);
 	    
 	    response.setQuickValue(Response.SUCCESS, "");
@@ -489,6 +507,51 @@ public class IpadService {
 		response.setReturnCode(Response.SUCCESS);
         
         return response;
+	}
+
+	@Transactional
+	public Response orderProduct(Object clientIdObj, Object orderIdObj,
+			String barcode, int quantity, UserInfor loginUser) {
+		Response response = new Response();
+		
+		ProductBarcode pb = productBarcodeDaoImpl.getByBarcode(barcode);
+		if (pb == null){
+			response.setFail("无法找到此条码的货品");
+			return response;
+		} else {
+			response = orderProduct(clientIdObj, orderIdObj, pb.getId(), quantity, loginUser);
+			if (response.isSuccess()){
+				int inventory = pbService.getProductInven(barcode);
+				
+				SaleHistory orderSalesHis = null;
+				Integer clientId = (Integer) clientIdObj;
+				if (clientId != null)
+				   orderSalesHis = saleHistoryDAOImpl.getSaleHistory(clientId.intValue(), barcode);
+				
+				int orderHis = 0;
+				if (orderSalesHis != null){
+					orderHis = Math.abs((int)orderSalesHis.getQuantity());
+				}
+				
+				int orderCurrent = 0 ;
+				Integer orderId = (Integer) orderIdObj;
+				if (orderId != null){
+					InventoryOrderProduct orderProduct = inventoryOrderProductDAOImpl.getByOrderIdProductId(orderId.intValue(), pb.getId());
+				    if(orderProduct != null)
+					  orderCurrent = orderProduct.getQuantity();
+				}
+				
+				
+				ProductBarcodeVO productBarcodeVO = new ProductBarcodeVO(pb, inventory, orderHis, orderCurrent);
+				
+				Map<String, Object> result = (Map)response.getReturnValue();
+				result.put("product", productBarcodeVO.toString());
+				
+				response.setReturnValue(result);
+			}
+			
+			return response;
+		}
 	}
 
 }

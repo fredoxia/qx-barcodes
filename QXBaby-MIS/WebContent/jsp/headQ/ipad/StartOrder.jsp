@@ -130,7 +130,7 @@ function addOrder(pbId){
 				<table>
 				    <tr>
 						<td><label for="productCode">货号: </label></td> 
-						<td><input id="productCode" name="productCode" placeholder="输入至少四位货号" onkeyup="checkSearch();"/></td>
+						<td><input id="productCode" type="number" name="productCode" placeholder="输入至少四位货号" onkeyup="checkSearch();"/></td>
 					</tr>
 
 				</table>

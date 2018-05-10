@@ -28,6 +28,11 @@ public class ProductActionFormBean {
     private String inventoryContentType;
     private String inventoryFileName;
     
+    //0: full
+    //1: single
+    private int fullOrSingle;
+    
+    
     private BrandPriceIncrease bpi = new BrandPriceIncrease();
     
     
@@ -40,6 +45,14 @@ public class ProductActionFormBean {
 
     
     
+	public int getFullOrSingle() {
+		return fullOrSingle;
+	}
+
+	public void setFullOrSingle(int fullOrSingle) {
+		this.fullOrSingle = fullOrSingle;
+	}
+
 	public BrandPriceIncrease getBpi() {
 		return bpi;
 	}

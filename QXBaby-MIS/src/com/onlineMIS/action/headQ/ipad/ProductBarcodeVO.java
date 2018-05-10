@@ -18,6 +18,7 @@ public class ProductBarcodeVO {
 	private int inventory;
 	private int orderHis;
 	private int orderCurrent;
+	private String category;
 	
 	public ProductBarcodeVO(ProductBarcode pb, int inventory, int orderHis, int orderCurrent){
 		this.setId(pb.getId());
@@ -38,6 +39,7 @@ public class ProductBarcodeVO {
 		this.setInventory(inventory);
 		this.setOrderCurrent(orderCurrent);
 		this.setOrderHis(orderHis);
+		this.setCategory(product.getCategory().getCategory_Name());
 	}
 	
 	public ProductBarcodeVO(){
@@ -45,6 +47,14 @@ public class ProductBarcodeVO {
 	}
 	
 	
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	public int getInventory() {
 		return inventory;
 	}
@@ -120,5 +130,12 @@ public class ProductBarcodeVO {
 		this.wholeSalePrice = wholeSalePrice;
 	}
 	
-	
+	public String toString(){
+		return brand + " " + productCode + " " +color + "<br/>" +
+			   "类型  : " + category +  "<br/>" +
+	           "批发价  : " + wholeSalePrice +  "<br/>" +
+			   "库存          : " + inventory + "<br/>" +
+			   "历史订货 : " + orderHis + "<br/>" + 
+			   "当前已订 : " + orderCurrent;
+	}
 }

@@ -20,7 +20,12 @@
                            <s:select name="formBean.order.order_scanner.user_id" id="scanner_id"  list="uiBean.users" listKey="user_id" listValue="user_name" headerKey="0" headerValue="-------" />			 		</th>		 					 				 					 		
 			 		<th colspan="5" align="left">货品点数&nbsp; :&nbsp; 
 			 		       <s:select name="formBean.order.order_Counter.user_id" id="counter_id"  list="uiBean.users" listKey="user_id" listValue="user_name" headerKey="0" headerValue="-------" />			 		</th>	
-			 		<th colspan="5"></th>							 		
+			 		<th colspan="5">
+			 		       <select name="formBean.fullOrSingle" id="fullOrSingle">
+						    <option value="0">齐手</option>
+						    <option value="1">单手</option>
+						   </select>
+			 		</th>							 		
 			 	</tr>
 				<tr height="10">
 					<th colspan="15"></th>

@@ -248,6 +248,10 @@
         	<result name="viewCurrentOrder">/jsp/headQ/ipad/ViewCurrentOrder.jsp</result>
         	<result name="ipadIndex">/3.jsp</result>
             <result name="EditCust">/jsp/headQ/ipad/EditCust.jsp</result>
+        	<result name="listDraftOrderPDA">/jsp/headQ/pda2/ListDraftOrders.jsp</result>
+        	<result name="viewCurrentOrderPDA">/jsp/headQ/pda2/ViewCurrentOrder.jsp</result>
+        	<result name="ipadIndexPDA">/4.jsp</result>
+            <result name="EditCustPDA">/jsp/headQ/pda2/EditCust.jsp</result>            
         </action>   
     </package>
     

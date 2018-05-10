@@ -73,7 +73,7 @@ public class ClientDAOImpl extends BaseDAOMS<ClientsMS> {
 		criteria.add(Restrictions.like("pinyin", pinyin +"%"));
 		criteria.add(Restrictions.ne("deleted", true));
 		
-		return this.getByCritera(criteria, false);
+		return buildClient(this.getByCritera(criteria, false));
 		
 	}
 	

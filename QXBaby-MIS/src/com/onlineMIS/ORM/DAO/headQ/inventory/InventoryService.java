@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 
+
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainPriceIncrementDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
@@ -81,6 +82,7 @@ import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.HttpUtil;
 import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.filter.SystemParm;
+import com.onlineMIS.sorter.SortByBrandProductCode;
 import com.opensymphony.xwork2.ActionContext;
 
 @Service
@@ -1279,29 +1281,7 @@ public class InventoryService {
 	}
 	
 	
-	class SortByBrandProductCode implements java.util.Comparator<InventoryOrderProduct>{
-		 public int compare(InventoryOrderProduct obj1,InventoryOrderProduct obj2){
-          String brand1 = "";
-          String brand2 = "";
-          String productCode1 = "";
-          String productCode2 = "";
-          
-          try{
-              brand1 = obj1.getProductBarcode().getProduct().getBrand().getBrand_Name();
-              brand2 = obj2.getProductBarcode().getProduct().getBrand().getBrand_Name();
-              productCode1 = obj1.getProductBarcode().getProduct().getProductCode();
-              productCode2 = obj2.getProductBarcode().getProduct().getProductCode();
-          } catch (NullPointerException e) {
-        	  loggerLocal.error(e);
-		  }
-		  if(brand1.compareTo(brand2) < 0)
-		   return -1;
-		  else if(brand1.compareTo(brand2) > 0)
-		   return 1;
-		  else
-		   return Common_util.compareString(productCode1,productCode2);
-		 }
-	}
+
 
 
 	/**

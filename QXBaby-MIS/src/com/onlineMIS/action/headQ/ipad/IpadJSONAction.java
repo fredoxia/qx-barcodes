@@ -93,6 +93,48 @@ public class IpadJSONAction extends IpadAction {
 		return SUCCESS;
 	}
 	
+	public String orderByBarcode(){
+        Response response = new Response();
+		
+		Object clientIdObj = ActionContext.getContext().getSession().get(IpadConf.HQ_SESSION_INFO_CLIENT_ID);
+		Object orderIdObj =  ActionContext.getContext().getSession().get(IpadConf.HQ_SESSION_INFO_ORDER_ID);
+		UserInfor loginUser = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		
+		if (clientIdObj == null){
+			response.setFail("请先输入客户后再选货");
+		} else {
+			try {
+		       response = ipadService.orderProduct(clientIdObj, orderIdObj, formBean.getBarcode(), formBean.getQuantity(), loginUser);
+		       
+		       if (response.isSuccess()){
+		    	   Object returnValue = response.getReturnValue();
+		    	   if (returnValue != null){
+		    		   try {
+		    			  Map<String, Integer> result = (Map)returnValue;
+		    			  Integer orderId = result.get("orderId");
+		    		      ActionContext.getContext().getSession().put(IpadConf.HQ_SESSION_INFO_ORDER_ID, orderId);
+		    		   } catch (Exception e2){
+		   				response.setFail(e2.getMessage());
+						loggerLocal.error(e2);
+		    		   }
+		    	   }
+		       }
+			} catch (Exception e){
+				response.setFail(e.getMessage());
+				loggerLocal.error(e);
+			}
+		}
+		
+		try{
+			
+		    jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return SUCCESS;
+	}
+	
 	public String orderProduct(){
 		Response response = new Response();
 		

@@ -40,10 +40,13 @@ public class SecurityFilterHeadQ implements Filter {
 			    String requestURL = req.getRequestURI();
 			    String requestFunction = requestURL.substring(requestURL.lastIndexOf("/") + 1);
 			    
-			    if (requestFunction.equalsIgnoreCase("loginJSON!login4Chain") || requestFunction.equalsIgnoreCase("loginJSON!login") || requestFunction.equalsIgnoreCase("userJSON!checkSession") || requestFunction.equalsIgnoreCase("loginJSON!reLogin") || requestFunction.equalsIgnoreCase("loginJSON!PDALogin") || requestFunction.equalsIgnoreCase("userJSP!logoff4Chain"))
+			    if (requestFunction.equalsIgnoreCase("loginJSON!login4Chain") || requestFunction.equalsIgnoreCase("loginJSON!login") || requestFunction.equalsIgnoreCase("userJSON!checkSession") || requestFunction.equalsIgnoreCase("loginJSON!reLogin") || requestFunction.equalsIgnoreCase("loginJSON!PDALogin") || requestFunction.equalsIgnoreCase("userJSP!logoff4Chain") || requestFunction.equalsIgnoreCase("ipadJSP!logoffPDA"))
 			    	chain.doFilter(request, response);
 			    else{
-			    	if (requestFunction.contains("ipad") || requestURL.contains("ipad"))
+			    	
+			    	if (requestFunction.toLowerCase().endsWith("pda")){
+			    		res.sendRedirect(req.getContextPath() + "/4.jsp");
+			    	} else if (requestFunction.contains("ipad") || requestURL.contains("ipad"))
 			    		res.sendRedirect(req.getContextPath() + "/indexIPAD.jsp");
 			    	else 
 		                res.sendRedirect(req.getContextPath() + "/1.jsp");

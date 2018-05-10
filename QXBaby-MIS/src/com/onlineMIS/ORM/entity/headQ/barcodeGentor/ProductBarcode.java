@@ -146,5 +146,9 @@ public class ProductBarcode implements Serializable {
 		return true;
 	}
 	
+	public String toString(){
+		Product product = this.getProduct();
+		return this.getBarcode() + " " + this.product.getProductCode();
+	}
 	
 }
