@@ -1269,7 +1269,7 @@ public class ProductBarcodeService {
 		}
 		
 		BarcodeImportTemplate barcodeTemplate = new BarcodeImportTemplate(inventory, year, quarter, brand, area);
-		barcodeTemplate.proccess(categoryDaoImpl, colorDaoImpl);
+		barcodeTemplate.proccess(categoryDaoImpl, colorDaoImpl, productUnitDaoImpl);
 		
 		if (!barcodeTemplate.isSuccess()){
 			response.setFail(barcodeTemplate.getValidateMsg());

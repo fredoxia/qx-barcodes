@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.CategoryDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ColorDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductUnitDaoImpl;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
 import com.onlineMIS.common.ExcelUtil;
@@ -23,16 +24,18 @@ public class BarcodeImportTemplate extends ExcelTemplate{
 	private boolean isSuccess = true;
 	private String validateMsg = "";
 	
-	private final int data_row = 2;
+	private final int data_row = 1;
 
-	private final int productCode_column= 1;
-	private final int category_column= 2;
-	private final int recCost_column= 4;
-	private final int color_column= 18;
-	private final int factorySalesPrice_column= 25;
-	private final int discount_column= 26;
-	private final int wholePrice_column= 28;
-	private final int salePrice_column= 27;	
+	private final int productCode_column= 3;
+	private final int category_column= 5;
+	private final int recCost_column= 6;
+	private final int color_column= 4;
+	private final int factorySalesPrice_column= 7;
+	private final int discount_column= 8;
+	private final int wholePrice_column= 9;
+	private final int salePrice_column= 10;	
+	private final int unit_column = 11;
+	private final int fullHandQ_column = 12;
 	private Area area = null;
 	private Year year = null;
 	private Quarter quarter = null;
@@ -62,7 +65,7 @@ public class BarcodeImportTemplate extends ExcelTemplate{
 	 * @param colorDaoImpl
 	 * @return
 	 */
-	private void validate(CategoryDaoImpl categoryDaoImpl, ColorDaoImpl colorDaoImpl){
+	private void validate(CategoryDaoImpl categoryDaoImpl, ColorDaoImpl colorDaoImpl, ProductUnitDaoImpl productUnitDaoImpl){
 		StringBuilder errorMsg = new StringBuilder();
 		boolean validate = true;
 		
@@ -144,6 +147,29 @@ public class BarcodeImportTemplate extends ExcelTemplate{
 					errorMsg.append("行" + rowDisplay + ": 发价错误. ");
 				}
 			
+			String unit = ExcelUtil.getPuzzleString(row.getCell(unit_column));
+			
+			if (unit.equals("")){
+				rowError = false;
+				errorMsg.append("行" + rowDisplay + ": 产品单位为空. ");
+			} else {
+				if (!productUnitDaoImpl.checkExist(unit)){
+					rowError = false;
+					errorMsg.append("行" + rowDisplay + ": 产品单位 (" + unit + ") 不存在. ");
+				}
+			}
+			
+			try {
+				   int numPerHand = (int) row.getCell(fullHandQ_column).getNumericCellValue();
+				   if (numPerHand <= 0) {
+				     rowError = false;
+					 errorMsg.append("行" + rowDisplay + ": 齐手数量("+ numPerHand+")错误. ");
+				   }
+				} catch (Exception e){
+					rowError = false;
+					errorMsg.append("行" + rowDisplay + ": 齐手数量 错误. ");
+				}
+			
 			
 			if (rowError == false){
 				validate = false;
@@ -160,8 +186,8 @@ public class BarcodeImportTemplate extends ExcelTemplate{
 	 * 通过文件读出条码，返回
 	 * @return
 	 */
-	public void proccess(CategoryDaoImpl categoryDaoImpl, ColorDaoImpl colorDaoImpl){
-		validate(categoryDaoImpl, colorDaoImpl);
+	public void proccess(CategoryDaoImpl categoryDaoImpl, ColorDaoImpl colorDaoImpl, ProductUnitDaoImpl productUnitDaoImpl){
+		validate(categoryDaoImpl, colorDaoImpl, productUnitDaoImpl);
 		
 		if (!isSuccess)
 			return ;
@@ -178,6 +204,13 @@ public class BarcodeImportTemplate extends ExcelTemplate{
 			HSSFCell colourCell = row.getCell(color_column);
 			String categoryString = categoryCell.getStringCellValue().trim();
 			Category category = categoryDaoImpl.getCategoryByName(categoryString);
+			
+			HSSFCell productUnitCell = row.getCell(unit_column);
+			String productUnitString = productUnitCell.getStringCellValue().trim();
+			
+			HSSFCell numPerHandCell = row.getCell(fullHandQ_column);
+			int numPerHand = (int)numPerHandCell.getNumericCellValue();
+			
 			
 			double salePrice = row.getCell(salePrice_column).getNumericCellValue();
 			double recCost = row.getCell(recCost_column).getNumericCellValue();
@@ -198,8 +231,8 @@ public class BarcodeImportTemplate extends ExcelTemplate{
 			product.setDiscount(discount);
 			product.setSalesPrice(salePrice);
 			product.setWholeSalePrice(wholePrice);
-			product.setUnit("无");
-			product.setNumPerHand(1);
+			product.setUnit(productUnitString);
+			product.setNumPerHand(numPerHand);
 			product.setSalesPriceFactory(factorySalePrice);
 			product.setRecCost(recCost);
 			
