@@ -128,14 +128,16 @@ function printChainSalesOrder(){
 	    	    
 	    	    var discountRate = "";
 	    	    if (hideDiscountPrint == 0)
-	    	    	discountRate = "/" + discountRateInput.val();
+	    	    	discountRate =price + "/" + discountRateInput.val();
+	    	    else 
+	    	    	discountRate = "-";
 	    	    
 	    	    var normalPrice = normalPriceInput.val();
 
 	    	    if (normalPrice == SPECIAL_PRICE)
-	    	        tempstr2 = qSpace + quantity + space2 + price    + discountRate + " 特价 "  + space2 +  discountAmount;
+	    	        tempstr2 = qSpace + quantity + space2 + discountRate + " 特价 "  + space2 +  discountAmount;
 	    	    else 
-	    	    	tempstr2 = qSpace + quantity + space2 + price    +  discountRate  + space2 +  discountAmount;
+	    	    	tempstr2 = qSpace + quantity + space2 + discountRate  + space2 +  discountAmount;
 	    	    
 		    	pazu.TPrinter.printToDefaultPrinter(tempstr2);  
 	        }

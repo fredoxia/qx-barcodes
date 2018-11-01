@@ -146,9 +146,9 @@ function backProcessChangeChainStore(data){
 					      	<s:textfield id="endDate" name="formBean.search_End_Time" cssClass="easyui-datebox" data-options="width:100,editable:false"/>		
 	                      </td>
 	                      <td width="71"><strong>单据状态</strong></td>
-					      <td width="160"><s:select id="status" name="formBean.chainSalesOrder.status"  list="uiBean.chainOrderStatus" listKey="key" listValue="value" headerKey="-1" headerValue="--所有状态--" /></td>
-					      <td width="77"></td>
-					      <td></td>
+					      <td width="140"><s:select id="status" name="formBean.chainSalesOrder.status"  list="uiBean.chainOrderStatus" listKey="key" listValue="value" headerKey="-1" headerValue="--所有状态--" /></td>
+					      <td width="77"><strong>付款方式</strong></td>
+					      <td><s:select id="chainOrderPay" name="formBean.chainOrderPay"  list="uiBean.chainOrderPay" listKey="key" listValue="value" headerKey="-1" headerValue="--所有付款方式--" /></td>
 					    </tr>
 						<tr class="InnerTableContent">
 					      <td height="30">&nbsp;</td>
@@ -164,7 +164,7 @@ function backProcessChangeChainStore(data){
 					      <td><strong>包含货品</strong></td>
 					      <td><%@ include file="../include/SearchProduct.jsp"%></td>
 					      <td><strong>单据号</strong></td>
-					      <td><s:textfield id="orderId" name="formBean.chainSalesOrder.id" cssClass="easyui-numberbox" value="0" data-options="min:0,precision:0"/></td>
+					      <td><s:textfield id="orderId" name="formBean.chainSalesOrder.id" cssClass="easyui-numberbox" value="0" data-options="min:0,precision:0" size="15"/></td>
 						  <td></td>
 					      <td></td>	    
 					    </tr>					    

@@ -52,6 +52,7 @@ import com.onlineMIS.ORM.entity.headQ.SQLServer.ProductsMS;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Area;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeImportTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeTemplate;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeUpdateTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
@@ -1303,6 +1304,41 @@ public class ProductBarcodeService {
 		uiBean.getBasicData().setQuarterList(quarters);
 		uiBean.getBasicData().setYearList(years);
 		
+	}
+
+	/**
+	 * 进行批量条码修改
+	 * @param inventory
+	 * @return
+	 * @throws Exception 
+	 */
+	@Transactional
+	public Response batchUpdateBarcode(File inventory)  {
+		Response response = new Response();
+		
+		try {
+			BarcodeUpdateTemplate barcodeTemplate = new BarcodeUpdateTemplate(inventory);
+			barcodeTemplate.proccess(productBarcodeDaoImpl, categoryDaoImpl, productUnitDaoImpl);
+			
+			if (!barcodeTemplate.isSuccess()){
+				response.setFail(barcodeTemplate.getValidateMsg());
+			} else {
+				Set<Product> wsData = barcodeTemplate.getWsData();
+				if (wsData == null|| wsData.size()==0){
+					response.setFail("无法找到更新数据");
+				} else {
+					
+					for (Product rowData: wsData){
+						productDaoImpl.update(rowData, true);
+					}
+					response.setSuccess("成功更新 "+ wsData.size() +"个 产品信息。");
+				}
+			}
+		} catch (Exception e){
+			response.setFail("更新条码失败: " + e.getMessage());
+		}
+		
+		return response;
 	}
 	
 }

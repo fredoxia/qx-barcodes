@@ -27,6 +27,31 @@ function getLevelOne(chainId){
 	});
 	window.location.href = "inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.chainId=" + chainId;
 }
+
+function deleteInventory(chainId, chainName){
+	$.messager.prompt("密码验证","一旦确认," + chainName + " 的库存将要清空:", function(password){
+		if (password == "vj7683c688"){
+			$.messager.progress({
+				title : '提示',
+				text : '数据处理中，请稍后....'
+			});
+			var param = "";
+			$.post('inventoryFlowJSONAction!deleteInventory?formBean.chainId='+chainId, param, 
+					function(result) {
+				  
+						if (result.returnCode == SUCCESS) {
+							$.messager.progress('close'); 
+							$.messager.alert('信息', result.message, 'info');
+						} else {
+							$.messager.progress('close'); 
+							$.messager.alert('失败警告', result.message, 'error');
+						}
+					}, 'JSON');
+		} else {
+			alert("密码错误");
+		}	   
+	});
+}
 </script>
 </head>
 <body>
@@ -57,7 +82,11 @@ function getLevelOne(chainId){
 						      <td><s:property value="#chainStore.pinYin.substring(0,1) "/></td>
 						      <td><s:property value="#chainStore.chain_name"/></td>
 						      <td><s:property value="#chainStore.owner_name"/></td>
-						      <td><a href='javascript:getLevelOne(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
+						      <td><a href='javascript:getLevelOne(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a>&nbsp;&nbsp; 
+						          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSONAction!deleteInventory') && #chainStore.chain_id!=-1">
+						             <a href='javascript:deleteInventory(<s:property value="#chainStore.chain_id"/>,"<s:property value="#chainStore.chain_name"/>")'> 清空库存</a>
+						          </s:if>
+						      </td>
 						    </tr>
 				       </s:iterator>	
 				       <s:if test="uiBean.chainStores.size == 0">

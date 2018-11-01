@@ -796,6 +796,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		
 		return "download"; 
 	}
+
 	
 	private String postSubmitFlowOrder(boolean toFinalize){
 		//clear the data

@@ -1195,6 +1195,35 @@ public class ChainStoreSalesService {
 			orderProductCriteria.add(Restrictions.eq("productBarcode.id", productId));
 		}
 		
+		int chainPayType = formBean.getChainOrderPay();
+		if (chainPayType != Common_util.ALL_RECORD){
+			switch (chainPayType) {
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_CASH:
+				criteria.add(Restrictions.ne("cashAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_CARD:
+				criteria.add(Restrictions.ne("cardAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_WECHAT:
+				criteria.add(Restrictions.ne("wechatAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_ALIPAY:
+				criteria.add(Restrictions.ne("alipayAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_COUPON:
+				criteria.add(Restrictions.ne("coupon", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_PREPAY:
+				criteria.add(Restrictions.ne("chainPrepaidAmt", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_VIPSCORE:
+				criteria.add(Restrictions.ne("vipScore", 0.0));
+				break;			
+			default:
+				break;
+			}
+		}
+		
 		return criteria;
 	}
 	

@@ -2399,4 +2399,28 @@ public class ChainInventoryFlowOrderService {
 		return response;
 	}
 
+	/**
+	 * 清空某个连锁店的库存
+	 * @param chainId
+	 * @return
+	 */
+	public Response deleteInventory(ChainUserInfor userInfor, int chainId) {
+		Response response = new Response();
+		if (ChainUserInforService.isMgmtFromHQ(userInfor)){
+			ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
+			if (chainStore != null) {
+			  String deleteInventory = "DELETE FROM ChainInOutStock WHERE clientId = ?";
+			  Object[] values = {chainStore.getClient_id()};
+			  
+			  int rowCount = chainInOutStockDaoImpl.executeHQLUpdateDelete(deleteInventory, values, true);
+			  response.setSuccess(rowCount + " 行数据已经删除");
+			} else {
+				response.setFail("无法找到连锁店");
+			}
+		} else {
+			response.setFail("非总部管理人员无法清空库存");
+		}
+		return response;
+	}
+
 }

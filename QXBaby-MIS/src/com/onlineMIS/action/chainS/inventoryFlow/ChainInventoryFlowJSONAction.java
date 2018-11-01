@@ -195,4 +195,30 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		
 		return "successful";
 	}
+	
+	/**
+	 * 清空连锁店的库存
+	 * @return
+	 */
+	public String deleteInventory(){
+	   	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"deleteInventory ");
+    	
+		Response response = new Response();
+		try{
+		    response = flowOrderService.deleteInventory(userInfor,formBean.getChainId());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setQuickValue(Response.FAIL, e.getMessage());
+		}
+
+		try{
+			   jsonObject = JSONObject.fromObject(response);
+			} catch (Exception e){
+				loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"getInventoryTraceInfor");
+				loggerLocal.error(e);
+			}
+		
+		return "successful";		
+	}
 }

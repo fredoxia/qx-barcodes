@@ -16,6 +16,10 @@ function save(){
     document.barcodeForm.action="productJSPAction!batchDeleteBarcode";
     document.barcodeForm.submit();
 }
+function saveUpdate(){
+    document.barcodeForm.action="productJSPAction!batchUpdateBarcode";
+    document.barcodeForm.submit();
+}
 </script>
 </head>
 <body>
@@ -38,6 +42,9 @@ function save(){
 						   <tr class="InnerTableContent">
 						    <td width="10%" height="25" align='left'>&nbsp;</td>
 						    <td width="90%" align='left'>
+						      <s:if test="#session.LOGIN_USER.containFunction('productJSPAction!batchUpdateBarcode')">
+						           <input type="button" value="上传批量更新" onclick="saveUpdate();" />
+						      </s:if>
 						      <s:if test="#session.LOGIN_USER.containFunction('productJSPAction!batchDeleteBarcode')">
 						           <input type="button" value="上传批量删除" onclick="save();" />
 						      </s:if>				

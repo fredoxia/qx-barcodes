@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
@@ -27,6 +28,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+
 
 
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
@@ -644,6 +646,72 @@ public class Common_util {
 		Date dateOfLastYear = new Date(calendar.getTimeInMillis());
 		return dateOfLastYear;
 	}
+	
+    public static boolean isContainChinese(String str) {
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        if (m.find()) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 过滤掉中文
+     * @param str 待过滤中文的字符串
+     * @return 过滤掉中文后字符串
+     */
+    public static String filterChinese(String str) {
+        // 用于返回结果
+        String result = str;
+        boolean flag = isContainChinese(str);
+        if (flag) {// 包含中文
+            // 用于拼接过滤中文后的字符
+            StringBuffer sb = new StringBuffer();
+            // 用于校验是否为中文
+            boolean flag2 = false;
+            // 用于临时存储单字符
+            char chinese = 0;
+            // 5.去除掉文件名中的中文
+            // 将字符串转换成char[]
+            char[] charArray = str.toCharArray();
+            // 过滤到中文及中文字符
+            for (int i = 0; i < charArray.length; i++) {
+                chinese = charArray[i];
+                flag2 = isChinese(chinese);
+                if (!flag2) {// 不是中日韩文字及标点符号
+                    sb.append(chinese);
+                } else 
+                	break;
+            }
+            result = sb.toString();
+        }
+        return result;
+    }
+
+    /**
+     * 判定输入的是否是汉字
+     *
+     * @param c
+     *  被校验的字符
+     * @return true代表是汉字
+     */
+    public static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+
 
 
 	static String[] weekdays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};

@@ -17,20 +17,23 @@ import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
 
 public class BarcodeTemplate extends ExcelTemplate{
-	private final int data_row = 2;
-	private final int year_column= 0;
-	private final int quarter_column= 1;
-	private final int brand_column= 2;
-	private final int productCode_column= 3;
-	private final int barcode_column= 4;
-	private final int recCost_column= 5;
-	private final int wholePrice_column= 6;
-	private final int salePrice_column= 7;
-	private final int delete_column= 8;
+	protected final int data_row = 2;
+	protected final int year_column= 0;
+	protected final int quarter_column= 1;
+	protected final int brand_column= 2;
+	protected final int productCode_column= 3;
+	protected final int barcode_column= 4;
+	protected final int recCost_column= 5;
+	protected final int wholePrice_column= 6;
+	protected final int salePrice_column= 7;
+	protected final int delete_column= 8;
 	
 	
 	private List<ProductBarcode> products = new ArrayList<ProductBarcode>();
 
+	public BarcodeTemplate(){
+		super();
+	}
 	
 	/**
 	 * 传入barcode对象，生成文件

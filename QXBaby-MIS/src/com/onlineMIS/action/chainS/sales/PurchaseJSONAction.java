@@ -93,6 +93,30 @@ public class PurchaseJSONAction extends PurchaseAction {
 	}
 	
 	/**
+	 * 某些情况下，客户没有清点就直接确认了，后来发现开单错误，总部需要回滚这个单子状态和库存
+	 * @return
+	 */
+	public String headqResetPurchaseOrderStatus(){
+		ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	
+		Response response = new Response();
+		try {
+		    purchaseService.resetPurchaseOrderStatus(formBean.getOrder(),loginUser, response);	
+		} catch (Exception e){
+			loggerLocal.error(e);
+			response.setFail(e.getMessage());
+		}
+
+		//to excludes the set and list inforamtion
+		try{
+			   jsonObject = JSONObject.fromObject(response);
+			} catch (Exception e){
+				loggerLocal.error(e);
+			}
+		return SUCCESS;
+	}
+	
+	/**
 	 * 连锁店更新purchase order的状态
 	 * @return
 	 */

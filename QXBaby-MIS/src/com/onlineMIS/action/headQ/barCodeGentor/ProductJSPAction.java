@@ -229,9 +229,26 @@ public class ProductJSPAction extends ProductAction {
 	 * @return
 	 */
 	public String batchDeleteBarcode(){
-		loggerLocal.info("ProductJSPAction - preBatchDeleteBarcode");
+		loggerLocal.info("ProductJSPAction - batchDeleteBarcode");
 		
 		Response response = productService.batchDeleteBarcode(formBean.getInventory());
+		
+		if (response.isSuccess())
+			addActionMessage(response.getMessage());
+		else 
+			addActionError(response.getMessage());
+		
+		return "batchDeleteBarcode";	
+	}
+	
+	/**
+	 * 批量修改条码
+	 * @return
+	 */
+	public String batchUpdateBarcode(){
+		loggerLocal.info("ProductJSPAction - batchUpdateBarcode");
+		
+		Response response = productService.batchUpdateBarcode(formBean.getInventory());
 		
 		if (response.isSuccess())
 			addActionMessage(response.getMessage());
