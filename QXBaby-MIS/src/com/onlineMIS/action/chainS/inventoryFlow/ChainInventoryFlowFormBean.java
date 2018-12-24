@@ -44,7 +44,7 @@ public class ChainInventoryFlowFormBean extends ChainActionFormBaseBean{
 	private int brandId;
 	
 	//for the chain inventory excle report
-	private int reportType;
+	private int parentId;
 	
 	public ChainStore getChainStore() {
 		return chainStore;
@@ -61,12 +61,14 @@ public class ChainInventoryFlowFormBean extends ChainActionFormBaseBean{
 		this.barcode = barcode;
 	}
 
-	public int getReportType() {
-		return reportType;
+	
+
+	public int getParentId() {
+		return parentId;
 	}
 
-	public void setReportType(int reportType) {
-		this.reportType = reportType;
+	public void setParentId(int parentId) {
+		this.parentId = parentId;
 	}
 
 	public int getYearId() {

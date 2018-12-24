@@ -24,7 +24,7 @@ import com.onlineMIS.common.ExcelTemplate;
 import com.onlineMIS.common.loggerLocal;
 
 public class ChainInventoryReportTemplate  extends ExcelTemplate{
-	private List<ChainLevelFourInventoryItem> items = new ArrayList<ChainLevelFourInventoryItem>();
+	private List<ChainInventoryRptItem> items = new ArrayList<ChainInventoryRptItem>();
 	private ChainStore chainStore;
 	private boolean showCost;
 	private int year_column = 0;
@@ -45,7 +45,7 @@ public class ChainInventoryReportTemplate  extends ExcelTemplate{
     	super(file);
     }
 	
-	public ChainInventoryReportTemplate(List<ChainLevelFourInventoryItem> items, ChainStore chainStore, String templateWorkbookPath, boolean showCost) throws IOException{
+	public ChainInventoryReportTemplate(List<ChainInventoryRptItem> items, ChainStore chainStore, String templateWorkbookPath, boolean showCost) throws IOException{
 		super(templateWorkbookPath);	
 		this.items = items;
 		this.chainStore = chainStore;
@@ -72,7 +72,7 @@ public class ChainInventoryReportTemplate  extends ExcelTemplate{
 		double totalSale = 0;
 		for (int i = 0; i < totalDataRow; i++){
 
-			ChainLevelFourInventoryItem levelFourItem = items.get(i);
+			ChainInventoryRptItem levelFourItem = items.get(i);
 			Row row = sheet.createRow(data_row + i);
 
 			Product product = levelFourItem.getProductBarcode().getProduct();
@@ -103,12 +103,12 @@ public class ChainInventoryReportTemplate  extends ExcelTemplate{
 			row.createCell(quantity_column).setCellValue(levelFourItem.getTotalQuantity());
 			
 			if (showCost)
-				row.createCell(totalCost_column).setCellValue(levelFourItem.getTotalCostAmt());
-			row.createCell(totalSales_column).setCellValue(levelFourItem.getTotalSalesAmt());
+				row.createCell(totalCost_column).setCellValue(levelFourItem.getTotalWholeSalesAmt());
+			row.createCell(totalSales_column).setCellValue(levelFourItem.getTotalRetailSalesAmt());
 			
 			totalQuantity += levelFourItem.getTotalQuantity();
-			totalCost += levelFourItem.getTotalCostAmt();
-			totalSale += levelFourItem.getTotalSalesAmt();
+			totalCost += levelFourItem.getTotalWholeSalesAmt();
+			totalSale += levelFourItem.getTotalRetailSalesAmt();
 		}
 		
 		Row row = sheet.createRow(totalDataRow + 3);

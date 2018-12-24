@@ -1,126 +1,139 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@taglib prefix="s" uri="/struts-tags" %>
-<%@ page import="com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder" %>
+<%@ page import="com.onlineMIS.common.Common_util,java.util.Date,java.text.SimpleDateFormat" %>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>千禧宝贝连锁店管理信息系统</title>
+<title>朴与素连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 <script>
+var baseurl = "<%=request.getContextPath()%>";
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
-	$("#org_table tr").mouseover(function(){      
-		$(this).addClass("over");}).mouseout(function(){    
-		$(this).removeClass("over");});
+	
+	var params= $.serializeObject($('#preGenReportForm'));
+	
+	$('#dataGrid').treegrid({
+		url : 'inventoryFlowJSONAction!getInventoryFlowEles',
+		idField: 'id',
+		queryParams: params,
+		treeField : 'name',
+		onBeforeExpand : function(node) {
+			$("#parentId").attr("value", node.parentId);
+			$("#chainId").attr("value", node.chainId);
+		    $("#yearId").attr("value", node.yearId);
+			$("#quarterId").attr("value", node.quarterId);
+			$("#brandId").attr("value", node.brandId);
+			var params = $('#preGenReportForm').serialize();
+			$('#dataGrid').treegrid('options').url = 'inventoryFlowJSONAction!getInventoryFlowEles?' + params;
+		},
+		columns : [ [
+					{field:'name', width:250,title:'库存列表'},
+					{field:'inventory', width:170,title:'库存数量'},
+					{field:'wholeSales', width:175,title:'库存成本金额',
+						formatter: function (value, row, index){
+							return (row.wholeSales).toFixed(2);
+						}
+					},
+					{field:'retailSales', width:175,title:'估算销售金额',
+						formatter: function (value, row, index){
+							return (row.retailSales).toFixed(2);
+						}
+					}
+			     ]],
+		toolbar : '#toolbar',
+	});
 });
-var baseurl = "<%=request.getContextPath()%>";
-function getLevelTwo(yearId){
-	$.messager.progress({
-		title : '提示',
-		text : '数据处理中，请稍后....'
-	});
-	$("#yearId").attr("value", yearId);
-    document.chainInventoryFlowForm.action="inventoryFlowJSPAction!getLevelTwoCurrentInventory";
-    document.chainInventoryFlowForm.submit();
+
+function refresh(){
+	location.reload();
 }
-function downloadInventory(yearId){
-	$("#yearId").attr("value", yearId);
-	$("#reportType").attr("value", 1);
-    document.chainInventoryFlowForm.action="inventoryFlowJSPAction!generateChainInventoryExcelReport";
-    document.chainInventoryFlowForm.submit();
+function back(){
+    document.preGenReportForm.action="inventoryFlowJSPAction!preGetCurrentInventory";
+    document.preGenReportForm.submit();
 }
-function downloadAllInventory(){
-	$("#reportType").attr("value", 0);
-    document.chainInventoryFlowForm.action="inventoryFlowJSPAction!generateChainInventoryExcelReport";
-    document.chainInventoryFlowForm.submit();
+function downloadInventory(){
+	var node = $('#dataGrid').treegrid('getSelected');
+
+	if (node == null){
+		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
+	} else {
+		
+		$("#chainId").attr("value", node.chainId);
+	    $("#yearId").attr("value", node.yearId);
+		$("#quarterId").attr("value", node.quarterId);
+		$("#brandId").attr("value", node.brandId);
+        document.preGenReportForm.action="inventoryFlowJSPAction!generateChainInventoryExcelReport";
+        document.preGenReportForm.submit();
+	}
+
 }
-function getPreCurrentInventory(){
-	$.messager.progress({
-		title : '提示',
-		text : '数据处理中，请稍后....'
-	});
-	window.location.href = "inventoryFlowJSPAction!preGetCurrentInventory";
+function deleteInventory(){
+	var node = $('#dataGrid').treegrid('getSelected');
+
+	if (node == null){
+		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
+	} else {
+		$.messager.prompt("密码验证","一旦确认,选中库存将要清空:", function(password){
+			if (password == "vj7683c688"){
+				$.messager.progress({
+					title : '提示',
+					text : '数据处理中，请稍后....'
+				});
+				
+				$("#chainId").attr("value", node.chainId);
+			    $("#yearId").attr("value", node.yearId);
+				$("#quarterId").attr("value", node.quarterId);
+				$("#brandId").attr("value", node.brandId);
+		        
+				var params = $('#preGenReportForm').serialize();
+				$.post('inventoryFlowJSONAction!deleteInventory', params, 
+						function(result) {
+					  
+							if (result.returnCode == SUCCESS) {
+								$.messager.progress('close'); 
+								$.messager.alert('信息', result.message, 'info');
+								setTimeout('refresh();', 2000);
+								
+							} else {
+								$.messager.progress('close'); 
+								$.messager.alert('失败警告', result.message, 'error');
+							}
+						}, 'JSON');
+			} else {
+				alert("密码错误");
+			}	   
+		});
+
+	}
+	
 }
 </script>
 </head>
 <body>
-
-    <s:form action="/actionChain/inventoryFlowJSPAction!getLevelTwoCurrentInventory" method="POST" name="chainInventoryFlowForm" id="chainInventoryFlowForm" theme="simple">
-	<s:hidden name="formBean.chainId"/>  
-	<s:hidden name="formBean.yearId" id="yearId"/>  
-	<s:hidden name="formBean.reportType" id="reportType" value="1"/> 
-    <table width="60%" align="center"  class="OuterTable">
-	    <tr><td>
-	         <div class="errorAndmes"><s:actionerror cssStyle="color:red"/><s:actionmessage cssStyle="color:blue"/></div>
-			 <table width="100%" border="0">
-			    <tr>
-			       <td height="50" colspan="7">
-				   	 <table width="100%" border="0">
-				       <tr class="PBAOuterTableTitale">
-				         <td height="32" colspan="4">
-				              	连锁店库存状况表
-				         </td>
-			           </tr>
-				       <tr class="InnerTableContent">
-				         <td colspan="4" height="20">连锁店:<s:property value="uiBean.inventoryItem.chainStore.chain_name"/></td>
-				       </tr>
-				     </table></td>
-			    </tr>
-			    <tr>
-			      <td colspan="7">
-			            <!-- table to display the product information -->
-						<table width="100%"  align="left" class="OuterTable" id="org_table">
-						  <tr class="PBAInnerTableTitale" align='left'>
-						    <th width="3%" height="35">&nbsp;</th>
-						    <th width="5%">年份</th>
-						    <th width="8%">库存量</th>
-						    <th width="10%">库存成本金额</th>
-						    <th width="10%">估算销售金额</th>
-						    <th width="5%">查看 下载</th>
-
-						  </tr>
-						  <tbody id="orderTablebody">
-						      <s:iterator value="uiBean.levelOneInventoryItem" status = "st" id="ci" >
-						  		<tr class="InnerTableContent" id="orderRow0" class="InnerTableContent" <s:if test="#st.odd">style='background-color: rgb(255, 250, 208);'</s:if>>   
-							      <td height="25"><s:property value="#st.index +1"/></td>							      
-							      <td align="center"><s:property value="#ci.year.year"/></td>						      
-							      <td align="right"><s:property value="#ci.totalQuantity"/></td>
-							      <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')"><s:text name="format.price"><s:param value="#ci.totalCostAmt"/></s:text></s:if><s:else>-</s:else></td>
-							      <td align="right"><s:text name="format.price"><s:param value="#ci.totalSalesAmt"/></s:text></td>
-							      <td align="center"><a href='#' onclick="getLevelTwo(<s:property value="#ci.year.year_ID"/>)"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0' title="查看"/></a>&nbsp;
-							      					 <a href='#' onclick="downloadInventory(<s:property value="#ci.year.year_ID"/>)"><img src='<%=request.getContextPath()%>/conf_files/easyUI/themes/icons/filesave.png' border='0' title="下载"/></a></td>
-							     </tr>
-							   </s:iterator>  
-						  </tbody>
-						  <s:if test="uiBean.levelOneInventoryItem.size >0">
-							  <tr class="PBAInnerTableTitale">
-							    <td colspan="2" align="left">合计</td>
-							    <td align="right"><s:property value="uiBean.inventoryItem.totalQuantity"/></td>
-							    <td align="right"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')">
-							    						<s:text name="format.price"><s:param value="uiBean.inventoryItem.totalCostAmt"/></s:text>
-							    				  </s:if><s:else>-</s:else>
-							    </td>
-							    <td align="right"><s:text name="format.price"><s:param value="uiBean.inventoryItem.totalSalesAmt"/></s:text></td>
-							    <td align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick="downloadAllInventory()"><img src='<%=request.getContextPath()%>/conf_files/easyUI/themes/icons/filesave.png' border='0' title="下载"/></a></td>
-
-							  </tr>
-						  </s:if><s:else>
-							  <tr class="InnerTableContent">
-							    <th colspan="6" align="left">无法找到库存信息</th>
-							  </tr>						  
-						  </s:else>
-					     </table>
-			      </td>
-			    </tr>
-			    <tr class="InnerTableContent">
-			      <td height="10" colspan="7">
-						<input type="button" value="返回上层" onclick="getPreCurrentInventory()"/>
-				  </td>
-			    </tr>
-			  </table>
-	   </td></tr>
-	 </table>
-	 </s:form>
+	<div class="easyui-layout" data-options="fit : true,border : false">
+	    <div data-options="region:'north',border:false" style="height: fit">
+        <s:form id="preGenReportForm" name="preGenReportForm" action="" theme="simple" method="POST">  
+            <s:hidden name="formBean.parentId" id="parentId"/>
+            <s:hidden name="formBean.chainId" id="chainId"/>
+            <input type="hidden" name="formBean.yearId" id="yearId" value="0"/>
+            <input type="hidden" name="formBean.quarterId" id="quarterId" value="0"/>
+            <input type="hidden" name="formBean.brandId" id="brandId" value="0"/>
+        </s:form>
+        </div>
+		<div data-options="region:'center',border:false">
+			    <table id="dataGrid" style="width:780px;height:fit">			       
+		        </table>
+		        <div id="toolbar" style="display: none;">
+		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
+		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新库存</a>
+		             <a onclick="downloadInventory();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">下载库存</a>
+		             <s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSONAction!deleteInventory')">
+		                <a onclick="deleteInventory();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'">删除库存</a>
+		             </s:if>
+	             </div>
+		</div>
+	</div>					  
 </body>
 </html>

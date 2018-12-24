@@ -13,7 +13,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelFourInventoryItem;
+
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;

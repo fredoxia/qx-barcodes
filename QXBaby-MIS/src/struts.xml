@@ -588,6 +588,9 @@
                     text/html
                 </param>
             </result>
+            <result type="json" name="jsonArray">
+                 <param name="root">jsonArray</param>
+            </result>
         </action> 
         <action name="chainVIPJSONAction" class="com.onlineMIS.action.chainS.vip.ChainVIPJSONAction">
             <result type="json" name="successful">

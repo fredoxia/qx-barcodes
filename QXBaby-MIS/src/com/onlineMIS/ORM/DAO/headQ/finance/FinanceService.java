@@ -395,7 +395,7 @@ public class FinanceService {
     		   financeBillImpl.update(bill, true);
     		}
 			
-			ChainAcctFlow chainAcctFlow = new ChainAcctFlow(chainId, netAmt, "F," + bill.getId() + "," + isCancel, bill.getCreateDate());
+			ChainAcctFlow chainAcctFlow = new ChainAcctFlow(chainId, netAmt, "F," + bill.getId() + "," + isCancel, bill.getBillDate());
 			chainAcctFlowDaoImpl.save(chainAcctFlow, true);
 		}
 		

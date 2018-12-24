@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>千禧宝贝连锁店管理信息系统</title>
+<title>朴与素连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 <link href="<%=request.getContextPath()%>/conf_files/css/pagination.css" rel="stylesheet" type="text/css"/>
 <SCRIPT src="<%=request.getContextPath()%>/conf_files/js/pagenav1.1.js" type=text/javascript></SCRIPT>
@@ -27,6 +27,7 @@ function getLevelOne(chainId){
 	});
 	window.location.href = "inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.chainId=" + chainId;
 }
+
 </script>
 </head>
 <body>
@@ -57,7 +58,9 @@ function getLevelOne(chainId){
 						      <td><s:property value="#chainStore.pinYin.substring(0,1) "/></td>
 						      <td><s:property value="#chainStore.chain_name"/></td>
 						      <td><s:property value="#chainStore.owner_name"/></td>
-						      <td><a href='javascript:getLevelOne(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
+						      <td><a href='javascript:getLevelOne(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a>&nbsp;&nbsp; 
+						          
+						      </td>
 						    </tr>
 				       </s:iterator>	
 				       <s:if test="uiBean.chainStores.size == 0">

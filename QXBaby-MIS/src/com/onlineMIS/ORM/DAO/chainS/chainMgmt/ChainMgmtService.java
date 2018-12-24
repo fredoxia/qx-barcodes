@@ -63,7 +63,7 @@ import com.onlineMIS.ORM.entity.chainS.chainMgmt.InitialInventoryFileTemplate;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.QxbabyConf;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelTwoInventoryItem;
+
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
