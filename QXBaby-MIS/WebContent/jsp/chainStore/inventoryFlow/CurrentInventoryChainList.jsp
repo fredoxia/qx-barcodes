@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>千禧宝贝连锁店管理信息系统</title>
+<title>朴与素连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 <link href="<%=request.getContextPath()%>/conf_files/css/pagination.css" rel="stylesheet" type="text/css"/>
 <SCRIPT src="<%=request.getContextPath()%>/conf_files/js/pagenav1.1.js" type=text/javascript></SCRIPT>
@@ -28,30 +28,6 @@ function getLevelOne(chainId){
 	window.location.href = "inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.chainId=" + chainId;
 }
 
-function deleteInventory(chainId, chainName){
-	$.messager.prompt("密码验证","一旦确认," + chainName + " 的库存将要清空:", function(password){
-		if (password == "vj7683c688"){
-			$.messager.progress({
-				title : '提示',
-				text : '数据处理中，请稍后....'
-			});
-			var param = "";
-			$.post('inventoryFlowJSONAction!deleteInventory?formBean.chainId='+chainId, param, 
-					function(result) {
-				  
-						if (result.returnCode == SUCCESS) {
-							$.messager.progress('close'); 
-							$.messager.alert('信息', result.message, 'info');
-						} else {
-							$.messager.progress('close'); 
-							$.messager.alert('失败警告', result.message, 'error');
-						}
-					}, 'JSON');
-		} else {
-			alert("密码错误");
-		}	   
-	});
-}
 </script>
 </head>
 <body>
@@ -83,9 +59,7 @@ function deleteInventory(chainId, chainName){
 						      <td><s:property value="#chainStore.chain_name"/></td>
 						      <td><s:property value="#chainStore.owner_name"/></td>
 						      <td><a href='javascript:getLevelOne(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a>&nbsp;&nbsp; 
-						          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSONAction!deleteInventory') && #chainStore.chain_id!=-1">
-						             <a href='javascript:deleteInventory(<s:property value="#chainStore.chain_id"/>,"<s:property value="#chainStore.chain_name"/>")'> 清空库存</a>
-						          </s:if>
+						          
 						      </td>
 						    </tr>
 				       </s:iterator>	
@@ -110,4 +84,5 @@ function deleteInventory(chainId, chainName){
 	 </table>
 	 </s:form>
 </body>
+
 </html>

@@ -10,10 +10,7 @@ import java.util.Map;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInvenTraceInfoVO;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelOneInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelTwoInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelFourInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelThreeInventoryItem;
+
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 
 
@@ -33,10 +30,7 @@ public class ChainInventoryFlowUIBean{
 	 * the UI Bean for the current inventory
 	 */
 	private ChainInventoryItem inventoryItem = new ChainInventoryItem();
-	private List<ChainLevelTwoInventoryItem> levelTwoInventoryItem = new ArrayList<ChainLevelTwoInventoryItem>();
-	private List<ChainLevelThreeInventoryItem> levelThreeInventoryItem = new ArrayList<ChainLevelThreeInventoryItem>();
-	private List<ChainLevelFourInventoryItem> levelFourInventoryItem = new ArrayList<ChainLevelFourInventoryItem>();
-	private List<ChainLevelOneInventoryItem> levelOneInventoryItem = new ArrayList<ChainLevelOneInventoryItem>();
+
 	private List<ChainInvenTraceInfoVO> traceItems = new ArrayList<ChainInvenTraceInfoVO>();
 	private ChainInvenTraceInfoVO traceFooter = new ChainInvenTraceInfoVO();
 
@@ -73,41 +67,6 @@ public class ChainInventoryFlowUIBean{
 		this.inventoryItem = inventoryItem;
 	}
 
-	public List<ChainLevelTwoInventoryItem> getLevelTwoInventoryItem() {
-		return levelTwoInventoryItem;
-	}
-
-	public void setLevelTwoInventoryItem(
-			List<ChainLevelTwoInventoryItem> levelTwoInventoryItem) {
-		this.levelTwoInventoryItem = levelTwoInventoryItem;
-	}
-
-	public List<ChainLevelThreeInventoryItem> getLevelThreeInventoryItem() {
-		return levelThreeInventoryItem;
-	}
-
-	public void setLevelThreeInventoryItem(
-			List<ChainLevelThreeInventoryItem> levelThreeInventoryItem) {
-		this.levelThreeInventoryItem = levelThreeInventoryItem;
-	}
-
-	public List<ChainLevelFourInventoryItem> getLevelFourInventoryItem() {
-		return levelFourInventoryItem;
-	}
-
-	public void setLevelFourInventoryItem(
-			List<ChainLevelFourInventoryItem> levelFourInventoryItem) {
-		this.levelFourInventoryItem = levelFourInventoryItem;
-	}
-
-	public List<ChainLevelOneInventoryItem> getLevelOneInventoryItem() {
-		return levelOneInventoryItem;
-	}
-
-	public void setLevelOneInventoryItem(
-			List<ChainLevelOneInventoryItem> levelOneInventoryItem) {
-		this.levelOneInventoryItem = levelOneInventoryItem;
-	}
 
 	public ChainInventoryFlowOrder getFlowOrder() {
 		return flowOrder;

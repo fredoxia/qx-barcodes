@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
@@ -36,6 +37,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 	protected ChainMgmtService chainMgmtService;
 	
 	private JSONObject jsonObject;
+	private JSONArray jsonArray;
 	private String message;
 	private Map<String,Object> jsonMap = new HashMap<String, Object>();
 
@@ -46,6 +48,12 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		this.jsonObject = jsonObject;
 	}
 
+	public JSONArray getJsonArray() {
+		return jsonArray;
+	}
+	public void setJsonArray(JSONArray jsonArray) {
+		this.jsonArray = jsonArray;
+	}
 	public String getMessage() {
 		return message;
 	}
@@ -195,6 +203,31 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		
 		return "successful";
 	}
+
+	/**
+	 * 获取连锁店库存信息
+	 * @return
+	 */
+	public String getInventoryFlowEles(){
+		loggerLocal.info(this.getClass().getName()+ ".getInventoryFlowEles");
+		Response response = new Response();
+
+		try {
+		    response = flowOrderService.getChainInventory(formBean.getParentId(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId());
+		} catch (Exception e){
+			e.printStackTrace();
+		}	
+		
+		try{
+			   jsonArray = JSONArray.fromObject(response.getReturnValue());
+			   System.out.println(jsonArray);
+			} catch (Exception e){
+				e.printStackTrace();
+			}	
+		
+		return "jsonArray";
+	}
+
 	
 	/**
 	 * 清空连锁店的库存
@@ -206,7 +239,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
     	
 		Response response = new Response();
 		try{
-		    response = flowOrderService.deleteInventory(userInfor,formBean.getChainId());
+		    response = flowOrderService.deleteInventory(userInfor,formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId());
 		} catch (Exception e) {
 			loggerLocal.error(e);
 			response.setQuickValue(Response.FAIL, e.getMessage());

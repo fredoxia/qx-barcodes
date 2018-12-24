@@ -35,7 +35,6 @@ import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroup;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroupElement;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelTwoInventoryItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesReport;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;

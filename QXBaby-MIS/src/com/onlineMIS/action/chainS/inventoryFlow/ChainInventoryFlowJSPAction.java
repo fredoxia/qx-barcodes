@@ -27,10 +27,7 @@ import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInvenTraceInfoVO;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrderProduct;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelFourInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelOneInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelThreeInventoryItem;
-import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainLevelTwoInventoryItem;
+
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
@@ -576,130 +573,13 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
     	
 		int chainId = formBean.getChainId();
 		
-		Response response = new Response();
+		formBean.setChainId(chainId);
 		
-		try {
- 		     response = flowOrderService.getLevelOneCurInventory(chainId);
-		} catch (Exception e) {
-			loggerLocal.chainActionError(loginUser,this.getClass().getName()+ "."+"");
-			loggerLocal.error(e);
-			response.setQuickValue(Response.ERROR, response.getMessage());
-		}
-		
-		if (response.getReturnCode() == Response.SUCCESS){
-			List<Object> respObjects = (List<Object>)response.getReturnValue();
-			ChainInventoryItem inventoryItem = (ChainInventoryItem)respObjects.get(0);
-			List<ChainLevelOneInventoryItem> levelOneInventoryItem = (List<ChainLevelOneInventoryItem>)respObjects.get(1);
-			uiBean.setInventoryItem(inventoryItem);
-			uiBean.setLevelOneInventoryItem(levelOneInventoryItem);
-		} else
-			addActionError(response.getMessage());
+		formBean.setParentId(0);
 		
 		return "levelOneCurInventory";
 	}
 
-	/**
-	 * 获取level two的当前库存
-	 * @return
-	 */
-	public String getLevelTwoCurrentInventory(){
-    	ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
-    	loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"getLevelTwoCurrentInventory : " + formBean);
-    	
-		int chainId = formBean.getChainId();
-		int yearId = formBean.getYearId();
-		
-		Response response = new Response();
-		
-		try {
- 		     response = flowOrderService.getLevelTwoCurInventory(chainId, yearId);
-		} catch (Exception e) {
-			loggerLocal.chainActionError(loginUser,this.getClass().getName()+ "."+"");
-			loggerLocal.error(e);
-			response.setQuickValue(Response.ERROR, response.getMessage());
-		}
-		
-		if (response.getReturnCode() == Response.SUCCESS){
-			List<Object> respObjects = (List<Object>)response.getReturnValue();
-			ChainInventoryItem inventoryItem = (ChainInventoryItem)respObjects.get(0);
-			List<ChainLevelTwoInventoryItem> levelTwoInventoryItems = (List<ChainLevelTwoInventoryItem>)respObjects.get(1);
-			uiBean.setInventoryItem(inventoryItem);
-			uiBean.setLevelTwoInventoryItem(levelTwoInventoryItems);
-		} else
-			addActionError(response.getMessage());
-		
-		return "levelTwoCurInventory";
-	}
-	
-	/**
-	 * 获取level two的当前库存
-	 * @return
-	 */
-	public String getLevelThreeCurrentInventory(){
-    	ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
-    	loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"getLevelThreeCurrentInventory : " + formBean);
-    	
-		int chainId = formBean.getChainId();
-		int yearId = formBean.getYearId();
-		int quarterId = formBean.getQuarterId();
-		
-		Response response = new Response();
-		
-		try {
- 		     response = flowOrderService.getLevelThreeCurInventory(chainId, yearId, quarterId, formBean.getPager());
-		} catch (Exception e) {
-			loggerLocal.chainActionError(loginUser,this.getClass().getName()+ "."+"");
-			loggerLocal.error(e);
-			response.setQuickValue(Response.ERROR, response.getMessage());
-		}
-		
-		if (response.getReturnCode() == Response.SUCCESS){
-			List<Object> respObjects = (List<Object>)response.getReturnValue();
-			ChainInventoryItem inventoryItem = (ChainInventoryItem)respObjects.get(0);
-			List<ChainLevelThreeInventoryItem> levelTwoInventoryItems = (List<ChainLevelThreeInventoryItem>)respObjects.get(1);
-			uiBean.setInventoryItem(inventoryItem);
-			uiBean.setLevelThreeInventoryItem(levelTwoInventoryItems);
-		} else
-			addActionError(response.getMessage());
-		
-		return "levelThreeCurInventory";
-	}
-	
-	/**
-	 * 获取level four的当前库存
-	 * @return
-	 */
-	public String getLevelFourCurrentInventory(){
-    	ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
-    	loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"getLevelFourCurrentInventory : " + formBean);
-    	
-		int chainId = formBean.getChainId();
-		int yearId = formBean.getYearId();
-		int quarterId = formBean.getQuarterId();
-		int brandId = formBean.getBrandId();
-		
-		Response response = new Response();
-		
-		try {
- 		     response = flowOrderService.getLevelFourCurInventory(chainId, yearId, quarterId, brandId, formBean.getPager());
-		} catch (Exception e) {
-			loggerLocal.chainActionError(loginUser,this.getClass().getName()+ "."+"");
-			loggerLocal.error(e);
-			response.setQuickValue(Response.ERROR, response.getMessage());
-		}
-		
-		if (response.getReturnCode() == Response.SUCCESS){
-			List<Object> respObjects = (List<Object>)response.getReturnValue();
-			ChainInventoryItem inventoryItem = (ChainInventoryItem)respObjects.get(0);
-			List<ChainLevelFourInventoryItem> levelTwoInventoryItems = (List<ChainLevelFourInventoryItem>)respObjects.get(1);
-			uiBean.setInventoryItem(inventoryItem);
-			uiBean.setLevelFourInventoryItem(levelTwoInventoryItems);
-		} else
-			addActionError(response.getMessage());
-		
-		return "levelFourCurInventory";
-	}
-	
 	/**
 	 * 获取连锁店库存报表
 	 * @return
@@ -713,7 +593,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 
 		Response response = new Response();
 		try {
-			response = flowOrderService.generateChainInventoryExcelReport(formBean.getReportType(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(), loginUserInfor, contextPath + "WEB-INF\\template\\" + CHAIN_INVENTORY_REPORT_TEMPLATENAME);     
+			response = flowOrderService.generateChainInventoryExcelReport(formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(), loginUserInfor, contextPath + "WEB-INF\\template\\" + CHAIN_INVENTORY_REPORT_TEMPLATENAME);     
 		} catch (Exception e) {
 			response.setReturnCode(Response.FAIL);
 			response.setMessage(e.getMessage());
@@ -727,6 +607,8 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		} else 
 			return ERROR;
 	}
+	
+
 	
 	/**
 	 * 察看跟踪货品库存
@@ -778,7 +660,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 	
 	public String downloadFlowOrder(){
 		ChainUserInfor loginUserInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
-		loggerLocal.chainActionInfo(loginUserInfor,this.getClass().getName()+ "."+"openInvenTracePage ： " + formBean.getBarcode());
+		loggerLocal.chainActionInfo(loginUserInfor,this.getClass().getName()+ "."+"downloadFlowOrder ： " + formBean.getBarcode());
 
 		Response response = new Response();
 		try {
