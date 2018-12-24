@@ -20,7 +20,7 @@ import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
 import com.onlineMIS.common.ExcelUtil;
 
-public class BarcodeImportTemplate extends ExcelTemplate{
+public class BarcodeImportTemplate extends BarcodeTemplate{
 	private boolean isSuccess = true;
 	private String validateMsg = "";
 	
