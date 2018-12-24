@@ -26,9 +26,11 @@ public class ChainBatchRptRepositoty implements Serializable {
 	 */
 	public static final int TYPE_CHAIN_TRANSFER_ACCT_FLOW_RPT = 3;
 	
-	public static final String REPORITORY_ROOT = "D:\\QXBaby-MIS\\BatchReport";
+	public static String REPORITORY_ROOT = "D:\\QXBaby-MIS\\BatchReport";
 	
 	private int id;
+	
+	
 	
 	/**
 	 * rpt type id
