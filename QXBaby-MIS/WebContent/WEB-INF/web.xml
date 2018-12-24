@@ -5,6 +5,10 @@
     <param-name>logFolder</param-name>
     <param-value>c:/QXBaby-MIS/logs/</param-value>
   </context-param>
+    <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>qxmis</param-value>
+</context-param>
   <context-param>
     <param-name>log4jConfigLocation</param-name>
     <param-value>/WEB-INF/log4j.properties</param-value>
