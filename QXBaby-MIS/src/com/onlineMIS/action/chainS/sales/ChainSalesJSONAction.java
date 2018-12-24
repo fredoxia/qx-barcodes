@@ -333,7 +333,7 @@ public class ChainSalesJSONAction extends ChainSalesAction {
 	 */
 	public String postSalesOrder(){
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
-    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"postSalesOrder : " + formBean.getChainSalesOrder().getChainStore().getChain_id() + "," + formBean.getChainSalesOrder().getSaler().getUser_name());
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"postSalesOrder : " + formBean.getChainSalesOrder().getChainStore().getChain_id() + "," + formBean.getChainSalesOrder().getSaler().getUser_id());
 		
 		Response response = new Response();
 		

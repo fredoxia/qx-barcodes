@@ -106,6 +106,7 @@ import com.onlineMIS.sorter.ChainInventoryReportSort;
 
 @Service
 public class ChainReportService {
+	private final int lezhixile = 213;
 	@Autowired
 	private ChainStoreService chainStoreService;
 	
@@ -343,9 +344,10 @@ public class ChainReportService {
 		Object[] value_sale = new Object[]{startDate, endDate, ChainStoreSalesOrder.STATUS_COMPLETE};
 		String chainCriteria = "";
 		String chainCriteriaPrepaid = "";
+		
 		if (chainId == Common_util.ALL_RECORD) {
-			chainCriteria = " chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID;
-			chainCriteriaPrepaid = " c.chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID;
+			chainCriteria = " chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID + " AND chainStore.chain_id <> " + lezhixile;
+			chainCriteriaPrepaid = " c.chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID  + " AND chainStore.chain_id <> " + lezhixile;
 		} else {
 			chainCriteria = " chainStore.chain_id = " + chainId;
 			chainCriteriaPrepaid = " c.chainStore.chain_id = " + chainId;
@@ -571,14 +573,25 @@ public class ChainReportService {
 		   }
 	    
 	    //5. 把预付金放进去
-	    for (ChainSalesReport rpt : reports){
+	    int removeId = -1;
+	    for (int i = 0; i < reports.size(); i++){
+	    	ChainSalesReport rpt = reports.get(i);
 	    	int chainIdRpt = rpt.getChainStore().getChain_id();
+	    	
+	    	//剔除乐至喜乐仓
+	    	if (chainIdRpt == lezhixile){
+	    		removeId = i;
+	    	}
+	    	
 	    	Double prepaidAmt = prepaidMap.get(chainIdRpt);
 	    	if (prepaidAmt == null)
 	    		rpt.setVipPrepaidDepositCash(0);
 	    	else
 	    		rpt.setVipPrepaidDepositCash(prepaidAmt);
 	    }
+	    
+	    if (removeId != -1)
+	    	reports.remove(removeId);
 
 		List<ChainSalesReport> footer = new ArrayList<ChainSalesReport>();
 		footer.add(totalReport);

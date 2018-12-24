@@ -1719,6 +1719,7 @@ public class ChainInventoryFlowOrderService {
 	 * @param chainId
 	 * @return
 	 */
+
 	public Response deleteInventory(ChainUserInfor userInfor, int chainId, int yearId, int quarterId, int brandId) {
 		Response response = new Response();
 		if (ChainUserInforService.isMgmtFromHQ(userInfor)){
@@ -1742,6 +1743,7 @@ public class ChainInventoryFlowOrderService {
 			  }
 			  
 			  int rowCount = chainInOutStockDaoImpl.executeHQLUpdateDelete(deleteInventory.toString(), null, true);
+
 			  response.setSuccess(rowCount + " 行数据已经删除");
 			} else {
 				response.setFail("无法找到连锁店");
@@ -1751,6 +1753,7 @@ public class ChainInventoryFlowOrderService {
 		}
 		return response;
 	}
+
 
 	public Response getChainInventory(int parentId, int chainId, int yearId, int quarterId, int brandId) {
 		Response response = new Response();

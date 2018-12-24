@@ -15,6 +15,14 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.action.chainS.vo.ChainProductBarcodeVO;
 
 public class ChainSalesActionUIBean {
+	public final static int CHAIN_ORDER_PAY_CASH = 1;
+	public final static int CHAIN_ORDER_PAY_CARD = 2;
+	public final static int CHAIN_ORDER_PAY_WECHAT = 3;
+	public final static int CHAIN_ORDER_PAY_ALIPAY = 4;
+	public final static int CHAIN_ORDER_PAY_COUPON = 5;
+	public final static int CHAIN_ORDER_PAY_PREPAY = 6;
+	public final static int CHAIN_ORDER_PAY_VIPSCORE = 7;
+
 	/**
 	 * those UI Bean is for the sales order search page's drop down
 	 */
@@ -24,6 +32,16 @@ public class ChainSalesActionUIBean {
     private String createDate = "";
     private Map<Integer, String> chainOrderTypes = new HashMap<Integer, String>();
     private Map<Integer, String> chainOrderStatus = new HashMap<Integer, String>();
+    private Map<Integer, String> chainOrderPay = new HashMap<Integer, String>();
+    {
+    	chainOrderPay.put(CHAIN_ORDER_PAY_CASH, "现金");
+    	chainOrderPay.put(CHAIN_ORDER_PAY_CARD, "刷卡");
+    	chainOrderPay.put(CHAIN_ORDER_PAY_WECHAT, "微信支付");
+    	chainOrderPay.put(CHAIN_ORDER_PAY_ALIPAY, "支付宝支付");
+    	chainOrderPay.put(CHAIN_ORDER_PAY_COUPON, "代金劵");
+    	chainOrderPay.put(CHAIN_ORDER_PAY_PREPAY, "预付金");
+    	chainOrderPay.put(CHAIN_ORDER_PAY_VIPSCORE, "积分抵现金");
+    }
 	private ChainStoreConf chainStoreConf = new ChainStoreConf();
     
     /**
@@ -50,7 +68,13 @@ public class ChainSalesActionUIBean {
     private ChainStore chainStore = null;
 
     
-    public ChainStore getChainStore() {
+    public Map<Integer, String> getChainOrderPay() {
+		return chainOrderPay;
+	}
+	public void setChainOrderPay(Map<Integer, String> chainOrderPay) {
+		this.chainOrderPay = chainOrderPay;
+	}
+	public ChainStore getChainStore() {
 		return chainStore;
 	}
 	public void setChainStore(ChainStore chainStore) {

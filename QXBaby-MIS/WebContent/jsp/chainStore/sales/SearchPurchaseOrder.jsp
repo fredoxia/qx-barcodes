@@ -52,7 +52,7 @@ function searchOrdersBackProcess(data){
 				          orders[i].comment+"</td><td>"+
 				          orders[i].chainStatusS+"</td><td>"+
 				          orders[i].chainConfirmComment+"</td><td>"+
-				          "<s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!getPurchase')"><a href='javascript:getPurchaseDetail(" + orders[i].id+ ")'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orders");
+				          "<s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!getPurchase')"><a href='javascript:getPurchaseDetail(" + orders[i].id+ ")'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if><s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseJSONAction!headqResetPurchaseOrderStatus')"><a href='javascript:resetOrder(" + orders[i].id+ ")'>重设单据</a></s:if></td></tr>").appendTo("#orders");
 	    }
 	    renderPaginationBar(pager.currentPage, pager.totalPage);
 	    
@@ -67,6 +67,31 @@ function searchOrdersBackProcess(data){
 }
 function changeChainStore(chainId){
 
+}
+
+function resetOrder(id){
+	$.messager.prompt("密码验证","一旦确认,当前单据状态和库存将会重设:", function(password){
+		if (password == "vj7683c688"){
+			$.messager.progress({
+				title : '提示',
+				text : '数据处理中，请稍后....'
+			});
+			var param = "";
+			$.post('purchaseJSONAction!headqResetPurchaseOrderStatus?formBean.order.order_ID='+id, param, 
+					function(result) {
+				  
+						if (result.returnCode == SUCCESS) {
+							$.messager.progress('close'); 
+							$.messager.alert('信息', result.message, 'info');
+						} else {
+							$.messager.progress('close'); 
+							$.messager.alert('失败警告', result.message, 'error');
+						}
+					}, 'JSON');
+		} else {
+			alert("密码错误");
+		}	   
+	});
 }
 </script>
 </head>

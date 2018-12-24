@@ -18,7 +18,6 @@ public class PurchaseActionFormBean extends ChainActionFormBaseBean{
     private InventoryOrder order = new InventoryOrder();
     private Pager pager = new Pager();
     
-    
 	public ChainStore getChainStore() {
 		return chainStore;
 	}

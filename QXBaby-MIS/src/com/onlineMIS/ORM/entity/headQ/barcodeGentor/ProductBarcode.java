@@ -6,6 +6,7 @@ import java.util.Date;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 
 public class ProductBarcode implements Serializable {
+	public static final int BARCODE_LENGTH = 12;
 	public static final String BARCODE_PREFIX ="1";
 	public static final String SERIAL_PREFIX = "2";
     public static final int STATUS_DELETE = 2;

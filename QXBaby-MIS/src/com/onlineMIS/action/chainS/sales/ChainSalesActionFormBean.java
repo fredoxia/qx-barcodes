@@ -14,6 +14,7 @@ public class ChainSalesActionFormBean extends ChainActionFormBaseBean{
 	private ChainStoreSalesOrder chainSalesOrder = new ChainStoreSalesOrder();
 	private ChainStoreConf chainStoreConf = new ChainStoreConf();
 	private int productId = 0;
+	private int chainOrderPay = -1;
 		
 	/**
 	 * the three are used to do the product scanning
@@ -43,6 +44,12 @@ public class ChainSalesActionFormBean extends ChainActionFormBaseBean{
     private Pager pager = new Pager();
     private String token = "";
     
+	public int getChainOrderPay() {
+		return chainOrderPay;
+	}
+	public void setChainOrderPay(int chaiOrderPay) {
+		this.chainOrderPay = chaiOrderPay;
+	}
 	public ChainStore getChainStore() {
 		return chainStore;
 	}

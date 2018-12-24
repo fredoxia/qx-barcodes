@@ -203,6 +203,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		
 		return "successful";
 	}
+
 	/**
 	 * 获取连锁店库存信息
 	 * @return
@@ -226,6 +227,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		
 		return "jsonArray";
 	}
+
 	
 	/**
 	 * 清空连锁店的库存

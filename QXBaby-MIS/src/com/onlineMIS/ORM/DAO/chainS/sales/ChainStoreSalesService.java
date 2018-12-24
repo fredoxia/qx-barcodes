@@ -475,7 +475,7 @@ public class ChainStoreSalesService {
 		    		double netAmountA = salesOrder.getNetAmount();
 		    		if (totalQuantityA != 0){
 		    	      for (ChainStoreSalesOrderProduct product : productSales){
-		    	    	  if (product == null)
+		    	    	  if (product == null || product.getProductBarcode() == null || product.getProductBarcode().getBarcode().equals(""))
 		    	    		  continue;
 		    	    	  
 		    	    	  if (isExclucded(product.getProductBarcode().getId())){
@@ -622,6 +622,7 @@ public class ChainStoreSalesService {
 	 *    - 如果不是总部管理员工和老板账户，不能跨日期过账
 	 *    - 非总部管理人员不能跨连锁店过账
 	 *    - 使用积分策略验证
+	 *    - 所有数量必须是大于零的 数字
 	 * @param salesOrder
 	 * @return
 	 */
@@ -674,7 +675,32 @@ public class ChainStoreSalesService {
 				return response;
 			}
 		}
-				
+		
+		//3. 验证所有的quantity 都是大于0
+	      List<ChainStoreSalesOrderProduct> products2 = salesOrder.getProductList();
+	      List<ChainStoreSalesOrderProduct> productsR2 = salesOrder.getProductListR();
+	      String errorMsg2 = "";
+	      boolean quantityError = false;
+	      for (ChainStoreSalesOrderProduct product : products2){
+	    	  if (product == null || product.getProductBarcode() == null|| product.getProductBarcode().getBarcode() == null || product.getProductBarcode().getBarcode().equals(""))
+	    		  continue;
+	    	  
+	    	  if (product.getQuantity() <= 0 && quantityError == false)
+	    	      quantityError = true;
+	      }
+	      
+	      for (ChainStoreSalesOrderProduct product : productsR2){
+	    	  if (product == null || product.getProductBarcode() == null|| product.getProductBarcode().getBarcode() == null || product.getProductBarcode().getBarcode().equals(""))
+	    		  continue;
+	    	  
+	    	  if (product.getQuantity() <= 0 && quantityError == false)
+	    	      quantityError = true;
+	      }
+	      if (quantityError){
+				String errorMsg = "所有数量必须是大于零的数字";
+				response.setQuickValue(Response.ERROR, errorMsg2);
+				return response;
+	      }
 		
 		if (conf != null ){
 		   double minDiscountRate = conf.getMinDiscountRate();
@@ -683,7 +709,7 @@ public class ChainStoreSalesService {
 		      List<ChainStoreSalesOrderProduct> products = salesOrder.getProductList();
 		      List<ChainStoreSalesOrderProduct> productsR = salesOrder.getProductListR();
 		      for (ChainStoreSalesOrderProduct product : products){
-		    	  if (product == null)
+		    	  if (product == null || product.getProductBarcode() == null|| product.getProductBarcode().getBarcode() == null || product.getProductBarcode().getBarcode().equals(""))
 		    		  continue;
 		    	  double discount = product.getDiscountRate();
 		    	  double productId = product.getProductBarcode().getId();
@@ -696,7 +722,7 @@ public class ChainStoreSalesService {
 		      }
 		      
 		      for (ChainStoreSalesOrderProduct product : productsR){
-		    	  if (product == null)
+		    	  if (product == null || product.getProductBarcode() == null|| product.getProductBarcode().getBarcode() == null || product.getProductBarcode().getBarcode().equals(""))
 		    		  continue;
 		    	  double discount = product.getDiscountRate();
 		    	  double productId = product.getProductBarcode().getId();
@@ -1169,6 +1195,35 @@ public class ChainStoreSalesService {
 			orderProductCriteria.add(Restrictions.eq("productBarcode.id", productId));
 		}
 		
+		int chainPayType = formBean.getChainOrderPay();
+		if (chainPayType != Common_util.ALL_RECORD){
+			switch (chainPayType) {
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_CASH:
+				criteria.add(Restrictions.ne("cashAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_CARD:
+				criteria.add(Restrictions.ne("cardAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_WECHAT:
+				criteria.add(Restrictions.ne("wechatAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_ALIPAY:
+				criteria.add(Restrictions.ne("alipayAmount", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_COUPON:
+				criteria.add(Restrictions.ne("coupon", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_PREPAY:
+				criteria.add(Restrictions.ne("chainPrepaidAmt", 0.0));
+				break;
+			case ChainSalesActionUIBean.CHAIN_ORDER_PAY_VIPSCORE:
+				criteria.add(Restrictions.ne("vipScore", 0.0));
+				break;			
+			default:
+				break;
+			}
+		}
+		
 		return criteria;
 	}
 	
@@ -1233,12 +1288,14 @@ public class ChainStoreSalesService {
 	 * @param salesOrder
 	 * @param orderStatus
 	 */
+	@Transactional
 	private void updateChainInOutStock(ChainStoreSalesOrder salesOrder,
 			int orderStatus) {
 		boolean isCancel = false;
 		int orderType = salesOrder.getType();
 		
 		int clientId = salesOrder.getChainStore().getClient_id();
+		int chainId = salesOrder.getChainStore().getChain_id();
 		if (orderStatus == ChainStoreSalesOrder.STATUS_CANCEL)
 			isCancel = true;
 		
@@ -1277,15 +1334,36 @@ public class ChainStoreSalesService {
 			 if (priorHistory != null)
 				 cost = priorHistory.getWholePrice();
 			 else {
-				 ChainInitialStockId initialStockId = new ChainInitialStockId(barcode, clientId);
-				 ChainInitialStock initialStock = chainInitialStockDaoImpl.get(initialStockId, true);
-				 if (initialStock != null)
-					 cost = initialStock.getCost();
-				 else {
-					 loggerLocal.error(ERRORS.ERROR_NO_COST + " 找不到货品进价: " + clientId + "," + barcode + "," + productBarcodeId + "," + orderProduct.getProductBarcode().getProduct().getProductCode());
-					 ProductBarcode pBarcode = productBarcodeDaoImpl.get(productBarcodeId, true);
-					 cost = productBarcodeDaoImpl.getWholeSalePrice(pBarcode);
-				 }
+				 ChainStore childStore = chainStoreService.getChildChainStore(chainId);
+					if (childStore != null){
+						HeadQSalesHistoryId idChild = new HeadQSalesHistoryId(productBarcodeId, childStore.getClient_id());
+						HeadQSalesHistory historyChild = headQSalesHisDAOImpl.get(idChild, true);
+						
+						if (historyChild != null){
+						   cost = historyChild.getWholePrice();
+					    } else {
+				 
+							 ChainInitialStockId initialStockId = new ChainInitialStockId(barcode, clientId);
+							 ChainInitialStock initialStock = chainInitialStockDaoImpl.get(initialStockId, true);
+							 if (initialStock != null)
+								 cost = initialStock.getCost();
+							 else {
+								 loggerLocal.error(ERRORS.ERROR_NO_COST + " 找不到货品进价: " + clientId + "," + barcode + "," + productBarcodeId + "," + orderProduct.getProductBarcode().getProduct().getProductCode());
+								 ProductBarcode pBarcode = productBarcodeDaoImpl.get(productBarcodeId, true);
+								 cost = productBarcodeDaoImpl.getWholeSalePrice(pBarcode);
+							 }
+						 }
+					} else {
+						 ChainInitialStockId initialStockId = new ChainInitialStockId(barcode, clientId);
+						 ChainInitialStock initialStock = chainInitialStockDaoImpl.get(initialStockId, true);
+						 if (initialStock != null)
+							 cost = initialStock.getCost();
+						 else {
+							 loggerLocal.error(ERRORS.ERROR_NO_COST + " 找不到货品进价: " + clientId + "," + barcode + "," + productBarcodeId + "," + orderProduct.getProductBarcode().getProduct().getProductCode());
+							 ProductBarcode pBarcode = productBarcodeDaoImpl.get(productBarcodeId, true);
+							 cost = productBarcodeDaoImpl.getWholeSalePrice(pBarcode);
+						 }
+					}
 			 }
 			 
 			 double chainSalePrice = productBarcodeDaoImpl.get(productBarcodeId, true).getProduct().getSalesPrice();
@@ -1389,11 +1467,23 @@ public class ChainStoreSalesService {
 			
 			if (chainId > 0){
 				ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
+				
+				//1. 先尝试获取当前店铺的采购价，如果没有再获取子连锁店采购价
 				HeadQSalesHistoryId id = new HeadQSalesHistoryId(productBarcode.getId(), chainStore.getClient_id());
 				HeadQSalesHistory history = headQSalesHisDAOImpl.get(id, true);
 				if (history != null){
 					//我的采购价
 					productBarcode.getProduct().setLastInputPrice(history.getWholePrice());
+				} else {
+					ChainStore childStore = chainStoreService.getChildChainStore(chainStore.getChain_id());
+					if (childStore != null){
+						HeadQSalesHistoryId idChild = new HeadQSalesHistoryId(productBarcode.getId(), childStore.getClient_id());
+						HeadQSalesHistory historyChild = headQSalesHisDAOImpl.get(idChild, true);
+						if (historyChild != null){
+							//我的采购价
+							productBarcode.getProduct().setLastInputPrice(historyChild.getWholePrice());
+						}
+					}
 				}
 				
 				int inventory = chainInOutStockDaoImpl.getProductStock(barcode, chainStore.getClient_id(), false);

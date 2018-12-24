@@ -497,5 +497,83 @@ public class PurchaseService {
 		 inventoryData.add(nonUpdatedInventory);
 		 updateInventoryResponse.setReturnValue(inventoryData);
 	}
+
+    /**
+     * 如果单子确认已经收了
+     * 1. 回滚状态
+     * 2. 删除之前的库存
+     * 3. 加上备注信息
+     * @param order
+     * @param loginUser
+     * @param response
+     */
+    @Transactional
+	public void resetPurchaseOrderStatus(InventoryOrder order,
+			ChainUserInfor loginUser, Response response) {
+	    InventoryOrder oldOrder = inventoryOrderDAOImpl.get(order.getOrder_ID(), true);
+		
+		if (oldOrder == null){
+			response.setFail("无法找到单据");
+		} else if (oldOrder.getChainConfirmStatus() != InventoryOrder.STATUS_CHAIN_CONFIRM && oldOrder.getChainConfirmStatus() != InventoryOrder.STATUS_SYSTEM_CONFIRM ){
+			response.setFail("单据没有被确认，无法重新设置状态");
+		} else {
+//			int myChainId = loginUser.getMyChainStore().getChain_id();
+//			Set<Integer> childrenClientIds = chainStoreDaoImpl.getStoreAndChildrenClientIds(myChainId);
+//			!childrenClientIds.contains(oldOrder.getClient_id()) && 
+			if (!ChainUserInforService.isMgmtFromHQ(loginUser)){
+				response.setFail("没有权重设连锁店单据状态");
+			} else {
+				String message = "";
+				
+				//1. 修改连锁店确认信息
+				oldOrder.setChainConfirmStatus(InventoryOrder.STATUS_CHAIN_NOT_CONFIRM);
+				oldOrder.setChainConfirmComment("管理员重设单据状态");
+				oldOrder.setChainConfirmDate(new Date());
+				
+				//2. 确认单据的库存
+				//   在exception之前的date过账的单子，库存已经自动导入了
+					Date exceptionDate = null;
+					try {
+						exceptionDate = Common_util.dateFormat.parse(SystemParm.getParm("CHAIN_INVENTORY_CONFIRM_EXCEPTION_DATE"));
+					} catch (ParseException e) {
+						response.setFail(e.getMessage());
+						return;
+					}
+					
+					if (oldOrder.getOrder_EndTime().after(exceptionDate)){
+						int orderClientId = oldOrder.getClient_id();
+						ChainStore store = chainStoreDaoImpl.getByClientId(orderClientId);
+						
+						int clientId = orderClientId;
+						if (store.getParentStore() != null){
+							clientId = store.getParentStore().getClient_id();
+						}
+						
+						//获取标码
+						String orderId = String.valueOf(oldOrder.getOrder_ID());
+		
+						if (oldOrder.getOrder_type() == InventoryOrder.TYPE_SALES_ORDER_W){
+							orderId = ChainInOutStock.HEADQ_SALES + orderId;
+						} else {
+							orderId = ChainInOutStock.HEADQ_RETURN + orderId;
+						}
+						
+						String hql_delete = "DELETE FROM ChainInOutStock WHERE clientId=? AND orderId=?";
+						Object[] values = {clientId, orderId};
+						int rows = chainInOutStockDaoImpl.executeHQLUpdateDelete(hql_delete, values, true);
+						
+						message = "已经成功更新单据状态。";
+						message += "\n清楚库存记录 : " + rows + " 条";
+					} else {
+						message = "已经成功更新单据状态。此单据发生在 " + exceptionDate.toString() + " 之前,总部已经成功导入库存.";
+					}
+
+				
+				inventoryOrderDAOImpl.update(oldOrder, true);
+				response.setSuccess(message);
+			}
+		}
+		
+	}
 	
 }

@@ -406,6 +406,24 @@ public class ChainStoreService {
 		return chainStores;
 	}
 
+	/**
+	 * 获取当前连锁店的子连锁店,默认只取一个
+	 * @param chain_id
+	 * @return
+	 */
+	public ChainStore getChildChainStore(int chain_id) {
+		List<ChainStore> chainStores = new ArrayList<ChainStore>();
+		
+		DetachedCriteria chainCriteria = DetachedCriteria.forClass(ChainStore.class);
+		chainCriteria.add(Restrictions.eq("parentStore.chain_id", chain_id));
+			
+		chainStores = chainStoreDaoImpl.getByCritera(chainCriteria, true);
+		if (chainStores.size() > 0)
+			return chainStores.get(0);
+		else 
+			return null;
+	}
+
 
 	
 }
