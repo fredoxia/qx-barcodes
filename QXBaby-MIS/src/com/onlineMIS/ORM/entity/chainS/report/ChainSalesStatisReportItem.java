@@ -5,21 +5,16 @@ import java.util.Date;
 
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 
 public class ChainSalesStatisReportItem implements Serializable {
-	/**
-	 * 
-	 */
-	public static final int LEVEL_ONE = 1;
-	public static final int LEVEL_TWO = 2;
-	public static final int LEVEL_THREE = 3;
-	public static final int LEVEL_FOUR = 4;
 	
 	private static final long serialVersionUID = 1L;
 	protected Date startDate = new Date();
 	protected Date endDate = new Date();
 	protected ChainStore chainStore = new ChainStore();
 	protected ChainUserInfor saler = new ChainUserInfor();
+	private ProductBarcode productBarcode = new ProductBarcode();
 	protected int salesQ = 0;
 	protected int returnQ = 0;
 	protected int netQ = 0;
@@ -47,11 +42,20 @@ public class ChainSalesStatisReportItem implements Serializable {
 		
 	}
 	
-	public ChainSalesStatisReportItem(ChainStore chainStore, ChainUserInfor saler, Date rptStartDate, Date rptEndDate){
+	public ChainSalesStatisReportItem(ChainStore chainStore, ChainUserInfor saler, Date rptStartDate, Date rptEndDate, ProductBarcode pb){
 		this.chainStore = chainStore;
 		this.saler = saler;
 		this.startDate = rptStartDate;
 		this.endDate = rptEndDate;
+		this.setProductBarcode(pb);
+	}
+
+	public ProductBarcode getProductBarcode() {
+		return productBarcode;
+	}
+
+	public void setProductBarcode(ProductBarcode productBarcode) {
+		this.productBarcode = productBarcode;
 	}
 
 	public double getSalesDiscount() {

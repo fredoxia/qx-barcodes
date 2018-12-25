@@ -13,8 +13,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
-
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
+import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
@@ -27,8 +26,8 @@ import com.onlineMIS.common.ExcelTemplate;
 import com.onlineMIS.common.loggerLocal;
 
 public class ChainSalesStatisticsReportTemplate  extends ExcelTemplate{
-	private List<ChainSalesStatisReportItemLevelFour> items = new ArrayList<ChainSalesStatisReportItemLevelFour>();
-	private ChainSalesStatisReportItemLevelFour totalItem = null;
+	private List<ChainSalesStatisReportItem> items = new ArrayList<ChainSalesStatisReportItem>();
+	private ChainSalesStatisReportItem totalItem = null;
 	private int data_row = 5;
 	private final int BARCODE_COLUMN = 0;
 	private final int PRODUCT_CODE_COLUMN = 1;
@@ -82,7 +81,7 @@ public class ChainSalesStatisticsReportTemplate  extends ExcelTemplate{
     	super(file);
     }
 	
-	public ChainSalesStatisticsReportTemplate(List<ChainSalesStatisReportItemLevelFour> items, ChainSalesStatisReportItemLevelFour totalItem, ChainStore chainStore, String templateWorkbookPath, boolean showCost, ChainUserInfor saler, Date startDate, Date endDate) throws IOException{
+	public ChainSalesStatisticsReportTemplate(List<ChainSalesStatisReportItem> items, ChainSalesStatisReportItem totalItem, ChainStore chainStore, String templateWorkbookPath, boolean showCost, ChainUserInfor saler, Date startDate, Date endDate) throws IOException{
 		super(templateWorkbookPath);	
 		this.items = items;
 		this.chainStore = chainStore;
@@ -117,7 +116,7 @@ public class ChainSalesStatisticsReportTemplate  extends ExcelTemplate{
 
 		for (int i = 0; i < totalDataRow; i++){
 
-			ChainSalesStatisReportItemLevelFour levelFourItem = items.get(i);
+			ChainSalesStatisReportItem levelFourItem = items.get(i);
 			Row row = sheet.createRow(data_row + i);
 
 			ProductBarcode pb = levelFourItem.getProductBarcode();

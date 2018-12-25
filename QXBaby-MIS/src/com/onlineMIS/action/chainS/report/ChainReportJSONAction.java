@@ -284,5 +284,28 @@ public class ChainReportJSONAction extends ChainReportAction {
 		return SUCCESS;
 	}
 	
+	/**
+	 * 获取销售统计报表的详细信息
+	 * @return
+	 */
+	public String getSalesStatisticReptEles(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.info(this.getClass().getName()+ ".getSalesStatisticReptEles");
+		Response response = new Response();
 
+		try {
+		    response = chainReportService.getSalesStatisticReptEles(formBean.getParentId(), formBean.getStartDate(), formBean.getEndDate(), formBean.getChainStore().getChain_id(), formBean.getYear().getYear_ID(), formBean.getQuarter().getQuarter_ID(), formBean.getBrand().getBrand_ID(), formBean.getSaler().getUser_id(), userInfor);
+		} catch (Exception e){
+			e.printStackTrace();
+		}	
+		
+		try{
+			   jsonArray = JSONArray.fromObject(response.getReturnValue());
+//			   System.out.println(jsonArray);
+			} catch (Exception e){
+				e.printStackTrace();
+			}	
+		
+		return "successful";
+	}
 }

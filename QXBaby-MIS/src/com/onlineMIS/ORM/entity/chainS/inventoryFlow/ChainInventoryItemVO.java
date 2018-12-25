@@ -26,12 +26,13 @@ public class ChainInventoryItemVO implements Serializable {
 	private int yearId = 0;
 	private int quarterId = 0;
 	private int brandId = 0;
+	private boolean seeCost = false;
 	
 	public ChainInventoryItemVO() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ChainInventoryItemVO(String name, int inventory, double wholeSales,double retailSales, String state,int parentId,int chainId,  int yearId, int quarterId, int brandId){
+	public ChainInventoryItemVO(String name, int inventory, double wholeSales,double retailSales, String state,int parentId,int chainId,  int yearId, int quarterId, int brandId, boolean seeCost){
 		this.setId(Common_util.getUUID());
 		this.setChainId(chainId);
 		this.setName(name);
@@ -43,6 +44,15 @@ public class ChainInventoryItemVO implements Serializable {
 		this.setBrandId(brandId);
 		this.setRetailSales(retailSales);
 		this.setParentId(parentId);
+		this.setSeeCost(seeCost);
+	}
+
+	public boolean getSeeCost() {
+		return seeCost;
+	}
+
+	public void setSeeCost(boolean seeCost) {
+		this.seeCost = seeCost;
 	}
 
 	public int getParentId() {

@@ -15,7 +15,8 @@ public class ChainReportActionFormBean {
 	private Date startDate = new Date(new java.util.Date().getTime());
 	private Date endDate = new Date(new java.util.Date().getTime());;
 	private ChainStore chainStore = new ChainStore();
-
+	private int parentId;
+	
     //查找品牌
     private Brand brand = new Brand();
     private Year year = new Year();
@@ -29,6 +30,12 @@ public class ChainReportActionFormBean {
     private ChainBatchRptRepositoty rptRepository = new ChainBatchRptRepositoty();
     
     
+	public int getParentId() {
+		return parentId;
+	}
+	public void setParentId(int parentId) {
+		this.parentId = parentId;
+	}
 	public ChainBatchRptRepositoty getRptRepository() {
 		return rptRepository;
 	}

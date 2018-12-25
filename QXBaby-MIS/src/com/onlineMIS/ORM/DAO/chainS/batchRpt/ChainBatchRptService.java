@@ -65,7 +65,7 @@ import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainTransferOrderFlowAcct;
 import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelTwo;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
+
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesVIPPercentageItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainTransferAcctFlowItem;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;

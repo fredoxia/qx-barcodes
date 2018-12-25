@@ -209,11 +209,12 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 	 * @return
 	 */
 	public String getInventoryFlowEles(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
 		loggerLocal.info(this.getClass().getName()+ ".getInventoryFlowEles");
 		Response response = new Response();
 
 		try {
-		    response = flowOrderService.getChainInventory(formBean.getParentId(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId());
+		    response = flowOrderService.getChainInventory(formBean.getParentId(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(),userInfor);
 		} catch (Exception e){
 			e.printStackTrace();
 		}	

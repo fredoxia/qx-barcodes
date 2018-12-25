@@ -1755,7 +1755,7 @@ public class ChainInventoryFlowOrderService {
 	}
 
 
-	public Response getChainInventory(int parentId, int chainId, int yearId, int quarterId, int brandId) {
+	public Response getChainInventory(int parentId, int chainId, int yearId, int quarterId, int brandId,ChainUserInfor userInfor) {
 		Response response = new Response();
 		List<ChainInventoryItemVO> chainInventoryVOs = new ArrayList<ChainInventoryItemVO>();
 		
@@ -1777,6 +1777,8 @@ public class ChainInventoryFlowOrderService {
 			
 			chainClause = "his.clientId ="+clientId;
 		}
+		
+		boolean showCost = userInfor.containFunction("purchaseAction!seeCost");
 
 		if (parentId == 0){
 			//@2. 展开所有年份的库存信息
@@ -1791,7 +1793,7 @@ public class ChainInventoryFlowOrderService {
 						double retailTotal = Common_util.getDouble(object2[1]);
 						int quantity = Common_util.getInt(object2[2]);
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(store.getChain_name(), quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 1,chainId, yearId, quarterId, brandId);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(store.getChain_name(), quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 1,chainId, yearId, quarterId, brandId, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1811,7 +1813,7 @@ public class ChainInventoryFlowOrderService {
 						
 						Year year = yearDaoImpl.get(yearIdDB, true);
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(year.getYear() + "年", quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 2,chainId, yearIdDB, quarterId, brandId);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(year.getYear() + "年", quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 2,chainId, yearIdDB, quarterId, brandId, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1835,7 +1837,7 @@ public class ChainInventoryFlowOrderService {
 						
 						String name = year.getYear() + "年" + quarter.getQuarter_Name();
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 3, chainId, yearId, quarterIdDB, brandId);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 3, chainId, yearId, quarterIdDB, brandId, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1858,13 +1860,13 @@ public class ChainInventoryFlowOrderService {
 						
 						String name = brand.getBrand_Name();
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,4,  chainId, yearId, quarterId, brandIdDB);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,4,  chainId, yearId, quarterId, brandIdDB, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
 		} else if (brandId != 0) {
 			//@2. 展开当前品霞的库存信息
-			String hql = "SELECT his.productBarcode.id, costTotal,salePriceTotal, quantity FROM ChainInOutStock AS his WHERE " +  chainClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.brand.brand_ID=?  ORDER BY his.productBarcode.product.productCode ASC";
+			String hql = "SELECT his.productBarcode.id, SUM(costTotal),SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  chainClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.brand.brand_ID=?  ORDER BY his.productBarcode.product.productCode ASC";
 			Object[] values = { yearId, quarterId, brandId};
 			
 			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
@@ -1885,7 +1887,7 @@ public class ChainInventoryFlowOrderService {
 						
 						String name = pb.getProduct().getProductCode() + colorName;
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, 5,chainId, yearId, quarterId, brandId);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, 5,chainId, yearId, quarterId, brandId, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }

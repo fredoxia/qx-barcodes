@@ -472,11 +472,8 @@
             <result name="AllInOneReportLevelThree">/jsp/chainStore/report/AllInOneReportLevelThree.jsp</result> 
             <result name="AllInOneReportLevelFour">/jsp/chainStore/report/AllInOneReportLevelFour.jsp</result> 
                           
-            <result name="salesStatisticReportLevelOne">/jsp/chainStore/report/SalesStatisticReportLevelOne.jsp</result> 
-			<result name="salesStatisticReportLevelTwo">/jsp/chainStore/report/SalesStatisticReportLevelTwo.jsp</result>  
-            <result name="salesStatisticReportLevelFour">/jsp/chainStore/report/SalesStatisticReportLevelFour.jsp</result>  
-            <result name="salesStatisticReportLevelThree">/jsp/chainStore/report/SalesStatisticReportLevelThree.jsp</result> 
-             
+            <result name="salesStatisticReport">/jsp/chainStore/report/ChainSalesStatisticReport.jsp</result> 
+              
             <result name="PrePurchaseStatisticReport">/jsp/chainStore/report/PrePurchaseStatisticReport.jsp</result>
             <result name="PurchaseStatisticReportLevelOne">/jsp/chainStore/report/PurchaseStatisticReportLevelOne.jsp</result> 
 			<result name="PurchaseStatisticReportLevelTwo">/jsp/chainStore/report/PurchaseStatisticReportLevelTwo.jsp</result>  
@@ -538,7 +535,6 @@
                 <param name="bufferSize">1024</param>  
             </result> 
         </action>  
-        
         <action name="chainTransferJSPAction" class="com.onlineMIS.action.chainS.chainTransfer.ChainTransferJSPAction">
             <result name="input">/jsp/common/error.jsp</result>
             <result name="createTransferOrder">/jsp/chainStore/chainTransfer/EditChainTransferOrder.jsp</result>

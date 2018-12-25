@@ -18,10 +18,6 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevel
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelOne;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelThree;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
@@ -37,10 +33,6 @@ public class ChainReportActionUIBean {
 	 * sales statis report
 	 */
 	private ChainSalesStatisReportItem totalItem = new ChainSalesStatisReportItem();
-	private List<ChainSalesStatisReportItemLevelOne> saleStatisLevelOne = new ArrayList<ChainSalesStatisReportItemLevelOne>();
-	private List<ChainSalesStatisReportItemLevelTwo> saleStatisLevelTwo = new ArrayList<ChainSalesStatisReportItemLevelTwo>();
-	private List<ChainSalesStatisReportItemLevelThree> saleStatisLevelThree = new ArrayList<ChainSalesStatisReportItemLevelThree>();
-	private List<ChainSalesStatisReportItemLevelFour> saleStatisLevelFour = new ArrayList<ChainSalesStatisReportItemLevelFour>();
 	/**
 	 * purchase statistic report
 	 */
@@ -186,32 +178,6 @@ public class ChainReportActionUIBean {
 		this.purchaseStatisLevelFour = purchaseStatisLevelFour;
 	}
 
-	public List<ChainSalesStatisReportItemLevelThree> getSaleStatisLevelThree() {
-		return saleStatisLevelThree;
-	}
-
-	public void setSaleStatisLevelThree(
-			List<ChainSalesStatisReportItemLevelThree> saleStatisLevelThree) {
-		this.saleStatisLevelThree = saleStatisLevelThree;
-	}
-
-	public List<ChainSalesStatisReportItemLevelFour> getSaleStatisLevelFour() {
-		return saleStatisLevelFour;
-	}
-
-	public void setSaleStatisLevelFour(
-			List<ChainSalesStatisReportItemLevelFour> saleStatisLevelFour) {
-		this.saleStatisLevelFour = saleStatisLevelFour;
-	}
-
-	public List<ChainSalesStatisReportItemLevelTwo> getSaleStatisLevelTwo() {
-		return saleStatisLevelTwo;
-	}
-
-	public void setSaleStatisLevelTwo(
-			List<ChainSalesStatisReportItemLevelTwo> saleStatisLevelTwo) {
-		this.saleStatisLevelTwo = saleStatisLevelTwo;
-	}
 
 	public ChainSalesStatisReportItem getTotalItem() {
 		return totalItem;
@@ -219,15 +185,6 @@ public class ChainReportActionUIBean {
 
 	public void setTotalItem(ChainSalesStatisReportItem totalItem) {
 		this.totalItem = totalItem;
-	}
-
-	public List<ChainSalesStatisReportItemLevelOne> getSaleStatisLevelOne() {
-		return saleStatisLevelOne;
-	}
-
-	public void setSaleStatisLevelOne(
-			List<ChainSalesStatisReportItemLevelOne> saleStatisLevelOne) {
-		this.saleStatisLevelOne = saleStatisLevelOne;
 	}
 
 	public List<ChainUserInfor> getChainSalers() {

@@ -31,10 +31,6 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevel
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelFour;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelOne;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelThree;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
@@ -179,62 +175,8 @@ public class ChainReportJSPAction extends ChainReportAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"generateSalesStatisticReport : " + formBean);
     	
-    	Date startDate = formBean.getStartDate();
-		Date endDate = formBean.getEndDate();
-		int chainId = formBean.getChainStore().getChain_id();
-		int salerId = formBean.getSaler().getUser_id();
-		int yearId = formBean.getYear().getYear_ID();
-		int quarterId = formBean.getQuarter().getQuarter_ID();
-		int brandId = formBean.getBrand().getBrand_ID();
-		Pager pager = formBean.getPager();
-		
-
-		
-		Response response = new Response();
-		try{
-		    response = chainReportService.generateSalesStatisticReport(startDate, endDate, chainId, salerId, yearId, quarterId, brandId, pager);
-		} catch (Exception e) {
-			response.setQuickValue(Response.FAIL, "操作失败 : " + e.getMessage());
-		}
-		
-		int returnCode = response.getReturnCode();
-		if (returnCode == Response.FAIL){
-			addActionError(response.getMessage());
-			return preSalesStatisticReport();
-		} else {
-			List<Object> values = (List<Object>)response.getReturnValue();
-			int resultCode = (Integer)values.get(0);
-
-			switch (resultCode) {
-				case ChainSalesStatisReportItem.LEVEL_ONE:
-					List<ChainSalesStatisReportItemLevelOne> levelOne = (List<ChainSalesStatisReportItemLevelOne>)values.get(1);
-					ChainSalesStatisReportItem totalItem = (ChainSalesStatisReportItem)values.get(2);
-					uiBean.setSaleStatisLevelOne(levelOne);
-					uiBean.setTotalItem(totalItem);
-					return "salesStatisticReportLevelOne";
-				case ChainSalesStatisReportItem.LEVEL_TWO:
-					List<ChainSalesStatisReportItemLevelTwo> levelTwo = (List<ChainSalesStatisReportItemLevelTwo>)values.get(1);
-					ChainSalesStatisReportItem totalItem1 = (ChainSalesStatisReportItem)values.get(2);
-					uiBean.setSaleStatisLevelTwo(levelTwo);
-					uiBean.setTotalItem(totalItem1);
-					return "salesStatisticReportLevelTwo";	
-				case ChainSalesStatisReportItem.LEVEL_THREE:
-					List<ChainSalesStatisReportItemLevelThree> levelThree = (List<ChainSalesStatisReportItemLevelThree>)values.get(1);
-					ChainSalesStatisReportItemLevelThree totalItem2 = (ChainSalesStatisReportItemLevelThree)values.get(2);
-					uiBean.setSaleStatisLevelThree(levelThree);
-					uiBean.setTotalItem(totalItem2);
-					return "salesStatisticReportLevelThree";	
-				case ChainSalesStatisReportItem.LEVEL_FOUR:
-					List<ChainSalesStatisReportItemLevelFour> levelFour = (List<ChainSalesStatisReportItemLevelFour>)values.get(1);
-					ChainSalesStatisReportItemLevelFour totalItem3 = (ChainSalesStatisReportItemLevelFour)values.get(2);
-					uiBean.setSaleStatisLevelFour(levelFour);
-					uiBean.setTotalItem(totalItem3);
-					return "salesStatisticReportLevelFour";
-				default:
-					addActionError("无法找到对应报表文件");
-					return preSalesStatisticReport();
-			}
-		}	
+    	
+    	return "salesStatisticReport";
 	}
 	
 	/**

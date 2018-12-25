@@ -33,7 +33,10 @@ $(document).ready(function(){
 					{field:'inventory', width:170,title:'库存数量'},
 					{field:'wholeSales', width:175,title:'库存成本金额',
 						formatter: function (value, row, index){
-							return (row.wholeSales).toFixed(2);
+							if (row.seeCost == true) 
+								return (row.wholeSales).toFixed(2);
+							else 
+								return "-";
 						}
 					},
 					{field:'retailSales', width:175,title:'估算销售金额',
