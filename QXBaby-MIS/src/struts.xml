@@ -475,11 +475,8 @@
             <result name="salesStatisticReport">/jsp/chainStore/report/ChainSalesStatisticReport.jsp</result> 
               
             <result name="PrePurchaseStatisticReport">/jsp/chainStore/report/PrePurchaseStatisticReport.jsp</result>
-            <result name="PurchaseStatisticReportLevelOne">/jsp/chainStore/report/PurchaseStatisticReportLevelOne.jsp</result> 
-			<result name="PurchaseStatisticReportLevelTwo">/jsp/chainStore/report/PurchaseStatisticReportLevelTwo.jsp</result>  
-            <result name="PurchaseStatisticReportLevelFour">/jsp/chainStore/report/PurchaseStatisticReportLevelFour.jsp</result>  
-            <result name="PurchaseStatisticReportLevelThree">/jsp/chainStore/report/PurchaseStatisticReportLevelThree.jsp</result> 
-
+            <result name="purchaseStatisticReport">/jsp/chainStore/report/ChainPurchaseStatisticReport.jsp</result> 
+            
             <result name="rptRepositoryUI">/jsp/chainStore/report/headRptRepository/ChainRptRepository.jsp</result> 
             
             <result type="stream" name="report">  

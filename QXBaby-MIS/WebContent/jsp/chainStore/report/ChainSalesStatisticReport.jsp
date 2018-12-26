@@ -56,7 +56,10 @@ $(document).ready(function(){
 					},
 					{field:'netProfit', width:110,title:'商品利润 C-D-E-F',
 						formatter: function (value, row, index){
-							return (row.netProfit).toFixed(2);
+							if (row.seeCost == true) 
+								return (row.netProfit).toFixed(2);
+							else 
+								return "-";
 						}
 					}
 			     ]],
@@ -65,7 +68,12 @@ $(document).ready(function(){
 });
 
 function refresh(){
-	location.reload();
+	$("#parentId").attr("value", 0);
+    $("#yearId").attr("value", 0);
+	$("#quarterId").attr("value", 0);
+	$("#brandId").attr("value", 0);
+    document.preGenReportForm.action="chainReportJSPAction!generateSalesStatisticReport";
+    document.preGenReportForm.submit();
 }
 function back(){
     document.preGenReportForm.action="chainReportJSPAction!preSalesStatisticReport";
@@ -94,7 +102,7 @@ function back(){
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
 		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新库存</a>
-
+					
 	             </div>
 		</div>
 	</div>					  

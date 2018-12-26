@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
-
-import net.sf.json.JSONObject;
-
 import com.onlineMIS.ORM.DAO.Response;
-import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforService;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelFour;
@@ -25,12 +20,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelThree;
 import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItem;
-import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelFour;
-import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelOne;
-import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelThree;
-import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItemLevelTwo;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
-import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPercentageTemplate;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
@@ -187,60 +177,7 @@ public class ChainReportJSPAction extends ChainReportAction {
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"generatePurchaseStatisticReport : " + formBean);
     	
-    	Date startDate = formBean.getStartDate();
-		Date endDate = formBean.getEndDate();
-		int chainId = formBean.getChainStore().getChain_id();
-		int yearId = formBean.getYear().getYear_ID();
-		int quarterId = formBean.getQuarter().getQuarter_ID();
-		int brandId = formBean.getBrand().getBrand_ID();
-		Pager pager = formBean.getPager();
-		
-		Response response = new Response();
-		try{
-		    response = chainReportService.generatePurchaseStatisticReport(startDate, endDate, chainId, yearId, quarterId, brandId, pager);
-		} catch (Exception e) {
-			loggerLocal.error(e);
-			response.setQuickValue(Response.FAIL, "操作失败 : " + e.getMessage());
-		}
-		
-		int returnCode = response.getReturnCode();
-		if (returnCode == Response.FAIL){
-			addActionError(response.getMessage());
-			return prePurchaseStatisticReport();
-		} else {
-			List<Object> values = (List<Object>)response.getReturnValue();
-			int resultCode = (Integer)values.get(0);
-
-			switch (resultCode) {
-				case ChainPurchaseStatisReportItem.LEVEL_ONE:
-					List<ChainPurchaseStatisReportItemLevelOne> levelOne = (List<ChainPurchaseStatisReportItemLevelOne>)values.get(1);
-					ChainPurchaseStatisReportItem totalItem = (ChainPurchaseStatisReportItem)values.get(2);
-					uiBean.setPurchaseStatisLevelOne(levelOne);
-					uiBean.setPurchaseTotalItem(totalItem);
-					return "PurchaseStatisticReportLevelOne";
-				case ChainPurchaseStatisReportItem.LEVEL_TWO:
-					List<ChainPurchaseStatisReportItemLevelTwo> levelTwo = (List<ChainPurchaseStatisReportItemLevelTwo>)values.get(1);
-					ChainPurchaseStatisReportItem totalItem1 = (ChainPurchaseStatisReportItem)values.get(2);
-					uiBean.setPurchaseStatisLevelTwo(levelTwo);
-					uiBean.setPurchaseTotalItem(totalItem1);
-					return "PurchaseStatisticReportLevelTwo";	
-				case ChainPurchaseStatisReportItem.LEVEL_THREE:
-					List<ChainPurchaseStatisReportItemLevelThree> levelThree = (List<ChainPurchaseStatisReportItemLevelThree>)values.get(1);
-					ChainPurchaseStatisReportItemLevelThree totalItem2 = (ChainPurchaseStatisReportItemLevelThree)values.get(2);
-					uiBean.setPurchaseStatisLevelThree(levelThree);
-					uiBean.setPurchaseTotalItem(totalItem2);
-					return "PurchaseStatisticReportLevelThree";	
-				case ChainPurchaseStatisReportItem.LEVEL_FOUR:
-					List<ChainPurchaseStatisReportItemLevelFour> levelFour = (List<ChainPurchaseStatisReportItemLevelFour>)values.get(1);
-					ChainPurchaseStatisReportItemLevelFour totalItem3 = (ChainPurchaseStatisReportItemLevelFour)values.get(2);
-					uiBean.setPurchaseStatisLevelFour(levelFour);
-					uiBean.setPurchaseTotalItem(totalItem3);
-					return "PurchaseStatisticReportLevelFour";
-				default:
-					addActionError("无法找到对应报表文件");
-					return prePurchaseStatisticReport();
-			}
-		}	
+    	return "purchaseStatisticReport";
 	}
 	
 	/**

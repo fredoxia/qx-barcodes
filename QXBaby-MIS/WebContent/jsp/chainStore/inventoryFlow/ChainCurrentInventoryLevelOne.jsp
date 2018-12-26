@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>朴与素连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
+<SCRIPT src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTrace.js" type=text/javascript></SCRIPT>
 <script>
 var baseurl = "<%=request.getContextPath()%>";
 $(document).ready(function(){
@@ -17,6 +18,8 @@ $(document).ready(function(){
 	$('#dataGrid').treegrid({
 		url : 'inventoryFlowJSONAction!getInventoryFlowEles',
 		idField: 'id',
+		rownumbers: true,
+		lines : true,
 		queryParams: params,
 		treeField : 'name',
 		onBeforeExpand : function(node) {
@@ -29,9 +32,17 @@ $(document).ready(function(){
 			$('#dataGrid').treegrid('options').url = 'inventoryFlowJSONAction!getInventoryFlowEles?' + params;
 		},
 		columns : [ [
-					{field:'name', width:250,title:'库存列表'},
-					{field:'inventory', width:170,title:'库存数量'},
-					{field:'wholeSales', width:175,title:'库存成本金额',
+					{field:'name', width:250,title:'库存列表',
+						formatter: function (value, row, index){
+							if (row.state == 'open') {
+								var str = '';
+							    str += $.formatString('<a href="#" onclick="traceInventory(\'{0}\',\'\');">{1}</a>', row.barcode, row.name);
+							    return str;
+							} else 
+								return row.name;
+						}},
+					{field:'inventory', width:160,title:'库存数量'},
+					{field:'wholeSales', width:160,title:'库存成本金额',
 						formatter: function (value, row, index){
 							if (row.seeCost == true) 
 								return (row.wholeSales).toFixed(2);
@@ -50,7 +61,12 @@ $(document).ready(function(){
 });
 
 function refresh(){
-	location.reload();
+	$("#parentId").attr("value", 0);
+    $("#yearId").attr("value", 0);
+	$("#quarterId").attr("value", 0);
+	$("#brandId").attr("value", 0);
+    document.preGenReportForm.action="inventoryFlowJSPAction!getLevelOneCurrentInventory";
+    document.preGenReportForm.submit();
 }
 function back(){
     document.preGenReportForm.action="inventoryFlowJSPAction!preGetCurrentInventory";

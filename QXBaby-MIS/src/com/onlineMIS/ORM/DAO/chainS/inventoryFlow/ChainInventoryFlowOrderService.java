@@ -1866,7 +1866,7 @@ public class ChainInventoryFlowOrderService {
 		    }
 		} else if (brandId != 0) {
 			//@2. 展开当前品霞的库存信息
-			String hql = "SELECT his.productBarcode.id, SUM(costTotal),SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  chainClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.brand.brand_ID=?  ORDER BY his.productBarcode.product.productCode ASC";
+			String hql = "SELECT his.productBarcode.id, SUM(costTotal), SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  chainClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.brand.brand_ID=? GROUP BY his.productBarcode.id  ORDER BY his.productBarcode.product.productCode ASC";
 			Object[] values = { yearId, quarterId, brandId};
 			
 			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
@@ -1885,9 +1885,11 @@ public class ChainInventoryFlowOrderService {
 						if (color != null)
 							colorName = color.getName();
 						
+						String barcode = pb.getBarcode();
 						String name = pb.getProduct().getProductCode() + colorName;
 						
 						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, 5,chainId, yearId, quarterId, brandId, showCost);
+						headqInventoryVO.setBarcode(barcode);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
