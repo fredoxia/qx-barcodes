@@ -30,15 +30,31 @@ $(document).ready(function(){
 			$('#dataGrid').treegrid('options').url = 'chainReportJSON!getSalesStatisticReptEles?' + params;
 		},		
 		columns : [ [
-					{field:'name', width:250,title:'销售列表'},
+					{field:'name', width:200,title:'销售列表'},
 					{field:'salesQ', width:80,title:'销售数量 A'},
 					{field:'returnQ', width:80,title:'退货数量 B'},
 					{field:'netQ', width:100,title:'净销售数量 A-B'},
 					{field:'freeQ', width:80,title:'赠品数量'},
-					{field:'salesPrice', width:80,title:'销售额 C'},
-					{field:'returnPrice', width:80,title:'退货额 D'},
-					{field:'netPrice', width:100,title:'净销售额 C-D'},
-					{field:'salesDiscount', width:70,title:'销售折扣'},
+					{field:'salesPrice', width:80,title:'销售额 C',
+						formatter: function (value, row, index){
+							return (row.salesPrice).toFixed(2);
+						}
+					},
+					{field:'returnPrice', width:80,title:'退货额 D',
+						formatter: function (value, row, index){
+							return (row.returnPrice).toFixed(2);
+						}
+					},
+					{field:'netPrice', width:100,title:'净销售额 C-D',
+						formatter: function (value, row, index){
+							return (row.netPrice).toFixed(2);
+						}
+					},
+					{field:'salesDiscount', width:70,title:'销售折扣',
+						formatter: function (value, row, index){
+							return (row.salesDiscount).toFixed(2);
+						}
+					},
 					{field:'netCost', width:100,title:'净销售成本 E',
 						formatter: function (value, row, index){
 							if (row.seeCost == true) 
