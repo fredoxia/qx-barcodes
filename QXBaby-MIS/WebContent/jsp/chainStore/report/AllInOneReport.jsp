@@ -10,10 +10,11 @@
 <script>
 var baseurl = "<%=request.getContextPath()%>";
 $(document).ready(function(){
+
 	var params= $.serializeObject($('#preGenReportForm'));
 	
 	$('#dataGrid').treegrid({
-		url : 'chainReportJSON!getPurchaseStatisticReptEles',
+		url : 'chainReportJSON!getAllInOneReptEles',
 		idField: 'id',
 		queryParams: params,
 		treeField : 'name',
@@ -25,28 +26,16 @@ $(document).ready(function(){
 			$("#quarterId").attr("value", node.quarterId);
 			$("#brandId").attr("value", node.brandId);
 			var params = $('#preGenReportForm').serialize();
-			$('#dataGrid').treegrid('options').url = 'chainReportJSON!getPurchaseStatisticReptEles?' + params;
+			$('#dataGrid').treegrid('options').url = 'chainReportJSON!getAllInOneReptEles?' + params;
 		},		
 		columns : [ [
-					{field:'name', width:280,title:'采购列表'},
-					{field:'purchaseQuantity', width:80,title:'采购数量'},
-					{field:'returnQuantity', width:80,title:'退货数量'},
-					{field:'netQuantity', width:100,title:'净采购量'},
-					{field:'avgPrice', width:100,title:'采购单价',
-						formatter: function (value, row, index){
-							if (row.seeCost == true) 
-								return (row.avgPrice).toFixed(2);
-							else 
-								return "-";
-						}},
-					{field:'purchaseTotalAmt', width:100,title:'净采购金额',
-						formatter: function (value, row, index){
-							if (row.seeCost == true) 
-								return (row.purchaseTotalAmt).toFixed(2);
-							else 
-								return "-";
-						}
-					}
+					{field:'name', width:280,title:'统计日期 <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
+					{field:'purchaseQ', width:80,title:'采购数量'},
+					{field:'purchaseR', width:80,title:'采购退货量'},
+					{field:'salesQ', width:80,title:'零售量'},
+					{field:'salesR', width:80,title:'零售退货'},
+					{field:'salesF', width:80,title:'赠品量'},
+					{field:'currentInventory', width:80,title:'当前库存'},
 			     ]],
 		toolbar : '#toolbar',
 	});
@@ -60,11 +49,11 @@ function refresh(){
     $("#yearId").attr("value", 0);
 	$("#quarterId").attr("value", 0);
 	$("#brandId").attr("value", 0);
-    document.preGenReportForm.action="chainReportJSPAction!generatePurchaseStatisticReport";
+    document.preGenReportForm.action="chainReportJSPAction!generateAllInOneReport";
     document.preGenReportForm.submit();
 }
 function back(){
-    document.preGenReportForm.action="chainReportJSPAction!prePurchaseStatisticReport";
+    document.preGenReportForm.action="chainReportJSPAction!preAllInOneReport";
     document.preGenReportForm.submit();
 }
 
@@ -73,7 +62,9 @@ function back(){
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
 	    <div data-options="region:'north',border:false" style="height: fit">
-        <s:form id="preGenReportForm" name="preGenReportForm" action="" theme="simple" method="POST">  
+	                  
+        <s:form id="preGenReportForm" name="preGenReportForm" action="" theme="simple" method="POST"> 
+      		   
             <s:hidden name="formBean.parentId" id="parentId"/>
             <s:hidden name="formBean.chainStore.chain_id" id="chainId"/>
             <s:hidden name="formBean.startDate" id="startDate"/>
@@ -88,7 +79,7 @@ function back(){
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
-		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新采购信息</a>
+		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新报表</a>
 					
 	             </div>
 		</div>

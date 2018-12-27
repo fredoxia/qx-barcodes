@@ -6,24 +6,12 @@ import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
 import com.onlineMIS.common.Common_util;
 
 
-public class ChainSalesStatisticReportItemVO {
-	public static final String STATE_CLOSED = "closed";
-	public static final String STATE_OPEN = "open";
-	private int parentId;
-	private int chainId;
-	private int salerId;
-	private int yearId;
-	private int quarterId;
-	private int brandId;
-	
-	private boolean seeCost = false;
+public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 
-	private String name;
-	private String id;
-	
-	protected Date startDate = new Date();
-	protected Date endDate = new Date();
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4747171410230537428L;
 	protected int salesQ = 0;
 	protected int returnQ = 0;
 	protected int netQ = 0;
@@ -46,98 +34,15 @@ public class ChainSalesStatisticReportItemVO {
 	protected double freeCost = 0;
 	//净利润
 	protected double netProfit = 0;
+
 	
-	private String state;
 	
-	
-	public ChainSalesStatisticReportItemVO(String name, int parentId, int yearId, int quarterId, int brandId, boolean seeCost, String state){
-		this.setId(Common_util.getUUID());
-		this.setName(name);
-		this.setParentId(parentId);
-		this.setChainId(chainId);
-		this.setSalerId(salerId);
-		this.setYearId(yearId);
-		this.setQuarterId(quarterId);
-		this.setBrandId(brandId);
+	public ChainSalesStatisticReportItemVO(String name, int parentId, int chainId, int yearId, int quarterId, int brandId, int pbId, boolean seeCost, String state){
+		super(name, parentId, chainId, yearId, quarterId, brandId, pbId, state);
 		this.setSeeCost(seeCost);
-		this.setState(state);
+
 	}
 	
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public boolean getSeeCost() {
-		return seeCost;
-	}
-	public void setSeeCost(boolean seeCost) {
-		this.seeCost = seeCost;
-	}
-	public int getParentId() {
-		return parentId;
-	}
-	public void setParentId(int parentId) {
-		this.parentId = parentId;
-	}
-	public int getChainId() {
-		return chainId;
-	}
-	public void setChainId(int chainId) {
-		this.chainId = chainId;
-	}
-	public int getSalerId() {
-		return salerId;
-	}
-	public void setSalerId(int salerId) {
-		this.salerId = salerId;
-	}
-	public int getYearId() {
-		return yearId;
-	}
-	public void setYearId(int yearId) {
-		this.yearId = yearId;
-	}
-	public int getQuarterId() {
-		return quarterId;
-	}
-	public void setQuarterId(int quarterId) {
-		this.quarterId = quarterId;
-	}
-	public int getBrandId() {
-		return brandId;
-	}
-	public void setBrandId(int brandId) {
-		this.brandId = brandId;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public Date getStartDate() {
-		return startDate;
-	}
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-	public Date getEndDate() {
-		return endDate;
-	}
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
 	public int getSalesQ() {
 		return salesQ;
 	}

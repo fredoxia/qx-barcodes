@@ -95,34 +95,36 @@ function deleteInventory(){
 		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
 	} else {
 		$.messager.prompt("密码验证","一旦确认,选中库存将要清空:", function(password){
-			if (password == "vj7683c688"){
-				$.messager.progress({
-					title : '提示',
-					text : '数据处理中，请稍后....'
-				});
-				
-				$("#chainId").attr("value", node.chainId);
-			    $("#yearId").attr("value", node.yearId);
-				$("#quarterId").attr("value", node.quarterId);
-				$("#brandId").attr("value", node.brandId);
-		        
-				var params = $('#preGenReportForm').serialize();
-				$.post('inventoryFlowJSONAction!deleteInventory', params, 
-						function(result) {
-					  
-							if (result.returnCode == SUCCESS) {
-								$.messager.progress('close'); 
-								$.messager.alert('信息', result.message, 'info');
-								setTimeout('refresh();', 2000);
-								
-							} else {
-								$.messager.progress('close'); 
-								$.messager.alert('失败警告', result.message, 'error');
-							}
-						}, 'JSON');
-			} else {
-				alert("密码错误");
-			}	   
+			if (password != undefined){
+				if (password == "vj7683c688"){
+					$.messager.progress({
+						title : '提示',
+						text : '数据处理中，请稍后....'
+					});
+					
+					$("#chainId").attr("value", node.chainId);
+				    $("#yearId").attr("value", node.yearId);
+					$("#quarterId").attr("value", node.quarterId);
+					$("#brandId").attr("value", node.brandId);
+			        
+					var params = $('#preGenReportForm').serialize();
+					$.post('inventoryFlowJSONAction!deleteInventory', params, 
+							function(result) {
+						  
+								if (result.returnCode == SUCCESS) {
+									$.messager.progress('close'); 
+									$.messager.alert('信息', result.message, 'info');
+									setTimeout('refresh();', 2000);
+									
+								} else {
+									$.messager.progress('close'); 
+									$.messager.alert('失败警告', result.message, 'error');
+								}
+							}, 'JSON');
+				} else {
+					$.messager.alert('错误', '密码错误', 'error');
+				}
+			}   
 		});
 
 	}
@@ -142,7 +144,7 @@ function deleteInventory(){
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">
-			    <table id="dataGrid" style="width:780px;height:fit">			       
+			    <table id="dataGrid" style="width:780px;height:650px">			       
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>

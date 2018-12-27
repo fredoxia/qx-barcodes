@@ -41,7 +41,7 @@ function validateReportForm(){
 				        </tr>
 					    <tr class="InnerTableContent">
 					      <td width="134" height="32"><strong>连锁店</strong></td>
-					      <td width="302"><%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/></td>
+					      <td width="302"><%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" id="accessLevel" name="formBean.accessLevel" value="4"/><input type="hidden" name="formBean.indicator" id="indicator" value="1"/></td>
 					      <td width="579"></td>
 				        </tr>
 					    <tr class="InnerTableContent">

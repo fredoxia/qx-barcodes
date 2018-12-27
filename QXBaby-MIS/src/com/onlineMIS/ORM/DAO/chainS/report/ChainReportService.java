@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderService;
 import com.onlineMIS.ORM.DAO.chainS.report.ChainReportService.ChainSalesStatisticComparator;
 import com.onlineMIS.ORM.DAO.chainS.sales.ChainDailySalesDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderDaoImpl;
@@ -55,11 +56,9 @@ import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.InventoryOrderProductDAOImpl;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
+import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryItemVO;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryReportTemplate;
-import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelFour;
-import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelOne;
-import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelThree;
-import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemLevelTwo;
+import com.onlineMIS.ORM.entity.chainS.report.ChainAllInOneReportItemVO;
 import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
 import com.onlineMIS.ORM.entity.chainS.report.ChainDailySalesAnalysis;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReport;
@@ -69,6 +68,7 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItem;
 
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisticReportItemVO;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
+import com.onlineMIS.ORM.entity.chainS.report.ChainReportItemVO;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisticReportItemVO;
@@ -162,7 +162,8 @@ public class ChainReportService {
 	
 	@Autowired
 	private ChainDailySalesDaoImpl chainDailySalesDaoImpl;
-	
+	@Autowired
+	private ChainInventoryFlowOrderService chainInventoryFlowOrderService;
 	/**
 	 * to prepare the generate the report UI
 	 * @param uiBean
@@ -1076,941 +1077,6 @@ public class ChainReportService {
 	}
 
 	/**
-	 * 计算综合报表数据
-	 * @param startDate
-	 * @param endDate
-	 * @param chainId
-	 * @param yearId
-	 * @param quarterId
-	 * @param brandId
-	 * @param pager
-	 * @return
-	 */
-	public Response generateAllInOneReport(Date startDateSQL,
-			Date endDateSQL, int chainId, int yearId, int quarterId,
-			int brandId, Pager pager) {
-		Date startDate = Common_util.formStartDate(startDateSQL);
-		Date endDate = Common_util.formEndDate(endDateSQL);
-		Map<String, Object> values = new HashMap<String, Object>();
-
-		Response response = new Response();
-		if (brandId != Common_util.ALL_RECORD && brandId > 0){
-			values.put("type", ChainPurchaseStatisReportItem.LEVEL_FOUR);
-			generateAllInOneReportLevelFour(startDate, endDate, chainId,yearId, quarterId, brandId,values, pager);
-		} else if (quarterId != Common_util.ALL_RECORD && quarterId >0){
-			values.put("type", ChainPurchaseStatisReportItem.LEVEL_THREE);
-			generateAllInOneReportLevelThree(startDate, endDate, chainId,yearId, quarterId,values, pager);
-		} else if (yearId != Common_util.ALL_RECORD && yearId >0){
-			values.put("type", ChainPurchaseStatisReportItem.LEVEL_TWO);
-			generateAllInOneReportLevelTwo(startDate, endDate, chainId,yearId,values);
-		} else if (yearId == Common_util.ALL_RECORD && quarterId == Common_util.ALL_RECORD && brandId == Common_util.ALL_RECORD){
-			values.put("type", ChainPurchaseStatisReportItem.LEVEL_ONE);
-			generateAllInOneReportLevelOne(startDate, endDate, chainId,values);
-		} else 
-			response.setQuickValue(Response.FAIL, "需求信息不充分，无法完成操作");
-
-		response.setReturnValue(values);
-		
-		return response;
-	}
-
-	/**
-	 * 生成综合报表level one数据
-	 * @param startDate
-	 * @param endDate
-	 * @param chainId
-	 * @param result
-	 * @return
-	 */
-	private void generateAllInOneReportLevelOne(Date startDate,
-			Date endDate, int chainId, Map<String, Object> result) {
-		//@1. 生成销售数据
-		List<Object> value_sale = new ArrayList<Object>();
-		value_sale.add(ChainStoreSalesOrder.STATUS_COMPLETE);
-		value_sale.add(startDate);
-		value_sale.add(endDate);
-		
-        //@2.1 组成total not count inventory
-        String notCoundBrandId = "(" + Brand.BRAND_NOT_COUNT_INVENTORY[0] + "," + Brand.BRAND_NOT_COUNT_INVENTORY[1]+")";
-		
-		String sql = "SELECT SUM(quantity), csp.productBarcode.product.year.year_ID, csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? ";
-		String sql_sales_total = "SELECT SUM(quantity), csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? ";
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			value_sale.add(chainId);
-		} else { 
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			value_sale.add(ChainStore.CHAIN_ID_TEST_ID);
-		}
-		sql += " GROUP BY csp.productBarcode.product.year.year_ID, csp.type ";
-		sql_sales_total += " GROUP BY csp.type ";
-		
-		List<Object> salesResult = chainSalesOrderDaoImpl.executeHQLSelect(sql, value_sale.toArray(), null, true);
-		
-		//@2. 生成销售总数
-		List<Object> salesTotalResult = chainSalesOrderDaoImpl.executeHQLSelect(sql_sales_total, value_sale.toArray(), null, true);
-		
-		//@3. 生成采购数据
-		List<Object> value_sale2 = new ArrayList<Object>();
-		value_sale2.add(InventoryOrder.STATUS_ACCOUNT_COMPLETE);
-		value_sale2.add(startDate);
-		value_sale2.add(endDate);
-		
-		String sql2 = "SELECT SUM(quantity), p.productBarcode.product.year.year_ID, p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.product.brand.brand_ID NOT IN " + notCoundBrandId;
-		String sql_purchase_total = "SELECT SUM(quantity), p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.product.brand.brand_ID NOT IN " + notCoundBrandId;
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql2 += "AND p.order.client_id = ? ";
-			sql_purchase_total += "AND p.order.client_id = ? ";
-			ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-			
-			if (chainStore != null)
-				value_sale2.add(chainStore.getClient_id());
-			else 
-				value_sale2.add(Common_util.ALL_RECORD);
-		} else { 
-			String chainSQL = constructChainSQL("p.order.client_id", value_sale2);
-			if (chainSQL != null ){
-			    sql2 += "AND " + chainSQL;
-			    sql_purchase_total += "AND " + chainSQL;
-			}
-		}
-		sql2 += " GROUP BY p.productBarcode.product.year.year_ID, p.order.order_type";
-		sql_purchase_total += " GROUP BY p.order.order_type";
-		List<Object> purchaseResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql2, value_sale2.toArray(), null, true);
-
-		//@4. 生成采购总数
-		List<Object> purchaseTotalResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql_purchase_total, value_sale2.toArray(), null, true);
-
-		//@5. 生成库存数据
-		String chainCriteria = "";
-		ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-		if (chainId == Common_util.ALL_RECORD){
-			chainCriteria = " c.clientId <> " + ChainStore.CLIENT_ID_TEST_ID;
-		}else{
-			chainCriteria = " c.clientId = " + chainStore.getClient_id();	
-		}
-		String sql_in_out = "SELECT c.productBarcode.product.year.year_ID, SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND c.productBarcode.product.brand.brand_ID <>? AND c.productBarcode.product.brand.brand_ID <>? GROUP BY c.productBarcode.product.year.year_ID";
-        Object[] values = Brand.BRAND_NOT_COUNT_INVENTORY;
-		List<Object> inventory = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out, values,null,true);
-		
-		//@6. 生成库存总数
-		String sql_in_out_total = "SELECT SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND c.productBarcode.product.brand.brand_ID <>? AND c.productBarcode.product.brand.brand_ID <>?";
-		List<Object> inventory_total = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out_total, values,null,true);
-		
-		setAllInOneLevelOneItem(salesResult, purchaseResult, salesTotalResult, purchaseTotalResult, inventory, inventory_total, result, chainId, startDate, endDate);
-	}
-
-
-
-	private  void generateAllInOneReportLevelTwo(Date startDate,
-			Date endDate, int chainId, int yearId, Map<String, Object> result) {
-		//@1. 生成销售数据
-		List<Object> value_sale = new ArrayList<Object>();
-		value_sale.add(ChainStoreSalesOrder.STATUS_COMPLETE);
-		value_sale.add(startDate);
-		value_sale.add(endDate);
-		value_sale.add(yearId);
-		
-        //@2.1 组成total not count inventory
-        String notCoundBrandId = "(" + Brand.BRAND_NOT_COUNT_INVENTORY[0] + "," + Brand.BRAND_NOT_COUNT_INVENTORY[1]+")";
-		
-		String sql = "SELECT SUM(quantity), csp.productBarcode.product.quarter.quarter_ID, csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? AND csp.productBarcode.product.year.year_ID=?";
-		String sql_sales_total = "SELECT SUM(quantity), csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? AND csp.productBarcode.product.year.year_ID=?";
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			value_sale.add(chainId);
-		} else { 
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			value_sale.add(ChainStore.CHAIN_ID_TEST_ID);
-		}
-		sql += " GROUP BY csp.productBarcode.product.quarter.quarter_ID, csp.type ";
-		sql_sales_total += " GROUP BY csp.type ";
-		
-		List<Object> salesResult = chainSalesOrderDaoImpl.executeHQLSelect(sql, value_sale.toArray(), null, true);
-		
-		//@2. 生成销售总数
-		List<Object> salesTotalResult = chainSalesOrderDaoImpl.executeHQLSelect(sql_sales_total, value_sale.toArray(), null, true);
-		
-		//@3. 生成采购数据
-		List<Object> value_sale2 = new ArrayList<Object>();
-		value_sale2.add(InventoryOrder.STATUS_ACCOUNT_COMPLETE);
-		value_sale2.add(startDate);
-		value_sale2.add(endDate);
-		value_sale2.add(yearId);
-		
-		String sql2 = "SELECT SUM(quantity), p.productBarcode.product.quarter.quarter_ID, p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.product.year.year_ID=? AND p.productBarcode.product.brand.brand_ID NOT IN " + notCoundBrandId;
-		String sql_purchase_total = "SELECT SUM(quantity), p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.product.year.year_ID=? AND p.productBarcode.product.brand.brand_ID NOT IN " + notCoundBrandId;
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql2 += "AND p.order.client_id = ? ";
-			sql_purchase_total += "AND p.order.client_id = ? ";
-			ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-			
-			if (chainStore != null)
-				value_sale2.add(chainStore.getClient_id());
-			else 
-				value_sale2.add(Common_util.ALL_RECORD);
-		} else { 
-			String chainSQL = constructChainSQL("p.order.client_id", value_sale2);
-			if (chainSQL != null ){
-			    sql2 += "AND " + chainSQL;
-			    sql_purchase_total += "AND " + chainSQL;
-			}
-		}
-		sql2 += " GROUP BY p.productBarcode.product.quarter.quarter_ID, p.order.order_type";
-		sql_purchase_total += " GROUP BY p.order.order_type";
-		List<Object> purchaseResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql2, value_sale2.toArray(), null, true);
-
-		//@4. 生成采购总数
-		List<Object> purchaseTotalResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql_purchase_total, value_sale2.toArray(), null, true);
-
-		//@5. 生成库存数据
-		String chainCriteria = "";
-		ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-		if (chainId == Common_util.ALL_RECORD){
-			chainCriteria = " c.clientId <> " + ChainStore.CLIENT_ID_TEST_ID;
-		}else{
-			chainCriteria = " c.clientId = " + chainStore.getClient_id();	
-		}
-		String sql_in_out = "SELECT c.productBarcode.product.quarter.quarter_ID, SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND c.productBarcode.product.brand.brand_ID <>? AND c.productBarcode.product.brand.brand_ID <>? AND  c.productBarcode.product.year.year_ID=? GROUP BY c.productBarcode.product.quarter.quarter_ID";
-        Object[] values = new Object[]{Brand.BRAND_NOT_COUNT_INVENTORY[0], Brand.BRAND_NOT_COUNT_INVENTORY[1],yearId};
-	    
-		List<Object> inventory = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out, values,null,true);
-		
-		//@6. 生成库存总数
-		String sql_in_out_total = "SELECT SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND c.productBarcode.product.brand.brand_ID <>? AND c.productBarcode.product.brand.brand_ID <>? AND  c.productBarcode.product.year.year_ID=?";
-		List<Object> inventory_total = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out_total, values,null,true);
-		
-		setAllInOneLevelTwoItem(salesResult, purchaseResult, salesTotalResult, purchaseTotalResult, inventory, inventory_total, result, chainId, yearId, startDate, endDate);
-	}
-
-	
-	private void generateAllInOneReportLevelThree(Date startDate,
-			Date endDate, int chainId, int yearId, int quarterId,
-			Map<String, Object> result, Pager pager) {
-		//@1. calculate the pager
-		if (pager.getTotalResult() == 0){
-			int totalBrand = productDaoImpl.getNumOfBrandsUnderYQ(yearId, quarterId);
-			pager.initialize(totalBrand);
-		} else {
-			pager.calFirstResult();
-		}
-		
-		//@1.1 组成sql parameters
-		List<Object> value_sale = new ArrayList<Object>();
-		value_sale.add(ChainStoreSalesOrder.STATUS_COMPLETE);
-		value_sale.add(startDate);
-		value_sale.add(endDate);
-		value_sale.add(yearId);
-		value_sale.add(quarterId);
-		
-		List<Object> value_purchase = new ArrayList<Object>();
-		value_purchase.add(InventoryOrder.STATUS_ACCOUNT_COMPLETE);
-		value_purchase.add(startDate);
-		value_purchase.add(endDate);
-		value_purchase.add(yearId);
-		value_purchase.add(quarterId);
-		
-        List<Object> value_inventory = new ArrayList<Object>();
-        value_inventory.add(yearId);
-        value_inventory.add(quarterId);
-        
-        //@2.1 组成total not count inventory
-        String notCoundBrandId = "(" + Brand.BRAND_NOT_COUNT_INVENTORY[0] + "," + Brand.BRAND_NOT_COUNT_INVENTORY[1]+")";
-		
-		//@2. 获取这页的brand ids
-		List<Object> brandIds = productDaoImpl.getBrandIdsUnderYQ(yearId, quarterId, pager.getFirstResult(), pager.getRecordPerPage());
-		String brandIdSQL = "(";
-		if (brandIds.size() != 0)
-			for (int i = 0; i < brandIds.size(); i++){
-				Object brandId = brandIds.get(i);
-				brandIdSQL += brandId;
-				if (i == brandIds.size() -1)
-					brandIdSQL += ")";
-				else 
-					brandIdSQL += ",";
-			}
-		else 
-			brandIdSQL ="(0)";
-		
-		//@3. 生成销售数据
-		String sql = "SELECT SUM(quantity), csp.productBarcode.product.brand.brand_ID, csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? AND csp.productBarcode.product.year.year_ID=? AND csp.productBarcode.product.quarter.quarter_ID=? AND csp.productBarcode.product.brand.brand_ID IN " + brandIdSQL;
-		String sql_sales_total = "SELECT SUM(quantity), csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? AND csp.productBarcode.product.year.year_ID=? AND csp.productBarcode.product.quarter.quarter_ID=? ";
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			value_sale.add(chainId);
-		} else { 
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			value_sale.add(ChainStore.CHAIN_ID_TEST_ID);
-		}
-		sql += " GROUP BY csp.productBarcode.product.brand.brand_ID, csp.type ";
-		sql_sales_total += " GROUP BY csp.type ";
-		
-		List<Object> salesResult = chainSalesOrderDaoImpl.executeHQLSelect(sql, value_sale.toArray(), null, true);
-		
-		//@2. 生成销售总数
-		List<Object> salesTotalResult = chainSalesOrderDaoImpl.executeHQLSelect(sql_sales_total, value_sale.toArray(), null, true);
-		
-		//@3. 生成采购数据
-		String sql2 = "SELECT SUM(quantity), p.productBarcode.product.brand.brand_ID, p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.product.year.year_ID=?  AND p.productBarcode.product.quarter.quarter_ID=? AND p.productBarcode.product.brand.brand_ID IN " + brandIdSQL;
-		String sql_purchase_total = "SELECT SUM(quantity), p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.product.year.year_ID=? AND p.productBarcode.product.quarter.quarter_ID=? AND p.productBarcode.product.brand.brand_ID NOT IN " + notCoundBrandId;
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql2 += "AND p.order.client_id = ? ";
-			sql_purchase_total += "AND p.order.client_id = ? ";
-			ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-			
-			if (chainStore != null)
-				value_purchase.add(chainStore.getClient_id());
-			else 
-				value_purchase.add(Common_util.ALL_RECORD);
-		} else { 
-			String chainSQL = constructChainSQL("p.order.client_id", value_purchase);
-			if (chainSQL != null ){
-			    sql2 += "AND " + chainSQL;
-			    sql_purchase_total += "AND " + chainSQL;
-			}
-		}
-		sql2 += " GROUP BY p.productBarcode.product.brand.brand_ID, p.order.order_type";
-		sql_purchase_total += " GROUP BY p.order.order_type";
-		List<Object> purchaseResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql2, value_purchase.toArray(), null, true);
-
-		//@4. 生成采购总数
-		List<Object> purchaseTotalResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql_purchase_total, value_purchase.toArray(), null, true);
-
-		//@5. 生成库存数据
-		String chainCriteria = "";
-		ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-		if (chainId == Common_util.ALL_RECORD){
-			chainCriteria = " c.clientId <> " + ChainStore.CLIENT_ID_TEST_ID;
-		}else{
-			chainCriteria = " c.clientId = " + chainStore.getClient_id();	
-		}
-		String sql_in_out = "SELECT c.productBarcode.product.brand.brand_ID, SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND c.productBarcode.product.year.year_ID=? AND c.productBarcode.product.quarter.quarter_ID=? AND c.productBarcode.product.brand.brand_ID IN " + brandIdSQL +" GROUP BY c.productBarcode.product.brand.brand_ID";
-
-		List<Object> inventory = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out, value_inventory.toArray(),null,true);
-		
-		//@6. 生成库存总数
-		String sql_in_out_total = "SELECT SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND  c.productBarcode.product.year.year_ID=?  AND c.productBarcode.product.quarter.quarter_ID=?  AND c.productBarcode.product.brand.brand_ID NOT IN" + notCoundBrandId;
-		List<Object> inventory_total = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out_total, value_inventory.toArray(),null,true);
-		
-		setAllInOneLevelThreeItem(salesResult, purchaseResult, salesTotalResult, purchaseTotalResult, inventory, inventory_total, result, chainId, yearId, quarterId, startDate, endDate);
-	}
-
-
-
-	private  void generateAllInOneReportLevelFour(Date startDate,
-			Date endDate, int chainId, int yearId, int quarterId, int brandId,
-			Map<String, Object> result, Pager pager) {
-		//@1. calculate the pager
-		if (pager.getTotalResult() == 0){
-			int totalBarcode = productBarcodeDaoImpl.getNumOfProductsUnderYQB(yearId, quarterId, brandId);
-			pager.initialize(totalBarcode);
-		} else {
-			pager.calFirstResult();
-		}
-		
-		//@1.1 组成sql parameters
-		List<Object> value_sale = new ArrayList<Object>();
-		value_sale.add(ChainStoreSalesOrder.STATUS_COMPLETE);
-		value_sale.add(startDate);
-		value_sale.add(endDate);
-		
-		List<Object> value_purchase = new ArrayList<Object>();
-		value_purchase.add(InventoryOrder.STATUS_ACCOUNT_COMPLETE);
-		value_purchase.add(startDate);
-		value_purchase.add(endDate);
-
-        
-		List<Object> value_sale_total = new ArrayList<Object>();
-		value_sale_total.add(ChainStoreSalesOrder.STATUS_COMPLETE);
-		value_sale_total.add(startDate);
-		value_sale_total.add(endDate);
-		value_sale_total.add(yearId);
-		value_sale_total.add(quarterId);
-		value_sale_total.add(brandId);
-		
-		List<Object> value_purchase_total = new ArrayList<Object>();
-		value_purchase_total.add(InventoryOrder.STATUS_ACCOUNT_COMPLETE);
-		value_purchase_total.add(startDate);
-		value_purchase_total.add(endDate);
-		value_purchase_total.add(yearId);
-		value_purchase_total.add(quarterId);
-		value_purchase_total.add(brandId);
-		
-        List<Object> value_inventory_total = new ArrayList<Object>();
-        value_inventory_total.add(yearId);
-        value_inventory_total.add(quarterId);
-        value_inventory_total.add(brandId);
- 
-		//@2. 获取这页的brand ids
-		List<Object> pbIds = productBarcodeDaoImpl.getProductsUnderYQB(yearId, quarterId,brandId, pager.getFirstResult(), pager.getRecordPerPage());
-		String pbIdSQL = "(";
-		if (pbIds.size() != 0)
-			for (int i = 0; i < pbIds.size(); i++){
-				Object pbId = pbIds.get(i);
-				pbIdSQL += pbId;
-				if (i == pbIds.size() -1)
-					pbIdSQL += ")";
-				else 
-					pbIdSQL += ",";
-			}
-		else 
-			pbIdSQL ="(0)";
-		
-		//@3. 生成销售数据
-		String sql = "SELECT SUM(quantity), csp.productBarcode.id, csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? AND csp.productBarcode.id IN " + pbIdSQL;
-		String sql_sales_total = "SELECT SUM(quantity), csp.type  FROM ChainStoreSalesOrderProduct csp " + 
-		         " WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? AND csp.productBarcode.product.year.year_ID=? AND csp.productBarcode.product.quarter.quarter_ID=?  AND csp.productBarcode.product.brand.brand_ID =? ";
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id = ? ";
-			value_sale.add(chainId);
-			value_sale_total.add(chainId);
-		} else { 
-			sql += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			sql_sales_total += "AND csp.chainSalesOrder.chainStore.chain_id <> ? ";
-			value_sale.add(ChainStore.CHAIN_ID_TEST_ID);
-			value_sale_total.add(ChainStore.CHAIN_ID_TEST_ID);
-		}
-		sql += " GROUP BY csp.productBarcode.id, csp.type ";
-		sql_sales_total += " GROUP BY csp.type ";
-		
-		List<Object> salesResult = chainSalesOrderDaoImpl.executeHQLSelect(sql, value_sale.toArray(), null, true);
-		
-		//@2. 生成销售总数
-		List<Object> salesTotalResult = chainSalesOrderDaoImpl.executeHQLSelect(sql_sales_total, value_sale_total.toArray(), null, true);
-		
-		//@3. 生成采购数据
-		String sql2 = "SELECT SUM(quantity), p.productBarcode.id, p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.id IN " + pbIdSQL;
-		String sql_purchase_total = "SELECT SUM(quantity), p.order.order_type FROM InventoryOrderProduct p " + 
-		         " WHERE p.order.order_Status = ? AND p.order.order_EndTime BETWEEN ? AND ? AND p.productBarcode.product.year.year_ID=? AND p.productBarcode.product.quarter.quarter_ID=?  AND p.productBarcode.product.brand.brand_ID =? ";
-
-		if (chainId != Common_util.ALL_RECORD){
-			sql2 += "AND p.order.client_id = ? ";
-			sql_purchase_total += "AND p.order.client_id = ? ";
-			ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-			
-			if (chainStore != null){
-				value_purchase.add(chainStore.getClient_id());
-				value_purchase_total.add(chainStore.getClient_id());
-			} else {
-				value_purchase.add(Common_util.ALL_RECORD);
-				value_purchase_total.add(Common_util.ALL_RECORD);
-			}
-		} else { 
-			String chainSQL = constructChainSQL("p.order.client_id", value_purchase);
-			if (chainSQL != null ){
-			    sql2 += "AND " + chainSQL;
-			    sql_purchase_total += "AND " + chainSQL;
-			}
-		}
-		sql2 += " GROUP BY p.productBarcode.id, p.order.order_type";
-		sql_purchase_total += " GROUP BY p.order.order_type";
-		List<Object> purchaseResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql2, value_purchase.toArray(), null, true);
-
-		//@4. 生成采购总数
-		List<Object> purchaseTotalResult = inventoryOrderProductDAOImpl.executeHQLSelect(sql_purchase_total, value_purchase_total.toArray(), null, true);
-
-		//@5. 生成库存数据
-		String chainCriteria = "";
-		ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
-		if (chainId == Common_util.ALL_RECORD){
-			chainCriteria = " c.clientId <> " + ChainStore.CLIENT_ID_TEST_ID;
-		}else{
-			chainCriteria = " c.clientId = " + chainStore.getClient_id();	
-		}
-		String sql_in_out = "SELECT c.productBarcode.id, SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND c.productBarcode.id IN " + pbIdSQL+" GROUP BY c.productBarcode.id";
-
-		List<Object> inventory = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out, null,null,true);
-		
-		//@6. 生成库存总数
-		String sql_in_out_total = "SELECT SUM(c.quantity) FROM ChainInOutStock c WHERE "+ chainCriteria +" AND  c.productBarcode.product.year.year_ID=?  AND c.productBarcode.product.quarter.quarter_ID=?  AND c.productBarcode.product.brand.brand_ID =? ";
-		List<Object> inventory_total = chainInOutStockDaoImpl.executeHQLSelect(sql_in_out_total, value_inventory_total.toArray(),null,true);
-		
-		setAllInOneLevelFourItem(salesResult, purchaseResult, salesTotalResult, purchaseTotalResult, inventory, inventory_total, result, chainId, yearId, quarterId, brandId, startDate, endDate);	
-	}
-
-	private void setAllInOneLevelOneItem(List<Object> salesResult,
-			List<Object> purchaseResult, List<Object> salesTotalResult,
-			List<Object> purchaseTotalResult, List<Object> inventoryResult,
-			List<Object> inventoryTotal, Map<String, Object> result, int chainId, Date startDate, Date endDate) {
-		Map<Integer, ChainAllInOneReportItemLevelOne> dataMap = new HashMap<Integer, ChainAllInOneReportItemLevelOne>();
-		ChainStore chainStore = this.getThisChainStore(chainId);
-		
-		if (salesResult != null){
-			for (Object record : salesResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int yearId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelOne levelOneItem = dataMap.get(yearId);
-				if (levelOneItem != null){
-					levelOneItem.putSales(type, quantity);
-				} else {
-					Year year = yearDaoImpl.get(yearId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelOne(chainStore, startDate, endDate, year);
-					
-					levelOneItem.putSales(type, quantity);
-					dataMap.put(yearId, levelOneItem);
-				}
-			}
-		}
-		
-		if (purchaseResult != null){
-			for (Object record : purchaseResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int yearId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelOne levelOneItem = dataMap.get(yearId);
-				if (levelOneItem != null){
-					levelOneItem.putPurchase(type, quantity);
-				} else {
-					Year year = yearDaoImpl.get(yearId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelOne(chainStore, startDate, endDate, year);
-					
-					levelOneItem.putPurchase(type, quantity);
-					dataMap.put(yearId, levelOneItem);
-				}
-			}
-		}
-		
-		if (inventoryResult != null){
-			for (Object record : inventoryResult ){
-				Object[] records = (Object[])record;
-				int yearId = Common_util.getInt(records[0]);
-				int quantity = Common_util.getInt(records[1]);
-				
-				ChainAllInOneReportItemLevelOne levelOneItem = dataMap.get(yearId);
-				if (levelOneItem != null){
-					levelOneItem.putInventory(quantity);
-				} else {
-					Year year = yearDaoImpl.get(yearId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelOne(chainStore, startDate, endDate, year);
-					
-					levelOneItem.putInventory(quantity);
-					dataMap.put(yearId, levelOneItem);
-				}
-			}
-		}
-		
-		ChainAllInOneReportItemLevelOne totalItem = new ChainAllInOneReportItemLevelOne(chainStore, startDate, endDate, null);
-		if (salesTotalResult != null){
-			for (Object record : salesTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putSales(type, quantity);
-			}
-		}
-		
-		if (purchaseTotalResult != null){
-			for (Object record : purchaseTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putPurchase(type, quantity);
-			}
-		}
-		
-		if (inventoryTotal != null){
-			for (Object record : inventoryTotal ){
-				int quantity = Common_util.getInt(record);
-				
-				totalItem.putInventory(quantity);
-			}
-		}
-		
-		List<Integer> yearKey = new ArrayList<Integer>(dataMap.keySet());
-		Collections.sort(yearKey);
-		
-		List<ChainAllInOneReportItemLevelOne> levelOneItems = new ArrayList<ChainAllInOneReportItemLevelOne>();
-		for (Integer yearId: yearKey){
-			levelOneItems.add(dataMap.get(yearId));
-		}
-		
-		result.put("data", levelOneItems);
-		result.put("total", totalItem);
-		
-	}
-	
-	private void setAllInOneLevelTwoItem(List<Object> salesResult,
-			List<Object> purchaseResult, List<Object> salesTotalResult,
-			List<Object> purchaseTotalResult, List<Object> inventory,
-			List<Object> inventory_total, Map<String, Object> result,
-			int chainId, int yearId, Date startDate, Date endDate) {
-		Map<Integer, ChainAllInOneReportItemLevelTwo> dataMap = new HashMap<Integer, ChainAllInOneReportItemLevelTwo>();
-		ChainStore chainStore = this.getThisChainStore(chainId);
-		Year year = yearDaoImpl.get(yearId, true);
-		
-		if (salesResult != null){
-			for (Object record : salesResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int quarterId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelTwo levelOneItem = dataMap.get(quarterId);
-				if (levelOneItem != null){
-					levelOneItem.putSales(type, quantity);
-				} else {
-					Quarter quarter = quarterDaoImpl.get(quarterId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelTwo(chainStore, startDate, endDate, year, quarter);
-					
-					levelOneItem.putSales(type, quantity);
-					dataMap.put(quarterId, levelOneItem);
-				}
-			}
-		}
-		
-		if (purchaseResult != null){
-			for (Object record : purchaseResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int quarterId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelTwo levelOneItem = dataMap.get(quarterId);
-				if (levelOneItem != null){
-					levelOneItem.putPurchase(type, quantity);
-				} else {
-					Quarter quarter = quarterDaoImpl.get(quarterId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelTwo(chainStore, startDate, endDate, year, quarter);
-					
-					levelOneItem.putPurchase(type, quantity);
-					dataMap.put(quarterId, levelOneItem);
-				}
-			}
-		}
-		
-		if (inventory != null){
-			for (Object record : inventory ){
-				Object[] records = (Object[])record;
-				int quarterId = Common_util.getInt(records[0]);
-				int quantity = Common_util.getInt(records[1]);
-				
-				ChainAllInOneReportItemLevelTwo levelOneItem = dataMap.get(quarterId);
-				if (levelOneItem != null){
-					levelOneItem.putInventory(quantity);
-				} else {
-					Quarter quarter = quarterDaoImpl.get(quarterId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelTwo(chainStore, startDate, endDate, year, quarter);
-					
-					levelOneItem.putInventory(quantity);
-					dataMap.put(quarterId, levelOneItem);
-				}
-			}
-		}
-		
-		ChainAllInOneReportItemLevelTwo totalItem = new ChainAllInOneReportItemLevelTwo(chainStore, startDate, endDate, null, null);
-		if (salesTotalResult != null){
-			for (Object record : salesTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putSales(type, quantity);
-			}
-		}
-		
-		if (purchaseTotalResult != null){
-			for (Object record : purchaseTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putPurchase(type, quantity);
-			}
-		}
-		
-		if (inventory_total != null){
-			for (Object record : inventory_total ){
-				int quantity = Common_util.getInt(record);
-				
-				totalItem.putInventory(quantity);
-			}
-		}
-		
-		List<Integer> quarterKey = new ArrayList<Integer>(dataMap.keySet());
-		Collections.sort(quarterKey);
-		
-		List<ChainAllInOneReportItemLevelTwo> levelOneItems = new ArrayList<ChainAllInOneReportItemLevelTwo>();
-		for (Integer quarterId: quarterKey){
-			levelOneItems.add(dataMap.get(quarterId));
-		}
-		
-		result.put("data", levelOneItems);
-		result.put("total", totalItem);
-		
-	}
-
-	
-	private void setAllInOneLevelThreeItem(List<Object> salesResult,
-			List<Object> purchaseResult, List<Object> salesTotalResult,
-			List<Object> purchaseTotalResult, List<Object> inventory,
-			List<Object> inventory_total, Map<String, Object> result,
-			int chainId, int yearId, int quarterId, Date startDate, Date endDate) {
-		Map<Integer, ChainAllInOneReportItemLevelThree> dataMap = new HashMap<Integer, ChainAllInOneReportItemLevelThree>();
-		ChainStore chainStore = this.getThisChainStore(chainId);
-		Year year = yearDaoImpl.get(yearId, true);
-		Quarter quarter = quarterDaoImpl.get(quarterId, true);
-		
-		if (salesResult != null){
-			for (Object record : salesResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int brandId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelThree levelOneItem = dataMap.get(brandId);
-				if (levelOneItem != null){
-					levelOneItem.putSales(type, quantity);
-				} else {
-					Brand brand = brandDaoImpl.get(brandId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelThree(chainStore, startDate, endDate, year, quarter,brand);
-					
-					levelOneItem.putSales(type, quantity);
-					dataMap.put(brandId, levelOneItem);
-				}
-			}
-		}
-		
-		if (purchaseResult != null){
-			for (Object record : purchaseResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int brandId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelThree levelOneItem = dataMap.get(brandId);
-				if (levelOneItem != null){
-					levelOneItem.putPurchase(type, quantity);
-				} else {
-					Brand brand = brandDaoImpl.get(brandId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelThree(chainStore, startDate, endDate, year, quarter,brand);
-					
-					levelOneItem.putPurchase(type, quantity);
-					dataMap.put(brandId, levelOneItem);
-				}
-			}
-		}
-		
-		if (inventory != null){
-			for (Object record : inventory ){
-				Object[] records = (Object[])record;
-				int brandId = Common_util.getInt(records[0]);
-				int quantity = Common_util.getInt(records[1]);
-				
-				ChainAllInOneReportItemLevelThree levelOneItem = dataMap.get(brandId);
-				if (levelOneItem != null){
-					levelOneItem.putInventory(quantity);
-				} else {
-					Brand brand = brandDaoImpl.get(brandId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelThree(chainStore, startDate, endDate, year, quarter,brand);
-					
-					levelOneItem.putInventory(quantity);
-					dataMap.put(brandId, levelOneItem);
-				}
-			}
-		}
-		
-		ChainAllInOneReportItemLevelThree totalItem = new ChainAllInOneReportItemLevelThree(chainStore, startDate, endDate, year, quarter, null);
-		if (salesTotalResult != null){
-			for (Object record : salesTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putSales(type, quantity);
-			}
-		}
-		
-		if (purchaseTotalResult != null){
-			for (Object record : purchaseTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putPurchase(type, quantity);
-			}
-		}
-		
-		if (inventory_total != null){
-			for (Object record : inventory_total ){
-				int quantity = Common_util.getInt(record);
-				
-				totalItem.putInventory(quantity);
-			}
-		}
-		
-		List<Integer> brandKey = new ArrayList<Integer>(dataMap.keySet());
-		Collections.sort(brandKey);
-		
-		List<ChainAllInOneReportItemLevelThree> levelOneItems = new ArrayList<ChainAllInOneReportItemLevelThree>();
-		for (Integer brandId: brandKey){
-			levelOneItems.add(dataMap.get(brandId));
-		}
-		
-		result.put("data", levelOneItems);
-		result.put("total", totalItem);
-	}
-
-	private void setAllInOneLevelFourItem(List<Object> salesResult,
-			List<Object> purchaseResult, List<Object> salesTotalResult,
-			List<Object> purchaseTotalResult, List<Object> inventory,
-			List<Object> inventory_total, Map<String, Object> result,
-			int chainId, int yearId, int quarterId, int brandId,
-			Date startDate, Date endDate) {
-		Map<Integer, ChainAllInOneReportItemLevelFour> dataMap = new HashMap<Integer, ChainAllInOneReportItemLevelFour>();
-		ChainStore chainStore = this.getThisChainStore(chainId);
-		Year year = yearDaoImpl.get(yearId, true);
-		Quarter quarter = quarterDaoImpl.get(quarterId, true);
-		Brand brand = brandDaoImpl.get(brandId, true);
-		
-		if (salesResult != null){
-			for (Object record : salesResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int pbId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelFour levelOneItem = dataMap.get(pbId);
-				if (levelOneItem != null){
-					levelOneItem.putSales(type, quantity);
-				} else {
-					ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelFour(chainStore, startDate, endDate, year, quarter,brand,pb);
-					
-					levelOneItem.putSales(type, quantity);
-					dataMap.put(pbId, levelOneItem);
-				}
-			}
-		}
-		
-		if (purchaseResult != null){
-			for (Object record : purchaseResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int pbId = Common_util.getInt(records[1]);
-				int type = Common_util.getInt(records[2]);
-				
-				ChainAllInOneReportItemLevelFour levelOneItem = dataMap.get(pbId);
-				if (levelOneItem != null){
-					levelOneItem.putPurchase(type, quantity);
-				} else {
-					ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelFour(chainStore, startDate, endDate, year, quarter,brand,pb);
-					
-					levelOneItem.putPurchase(type, quantity);
-					dataMap.put(pbId, levelOneItem);
-				}
-			}
-		}
-		
-		if (inventory != null){
-			for (Object record : inventory ){
-				Object[] records = (Object[])record;
-				int pbId = Common_util.getInt(records[0]);
-				int quantity = Common_util.getInt(records[1]);
-				
-				ChainAllInOneReportItemLevelFour levelOneItem = dataMap.get(pbId);
-				if (levelOneItem != null){
-					levelOneItem.putInventory(quantity);
-				} else {
-					ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
-					
-					levelOneItem = new ChainAllInOneReportItemLevelFour(chainStore, startDate, endDate, year, quarter,brand, pb);
-					
-					levelOneItem.putInventory(quantity);
-					dataMap.put(pbId, levelOneItem);
-				}
-			}
-		}
-		
-		ChainAllInOneReportItemLevelFour totalItem = new ChainAllInOneReportItemLevelFour(chainStore, startDate, endDate, year, quarter, brand, null);
-		if (salesTotalResult != null){
-			for (Object record : salesTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putSales(type, quantity);
-			}
-		}
-		
-		if (purchaseTotalResult != null){
-			for (Object record : purchaseTotalResult ){
-				Object[] records = (Object[])record;
-				int quantity = Common_util.getInt(records[0]);
-				int type = Common_util.getInt(records[1]);
-				
-				totalItem.putPurchase(type, quantity);
-			}
-		}
-		
-		if (inventory_total != null){
-			for (Object record : inventory_total ){
-				int quantity = Common_util.getInt(record);
-				
-				totalItem.putInventory(quantity);
-			}
-		}
-		
-		List<Integer> brandKey = new ArrayList<Integer>(dataMap.keySet());
-		Collections.sort(brandKey);
-		
-		List<ChainAllInOneReportItemLevelFour> levelOneItems = new ArrayList<ChainAllInOneReportItemLevelFour>();
-		for (Integer pbId: brandKey){
-			levelOneItems.add(dataMap.get(pbId));
-		}
-		
-		result.put("data", levelOneItems);
-		result.put("total", totalItem);
-		
-	}
-
-	/**
 	 * 准备销售分析报表页面
 	 * @param formBean
 	 */
@@ -2211,7 +1277,7 @@ public class ChainReportService {
 			
 			List<Object> values = chainSalesOrderDaoImpl.executeHQLSelect(criteria, value_sale.toArray(), null, true);
 			
-			ChainSalesStatisticReportItemVO rootItem = new ChainSalesStatisticReportItemVO(name, 1, yearId, quarterId, brandId, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
+			ChainSalesStatisticReportItemVO rootItem = new ChainSalesStatisticReportItemVO(name, 1, chainId, yearId, quarterId, brandId,0, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
 			
 			if (values != null){
 				for (Object record : values ){
@@ -2254,7 +1320,7 @@ public class ChainReportService {
 						
 						name = year.getYear() + "年";
 						
-						levelFour = new ChainSalesStatisticReportItemVO(name, 2, yearIdDB, quarterId, brandId, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
+						levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearIdDB, quarterId, brandId,0, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
 
 						levelFour.putValue(quantity, type, sales, cost, salesDiscount);
 					}
@@ -2300,7 +1366,7 @@ public class ChainReportService {
 						Quarter quarter = quarterDaoImpl.get(quarterIdDB, true);
 						name = year.getYear() + "年" + quarter.getQuarter_Name();
 						
-						levelFour = new ChainSalesStatisticReportItemVO(name, 3, yearId, quarterIdDB, brandId, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
+						levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterIdDB, brandId,0, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
 
 						levelFour.putValue(quantity, type, sales, cost, salesDiscount);
 					}
@@ -2344,7 +1410,7 @@ public class ChainReportService {
 						
 						name = brand.getBrand_Name();
 						
-						levelFour = new ChainSalesStatisticReportItemVO(name, 4, yearId, quarterId, brandIdDB, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
+						levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandIdDB,0, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
 
 						levelFour.putValue(quantity, type, sales, cost, salesDiscount);
 					}
@@ -2392,7 +1458,7 @@ public class ChainReportService {
 						
 						name = pb.getProduct().getProductCode() + colorName;
 						
-						levelFour = new ChainSalesStatisticReportItemVO(name, 5, yearId, quarterId, brandId, showCost, ChainSalesStatisticReportItemVO.STATE_OPEN);
+						levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandId,pbId, showCost, ChainSalesStatisticReportItemVO.STATE_OPEN);
 
 						levelFour.putValue(quantity, type, sales, cost, salesDiscount);
 					}
@@ -2817,7 +1883,7 @@ public class ChainReportService {
 			List<Object> values = inventoryOrderProductDAOImpl.executeHQLSelect(sql.toString(), value_sale.toArray(), null, true);
 
 			name = chainStore.getChain_name();
-			ChainPurchaseStatisticReportItemVO rootItem = new ChainPurchaseStatisticReportItemVO(name, 1, yearId, quarterId, brandId, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
+			ChainPurchaseStatisticReportItemVO rootItem = new ChainPurchaseStatisticReportItemVO(name, 1, chainId, yearId, quarterId, brandId,0, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
 			
 			if (values != null){
 				for (Object record : values ){
@@ -2858,7 +1924,7 @@ public class ChainReportService {
 					Year year = yearDaoImpl.get(yearIdDB, true);
 					name = year.getYear() + "年";
 					
-					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId, yearIdDB, quarterId, brandId, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
+					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId, chainId, yearIdDB, quarterId, brandId,0, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
 					levelOneItem.putValue(type, quantity, amount);
 					
 					dataMap.put(yearIdDB, levelOneItem);
@@ -2903,7 +1969,7 @@ public class ChainReportService {
 					Quarter quarter = quarterDaoImpl.get(quarterIdDB, true);
 					name = year.getYear() + "年 " + quarter.getQuarter_Name();
 					
-					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId, yearId, quarterIdDB, brandId, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
+					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId, chainId, yearId, quarterIdDB, brandId,0, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
 					levelOneItem.putValue(type, quantity, amount);
 					
 					dataMap.put(quarterIdDB, levelOneItem);
@@ -2946,7 +2012,7 @@ public class ChainReportService {
 					Brand brand = brandDaoImpl.get(brandIdDB, true);
 					name = brand.getBrand_Name();
 					
-					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId, yearId, quarterId, brandIdDB, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
+					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId,chainId, yearId, quarterId, brandIdDB,0, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
 					levelOneItem.putValue(type, quantity, amount);
 					
 					dataMap.put(brandIdDB, levelOneItem);
@@ -2996,7 +2062,7 @@ public class ChainReportService {
 					
 					name = category.getCategory_Name() + " " + pb.getProduct().getProductCode() + colorName;
 					
-					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId, yearId, quarterId, brandId, showCost, ChainPurchaseStatisticReportItemVO.STATE_OPEN);
+					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId,chainId, yearId, quarterId, brandId,pbId, showCost, ChainPurchaseStatisticReportItemVO.STATE_OPEN);
 					levelOneItem.putValue(type, quantity, amount);
 					
 					dataMap.put(pbId, levelOneItem);
@@ -3018,6 +2084,143 @@ public class ChainReportService {
 
 	    response.setReturnValue(reportItems);
 	    return response;
+	}
+
+	/**
+	 * 获取all in one statis 信息
+	 * @param parentId
+	 * @param startDate
+	 * @param endDate
+	 * @param chain_id
+	 * @param year_ID
+	 * @param quarter_ID
+	 * @param brand_ID
+	 * @return
+	 */
+	@Transactional
+	public Response getAllInOneReptEles(int parentId, java.sql.Date startDate, java.sql.Date endDate, int chainId,
+			int yearId, int quarterId, int brandId, ChainUserInfor userInfor) {
+	    Response response = new Response();
+		
+		List<ChainAllInOneReportItemVO> reportItems = new ArrayList<ChainAllInOneReportItemVO>();
+		List<ChainSalesStatisticReportItemVO> salesStatisticReportItemVOs = new ArrayList<ChainSalesStatisticReportItemVO>();
+		List<ChainPurchaseStatisticReportItemVO> purchaseStatisticReportItemVOs = new ArrayList<ChainPurchaseStatisticReportItemVO>();
+		List<ChainInventoryItemVO> chainInventoryItemVOs = new ArrayList<ChainInventoryItemVO>();
+		
+		Map<String,ChainSalesStatisticReportItemVO> salesStatisticReportItemMap = new HashMap<String,ChainSalesStatisticReportItemVO>();
+		Map<String,ChainPurchaseStatisticReportItemVO> purchaseStatisticReportItemMap = new HashMap<String,ChainPurchaseStatisticReportItemVO>();
+		Map<String,ChainInventoryItemVO> chainInventoryItemMap = new HashMap<String,ChainInventoryItemVO>();
+		Set<String> keys = new HashSet<String>();
+		
+		String name = "";
+
+		
+		Response salesResponse = getSalesStatisticReptEles(parentId, startDate, endDate, chainId, yearId, quarterId, brandId, Common_util.ALL_RECORD, userInfor);
+		Response purchaseResponse = getPurchaseStatisticReptEles(parentId, startDate, endDate, chainId, yearId, quarterId, brandId, userInfor);
+		Response inventoryResponse = chainInventoryFlowOrderService.getChainInventory(parentId, chainId, yearId, quarterId, brandId, userInfor, true);
+		
+		if (salesResponse.getReturnValue() != null){
+			salesStatisticReportItemVOs = (List<ChainSalesStatisticReportItemVO>) salesResponse.getReturnValue();
+		}
+		if (purchaseResponse.getReturnValue() != null){
+			purchaseStatisticReportItemVOs = (List<ChainPurchaseStatisticReportItemVO>) purchaseResponse.getReturnValue();
+		}
+		if (inventoryResponse.getReturnValue() != null){
+			chainInventoryItemVOs = (List<ChainInventoryItemVO>) inventoryResponse.getReturnValue();
+		}
+		
+		for (ChainSalesStatisticReportItemVO itemVO : salesStatisticReportItemVOs){
+			keys.add(itemVO.generateKeys());
+			salesStatisticReportItemMap.put(itemVO.generateKeys(), itemVO);
+		}
+		for (ChainInventoryItemVO itemVO : chainInventoryItemVOs){
+			keys.add(itemVO.generateKeys());
+			chainInventoryItemMap.put(itemVO.generateKeys(), itemVO);
+		}
+		for (ChainPurchaseStatisticReportItemVO itemVO : purchaseStatisticReportItemVOs){
+			keys.add(itemVO.generateKeys());
+			purchaseStatisticReportItemMap.put(itemVO.generateKeys(), itemVO);
+		}
+		
+		List<String> keyList = new ArrayList<String>();
+		keyList.addAll(keys);
+		Collections.sort(keyList);
+		
+		
+		
+		for (String key : keyList){
+			ChainSalesStatisticReportItemVO sales =  salesStatisticReportItemMap.get(key);
+			ChainPurchaseStatisticReportItemVO purchase = purchaseStatisticReportItemMap.get(key);
+			ChainInventoryItemVO inventory = chainInventoryItemMap.get(key);
+			ChainAllInOneReportItemVO reportItem = null; 
+			if (parentId == 0){
+				
+				ChainStore chainStore = this.getThisChainStore(chainId);
+				name = chainStore.getChain_name();
+				
+				reportItem = new ChainAllInOneReportItemVO(name, 1, chainId, yearId, quarterId, brandId,0, ChainReportItemVO.STATE_CLOSED, sales, purchase, inventory);
+			} else if (yearId == 0){
+				int yearDB = get(key, "yearId");
+				
+				Year year = yearDaoImpl.get(yearDB, true);
+				name = year.getYear() + "年";
+				
+				reportItem = new ChainAllInOneReportItemVO(name, parentId, chainId, yearDB, quarterId, brandId,0, ChainReportItemVO.STATE_CLOSED, sales, purchase, inventory);
+			} else if (quarterId == 0){
+				int quarterDB = get(key, "quarterId");
+				
+				Year year = yearDaoImpl.get(yearId, true);
+				Quarter quarter = quarterDaoImpl.get(quarterDB, true);
+				name = year.getYear() + "年 " + quarter.getQuarter_Name();
+				
+				reportItem = new ChainAllInOneReportItemVO(name, parentId, chainId, yearId, quarterDB, brandId,0, ChainReportItemVO.STATE_CLOSED, sales, purchase, inventory);	
+			} else if (brandId == 0){
+				int brandDB = get(key, "brandId");
+				
+				Brand brand = brandDaoImpl.get(brandDB, true);
+				name = brand.getBrand_Name();
+				
+				reportItem = new ChainAllInOneReportItemVO(name, parentId, chainId, yearId, quarterId, brandDB,0, ChainReportItemVO.STATE_CLOSED, sales, purchase, inventory);	
+			} else if (brandId != 0) {
+				int pbId = get(key, "pbId");
+				ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+				
+				if (pb == null)
+					System.out.println(pbId +" " +  key);
+				
+				
+				Color color = pb.getColor();
+				String colorName = "";
+				if (color != null)
+					colorName = color.getName();
+
+				
+				name = pb.getProduct().getProductCode() + colorName;
+				reportItem = new ChainAllInOneReportItemVO(name, parentId, chainId, yearId, quarterId, brandId,pbId, ChainReportItemVO.STATE_OPEN, sales, purchase, inventory);
+			}
+			
+			reportItems.add(reportItem);
+		}
+		
+		response.setReturnValue(reportItems);
+		
+		return response;
+	}
+
+	public int get(String key, String item){
+		if (item.equals("parentId"))
+			return Integer.parseInt(key.split(ChainReportItemVO.spliter)[0]);
+		else if (item.equals("chainId"))
+			return Integer.parseInt(key.split(ChainReportItemVO.spliter)[1]);
+		else if (item.equals("yearId"))
+			return Integer.parseInt(key.split(ChainReportItemVO.spliter)[2]);
+		else if (item.equals("quarterId"))
+			return Integer.parseInt(key.split(ChainReportItemVO.spliter)[3]);
+		else if (item.equals("brandId"))
+			return Integer.parseInt(key.split(ChainReportItemVO.spliter)[4]);
+		else if (item.equals("pbId"))
+			return Integer.parseInt(key.split(ChainReportItemVO.spliter)[5]);		
+		return -1;
 	}
 
 }

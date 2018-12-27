@@ -5,55 +5,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>千禧宝贝连锁店管理信息系统</title>
+<title>朴与素连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
 
 <SCRIPT src="<%=request.getContextPath()%>/conf_files/js/ChainReport.js" type=text/javascript></SCRIPT>
 <script>
 $(document).ready(function(){
-	var yearId = $("#year").val();
-	if (yearId <= 0)
-	   $("#quarter").attr("disabled","true");
-	$("#checkBrandBt").attr("disabled","true");
 	parent.$.messager.progress('close'); 
 	});
-	
-function changeYear(){
-	var yearId = $("#year").val();
-	var quarterDis = $("#quarter").attr("disabled");
 
-	if (yearId > 0){
-		if (quarterDis == undefined){
-			$("#brandId").attr("value", -1);
-			$("#brandName").attr("value","");
-		} else {
-			$("#quarter").attr("disabled", false);
-		}
-	} else {
-		$("#brandId").attr("value", -1);
-		$("#brandName").attr("value","");
-		$("#quarter").attr("value", -1);
-		$("#quarter").attr("disabled", true);
-		$("#checkBrandBt").attr("disabled", true);
-	}
-}
-function changeQuarter(){
-	var quarterId = $("#quarter").val();
-	var checkBrandBtDis = $("#checkBrandBt").attr("disabled");
-
-	if (quarterId > 0){
-		if (checkBrandBtDis == undefined){
-			$("#brandId").attr("value", -1);
-			$("#brandName").attr("value","");
-		} else {
-			$("#checkBrandBt").attr("disabled", false);
-		}
-	} else {
-		$("#brandId").attr("value", -1);
-		$("#brandName").attr("value","");
-		$("#checkBrandBt").attr("disabled", true);
-	}
-}
 function changeChainStore(chainId){
 }
 
@@ -87,7 +47,7 @@ function validateReportForm(){
 				        </tr>
 					    <tr class="InnerTableContent">
 					      <td width="134" height="32"><strong>连锁店</strong></td>
-					      <td width="302"><%@ include file="../include/SearchChainStore.jsp"%></td>
+					      <td width="302"><%@ include file="../include/SearchChainStore.jsp"%><input type="hidden" name="formBean.indicator" id="indicator" value="1"/></td>
 					      <td width="579"></td>
 				        </tr>
 					    <tr class="InnerTableContent">
@@ -101,21 +61,6 @@ function validateReportForm(){
 						<tr class="InnerTableContent">
 					      <td height="25"></td>
 				        </tr>				        
-						<tr class="InnerTableContent">
-					      <td height="31"><strong>商品年份</strong></td>
-					      <td><s:select id="year" name="formBean.year.year_ID"  list="uiBean.years" listKey="year_ID" listValue="year" headerKey="-1" headerValue="---全选---" onchange = "changeYear();"/> </td>
-					      <td>统计所属某个年份的货品情况</td>
-				        </tr>
-					    <tr class="InnerTableContent">
-					      <td height="31"><strong>商品季度</strong></td>
-					      <td><s:select id="quarter" name="formBean.quarter.quarter_ID"  list="uiBean.quarters" listKey="quarter_ID" listValue="quarter_Name" headerKey="-1" headerValue="---全选---" onchange="changeQuarter();"/> </td>
-					      <td>统计所属某个季度的货品情况</td>
-				        </tr>
-				        <tr class="InnerTableContent">
-					      <td width="134" height="32"><strong>商品品牌</strong></td>
-					      <td width="302"><%@ include file="../include/SearchBrand.jsp"%></td>
-					      <td width="579">统计所属某个品牌的情况</td>
-				        </tr>
 	                    <tr class="InnerTableContent">
 					      <td height="34">&nbsp;</td>
 					      <td colspan="2"><input type="button" value="查询报表" onclick="generateReport();"/></td>

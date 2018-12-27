@@ -467,11 +467,8 @@
             
             
             <result name="PreAllInOneReport">/jsp/chainStore/report/PreAllInOneReport.jsp</result>
-            <result name="AllInOneReportLevelOne">/jsp/chainStore/report/AllInOneReportLevelOne.jsp</result> 
-            <result name="AllInOneReportLevelTwo">/jsp/chainStore/report/AllInOneReportLevelTwo.jsp</result> 
-            <result name="AllInOneReportLevelThree">/jsp/chainStore/report/AllInOneReportLevelThree.jsp</result> 
-            <result name="AllInOneReportLevelFour">/jsp/chainStore/report/AllInOneReportLevelFour.jsp</result> 
-                          
+            <result name="allInOneStatisticReport">/jsp/chainStore/report/AllInOneReport.jsp</result> 
+                           
             <result name="salesStatisticReport">/jsp/chainStore/report/ChainSalesStatisticReport.jsp</result> 
               
             <result name="PrePurchaseStatisticReport">/jsp/chainStore/report/PrePurchaseStatisticReport.jsp</result>

@@ -1755,7 +1755,7 @@ public class ChainInventoryFlowOrderService {
 	}
 
 
-	public Response getChainInventory(int parentId, int chainId, int yearId, int quarterId, int brandId,ChainUserInfor userInfor) {
+	public Response getChainInventory(int parentId, int chainId, int yearId, int quarterId, int brandId,ChainUserInfor userInfor, boolean skipZero) {
 		Response response = new Response();
 		List<ChainInventoryItemVO> chainInventoryVOs = new ArrayList<ChainInventoryItemVO>();
 		
@@ -1793,7 +1793,7 @@ public class ChainInventoryFlowOrderService {
 						double retailTotal = Common_util.getDouble(object2[1]);
 						int quantity = Common_util.getInt(object2[2]);
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(store.getChain_name(), quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 1,chainId, yearId, quarterId, brandId, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(store.getChain_name(), quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 1,chainId, yearId, quarterId, brandId, 0,showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1813,7 +1813,7 @@ public class ChainInventoryFlowOrderService {
 						
 						Year year = yearDaoImpl.get(yearIdDB, true);
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(year.getYear() + "年", quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 2,chainId, yearIdDB, quarterId, brandId, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(year.getYear() + "年", quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, parentId,chainId, yearIdDB, quarterId, brandId,0, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1837,7 +1837,7 @@ public class ChainInventoryFlowOrderService {
 						
 						String name = year.getYear() + "年" + quarter.getQuarter_Name();
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 3, chainId, yearId, quarterIdDB, brandId, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, parentId, chainId, yearId, quarterIdDB, brandId,0, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1860,7 +1860,7 @@ public class ChainInventoryFlowOrderService {
 						
 						String name = brand.getBrand_Name();
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,4,  chainId, yearId, quarterId, brandIdDB, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId,  chainId, yearId, quarterId, brandIdDB,0, showCost);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1879,6 +1879,9 @@ public class ChainInventoryFlowOrderService {
 						double retailTotal = Common_util.getDouble(object2[2]);
 						int quantity = Common_util.getInt(object2[3]);
 						
+						if (quantity == 0 && skipZero)
+							continue;
+						
 						ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
 						Color color = pb.getColor();
 						String colorName = "";
@@ -1888,7 +1891,7 @@ public class ChainInventoryFlowOrderService {
 						String barcode = pb.getBarcode();
 						String name = pb.getProduct().getProductCode() + colorName;
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, 5,chainId, yearId, quarterId, brandId, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, parentId,chainId, yearId, quarterId, brandId,pbId, showCost);
 						headqInventoryVO.setBarcode(barcode);
 						chainInventoryVOs.add(headqInventoryVO);
 				}

@@ -334,4 +334,28 @@ public class ChainReportJSONAction extends ChainReportAction {
 		
 		return "successful";
 	}
+	/**
+	 * 获取综合统计报表的详细信息
+	 * @return
+	 */
+	public String getAllInOneReptEles(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.info(this.getClass().getName()+ ".getAllInOneReptEles");
+		Response response = new Response();
+
+		try {
+		    response = chainReportService.getAllInOneReptEles(formBean.getParentId(), formBean.getStartDate(), formBean.getEndDate(), formBean.getChainStore().getChain_id(), formBean.getYear().getYear_ID(), formBean.getQuarter().getQuarter_ID(), formBean.getBrand().getBrand_ID(),userInfor);
+		} catch (Exception e){
+			e.printStackTrace();
+		}	
+		
+		try{
+			   jsonArray = JSONArray.fromObject(response.getReturnValue());
+//			   System.out.println(jsonArray);
+			} catch (Exception e){
+				e.printStackTrace();
+			}	
+		
+		return "successful";
+	}
 }

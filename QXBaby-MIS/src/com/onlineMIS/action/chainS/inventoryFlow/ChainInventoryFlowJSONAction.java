@@ -214,7 +214,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		Response response = new Response();
 
 		try {
-		    response = flowOrderService.getChainInventory(formBean.getParentId(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(),userInfor);
+		    response = flowOrderService.getChainInventory(formBean.getParentId(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(),userInfor, false);
 		} catch (Exception e){
 			e.printStackTrace();
 		}	
