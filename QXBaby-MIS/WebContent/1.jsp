@@ -21,7 +21,7 @@ function loginBackProcess(data){
 	var response = data.response;
 	var returnCode = response.returnCode;
 	if (returnCode != SUCCESS){
-		alert(response.message);
+		$.messager.alert('错误提示',response.message,'warning');
 	} else {
 		var returnValue = response.returnValue;
 		if (returnValue == 2){
@@ -29,7 +29,7 @@ function loginBackProcess(data){
 		} else if (returnValue == 1)
 			window.location.href = "<%=request.getContextPath()%>/action/userJSP!swithToChain";	
 		else 
-			alert("无法找到对应链接");			    
+			$.messager.alert('错误提示',"无法找到对应链接",'warning');		    
 	}
 }
 function pdaLogin(){

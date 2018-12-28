@@ -13,7 +13,7 @@ $(document).ready(function(){
 
 	if(!$.browser.msie && !($.browser.mozilla && $.browser.version == '11.0')) { 
 
-		alert("请使用电脑自带的Internet Explorer作为访问系统的浏览器，否则会出现小票无法打印等错误。\n\n修改默认浏览器设置或者联系总部技术支持(夏林 QQ13763339)"); 
+		$.messager.alert('提示',"请使用电脑自带的Internet Explorer作为访问系统的浏览器，否则会出现小票无法打印等错误。\n\n修改默认浏览器设置或者联系总部技术支持(夏林 QQ13763339)","info"); 
 	}
 	$.ajaxSetup( {    
 		timeout : 20000
@@ -29,7 +29,7 @@ function loginBackProcess(data){
 	var response = data.response;
 	var returnCode = response.returnCode;
 	if (returnCode != SUCCESS){
-		alert(response.message);
+		$.messager.alert('错误提示',response.message,'warning');
 	} else {
 		//window.open ('<%=request.getContextPath()%>/actionChain/chainUserJSP!getNews', '千禧宝贝管理系统', 'height=100, width=400, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=yes,location=no, status=no, fullscreen=yes');    
 		window.location.href = "<%=request.getContextPath()%>/actionChain/chainUserJSP!getNews";
