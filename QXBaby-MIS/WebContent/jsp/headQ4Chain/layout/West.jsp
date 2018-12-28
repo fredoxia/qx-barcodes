@@ -29,7 +29,7 @@ $(function() {
 </script>
 <div id="menuAccordian" class="easyui-accordion" style="width:auto;height:auto;">  
     <div title="系统菜单" data-options="selected:true" style="overflow:false">
-        <ul id="treeMenu" class="easyui-tree"  lines="true" >  
+        <ul id="treeMenu" class="easyui-tree" data-options="lines:true,animate:true" >  
 		      <li data-options="iconCls:'icon-text_1',state:'open',border:false">
 			  	    <span>我的条型码管理</span>
 			  		<ul>

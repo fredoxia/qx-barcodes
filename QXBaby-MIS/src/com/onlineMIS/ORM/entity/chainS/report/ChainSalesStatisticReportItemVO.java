@@ -36,7 +36,7 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 	protected double netProfit = 0;
 
 	
-	
+											
 	public ChainSalesStatisticReportItemVO(String name, int parentId, int chainId, int yearId, int quarterId, int brandId, int pbId, boolean seeCost, String state){
 		super(name, parentId, chainId, yearId, quarterId, brandId, pbId, state);
 		this.setSeeCost(seeCost);

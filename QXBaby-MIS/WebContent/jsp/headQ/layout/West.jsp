@@ -51,7 +51,7 @@ $(function() {
 </script>
 <div id="menuAccordian" class="easyui-accordion" style="width:auto;height:auto;">  
     <div title="系统菜单" data-options="selected:true" style="overflow:false">
-        <ul id="treeMenu" class="easyui-tree"  lines="true" >  
+        <ul id="treeMenu" class="easyui-tree" data-options="lines:true,animate:true">  
 		      <s:if test="#session.LOGIN_USER.containFunction('basicData!preMaintainBasic') || #session.LOGIN_USER.containFunction('productJSPAction!preCreateProduct') || #session.LOGIN_USER.containFunction('productJSPAction!preSearch')||#session.LOGIN_USER.containFunction('productJSPAction!preCreateProduct') || #session.LOGIN_USER.containFunction('productJSPAction!preBrandPriceIncrease')">
 			  	<li data-options="iconCls:'icon-text_1',state:'open',border:false">
 			  	    <span>条型码管理</span>
@@ -132,7 +132,7 @@ $(function() {
 
 	</div>  
     <div title="其他功能" style="padding:10px;">  
-    	<ul id="treeMenu2" class="easyui-tree"  lines="true" >  
+    	<ul id="treeMenu2" class="easyui-tree" data-options="lines:true,animate:true">  
         		<li  data-options="iconCls:'icon-images',state:'open',border:false">
 			  	    <span>订货会订单管理</span>
 			  		<ul style="width: 150%">

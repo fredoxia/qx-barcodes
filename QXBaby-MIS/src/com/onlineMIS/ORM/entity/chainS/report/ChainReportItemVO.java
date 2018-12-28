@@ -23,12 +23,13 @@ public class ChainReportItemVO implements Serializable{
 	private String name;
 	private String id;
 	private boolean seeCost = false;
+	private boolean isChain = false;
 	private Date startDate = new Date();
 	private Date endDate = new Date();
 	
 	public ChainReportItemVO(){
 		
-	}
+	}                          
 	public ChainReportItemVO(String name, int parentId, int chainId, int yearId, int quarterId, int brandId, int pbId, String state){
 		super();
 		this.setId(Common_util.getUUID());
@@ -42,6 +43,12 @@ public class ChainReportItemVO implements Serializable{
 		this.setPbId(pbId);
 	}
 	
+	public boolean getIsChain() {
+		return isChain;
+	}
+	public void setIsChain(boolean isChain) {
+		this.isChain = isChain;
+	}
 	public int getPbId() {
 		return pbId;
 	}

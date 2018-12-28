@@ -48,7 +48,7 @@ $(function() {
 </script>
 <div id="menuAccordian" class="easyui-accordion" style="fit:true,border:false">  
     <div title="系统菜单" data-options="selected:true" style="padding:10px;">
-        <ul id="treeMenu" class="easyui-tree" lines="true">  
+        <ul id="treeMenu" class="easyui-tree" data-options="lines:true,animate:true">  
            <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainSalesJSPAction!preNewSalesOrder') ||#session.LOGIN_CHAIN_USER.containFunction('chainSalesJSPAction!preSearchDraftSalesOrder') ||#session.LOGIN_CHAIN_USER.containFunction('chainSalesJSPAction!preSearchSalesOrder')">
         	  	 <li data-options="iconCls:'icon-money_yen',state:'open',border:false">  
 		            <span>销售管理</span>  
@@ -214,7 +214,7 @@ $(function() {
 
 	</div>  
     <div title="大家比一比" style="padding:10px;">  
-        <ul id="treeMenu2" class="easyui-tree" lines="true">  
+        <ul id="treeMenu2" class="easyui-tree" data-options="lines:true,animate:true" >  
            <li data-options="iconCls:'icon-money_yen',state:'open',border:false">  
 		            <span>销售比较</span>  
 	        		<ul>

@@ -11,6 +11,10 @@
 var baseurl = "<%=request.getContextPath()%>";
 $(document).ready(function(){
 	var params= $.serializeObject($('#preGenReportForm'));
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
 	
 	$('#dataGrid').treegrid({
 		url : 'chainReportJSON!getPurchaseStatisticReptEles',
@@ -19,6 +23,9 @@ $(document).ready(function(){
 		treeField : 'name',
 		rownumbers: true,
 		lines : true,
+		onLoadSuccess : function(row, param){
+			$.messager.progress('close'); 
+		},
 		onBeforeExpand : function(node) {
 			$("#parentId").attr("value", node.parentId);
 		    $("#yearId").attr("value", node.yearId);
@@ -84,7 +91,7 @@ function back(){
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">
-			    <table id="dataGrid" style="width:fit;height:650px">			       
+			    <table id="dataGrid" style="width:fit;height:800px">			       
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>

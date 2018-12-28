@@ -1855,12 +1855,16 @@ public class ChainInventoryFlowOrderService {
 						double costTotal = Common_util.getDouble(object2[1]);
 						double retailTotal = Common_util.getDouble(object2[2]);
 						int quantity = Common_util.getInt(object2[3]);
-						
+					
 						Brand brand = brandDaoImpl.get(brandIdDB, true);
+						boolean isChain = false;
+						if (brand.getChainStore() != null && brand.getChainStore().getChain_id() !=0)
+							isChain = true;
 						
 						String name = brand.getBrand_Name();
 						
 						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId,  chainId, yearId, quarterId, brandIdDB,0, showCost);
+						headqInventoryVO.setIsChain(isChain);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1891,8 +1895,13 @@ public class ChainInventoryFlowOrderService {
 						String barcode = pb.getBarcode();
 						String name = pb.getProduct().getProductCode() + colorName;
 						
+						boolean isChain = false;
+						if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
+							isChain = true;
+						
 						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, parentId,chainId, yearId, quarterId, brandId,pbId, showCost);
 						headqInventoryVO.setBarcode(barcode);
+						headqInventoryVO.setIsChain(isChain);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
