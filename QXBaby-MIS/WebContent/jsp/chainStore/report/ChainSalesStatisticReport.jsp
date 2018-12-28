@@ -43,7 +43,7 @@ $(document).ready(function(){
 			return style;
 		},
 		columns : [ [
-					{field:'name', width:200,title:'销售列表'},
+					{field:'name', width:200,title:'统计日期 <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
 					{field:'salesQ', width:80,title:'销售数量 A'},
 					{field:'returnQ', width:80,title:'退货数量 B'},
 					{field:'netQ', width:100,title:'净销售数量 A-B'},

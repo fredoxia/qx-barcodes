@@ -35,7 +35,7 @@ $(document).ready(function(){
 			$('#dataGrid').treegrid('options').url = 'chainReportJSON!getPurchaseStatisticReptEles?' + params;
 		},		
 		columns : [ [
-					{field:'name', width:280,title:'采购列表'},
+					{field:'name', width:280,title:'统计日期 <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
 					{field:'purchaseQuantity', width:80,title:'采购数量'},
 					{field:'returnQuantity', width:80,title:'退货数量'},
 					{field:'netQuantity', width:100,title:'净采购量'},
