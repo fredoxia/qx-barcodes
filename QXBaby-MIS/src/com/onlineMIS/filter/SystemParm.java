@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.onlineMIS.common.loggerLocal;
 
 public class SystemParm {
@@ -28,6 +30,13 @@ public class SystemParm {
 		if (value == null)
 			value = "";
 		return value.trim();
+	}
+	
+	public static int getQXCategory(){
+		String value = SystemParm.getProperty("QX_PURCHASE_CATEGORY_ID");
+		if (StringUtils.isEmpty(value))
+			return 0;
+		return Integer.parseInt(value);
 	}
 	
 	/**

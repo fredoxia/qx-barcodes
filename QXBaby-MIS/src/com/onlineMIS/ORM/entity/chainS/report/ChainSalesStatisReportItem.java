@@ -42,12 +42,25 @@ public class ChainSalesStatisReportItem implements Serializable {
 		
 	}
 	
-	public ChainSalesStatisReportItem(ChainStore chainStore, ChainUserInfor saler, Date rptStartDate, Date rptEndDate, ProductBarcode pb){
+	public ChainSalesStatisReportItem(ChainSalesStatisticReportItemVO vo, ChainStore chainStore, ChainUserInfor saler, Date rptStartDate, Date rptEndDate, ProductBarcode pb){
 		this.chainStore = chainStore;
 		this.saler = saler;
 		this.startDate = rptStartDate;
 		this.endDate = rptEndDate;
 		this.setProductBarcode(pb);
+        this.setFreeCost(vo.getFreeCost());
+		this.setFreeQ(vo.getFreeQ());
+		this.setNetCost(vo.getNetCost());
+		this.setNetPrice(vo.getNetPrice());
+		this.setNetProfit(vo.getNetProfit());
+		this.setNetQ(vo.getNetQ());
+		this.setReturnCost(vo.getReturnCost());
+		this.setReturnPrice(vo.getReturnPrice());
+		this.setReturnQ(vo.getReturnQ());
+		this.setSalesCost(vo.getSalesCost());
+		this.setSalesDiscount(vo.getSalesDiscount());
+		this.setSalesQ(vo.getSalesQ());
+		this.setSalesPrice(vo.getSalesPrice());
 	}
 
 	public ProductBarcode getProductBarcode() {

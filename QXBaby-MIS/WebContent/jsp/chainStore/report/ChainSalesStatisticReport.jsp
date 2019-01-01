@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>朴与素连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
+<SCRIPT src="<%=request.getContextPath()%>/conf_files/js/ChainInvenTrace.js" type=text/javascript></SCRIPT>
 <script>
 var baseurl = "<%=request.getContextPath()%>";
 $(document).ready(function(){
@@ -25,6 +26,7 @@ $(document).ready(function(){
 		treeField : 'name',
 		rownumbers: true,
 		lines : true,
+
 		onLoadSuccess : function(row, param){
 			$.messager.progress('close'); 
 		},
@@ -43,39 +45,47 @@ $(document).ready(function(){
 			return style;
 		},
 		columns : [ [
-					{field:'name', width:200,title:'统计日期 <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
-					{field:'salesQ', width:80,title:'销售数量 A'},
-					{field:'returnQ', width:80,title:'退货数量 B'},
-					{field:'netQ', width:100,title:'净销售数量 A-B'},
-					{field:'freeQ', width:80,title:'赠品数量'},
-					{field:'salesPrice', width:80,title:'销售额 C',
+					{field:'name', width:220,title:' <s:property value="formBean.startDate"/>到 <s:property value="formBean.endDate"/>',
+						formatter: function (value, row, index){
+							if (row.state == 'open' && row.chainId != -1) {
+								var str = '';
+							    str += $.formatString('<a href="#" onclick="traceInventory(\'{0}\',\'\');">{1}</a>', row.barcode, row.name);
+							    return str;
+							} else 
+								return row.name;
+						}},
+					{field:'salesQ', width:50,title:'销售量A'},
+					{field:'returnQ', width:50,title:'退货量B'},
+					{field:'netQ', width:50,title:'净售量A-B'},
+					{field:'freeQ', width:50,title:'赠品量'},
+					{field:'salesPrice', width:50,title:'销售额C',
 						formatter: function (value, row, index){
 							return (row.salesPrice).toFixed(2);
 						}
 					},
-					{field:'returnPrice', width:80,title:'退货额 D',
+					{field:'returnPrice', width:50,title:'退货额D',
 						formatter: function (value, row, index){
 							return (row.returnPrice).toFixed(2);
 						}
 					},
-					{field:'netPrice', width:100,title:'净销售额 C-D',
+					{field:'netPrice', width:65,title:'净售额C-D',
 						formatter: function (value, row, index){
 							return (row.netPrice).toFixed(2);
 						}
 					},
-					{field:'salesDiscount', width:70,title:'销售折扣',
+					{field:'salesDiscount', width:50,title:'销售折扣',
 						formatter: function (value, row, index){
 							return (row.salesDiscount).toFixed(2);
 						}
 					},
-					{field:'netCost', width:100,title:'净销售成本 E',
+					{field:'netCost', width:50,title:'净售成本E',
 						formatter: function (value, row, index){
 							if (row.seeCost == true) 
 								return (row.netCost).toFixed(2);
 							else 
 								return "-";
 						}},
-					{field:'freeCost', width:100,title:'赠品成本 F',
+					{field:'freeCost', width:50,title:'赠品成本F',
 						formatter: function (value, row, index){
 							if (row.seeCost == true) 
 								return (row.freeCost).toFixed(2);
@@ -83,7 +93,7 @@ $(document).ready(function(){
 								return "-";
 						}
 					},
-					{field:'netProfit', width:110,title:'商品利润 C-D-E-F',
+					{field:'netProfit', width:110,title:'商品利润C-D-E-F',
 						formatter: function (value, row, index){
 							if (row.seeCost == true) 
 								return (row.netProfit).toFixed(2);
@@ -108,6 +118,22 @@ function back(){
     document.preGenReportForm.action="chainReportJSPAction!preSalesStatisticReport";
     document.preGenReportForm.submit();
 }
+function exportFile(){
+	
+	var node = $('#dataGrid').treegrid('getSelected');
+
+	if (node == null){
+		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
+	} else {
+		
+		$("#chainId").attr("value", node.chainId);
+	    $("#yearId").attr("value", node.yearId);
+		$("#quarterId").attr("value", node.quarterId);
+		$("#brandId").attr("value", node.brandId);
+        document.preGenReportForm.action="chainReportJSPAction!generateChainSalesStatisticExcelReport";
+        document.preGenReportForm.submit();
+	}
+}
 
 </script>
 </head>
@@ -126,12 +152,12 @@ function back(){
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">
-			    <table id="dataGrid" style="width:fit;height:800px">			       
+			    <table id="dataGrid" style="width:870px;height:800px">			       
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
 		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新库存</a>
-					
+					<a onclick="exportFile();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">导出报表</a>
 	             </div>
 		</div>
 	</div>					  

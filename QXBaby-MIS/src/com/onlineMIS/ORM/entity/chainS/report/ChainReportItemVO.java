@@ -26,6 +26,7 @@ public class ChainReportItemVO implements Serializable{
 	private boolean isChain = false;
 	private Date startDate = new Date();
 	private Date endDate = new Date();
+	private String barcode = "";
 	
 	public ChainReportItemVO(){
 		
@@ -43,6 +44,13 @@ public class ChainReportItemVO implements Serializable{
 		this.setPbId(pbId);
 	}
 	
+	public String getBarcode() {
+		return barcode;
+	}
+
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
+	}
 	public boolean getIsChain() {
 		return isChain;
 	}

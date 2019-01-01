@@ -42,13 +42,13 @@ $(document).ready(function(){
 			$('#dataGrid').treegrid('options').url = 'chainReportJSON!getAllInOneReptEles?' + params;
 		},		
 		columns : [ [
-					{field:'name', width:280,title:'统计日期 <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
-					{field:'purchaseQ', width:80,title:'采购数量'},
-					{field:'purchaseR', width:80,title:'采购退货量'},
-					{field:'salesQ', width:80,title:'零售量'},
-					{field:'salesR', width:80,title:'零售退货'},
-					{field:'salesF', width:80,title:'赠品量'},
-					{field:'currentInventory', width:80,title:'当前库存'},
+					{field:'name', width:250,title:' <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
+					{field:'purchaseQ', width:60,title:'采购数量'},
+					{field:'purchaseR', width:70,title:'采购退货量'},
+					{field:'salesQ', width:60,title:'零售量'},
+					{field:'salesR', width:60,title:'零售退货'},
+					{field:'salesF', width:60,title:'赠品量'},
+					{field:'currentInventory', width:60,title:'当前库存'},
 			     ]],
 		toolbar : '#toolbar',
 	});

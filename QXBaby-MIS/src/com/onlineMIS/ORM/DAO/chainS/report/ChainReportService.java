@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.naming.java.javaURLContextFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.hibernate.criterion.DetachedCriteria;
@@ -65,7 +66,6 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItem;
-
 import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisticReportItemVO;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReportItemVO;
@@ -80,6 +80,7 @@ import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesReportVIPPer
 import com.onlineMIS.ORM.entity.chainS.report.rptTemplate.ChainSalesStatisticsReportTemplate;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainDailySales;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
+import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
 import com.onlineMIS.ORM.entity.chainS.sales.PurchaseOrderTemplate;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
@@ -102,6 +103,7 @@ import com.onlineMIS.common.ExcelUtil;
 import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.filter.SystemParm;
 import com.onlineMIS.sorter.ChainInventoryReportSort;
+import com.onlineMIS.sorter.ChainStatisticReportItemVOSorter;
 
 @Service
 public class ChainReportService {
@@ -1410,7 +1412,12 @@ public class ChainReportService {
 						boolean isChain = false;
 						if (brand.getChainStore() != null && brand.getChainStore().getChain_id() !=0)
 							isChain = true;
-						name = brand.getBrand_Name();
+						String pinyin = brand.getPinyin();
+						if (!StringUtils.isEmpty(pinyin)){
+							name = pinyin.substring(0, 1) + " ";
+						}
+						
+						 name += brand.getBrand_Name();
 						
 						levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandIdDB,0, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
 						levelFour.setIsChain(isChain);
@@ -1453,13 +1460,14 @@ public class ChainReportService {
 						levelFour.putValue(quantity, type, sales, cost, salesDiscount);
 					} else {
 						ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+						String barcode = pb.getBarcode();
 						Color color = pb.getColor();
 						String colorName = "";
 						if (color != null)
 							colorName = color.getName();
 
 						Category category = pb.getProduct().getCategory();
-						name = category.getCategory_Name() + " " + pb.getProduct().getProductCode() + colorName;
+						name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName + " " +  category.getCategory_Name();
 						
 						boolean isChain = false;
 						if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
@@ -1468,6 +1476,7 @@ public class ChainReportService {
 						levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandId,pbId, showCost, ChainSalesStatisticReportItemVO.STATE_OPEN);
 						levelFour.putValue(quantity, type, sales, cost, salesDiscount);
 						levelFour.setIsChain(isChain);
+						levelFour.setBarcode(barcode);
 					}
 					
 					dataMap.put(pbId, levelFour);
@@ -1485,7 +1494,7 @@ public class ChainReportService {
 				}	
 			}
 		}
-
+		Collections.sort(reportItems, new ChainStatisticReportItemVOSorter());
 	    response.setReturnValue(reportItems);
 	    return response;
 	}
@@ -1502,49 +1511,118 @@ public class ChainReportService {
 	 * @param string
 	 * @return
 	 */
-	public Response generateChainSalesStatisticExcelReport(
-			ChainStore chainStore, ChainUserInfor saler, java.sql.Date startDate,
-			java.sql.Date endDate, Year year, Quarter quarter, Brand brand,
+	public Response generateChainSalesStatisticExcelReport(int parentId,
+			int chainId, int salerId, java.sql.Date startDate,
+			java.sql.Date endDate, int yearId, int quarterId, int brandId,
 			ChainUserInfor loginUserInfor, String filePath) {
 		
-            Response response = new Response();
-            
-            List<Object> result = new ArrayList<Object>();
-            
-    		int chainId = chainStore.getChain_id();
-    		int salerId = saler.getUser_id();
-    		int yearId = (year == null) ? 0 : year.getYear_ID();
-    		int quarterId = (quarter == null) ? 0 : quarter.getQuarter_ID();
-    		int brandId = (brand == null) ? 0 : brand.getBrand_ID();
+	    Response response = new Response();	
+	
+		List<Object> value_sale = new ArrayList<Object>();
+		value_sale.add(ChainStoreSalesOrder.STATUS_COMPLETE);
+		value_sale.add(startDate);
+		value_sale.add(endDate);
+		
+		boolean showCost = loginUserInfor.containFunction("purchaseAction!seeCost");
 
-            //generateSalesStatisticReportLevelFour(startDate, endDate, chainId, salerId, yearId, quarterId, brandId, result, null);
+		String whereClause = "";
+		if (chainId != Common_util.ALL_RECORD){
+			whereClause += " AND csp.chainSalesOrder.chainStore.chain_id = " + chainId;
+		} else { 
+			whereClause += " AND csp.chainSalesOrder.chainStore.chain_id <>  " +ChainStore.CHAIN_ID_TEST_ID;
+		}
+		
+		if (salerId != Common_util.ALL_RECORD){
+			whereClause += " AND csp.chainSalesOrder.saler.user_id = " + salerId;
+		}	
+		
+		String criteria = "SELECT SUM(quantity), SUM(retailPrice * discountRate * quantity), SUM(costPrice * quantity), SUM(retailPrice * (1 - discountRate) * quantity), csp.productBarcode.id,  csp.type FROM ChainStoreSalesOrderProduct csp WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? ";
+		
+		if (yearId != 0){
+			whereClause += " AND csp.productBarcode.product.year.year_ID = " + yearId;
+		}
+		
+		if (quarterId != 0){
+			whereClause += " AND csp.productBarcode.product.quarter.quarter_ID = " + quarterId;
+		}
+		
+		if (brandId != 0){
+			whereClause += " AND csp.productBarcode.product.brand.brand_ID = " + brandId;
+		}
+		
+		criteria += whereClause + " GROUP BY csp.productBarcode.id, csp.type";
+		
+		List<Object> values = chainSalesOrderDaoImpl.executeHQLSelect(criteria, value_sale.toArray(), null, true);
+		
+		Map<Integer, ChainSalesStatisticReportItemVO> dataMap = new HashMap<Integer, ChainSalesStatisticReportItemVO>();
+		
+		if (values != null){
+			for (Object record : values ){
+				Object[] records = (Object[])record;
+				int quantity = Common_util.getInt(records[0]);
+				double sales = Common_util.getDouble(records[1]);
+				double cost = Common_util.getDouble(records[2]);
+				double salesDiscount = Common_util.getDouble(records[3]);
+				int pbId = Common_util.getInt(records[4]);
+				int type = Common_util.getInt(records[5]);
+				
+				ChainSalesStatisticReportItemVO levelFour = dataMap.get(pbId);
+				if (levelFour != null){
+					levelFour.putValue(quantity, type, sales, cost, salesDiscount);
+				} else {
+				    String name = "";
+					ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+					
+					boolean isChain = false;
+					if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
+						isChain = true;
 
-			/**
-			 * @2. 准备excel报表
-			 */
-			boolean showCost = false;
-			if (ChainUserInforService.isMgmtFromHQ(loginUserInfor) || loginUserInfor.containFunction("purchaseAction!seeCost"))
-				showCost = true;
-			
-			List<ChainSalesStatisReportItem> reportItems = (List<ChainSalesStatisReportItem>)result.get(0);
-			Collections.sort(reportItems, new ChainSalesStatisticComparator());
-			
-			ChainSalesStatisReportItem totalItem = (ChainSalesStatisReportItem)result.get(1);
-			try {
-				chainStore = this.getThisChainStore(chainStore.getChain_id());
-				if (saler.getUser_id() != Common_util.ALL_RECORD)
-					saler = chainUserInforDaoImpl.get(saler.getUser_id(), true);
-				ChainSalesStatisticsReportTemplate chainSalesStatisticsReportTemplate = new ChainSalesStatisticsReportTemplate(reportItems,totalItem, chainStore, filePath, showCost, saler, startDate, endDate);
-				HSSFWorkbook wb = chainSalesStatisticsReportTemplate.process();
+					levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandId,pbId, showCost, ChainSalesStatisticReportItemVO.STATE_OPEN);
+					levelFour.putValue(quantity, type, sales, cost, salesDiscount);
+					levelFour.setIsChain(isChain);
+				}
 				
-				ByteArrayInputStream byteArrayInputStream = ExcelUtil.convertExcelToInputStream(wb);
-				
-				response.setReturnValue(byteArrayInputStream);
-				response.setReturnCode(Response.SUCCESS);
-			} catch (IOException e){
-				response.setReturnCode(Response.FAIL);
+				dataMap.put(pbId, levelFour);
 			}
-			return response;
+		}
+			
+		List<ChainSalesStatisReportItem> reportItems = new ArrayList<ChainSalesStatisReportItem>();
+		ChainSalesStatisReportItem totalItem = new ChainSalesStatisReportItem();
+		List<ChainSalesStatisticReportItemVO> reportItemVOs = new ArrayList<ChainSalesStatisticReportItemVO>(dataMap.values());
+		
+		ChainStore chainStore = this.getThisChainStore(chainId);
+		ChainUserInfor saler = this.getThisChainUserInfor(salerId);
+		
+		for (ChainSalesStatisticReportItemVO vo : reportItemVOs){
+            int pbId = vo.getPbId();
+            ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+            
+            vo.reCalculate();
+            
+			ChainSalesStatisReportItem reportItem = new ChainSalesStatisReportItem(vo, chainStore, saler, startDate, endDate, pb);
+			totalItem.add(reportItem);
+			reportItems.add(reportItem);
+		}
+		
+		/**
+		 * @2. 准备excel报表
+		 */
+
+		try {
+			chainStore = this.getThisChainStore(chainStore.getChain_id());
+			if (saler.getUser_id() != Common_util.ALL_RECORD)
+				saler = chainUserInforDaoImpl.get(saler.getUser_id(), true);
+			ChainSalesStatisticsReportTemplate chainSalesStatisticsReportTemplate = new ChainSalesStatisticsReportTemplate(reportItems,totalItem, chainStore, filePath, showCost, saler, startDate, endDate);
+			HSSFWorkbook wb = chainSalesStatisticsReportTemplate.process();
+			
+			ByteArrayInputStream byteArrayInputStream = ExcelUtil.convertExcelToInputStream(wb);
+			
+			response.setReturnValue(byteArrayInputStream);
+			response.setReturnCode(Response.SUCCESS);
+		} catch (IOException e){
+			response.setReturnCode(Response.FAIL);
+		}
+		return response;
 	}
 
 	class ChainSalesStatisticComparator implements Comparator<ChainSalesStatisReportItem> {
@@ -1870,7 +1948,7 @@ public class ChainReportService {
 		List<ChainPurchaseStatisticReportItemVO> reportItems = new ArrayList<ChainPurchaseStatisticReportItemVO>();
 		String name = "";
 		
-		String whereClause = "";
+		String whereClause = " AND p.productBarcode.product.category.category_ID!=" + SystemParm.getQXCategory();
 		if (chainId != Common_util.ALL_RECORD){
 			whereClause += " AND p.order.client_id = " + chainStore.getClient_id();
 		} else { 
@@ -2017,7 +2095,12 @@ public class ChainReportService {
 					levelOneItem.putValue(type, quantity, amount);
 				} else {
 					Brand brand = brandDaoImpl.get(brandIdDB, true);
-					name = brand.getBrand_Name();
+					String pinyin = brand.getPinyin();
+					if (!StringUtils.isEmpty(pinyin)){
+						name = pinyin.substring(0, 1) + " ";
+					}
+					
+					 name += brand.getBrand_Name();
 					
 					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId,chainId, yearId, quarterId, brandIdDB,0, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
 					levelOneItem.putValue(type, quantity, amount);
@@ -2027,7 +2110,6 @@ public class ChainReportService {
 			}
 			
 			List<Integer> brandKey = new ArrayList<Integer>(dataMap.keySet());
-			Collections.sort(brandKey);
 			
 			//1. 把基本对象放入
 			//2. 计算总数
@@ -2067,7 +2149,7 @@ public class ChainReportService {
 					
 					Category category = pb.getProduct().getCategory();
 					
-					name = category.getCategory_Name() + " " + pb.getProduct().getProductCode() + colorName;
+					name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName  + " " +  category.getCategory_Name();
 					
 					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId,chainId, yearId, quarterId, brandId,pbId, showCost, ChainPurchaseStatisticReportItemVO.STATE_OPEN);
 					levelOneItem.putValue(type, quantity, amount);
@@ -2077,7 +2159,6 @@ public class ChainReportService {
 			}
 			
 			List<Integer> pbKey = new ArrayList<Integer>(dataMap.keySet());
-			Collections.sort(pbKey);
 			
 			//1. 把基本对象放入
 			//2. 计算总数
@@ -2088,7 +2169,7 @@ public class ChainReportService {
 				reportItems.add(levelOneItem);
 			}
 		}
-
+		Collections.sort(reportItems, new ChainStatisticReportItemVOSorter());
 	    response.setReturnValue(reportItems);
 	    return response;
 	}
@@ -2185,7 +2266,11 @@ public class ChainReportService {
 				int brandDB = get(key, "brandId");
 				
 				Brand brand = brandDaoImpl.get(brandDB, true);
-				name = brand.getBrand_Name();
+				String pinyin = brand.getPinyin();
+				if (!StringUtils.isEmpty(pinyin)){
+					name = pinyin.substring(0, 1) + " ";
+				}
+				name += brand.getBrand_Name();
 				
 				boolean isChain = false;
 				if (brand.getChainStore() != null && brand.getChainStore().getChain_id() !=0)
@@ -2211,13 +2296,14 @@ public class ChainReportService {
 					isChain = true;
 
 				Category category = pb.getProduct().getCategory();
-				name = category.getCategory_Name() + " " + pb.getProduct().getProductCode() + colorName;
+				name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName+ " " +  category.getCategory_Name();
 				reportItem = new ChainAllInOneReportItemVO(name, parentId, chainId, yearId, quarterId, brandId,pbId, ChainReportItemVO.STATE_OPEN, sales, purchase, inventory);
 				reportItem.setIsChain(isChain);
 			}
 			
 			reportItems.add(reportItem);
 		}
+		Collections.sort(reportItems, new ChainStatisticReportItemVOSorter());
 		
 		response.setReturnValue(reportItems);
 		

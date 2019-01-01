@@ -256,7 +256,7 @@ public class ChainReportJSPAction extends ChainReportAction {
 
 		Response response = new Response();
 		try {
-			response = chainReportService.generateChainSalesStatisticExcelReport(formBean.getChainStore(), formBean.getSaler(), formBean.getStartDate(), formBean.getEndDate(), formBean.getYear(), formBean.getQuarter(), formBean.getBrand(), loginUserInfor, contextPath + "WEB-INF\\template\\" + CHAIN_SALES_STATISC_REPORT_TEMPLATENAME);     
+			response = chainReportService.generateChainSalesStatisticExcelReport(formBean.getParentId(),formBean.getChainStore().getChain_id(), formBean.getSaler().getUser_id(), formBean.getStartDate(), formBean.getEndDate(), formBean.getYear().getYear_ID(), formBean.getQuarter().getQuarter_ID(), formBean.getBrand().getBrand_ID(), loginUserInfor, contextPath + "WEB-INF\\template\\" + CHAIN_SALES_STATISC_REPORT_TEMPLATENAME);     
 		} catch (Exception e) {
 			response.setReturnCode(Response.FAIL);
 			response.setMessage(e.getMessage());

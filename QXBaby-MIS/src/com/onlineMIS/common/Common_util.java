@@ -42,6 +42,7 @@ public class Common_util {
 	public static  final SimpleDateFormat dateFormat_f =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public static  final Pattern pattern = Pattern.compile("[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}");
 	public static  final Pattern pattern_f = Pattern.compile("[0-9]{4}-[0-9]{1,2}-[0-9]{1,2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}");
+	public static  final Pattern pattern_productCode = Pattern.compile("^[0-9][0-9]-[A-Za-z0-9-]+");
 	public static HanyuPinyinOutputFormat hanYuPinOutputFormat = new HanyuPinyinOutputFormat();  
     static {
 		hanYuPinOutputFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);   
@@ -709,8 +710,19 @@ public class Common_util {
         return false;
     }
 
-
-
+    /**
+     * 将产品货号-前面的字符去掉
+     * 81-23003 -> 23003
+     * @param productCode
+     * @return
+     */
+    public static String cutProductCode(String productCode){
+        Matcher m = pattern_productCode.matcher(productCode);
+        if (m.find()) {
+            return productCode.substring(productCode.indexOf("-")+1);
+        }
+        return productCode;
+    }
 
 
 
@@ -720,8 +732,8 @@ public class Common_util {
 	}
 
 	public static void main(String[] args){
-		Date date = Common_util.getToday();
-		System.out.println(Common_util.getDateOfLastYear(date));
+		String productCode = "43-abcd34";
+		System.out.print(Common_util.cutProductCode(productCode));
 	}
 
 	public static Object correctFileName(String custName) {

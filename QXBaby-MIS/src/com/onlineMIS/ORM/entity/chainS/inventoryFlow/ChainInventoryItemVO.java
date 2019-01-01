@@ -14,7 +14,7 @@ public class ChainInventoryItemVO extends ChainReportItemVO {
 	private int inventory;
 	private double wholeSales;
 	private double retailSales;
-	private String barcode = "";
+	
 	
 	public ChainInventoryItemVO() {
 		// TODO Auto-generated constructor stub
@@ -27,17 +27,6 @@ public class ChainInventoryItemVO extends ChainReportItemVO {
 		this.setRetailSales(retailSales);
 		this.setSeeCost(seeCost);
 	}
-	
-	
-
-	public String getBarcode() {
-		return barcode;
-	}
-
-	public void setBarcode(String barcode) {
-		this.barcode = barcode;
-	}
-
 
 	public int getInventory() {
 		return inventory;

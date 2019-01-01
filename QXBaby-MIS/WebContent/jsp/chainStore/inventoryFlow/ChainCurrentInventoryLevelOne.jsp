@@ -47,7 +47,7 @@ $(document).ready(function(){
 		columns : [ [
 					{field:'name', width:250,title:'库存列表',
 						formatter: function (value, row, index){
-							if (row.state == 'open') {
+							if (row.state == 'open' && row.chainId != -1) {
 								var str = '';
 							    str += $.formatString('<a href="#" onclick="traceInventory(\'{0}\',\'\');">{1}</a>', row.barcode, row.name);
 							    return str;
