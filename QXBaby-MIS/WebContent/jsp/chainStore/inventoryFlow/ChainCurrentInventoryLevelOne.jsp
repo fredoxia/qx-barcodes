@@ -32,7 +32,7 @@ $(document).ready(function(){
 		rowStyler: function(row){
             var style = "";
             if (row.isChain == true)
-            	style = "color:blue;";
+            	style = "background-color:#EBEDEF;color:blue;";
 			return style;
 		},
 		onBeforeExpand : function(node) {
@@ -44,7 +44,7 @@ $(document).ready(function(){
 			var params = $('#preGenReportForm').serialize();
 			$('#dataGrid').treegrid('options').url = 'inventoryFlowJSONAction!getInventoryFlowEles?' + params;
 		},
-		columns : [ [
+		frozenColumns :[[					
 					{field:'name', width:250,title:'库存列表',
 						formatter: function (value, row, index){
 							if (row.state == 'open' && row.chainId != -1) {
@@ -53,7 +53,8 @@ $(document).ready(function(){
 							    return str;
 							} else 
 								return row.name;
-						}},
+						}}]],			
+		columns : [ [
 					{field:'inventory', width:160,title:'库存数量'},
 					{field:'wholeSales', width:160,title:'库存成本金额',
 						formatter: function (value, row, index){
@@ -157,7 +158,7 @@ function deleteInventory(){
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">
-			    <table id="dataGrid" style="width:780px;height:800px">			       
+			    <table id="dataGrid">			       
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>

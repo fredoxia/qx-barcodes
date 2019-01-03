@@ -27,7 +27,7 @@ $(document).ready(function(){
 		rowStyler: function(row){
             var style = "";
             if (row.isChain == true)
-            	style = "color:blue;";
+            	style = "background-color:#EBEDEF;color:blue;";
 			return style;
 		},
 		onLoadSuccess : function(row, param){
@@ -40,9 +40,12 @@ $(document).ready(function(){
 			$("#brandId").attr("value", node.brandId);
 			var params = $('#preGenReportForm').serialize();
 			$('#dataGrid').treegrid('options').url = 'chainReportJSON!getAllInOneReptEles?' + params;
-		},		
+		},	
+		frozenColumns :[[					
+						{field:'name', width:220,title:'<s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'}
+							]],			
 		columns : [ [
-					{field:'name', width:250,title:' <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
+					
 					{field:'purchaseQ', width:60,title:'采购数量'},
 					{field:'purchaseR', width:70,title:'采购退货量'},
 					{field:'salesQ', width:60,title:'零售量'},
@@ -88,7 +91,7 @@ function back(){
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">
-			    <table id="dataGrid" style="width:fit;height:800px">			       
+			    <table id="dataGrid" >			       
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>

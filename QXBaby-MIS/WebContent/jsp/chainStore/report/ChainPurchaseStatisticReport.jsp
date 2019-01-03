@@ -33,9 +33,11 @@ $(document).ready(function(){
 			$("#brandId").attr("value", node.brandId);
 			var params = $('#preGenReportForm').serialize();
 			$('#dataGrid').treegrid('options').url = 'chainReportJSON!getPurchaseStatisticReptEles?' + params;
-		},		
+		},	
+		frozenColumns :[[					
+						{field:'name', width:220,title:'<s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'}
+						]],		
 		columns : [ [
-					{field:'name', width:280,title:'统计日期 <s:property value="formBean.startDate"/> 到 <s:property value="formBean.endDate"/>'},
 					{field:'purchaseQuantity', width:80,title:'采购数量'},
 					{field:'returnQuantity', width:80,title:'退货数量'},
 					{field:'netQuantity', width:100,title:'净采购量'},
@@ -91,7 +93,7 @@ function back(){
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">
-			    <table id="dataGrid" style="width:fit;height:800px">			       
+			    <table id="dataGrid">			       
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>

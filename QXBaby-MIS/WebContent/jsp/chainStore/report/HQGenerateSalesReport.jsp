@@ -22,7 +22,7 @@ $(document).ready(function(){
 		url : 'chainReportJSON!generateSalesReportByHQ',
 		queryParams: params,
 		fit : true,
-		fitColumns : true,
+		fitColumns : false,
 		pagination : true,
 		pageSize : 15,
 		pageList : [ 15, 30],
@@ -35,11 +35,12 @@ $(document).ready(function(){
 		showFooter:true,
 		rownumbers:true,
 		nowrap : false,
+		frozenColumns :[[					
+		                {field:'chainName', width:80,title:'连锁店',fixed:true,
+							formatter: function (value, row, index){
+						return row.chainStore.chain_name;
+						}}]],
 		columns : [ [
-					{field:'chainName', width:80,title:'连锁店',fixed:true,
-						formatter: function (value, row, index){
-							return row.chainStore.chain_name;
-						}},
 					{field:'saleQuantitySum', width:50,title:'销售量',sortable:true,order:'desc'},
 					{field:'returnQuantitySum', width:50,title:'退货量',sortable:true,order:'desc'},
 					{field:'netQuantitySum', width:50,title:'净销售',sortable:true,order:'desc'},

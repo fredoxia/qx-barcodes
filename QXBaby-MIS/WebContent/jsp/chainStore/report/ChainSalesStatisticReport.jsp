@@ -41,19 +41,21 @@ $(document).ready(function(){
 		rowStyler: function(row){
             var style = "";
             if (row.isChain == true)
-            	style = "color:blue;";
+            	style = "background-color:#EBEDEF;color:blue;";
 			return style;
 		},
+		frozenColumns :[[					
+						{field:'name', width:220,title:' <s:property value="formBean.startDate"/>到1 <s:property value="formBean.endDate"/>',
+							formatter: function (value, row, index){
+								if (row.state == 'open' && row.chainId != -1) {
+									var str = '';
+								    str += $.formatString('<a href="#" onclick="traceInventory(\'{0}\',\'\');">{1}</a>', row.barcode, row.name);
+								    return str;
+								} else 
+									return row.name;
+							}}]],
 		columns : [ [
-					{field:'name', width:220,title:' <s:property value="formBean.startDate"/>到 <s:property value="formBean.endDate"/>',
-						formatter: function (value, row, index){
-							if (row.state == 'open' && row.chainId != -1) {
-								var str = '';
-							    str += $.formatString('<a href="#" onclick="traceInventory(\'{0}\',\'\');">{1}</a>', row.barcode, row.name);
-							    return str;
-							} else 
-								return row.name;
-						}},
+					
 					{field:'salesQ', width:50,title:'销售量A'},
 					{field:'returnQ', width:50,title:'退货量B'},
 					{field:'netQ', width:50,title:'净售量A-B'},
@@ -152,7 +154,7 @@ function exportFile(){
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">
-			    <table id="dataGrid" style="width:870px;height:800px">			       
+			    <table id="dataGrid">			       
 		        </table>
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
