@@ -37,7 +37,7 @@ $(document).ready(function(){
 
 });
 function reloadStatis(){
-	$('#dataGrid').datagrid('load',''); 
+	$('#dataGrid').datagrid('load'); 
 }
 
 </script>
