@@ -168,7 +168,7 @@ public class ChainDailySalesService{
 			//需要补充数据
 			if (!chainIdSet.contains(store.getChain_id())){
 				loggerLocal.infoB(threadId + " 开始补充连锁店信息 : " + store.getChain_id());
-				Object[] emptyObjects = new Object[]{0,0,0,0,0,0,0,0,0,0,0,0,store.getChain_id(),0,0,0,0,0,0};
+				Object[] emptyObjects = new Object[]{0,0,0,0,0,0,0,0,0,0,0,0,store.getChain_id(),0,0,0,0,0,0,0,0,0};
 				dailyReportMappingAndSave(emptyObjects, store.getChain_id(),  threadId, yestorday,++i);
 			}
 		}
