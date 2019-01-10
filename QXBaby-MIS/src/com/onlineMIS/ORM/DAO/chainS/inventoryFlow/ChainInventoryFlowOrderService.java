@@ -1584,14 +1584,16 @@ public class ChainInventoryFlowOrderService {
 				List<ChainInOutStock> stocks = chainInOutStockDaoImpl.getByCritera(criteria, true);
 				
 				for (ChainInOutStockArchive stock : stocks2){
-					if (stock.getType() == Common_util.ALL_RECORD)
-						continue;
 					ChainInvenTraceInfoVO traceVO = new ChainInvenTraceInfoVO(stock);
 					traceVOs.add(traceVO);
 				}
 				
+				boolean skip = false;
+				if (stocks2.size() > 0)
+					skip = true;
+				
 				for (ChainInOutStock stock : stocks){
-					if (stock.getType() == Common_util.ALL_RECORD)
+					if ((stock.getType() == ChainInOutStock.TYPE_ARCHIVING || stock.getOrderId().startsWith(ChainInOutStock.AUTO_BAR_ACCT)) && skip)
 						continue;
 					ChainInvenTraceInfoVO traceVO = new ChainInvenTraceInfoVO(stock);
 					traceVOs.add(traceVO);

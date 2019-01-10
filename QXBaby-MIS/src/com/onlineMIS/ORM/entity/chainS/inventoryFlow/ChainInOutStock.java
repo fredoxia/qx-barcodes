@@ -30,6 +30,7 @@ public class ChainInOutStock implements Serializable {
 	public static final int TYPE_PURCHASE = 9;
 	public static final int TYPE_INITIAL_STOCK = 10;
 	public static final int TYPE_TRANSFER2 = 11;
+	public static final int TYPE_ARCHIVING = -9;
 	
 	private String barcode;
     private int clientId;
