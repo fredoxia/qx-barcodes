@@ -61,6 +61,7 @@
 	             <value>com/onlineMIS/ORM/chainS/ChainMgmt.hbm.xml</value>
 	             <value>com/onlineMIS/ORM/chainS/ChainReport.hbm.xml</value>
 	             <value>com/onlineMIS/ORM/chainS/ChainManualRpt.hbm.xml</value>
+	             <value>com/onlineMIS/ORM/shared/Expense.hbm.xml</value>
 	     </list>
         </property>
 	    <property name="hibernateProperties">

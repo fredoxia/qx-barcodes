@@ -175,7 +175,22 @@ $(function() {
 						</s:if>
 					</ul>
 				 </li>
-
+				 <s:if test="#session.LOGIN_CHAIN_USER.containFunction('expenseChainJSP!preCreateExpenseChain') ||#session.LOGIN_CHAIN_USER.containFunction('expenseChainJSP!preSearchExpenseChain')">
+				<li data-options="iconCls:'icon-money_yen',state:'closed'">
+					<span>连锁店费用管理</span>
+					<ul>
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('expenseChainJSP!preCreateExpenseChain')">
+							<li data-options="iconCls:'icon-money_yen',attributes:{url:'expenseChainJSP!preCreateExpenseChain'}">创建连锁店费用</li>
+						</s:if>
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('expenseChainJSP!preSearchExpenseChain')">
+							<li data-options="iconCls:'icon-money_yen',attributes:{url:'expenseChainJSP!preSearchExpenseChain'}">查找连锁店费用</li>
+						</s:if>		
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('expenseChainJSP!preExpenseReportChain')">
+							<li data-options="iconCls:'icon-money_yen',attributes:{url:'expenseChainJSP!preExpenseReportChain'}">连锁店费用报表</li>
+						</s:if>																
+					</ul>
+				</li>
+				 </s:if>
 				<li data-options="iconCls:'icon-connect',state:'closed'">
 					<span>连锁店管理</span>
 					<ul>

@@ -21,14 +21,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreGroupDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainTransferOrderDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.report.ChainReportService;
 import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.finance.FinanceBillImpl;
+import com.onlineMIS.ORM.DAO.headQ.user.NewsService;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforService;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInventoryFlowOrder;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainTransferOrder;
+import com.onlineMIS.ORM.entity.chainS.report.ChainWMRank;
 import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrder;
 import com.onlineMIS.ORM.entity.chainS.user.ChainLoginStatisticInforVO;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
@@ -40,6 +44,7 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.headQ.HR.PeopleEvaluation;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBill;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
+import com.onlineMIS.ORM.entity.headQ.user.News;
 import com.onlineMIS.ORM.entity.headQ.user.UserFunctionality;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.action.chainS.user.ChainUserUIBean;
@@ -81,6 +86,15 @@ public class ChainUserInforService {
 	
 	@Autowired
 	private ChainTransferOrderDaoImpl chainTransferOrderDaoImpl;
+	
+	@Autowired
+	private ChainStoreGroupDaoImpl chainStoreGroupDaoImpl;
+	
+	@Autowired
+	private NewsService newsService;
+	
+	@Autowired
+	private ChainReportService chainReportService;
 	
 	@Transactional
 	public Response validateUser(String userName, String password, boolean addFunction){
@@ -622,6 +636,113 @@ public class ChainUserInforService {
 		statisMap.put("rows", statisEle);
 		
 		response.setReturnValue(statisMap);
+		
+	}
+	/**
+	 * 判断用户能否切换到另外的连锁带
+	 * @param userInfor
+	 * @param chainStore
+	 * @return
+	 */
+	@Transactional
+	public Response swithToChain(ChainUserInfor userInfor, ChainStore chainStore) {
+		Response response = new Response();
+		
+		//1。判断这个chain是否正常
+		int fromChainId = userInfor.getMyChainStore().getChain_id();
+		int toChainId = chainStore.getChain_id();
+
+		
+		ChainStore toStore = chainStoreDaoImpl.get(toChainId, true);
+		if (toStore == null){
+			response.setFail("无法找到连锁店");
+			return response;
+		} else if (fromChainId == toChainId){
+			response.setFail("当前使用的连锁店和将要切换的连锁店为同一个连锁店");
+			return response;
+		}
+
+		
+		//2. 判断这个连锁店是否和当前连锁店在同一个group里面
+		Set<Integer> chainIds = chainStoreGroupDaoImpl.getChainGroupStoreIdList(fromChainId, userInfor, Common_util.CHAIN_ACCESS_LEVEL_3);
+		if (!chainIds.contains(toChainId)){
+			response.setFail("无法切换到不相关的连锁店");
+			return response;
+		}
+		
+		//3.获取toChain的用户 <目前切只开放给owner帐号>
+		ChainUserInfor newUser = null;
+		List<ChainUserInfor> users = chainUserInforDaoImpl.getActiveChainUsersByChainStore(toChainId);
+		for (ChainUserInfor user : users){
+			if (user.getRoleType().getChainRoleTypeId() == ChainRoleType.CHAIN_OWNER){
+				newUser = user;
+				break;
+			}
+		}
+		if (newUser == null){
+			response.setFail("无法在目标连锁店找到可以使用帐号,请配置好目标连锁店之后再使用当前功能");
+			return response;
+		} else {
+			chainUserInforDaoImpl.initialize(newUser);
+			
+			//to set the user functions
+			setFunctions(newUser);
+		}
+		
+		response.setReturnCode(Response.SUCCESS);
+		response.setReturnValue(newUser);
+
+		return response;
+	}
+
+	@Transactional
+	public Response getChainUserLoginUI(ChainUserInfor userInfor) {
+		Response response = new Response();
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		
+		//1. 准备千禧消息
+		try {
+			List<News> news = newsService.getNews(News.TYPE_CHAIN_S);
+			dataMap.put("news", news);
+			
+			//2. 准备特别信息，比如会员日加倍积分
+	//		Date today = Common_util.getToday();
+	//		if (today.getDate() == Common_util.VIP_DATE)
+	//			uiBean.setSpecialMsg(QXMsgManager.getMsg("VIP_DATE_MSG"));
+			
+			//2. 获取当前用户的相关连锁店
+			ChainStore myStore = userInfor.getMyChainStore();
+			if (myStore != null && myStore.getChain_id() != 0){
+				List<ChainStore> stores = chainStoreGroupDaoImpl.getChainGroupStoreList(myStore.getChain_id(), userInfor, Common_util.CHAIN_ACCESS_LEVEL_3);
+				
+				//2.1 过滤掉当前连锁店，过滤掉删除的连锁店
+				List<ChainStore> availableStores = new ArrayList<ChainStore>();
+				for (ChainStore store : stores){
+					if (store.getStatus() != ChainStore.STATUS_DELETE && store.getChain_id() != myStore.getChain_id()){
+						availableStores.add(store);
+					}
+				}
+
+				dataMap.put("stores", availableStores);
+			}
+			
+			//3. 准备每周排名信息
+
+		     response = chainReportService.getRank(userInfor);
+		     if (response.getReturnCode() == Response.SUCCESS){
+		    	 List<Object> returnValue = (List<Object>)response.getReturnValue();
+		    	 ChainWMRank chainWMRank = (ChainWMRank)returnValue.get(0);
+		    	 dataMap.put("chainWMRank", chainWMRank);
+		    	 
+		    	 List<ChainWMRank> myRank = (List<ChainWMRank>)returnValue.get(1);
+		    	 dataMap.put("myRank", myRank);
+		     }
+		} catch (Exception e) {
+			loggerLocal.error(e);
+		}
+		
+		response.setReturnValue(dataMap);
+		return response;
 		
 	}
 

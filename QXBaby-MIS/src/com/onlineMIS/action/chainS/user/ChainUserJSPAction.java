@@ -2,6 +2,7 @@ package com.onlineMIS.action.chainS.user;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,6 +12,7 @@ import com.onlineMIS.ORM.DAO.headQ.user.NewsService;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforService;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.report.ChainWMRank;
+import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.user.News;
 import com.onlineMIS.common.Common_util;
@@ -59,33 +61,41 @@ public class ChainUserJSPAction extends ChainUserAction{
 	 * 用户成功登陆之后
 	 * @return
 	 */
-	public String getNews(){
+	public String prepareUIAfterLogin(){
     	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
-    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"");
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"prepareUIAfterLogin");
+    	
+    	Response response = new Response();
+    	
+    	response = chainUserInforService.getChainUserLoginUI(userInfor);
+    	Map dataMap = (Map<String, Object>)response.getReturnValue();
+    	
     	
 		//1. 准备千禧消息
-		uiBean.setNews(newsService.getNews(News.TYPE_CHAIN_S));
+    	Object newsObj = dataMap.get("news");
+    	if (newsObj != null) {
+		    uiBean.setNews((List<News>)newsObj);
+    	}
 		
 		//2. 准备特别信息，比如会员日加倍积分
 //		Date today = Common_util.getToday();
 //		if (today.getDate() == Common_util.VIP_DATE)
 //			uiBean.setSpecialMsg(QXMsgManager.getMsg("VIP_DATE_MSG"));
 		
-		//3. 准备每周排名信息
-		Response response = new Response();
-		try {
-		     response = chainReportService.getRank(userInfor);
-		     if (response.getReturnCode() == Response.SUCCESS){
-		    	 List<Object> returnValue = (List<Object>)response.getReturnValue();
-		    	 ChainWMRank chainWMRank = (ChainWMRank)returnValue.get(0);
-		    	 uiBean.setChainWMRank(chainWMRank);
-		    	 
-		    	 List<ChainWMRank> myRank = (List<ChainWMRank>)returnValue.get(1);
-		    	 uiBean.setMyDailyRank(myRank);
-		     }
-		} catch (Exception e) {
-			loggerLocal.error(e);
+		//2. 获取当前用户的相关连锁店
+		Object chainStoreObj = dataMap.get("stores");
+		if (newsObj != null){
+			uiBean.setChainStores((List<ChainStore>)chainStoreObj);
 		}
+
+		//3. 准备每周排名信息
+		Object chainWMRankObj = dataMap.get("chainWMRank");
+		if (chainWMRankObj != null)
+		   uiBean.setChainWMRank((ChainWMRank)chainWMRankObj);
+		    	 
+		Object myRankObj = dataMap.get("myRank");
+		if (myRankObj != null)
+		    uiBean.setMyDailyRank((List<ChainWMRank>)myRankObj);
 		
 		return "BoardNews";
 	}

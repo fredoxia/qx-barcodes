@@ -155,8 +155,8 @@ function clearAllData(){
       <td>员工信息管理:<input type="checkbox" name="formBean.functions" id="function8" value="8"/></td>
       <td>连锁店配置:<input type="checkbox" name="formBean.functions" id="function15" value="15"/></td>
       <td>允许修改零售价:<input type="checkbox" name="formBean.functions" id="function21" value="21"/></td>
-      <td></td>
-      <td></td>
+      <td>连锁店消费:<input type="checkbox" name="formBean.functions" id="function25" value="25"/></td>
+      <td>关联连锁店切换:<input type="checkbox" name="formBean.functions" id="function26" value="26"/></td>
     </tr>
 
     <tr class="InnerTableContent">

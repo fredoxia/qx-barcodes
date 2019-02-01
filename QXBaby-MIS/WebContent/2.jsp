@@ -32,7 +32,7 @@ function loginBackProcess(data){
 		$.messager.alert('错误提示',response.message,'warning');
 	} else {
 		//window.open ('<%=request.getContextPath()%>/actionChain/chainUserJSP!getNews', '千禧宝贝管理系统', 'height=100, width=400, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=yes,location=no, status=no, fullscreen=yes');    
-		window.location.href = "<%=request.getContextPath()%>/actionChain/chainUserJSP!getNews";
+		window.location.href = "<%=request.getContextPath()%>/actionChain/chainUserJSP!prepareUIAfterLogin";
 	}
 }
 function clear(){

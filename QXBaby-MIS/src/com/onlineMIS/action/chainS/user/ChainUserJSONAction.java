@@ -243,4 +243,36 @@ public class ChainUserJSONAction extends ChainUserAction {
 		
 		return SUCCESS;
 	}
+	/**
+	 * 切换到另外的连锁店
+	 * @return
+	 */
+	public String swithToChain(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"swithToChain");
+		Response response = new Response();
+		
+		try {
+		     response = chainUserInforService.swithToChain(userInfor, formBean.getChainStore());
+             
+		     if (response.isSuccess()) {
+			     //set session
+			     ChainUserInfor user = (ChainUserInfor)response.getReturnValue();
+			     ActionContext.getContext().getSession().put(Common_util.LOGIN_CHAIN_USER, user);
+		     }
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				 response.setQuickValue(Response.ERROR, "系统错误，请联系管理员");
+			}
+
+		try{
+			   response.setReturnValue("");
+			   jsonObject = JSONObject.fromObject(response);
+			} catch (Exception e){
+				loggerLocal.error(e);
+			}
+    	
+    	return SUCCESS;
+	}
 }

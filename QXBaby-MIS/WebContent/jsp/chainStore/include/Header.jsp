@@ -16,7 +16,31 @@
     </div>
     <div style="position: absolute; right: 0px; bottom: 4px;">
         <!--  
-	    <a href="javascript:void(0);" class="easyui-menubutton" data-options="menu:'#layout_north_pfMenu',iconCls:'cog'">更换皮肤</a> 
-	    <a href="javascript:void(0);" class="easyui-menubutton" data-options="menu:'#layout_north_kzmbMenu',iconCls:'cog'">控制面板</a>-->
-	    <a href="chainUserJSP!logoff" class="easyui-linkbutton">退出系统</a>
+	    <a href="javascript:void(0);" class="easyui-menubutton" data-options="menu:'#layout_north_pfMenu',iconCls:'cog'">更换皮肤</a> -->
+	    <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainUserJSON!swithToChain') && uiBean.chainStores.size() > 0">
+		    <a href="javascript:void(0);" class="easyui-menubutton" data-options="menu:'#chainMenu',plain:false">切换连锁店</a>&nbsp;
+			<div id="chainMenu" style="width:150px;">
+			    <s:iterator value="uiBean.chainStores" status = "st" id="store" >
+			       <div data-options="iconCls:'icon-back'" onclick="swithStore(<s:property value="#store.chain_id"/>)"><s:property value="#store.chain_name"/></div>
+			       
+			    </s:iterator>
+			</div>
+		</s:if>
+	    <a href="chainUserJSP!logoff" class="easyui-linkbutton" >退出系统</a>
     </div>
+
+	<script type="text/javascript">
+		function swithStore(chainId){
+
+		    var params= "formBean.chainStore.chain_id=" + chainId; 
+		    $.post("<%=request.getContextPath()%>/actionChain/chainUserJSON!swithToChain",params, swithBackProcess,"json");
+		}
+		function swithBackProcess(data){
+			var returnCode = data.returnCode;
+			if (returnCode != SUCCESS){
+				$.messager.alert('错误提示',data.message,'warning');
+			} else {
+				window.location.href = "<%=request.getContextPath()%>/actionChain/chainUserJSP!prepareUIAfterLogin";
+			}
+		}
+    </script>
