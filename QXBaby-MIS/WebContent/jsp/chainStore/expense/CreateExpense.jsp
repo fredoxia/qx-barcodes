@@ -83,7 +83,7 @@ function changeChainStore(chainId){
 		    <tr class="InnerTableContent">
 		      <td>金额 *</td>
 		      <td colspan="2">
-		      	<s:textfield name="formBean.expense.amount" id="amount" cssClass="easyui-numberbox" style="width:100px;" data-options="validType:'notValue[0]'"/>
+		      	<s:textfield name="formBean.expense.amount" id="amount" cssClass="easyui-numberbox" style="width:100px;" data-options="validType:'notValue[0]',precision:1"/>
 		      </td>
 		    </tr>		
 		    <tr class="InnerTableContent">
