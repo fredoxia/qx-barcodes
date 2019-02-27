@@ -264,6 +264,26 @@ public class InventoryOrderJSONAction extends InventoryOrderAction {
 		return "successful";
 	}
 	
+	/**
+	 * 因为单据具有权限控制,仓库分开操作以后必须有权限转移功能
+	 * @return
+	 */
+	public String transferOrderToOther(){
+		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		String uuid = Common_util.getUUID();
+		String log = logInventory("transferOrderToOther", "-", "-", uuid);
+		loggerLocal.info(log);
+		
+		Response response = inventoryService.transferOrderToOther(formBean.getOrder().getOrder_ID(), loginUserInfor, formBean.getUser());
+		try{
+			   jsonObject = JSONObject.fromObject(response);
+		   } catch (Exception e){
+				loggerLocal.error(e);
+			}
+		
+		
+		return "successful";
+	}
 	private String logInventory(String action, Object clientId, Object orderId, String uuid){
 		return super.logInventory(this.getClass().getSimpleName() , action, clientId, orderId, uuid);		
 	}

@@ -1561,20 +1561,45 @@ public class InventoryService {
 		if (orderList != null){
 			for (InventoryOrder order : orderList){
 				boolean isEditable = false;
+				boolean isTranferable = false;
 				int orderStatus = order.getOrder_Status();
-				if (orderStatus == InventoryOrder.STATUS_COMPLETE && user.containFunction("inventoryOrder!acctProcess"))
+				switch (orderStatus) {
+				case InventoryOrder.STATUS_DRAFT:
+					if (user.equals(order.getOrder_Keeper()) && user.containFunction("inventoryOrder!editDraft"))
+						isEditable = true;
+					else if ((order.getOrder_Keeper() == null || order.getOrder_Keeper().getUser_id()==0)  && user.containFunction("inventoryOrder!editDraft"))
+						isEditable = true;
+					
+					if (user.equals(order.getOrder_Keeper()))
+						isTranferable = true;
+					break;
+				case InventoryOrder.STATUS_ACCOUNT_PROCESS:
+					if (user.equals(order.getOrder_Auditor()) || (order.getOrder_Auditor() == null || order.getOrder_Auditor().getUser_id()==0))
+						isEditable = true;
+					if (user.equals(order.getOrder_Auditor()))
+						isTranferable = true;
+					break;
+				case InventoryOrder.STATUS_ACCOUNT_COMPLETE :
 					isEditable = true;
-				else if (((orderStatus == InventoryOrder.STATUS_ACCOUNT_PROCESS && user.equals(order.getOrder_Auditor())) || orderStatus == InventoryOrder.STATUS_ACCOUNT_COMPLETE || orderStatus == InventoryOrder.STATUS_CANCELLED ))
-				    isEditable = true;
-				else if (orderStatus == InventoryOrder.STATUS_DRAFT && user.equals(order.getOrder_Keeper()) && user.containFunction("inventoryOrder!editDraft"))
-			        isEditable = true; 
-				else if (orderStatus == InventoryOrder.STATUS_PDA_COMPLETE &&user.containFunction("inventoryOrder!editDraft"))
-					isEditable = true; 
-				else if (orderStatus == InventoryOrder.STATUS_WAITING_AUDIT && user.containFunction("inventoryOrder!acctAuditOrder"))
+					isTranferable = false;
+					break;
+				case InventoryOrder.STATUS_CANCELLED  :
 					isEditable = true;
+					isTranferable = false;
+					break;
+				case InventoryOrder.STATUS_PDA_COMPLETE :
+					if (user.containFunction("inventoryOrder!editDraft"))
+						isEditable =true;
+					
+					isTranferable = false;
+					break;
+				default:
+					break;
+				}
 				
 				InventoryOrderVO vo = new InventoryOrderVO(order);
 				vo.setIsAuthorizedToEdit(isEditable);
+				vo.setIsAuthorizedToTransfer(isTranferable);
 				inventoryOrderVOs.add(vo);
 			}
 		}
@@ -1606,6 +1631,60 @@ public class InventoryService {
 	        }
 	        
 	        return response;
+	}
+	
+	/**
+	 * 将单据权限转移给其他人
+	 * @param order_ID
+	 * @param loginUserInfor
+	 * @param user
+	 * @return
+	 */
+	public Response transferOrderToOther(int orderId, UserInfor loginUserInfor, UserInfor user) {
+		Response response = new Response();
+		
+		InventoryOrder order = inventoryOrderDAOImpl.get(orderId, true);
+		if (order == null){
+			response.setQuickValue(Response.FAIL, "数据库无法找到,单据" + orderId);
+		} else {
+			
+			int status = order.getOrder_Status();
+			switch (status) {
+				case InventoryOrder.STATUS_DELETED:
+					response.setQuickValue(Response.FAIL, "单据" + orderId + " 处于删除状态,无法开启。请联系管理员");
+					break;
+				case InventoryOrder.STATUS_PDA_COMPLETE:
+				case InventoryOrder.STATUS_ACCOUNT_COMPLETE:
+				case InventoryOrder.STATUS_CANCELLED:
+					response.setQuickValue(Response.FAIL, "单据" + orderId + " 处于任何人都能查看状态,无需转移权限");
+					break;
+
+				case InventoryOrder.STATUS_DRAFT:
+					UserInfor orderKeeper = order.getOrder_Keeper();
+					if (orderKeeper.getUser_id() != loginUserInfor.getUser_id()){
+						response.setQuickValue(Response.FAIL, "你没有修改单据的权限");
+					} else {
+						order.setOrder_Keeper(user);
+						inventoryOrderDAOImpl.update(order, true);
+					}
+					break;
+				case InventoryOrder.STATUS_ACCOUNT_PROCESS:	
+					UserInfor orderUser = order.getOrder_Auditor();
+					if (orderUser.getUser_id() != loginUserInfor.getUser_id()){
+						response.setQuickValue(Response.FAIL, "你没有修改单据的权限");
+					} else {
+					   order.setOrder_Auditor(user);
+					   inventoryOrderDAOImpl.update(order, true);
+					}
+					break;	
+
+				default:
+					response.setQuickValue(Response.FAIL, "无法找到对应的资源，请刷新然后继续搜索");
+					break;
+			}
+		}
+
+		return response;
 	}
 
 }
