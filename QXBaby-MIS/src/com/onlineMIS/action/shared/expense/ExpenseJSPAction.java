@@ -3,6 +3,7 @@ package com.onlineMIS.action.shared.expense;
 
 import org.springframework.stereotype.Controller;
 
+import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
@@ -54,5 +55,18 @@ public class ExpenseJSPAction extends ExpenseAction{
     	expenseService.prepareSearchExpenseChainUI(userInfor, formBean, uiBean);
 		
     	return "expenseRptChain";
+	}
+	
+	/**
+	 * 获取连锁店某条expense然后修改
+	 * @return
+	 */
+	public String getExpenseById(){
+    	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"getExpenseById");
+
+    	expenseService.prepareUpdateExpenseChainUI(userInfor, formBean, uiBean);
+    	
+    	return "updateExpenseChain";
 	}
 }

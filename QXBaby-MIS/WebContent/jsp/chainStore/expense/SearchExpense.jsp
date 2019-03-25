@@ -73,6 +73,27 @@ function backProcessDeleteExpense(data){
      } else 
         $.messager.alert('操作失败', data.message, 'error');
 }
+function loadExpenseForUpdate(){
+	var rows = $('#dataGrid').datagrid('getSelections');
+	if (rows.length == 0){
+		$.messager.alert('错误', '请选中一条费用再继续操作', 'error');
+		return;
+	}
+	
+	var	id = rows[0].id;
+	
+	var param = "formBean.expense.id="+ id;
+
+	var windowTitle =rows[0].entity + " 费用 " + rows[0].comment;
+	$.modalDialog({
+		title : windowTitle,
+		width : 600,
+		height : 350,
+		modal : false,
+		draggable:true,
+		href : 'expenseChainJSP!getExpenseById?' + param
+	});
+}
 </script>
 </head>
 <body>
@@ -113,6 +134,7 @@ function backProcessDeleteExpense(data){
 	</div>					  
 	<div id="toolbar" style="display: none;">
 			<a onclick="deleteExpense();" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true">删除费用</a>
+			<a onclick="loadExpenseForUpdate();" href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true">修改费用</a>
 	</div>
 </body>
 </html>

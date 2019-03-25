@@ -143,4 +143,12 @@ public class ExpenseJSONAction extends ExpenseAction {
 		
 		return "jsonArray";
 	}
+	
+	/**
+	 * 更新expense
+	 * @return
+	 */
+	public String updateExpenseChain(){
+		
+	}
 }

@@ -349,6 +349,7 @@
             <result name="createExpenseChain">/jsp/chainStore/expense/CreateExpense.jsp</result>
             <result name="searchExpenseChain">/jsp/chainStore/expense/SearchExpense.jsp</result>
             <result name="expenseRptChain">/jsp/chainStore/expense/ExpenseReport.jsp</result>
+            <result name="updateExpenseChain">/jsp/chainStore/expense/UpdateExpense.jsp</result>
        </action>
        <action name="chainUserJSP" class="com.onlineMIS.action.chainS.user.ChainUserJSPAction">
             <result name="error">/2.jsp</result>

@@ -295,6 +295,25 @@ public class ExpenseService {
 	}
 
 
+	public void prepareUpdateExpenseChainUI(ChainUserInfor userInfor,
+			ExpenseActionFormBean formBean, ExpenseActionUIBean uiBean) {
+		int expenseId = formBean.getExpense().getId();
+		
+		Expense expense = expenseDaoImpl.get(expenseId, true);
+		if (expense != null ){
+		   int chainId = expense.getEntity().getChain_id();
+		   ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
+		   formBean.setChainStore(chainStore);
+		}
+
+		formBean.setExpense(expense);
+		
+		uiBean.setExpenseTypes(expenseTypeDaoImpl.getExpenseTypes(ExpenseType.belongE.CHAIN.getType()));
+		
+	}
+
+
+
 
 
 }
