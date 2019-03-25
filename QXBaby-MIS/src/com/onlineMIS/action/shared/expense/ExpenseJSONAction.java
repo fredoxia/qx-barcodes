@@ -149,6 +149,22 @@ public class ExpenseJSONAction extends ExpenseAction {
 	 * @return
 	 */
 	public String updateExpenseChain(){
+    	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"updateExpenseChain");
+    	Response response = new Response();
+    	try {
+    	   response = expenseService.updateExpenseChain(userInfor,formBean.getExpense());
+    	} catch (Exception e){
+    	   response.setFail(e.getMessage());
+    	}
+    	
+		try{
+			jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e){
+			loggerLocal.chainActionError(userInfor,this.getClass().getName()+ "."+"updateExpenseChain");
+			loggerLocal.error(e);
+		}
 		
+    	return SUCCESS;
 	}
 }

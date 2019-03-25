@@ -12,12 +12,6 @@ $.extend($.fn.validatebox.defaults.rules, {
     }
 });
 function updateExpense(){
-    var chainId = $("#chainId").val();
-    if (chainId == "" || chainId == 0){
-		alert("连锁店是必选项");
-		return ;
-	}
-    
     if (!$('#expenseForm').form('validate'))
     	return ;
 
@@ -33,14 +27,8 @@ function updateExpense(){
 function backProcessSaveExpense(data){
 	$.messager.progress('close'); 
     if (data.returnCode == SUCCESS){
-        $.messager.alert({
-    		title:'操作成功',
-    		msg:'消费记录创建成功',
-    		fn: function(){
-    			window.location.href = "actionChain/expenseChainJSP!preCreateExpenseChain";
-    		}
-    	});
-       
+    	$.modalDialog.handler.dialog('close');
+    	$('#dataGrid').datagrid("reload");
     } else 
        $.messager.alert('操作失败', data.message, 'error');
 }

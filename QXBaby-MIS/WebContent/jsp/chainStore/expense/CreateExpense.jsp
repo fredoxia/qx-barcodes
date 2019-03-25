@@ -41,16 +41,15 @@ function save(){
 function backProcessSaveExpense(data){
 	$.messager.progress('close'); 
     if (data.returnCode == SUCCESS){
-        $.messager.alert({
-    		title:'操作成功',
-    		msg:'消费记录创建成功',
-    		fn: function(){
-    			window.location.href = "actionChain/expenseChainJSP!preCreateExpenseChain";
-    		}
-    	});
-       
+        $.messager.alert('操作成功','消费记录创建成功',
+        		setTimeout("goBack()",2000)
+    	);
+
     } else 
        $.messager.alert('操作失败', data.message, 'error');
+}
+function goBack(){
+	window.location.href = "actionChain/expenseChainJSP!preCreateExpenseChain";
 }
 
 function changeChainStore(chainId){
