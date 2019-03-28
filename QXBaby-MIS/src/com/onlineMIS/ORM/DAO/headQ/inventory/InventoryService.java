@@ -1486,9 +1486,13 @@ public class InventoryService {
 				case InventoryOrder.STATUS_ACCOUNT_PROCESS:		
 					order = searchByID(orderId);
 					UserInfor auditor2 = order.getOrder_Auditor();
-					if (auditor2.getUser_id() != loginUserInfor.getUser_id()){
+					if (auditor2 != null && auditor2.getUser_id() != loginUserInfor.getUser_id()){
 						response.setQuickValue(Response.FAIL, "单据 正在被 " + auditor2.getName() + " 修改,你暂时无法修改");
 					} else {
+						if (auditor2 == null ){
+						    order.setOrder_Auditor(loginUserInfor);
+						    inventoryOrderDAOImpl.update(order,false);
+						}
 						response.setAction(2);
 						response.setReturnValue(order);
 						response.setReturnCode(Response.SUCCESS);
@@ -1574,10 +1578,18 @@ public class InventoryService {
 						isTranferable = true;
 					break;
 				case InventoryOrder.STATUS_ACCOUNT_PROCESS:
-					if (user.equals(order.getOrder_Auditor()) || (order.getOrder_Auditor() == null || order.getOrder_Auditor().getUser_id()==0))
-						isEditable = true;
+					if (user.containFunction("inventoryOrder!acctUpdate")){
+						if (user.equals(order.getOrder_Auditor()) || (order.getOrder_Auditor() == null || order.getOrder_Auditor().getUser_id()==0))
+							isEditable = true;
+					}
 					if (user.equals(order.getOrder_Auditor()))
 						isTranferable = true;
+					
+					break;
+				case InventoryOrder.STATUS_WAITING_AUDIT :
+					if (user.containFunction("inventoryOrder!acctAuditOrder"))
+						isEditable = true;
+					isTranferable = false;
 					break;
 				case InventoryOrder.STATUS_ACCOUNT_COMPLETE :
 					isEditable = true;
