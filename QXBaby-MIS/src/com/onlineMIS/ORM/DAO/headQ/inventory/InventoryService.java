@@ -516,7 +516,7 @@ public class InventoryService {
 		
 		order.setOrder_ComplTime(new Date());
 		
-		order.setOrder_Auditor(auditor);
+		//order.setOrder_Auditor(auditor);
 		
 		boolean saveOrder = false;
 		try{
