@@ -19,6 +19,7 @@
         </id>
         <many-to-one name="entity" fetch="select" column="entity_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="false" lazy="false"/>
         <many-to-one name="expenseType" fetch="select" column="expense_type_id" class="ExpenseType" not-null="false" lazy="false"/>
+		<property name="feeType" column="fee_type" type="integer" not-null="false"/>
 		<property name="amount" column="amount" type="double"/>
 		<property name="comment" column="comment" type="string"/>
 		<property name="userId" column="user_id" type="integer"/>

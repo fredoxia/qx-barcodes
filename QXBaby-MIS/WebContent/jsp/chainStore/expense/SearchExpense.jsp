@@ -39,6 +39,7 @@ $(document).ready(function(){
 					{field:'entity', width:120,title:'店铺'},	
 					{field:'expenseDate', width:100,title:'费用日期'},	
 					{field:'expenseType', width:100,title:'费用类别'},
+					{field:'feeType', width:100,title:'支付方式'},
 					{field:'amount', width:60,title:'金额'},
 					{field:'userName', width:70,title:'修改人员'}	,
 					{field:'comment', width:200,title:'备注'}	,

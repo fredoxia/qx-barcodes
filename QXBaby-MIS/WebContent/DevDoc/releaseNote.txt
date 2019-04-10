@@ -186,7 +186,10 @@ Release Summary
 		DB	: 1. add chain_transfer_order，chain_transfer_order_product，  chain_transfer_log，chain_transfer_order_flow_acct
 			  2. add shipping_address to chain_store_conf
 			  
-Release Date 
+Release Date done
 Release Summary       
 		DB	: 1. add allow_vip_other_chain_vipscore in chain_store_conf
+		
+Release Date
+Release Summary : 1. add the fee_type column to the expense table		
 		  	                  

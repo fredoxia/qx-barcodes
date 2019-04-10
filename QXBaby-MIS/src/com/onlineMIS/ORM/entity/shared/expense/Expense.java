@@ -12,6 +12,7 @@ public class Expense implements Serializable{
 	private int id;
 	private ChainStore entity = new ChainStore();
 	private ExpenseType expenseType;
+	private int feeType;
 	private double amount;
 	private String comment;
 	private int userId;
@@ -22,6 +23,12 @@ public class Expense implements Serializable{
 
 	
 	
+	public int getFeeType() {
+		return feeType;
+	}
+	public void setFeeType(int feeType) {
+		this.feeType = feeType;
+	}
 	public ChainStore getEntity() {
 		return entity;
 	}
