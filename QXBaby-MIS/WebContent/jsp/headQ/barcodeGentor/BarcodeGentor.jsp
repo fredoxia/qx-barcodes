@@ -300,11 +300,9 @@ function clickSize(){
             <s:select name="formBean.productBarcode.product.quarter.quarter_ID" size="1" id="quarter_ID" list="uiBean.basicData.quarterList" listKey="quarter_ID" listValue="quarter_Name"  />
       </td>
       <td width="85"><strong>品牌：</strong></td>
-      <td colspan="2">
+      <td colspan="3">
          <%@ include file="SearchBrandStub.jsp"%>
-      </td>
-      
-      <td>&nbsp;</td>        
+      </td>     
     </tr>
     <tr class="InnerTableContent">
       <td height="19"><strong>齐码数量：</strong></td>

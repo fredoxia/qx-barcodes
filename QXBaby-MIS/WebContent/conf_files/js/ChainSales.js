@@ -95,12 +95,7 @@ function backRetrievePByBarcodeProcess(data){
     	if ($.isNumeric(defaultDiscount) && defaultDiscount > 0 && defaultDiscount <= 1){
     		discount = defaultDiscount;
     	}
-    	
-    	//@temp fix 2015.12月作废
-    	//对于南充连锁店的2015秋的衣服0.8折处理
-    	if ($("#chainStore").val()==84 && data.productBarcode.product.year.year_ID == 5 && data.productBarcode.product.quarter.quarter_ID == 3){
-    		discount = 0.8;
-    	}
+
     	
 		var barcode = data.productBarcode.barcode;
 		var productId = data.productBarcode.id;
