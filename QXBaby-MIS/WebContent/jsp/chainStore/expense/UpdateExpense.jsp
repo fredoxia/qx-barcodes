@@ -41,14 +41,10 @@ function changeChainStore(chainId){
    	<table width="95%" align="center"  class="OuterTable">
 	    <tr><td>
 		<table width="100%" border="0">
-		    <tr class="PBAOuterTableTitale">
-		       <td height="50" colspan="3" >连锁店消费记录
-		       <s:hidden name="formBean.expense.id"/>
-		       </td>
-	        </tr>
 		    <tr class="InnerTableContent">
 		      <td width="18%">连锁店 *</td>
 		      <td colspan="2">
+		      <s:hidden name="formBean.expense.id"/>
 					<s:hidden name="formBean.chainStore.chain_id" id="chainId"/>
 					<s:textfield name="formBean.chainStore.chain_name" id="chainName" size="18" readonly="true"/>
 		      </td>
