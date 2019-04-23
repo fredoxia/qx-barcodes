@@ -339,14 +339,14 @@ public class FinanceService {
 				if (type == FinanceCategory.PREPAY_ACCT_TYPE)
 					offset *= -1;
 				
-			    ChainFinanceTrace financeTrace = new ChainFinanceTrace(chainId, type, billId, amount * offset, bill.getBillDate());
+			    ChainFinanceTrace financeTrace = new ChainFinanceTrace(chainId, type, billId, amount * offset, new java.sql.Date(bill.getCreateDate().getTime()));
 			    chainFinanceTraceImpl.save(financeTrace, false);
 			} 
 		}
 		
 		//2. if it is prepaid bill, need insert a prepaid amount
 		if (billType == FinanceBill.FINANCE_PREINCOME_HQ){
-		    ChainFinanceTrace financeTrace = new ChainFinanceTrace(chainId, FinanceCategory.PREPAY_ACCT_TYPE, billId, totalAmt * offset , bill.getBillDate());
+		    ChainFinanceTrace financeTrace = new ChainFinanceTrace(chainId, FinanceCategory.PREPAY_ACCT_TYPE, billId, totalAmt * offset , new java.sql.Date(bill.getCreateDate().getTime()));
 		    chainFinanceTraceImpl.save(financeTrace, false);
 		}
 		
@@ -395,7 +395,7 @@ public class FinanceService {
     		   financeBillImpl.update(bill, true);
     		}
 			
-			ChainAcctFlow chainAcctFlow = new ChainAcctFlow(chainId, netAmt, "F," + bill.getId() + "," + isCancel, bill.getBillDate());
+			ChainAcctFlow chainAcctFlow = new ChainAcctFlow(chainId, netAmt, "F," + bill.getId() + "," + isCancel, new java.sql.Date(bill.getCreateDate().getTime()));
 			chainAcctFlowDaoImpl.save(chainAcctFlow, true);
 		}
 		
