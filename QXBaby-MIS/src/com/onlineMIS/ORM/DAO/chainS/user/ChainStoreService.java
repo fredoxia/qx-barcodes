@@ -94,23 +94,28 @@ public class ChainStoreService {
 			if (priceIncrementId == 0)
 				chainStore.setPriceIncrement(null);
 			
-			//验证parent store 不是自己，自己和parent store 之间没有循环
 			ChainStore parentStore = chainStore.getParentStore();
-			if (parentStore.getParentStore() != null && parentStore.getParentStore().getChain_id() != 0){
-				response.setFail("父连锁店 上面还有一层连锁店，请检查");
-				return response;
+			if (parentStore != null && parentStore.getChain_id() != 0){
+                parentStore = chainStoreDaoImpl.get(parentStore.getChain_id(), true);
 				
+                if (parentStore.getParentStore() != null && parentStore.getParentStore().getChain_id() != 0){
+    				response.setFail("父连锁店 上面还有一层连锁店，请检查");
+    				return response;
+                } else {
+    				DetachedCriteria criteriaCheck = DetachedCriteria.forClass(ChainStore.class);
+    				criteriaCheck.add(Restrictions.eq("parentStore.chain_id", parentStore.getChain_id()));
+    				
+    				List<ChainStore> stores = chainStoreDaoImpl.getByCritera(criteriaCheck, true);
+
+    				if (stores.size() >0){
+    					response.setFail("你所选择的父连锁店 已经包含一个子连锁店请检查 : " + stores.get(0).getChain_name());
+    					return response;
+    				}
+                }
+
 			//检查选择的父连锁店是否已经存在其他的子连锁店，否则不允许。当前只允许一个子连锁店
 			} else {
-				DetachedCriteria criteriaCheck = DetachedCriteria.forClass(ChainStore.class);
-				criteriaCheck.add(Restrictions.eq("parentStore.chain_id", parentStore.getChain_id()));
-				
-				List<ChainStore> stores = chainStoreDaoImpl.getByCritera(criteriaCheck, true);
-
-				if (stores.size() >0){
-					response.setFail("你所选择的父连锁店 已经包含一个子连锁店请检查 : " + stores.get(0).getChain_name());
-					return response;
-				}
+				chainStore.setParentStore(null);
 			}
 			
 			chainStoreDaoImpl.saveOrUpdate(chainStore, cached);
