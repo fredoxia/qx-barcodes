@@ -229,7 +229,7 @@ $(document).ready(function(){
 	  	     <td>&nbsp;</td>
 			 <td>
 			     <!-- for user, 1. the order is not in Complete status, 2. the order status ==1 || 2 -->
-				 <s:if test="#session.LOGIN_USER.containFunction('inventoryOrder!acctProcess')  && (formBean.order.order_Status==1  || formBean.order.order_Status==2)">
+				 <s:if test="#session.LOGIN_USER.containFunction('inventoryOrder!acctUpdate')  && (formBean.order.order_Status==1  || formBean.order.order_Status==2)">
 				     <input type="button" value="会计修改" onclick="edit();"/>
 				 </s:if>
 			 </td>			 					 		
