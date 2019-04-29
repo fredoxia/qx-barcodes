@@ -18,6 +18,8 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	public static final String OPERATION_TYPE_CONSUMP = "C";
 	public static final String DEPOSIT_TYPE_CASH = "C";
 	public static final String DEPOSIT_TYPE_CARD = "D";
+	public static final String DEPOSIT_TYPE_WECHAT = "W";
+	public static final String DEPOSIT_TYPE_ALIPAY = "A";
 	private int id;
 
 	private ChainStore chainStore;
@@ -32,6 +34,8 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	/**
 	 * C:现金
 	 * D:刷卡
+	 * W:微信
+	 * A:支付宝
 	 */
 	private String depositType = "";
 	private double amount;

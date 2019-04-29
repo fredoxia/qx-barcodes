@@ -28,6 +28,12 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 		} else if (this.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH)){
 			prepaidType = "充值";
 			depositCash = amount;
+		} else if (this.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_WECHAT)){
+			prepaidType = "充值";
+			depositWechat = amount;
+		} else if (this.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_ALIPAY)){
+			prepaidType = "充值";
+			depositAlipay = amount;
 		}
 		dateUI = Common_util.dateFormat.format(c.getDateD());
 		
@@ -43,6 +49,8 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	private String prepaidType = "";
 	private String depositCash = "-";
 	private String depositCard = "-";
+	private String depositWechat = "-";
+	private String depositAlipay = "-";
 	private String consump = "-";
 	private String dateUI = "";
 	private String statusS = "";

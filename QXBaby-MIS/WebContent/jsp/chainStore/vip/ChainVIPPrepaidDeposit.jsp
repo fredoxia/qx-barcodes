@@ -111,7 +111,7 @@ function changeChainStore(chainId){
 		    <tr class="InnerTableContent">
 		      <td>现金/刷卡 *</td>
 		      <td colspan="2">
-		      	<s:select id="depositType" name="formBean.vipPrepaid.depositType"  list="#{'C':'现金','D':'刷卡'}" listKey="key" listValue="value" headerKey="" headerValue="------" />
+		      	<s:select id="depositType" name="formBean.vipPrepaid.depositType"  list="#{'C':'现金','D':'刷卡','W':'微信','A':'支付宝'}" listKey="key" listValue="value" headerKey="" headerValue="------" />
 		      </td>
 		    </tr>		    
 		    <tr class="InnerTableContent">

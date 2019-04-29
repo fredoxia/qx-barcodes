@@ -199,6 +199,26 @@ function showSalesReport(report){
 	          (report.myAmount).toFixed(2) +"</td><td>"+
 	          <s:if test="#session.LOGIN_CHAIN_USER.containFunction('purchaseAction!seeCost')">(report.myCost).toFixed(2) </s:if><s:else>"-"</s:else> +"</td><td>"+
 	          "</td><td>"+ (report.vipPrepaidDepositCash).toFixed(2)+"</td><td>"+(report.vipPrepaidDepositCard).toFixed(2)+"</td><td>"+(report.vipPrepaidAccumulate).toFixed(2)+"</td></tr>").appendTo("#reportTable");    
+	$("<tr class='PBAInnerTableTitale'>"+
+		       "<td height='20'></td>"+
+			   "<td></td>"+
+			   "<td></td>"+
+			   "<td></td>"+
+			   "<td>&nbsp;</td>"+
+			   "<td></td>"+
+			   "<td></td>"+
+			   "<td></td>"+
+			   "<td></td>"+ 
+			   "<td>预存支付宝</td>"+
+			   "<td>预存微信</td>"+
+			   "<td></td>"+
+			   "</tr>").appendTo("#reportTable");
+			
+ $("<tr class='InnerTableContent'><td></td><td></td><td>"+
+	          "</td><td></td><td>"+
+	          "&nbsp;</td><td></td><td>"+
+	          "</td><td></td><td>"+
+	          "</td><td>"+ (report.vipPrepaidDepositAlipay).toFixed(2)+"</td><td>"+(report.vipPrepaidDepositWechat).toFixed(2)+"</td><td></td></tr>").appendTo("#reportTable");  
 }
 </script>
 </head>
