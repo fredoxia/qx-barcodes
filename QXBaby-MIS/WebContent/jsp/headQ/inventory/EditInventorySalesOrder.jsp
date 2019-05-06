@@ -170,7 +170,7 @@ $(document).ready(function(){
 			 <td><input type="button" value="删除订单" onclick="deleteOrder();"/></td>			 					 		
 			 <td><input type="button" value="下载配货单" onclick="downloadOrder();"/><input type="button" value="打印小票配货" onclick="printPOSOrder();"/></td>	
 	  </tr>
-	</s:elseif><s:elseif test="#session.LOGIN_USER.containFunction('inventoryOrder!acctProcess') || #session.LOGIN_USER.roleType == 99">
+	</s:elseif><s:elseif test="#session.LOGIN_USER.containFunction('inventoryOrder!acctUpdate') || #session.LOGIN_USER.roleType == 99">
 	  <tr height="10">
 	         <td>&nbsp;</td>
 	  	     <td>&nbsp;</td>
