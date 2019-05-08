@@ -139,6 +139,10 @@ public class ChainVIPScoreImpl extends BaseDAO<ChainVIPScore> {
 				additionalComment += "预存刷卡 ";
 			else if (vipPrepaid.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_CASH))
 				additionalComment += "预存现金 ";
+			else if (vipPrepaid.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_ALIPAY))
+				additionalComment += "预存支付宝 ";
+			else if (vipPrepaid.getDepositType().equalsIgnoreCase(ChainVIPPrepaidFlow.DEPOSIT_TYPE_WECHAT))
+				additionalComment += "预存微信 ";			
 			vipScore.setComment(additionalComment + vipPrepaid.getComment());
 			vipScore.setDate(vipPrepaid.getCreateDate());
 			vipScore.setOrderId(vipPrepaid.getId());

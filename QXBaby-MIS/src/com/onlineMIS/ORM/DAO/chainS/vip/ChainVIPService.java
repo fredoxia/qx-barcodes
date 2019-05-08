@@ -1040,8 +1040,8 @@ public class ChainVIPService {
 		//1. 第一步保存 prepaid
 		chainStore = chainStoreDaoImpl.get(chainId, true);
 		vipPrepaid.setChainStore(chainStore);
-		vipPrepaid.setCreateDate(new java.util.Date());
-		vipPrepaid.setDateD(Common_util.getToday());
+		vipPrepaid.setCreateDate(Common_util.getToday());
+		//vipPrepaid.setDateD(Common_util.getToday());
 		vipPrepaid.setOperationType(ChainVIPPrepaidFlow.OPERATION_TYPE_DEPOSIT);
 		vipPrepaid.setOperator(operator);
 		vipPrepaid.setVipCard(vipCard);
