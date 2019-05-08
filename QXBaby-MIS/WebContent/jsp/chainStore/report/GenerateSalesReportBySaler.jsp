@@ -63,7 +63,11 @@ $(document).ready(function(){
 					{field:'receiveAmtSum', width:55,title:'刷卡+现金等',sortable:true,order:'desc',
 							formatter: function (value, row, index){
 								return (row.receiveAmtSum).toFixed(0);
-						}},					
+						}},		
+						{field:'vipPrepaidAmt', width:57,title:'预存消费',
+							formatter: function (value, row, index){
+								return (row.vipPrepaidAmt).toFixed(0);
+						}},							
 					{field:'netSaleCostSum', width:65,title:'净售成本',
 						formatter: function (value, row, index){
 							return (row.netSaleCostSum).toFixed(0);

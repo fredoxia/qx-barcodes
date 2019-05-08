@@ -1785,7 +1785,7 @@ public class ChainInventoryFlowOrderService {
 
 		if (parentId == 0){
 			//@2. 展开所有年份的库存信息
-			String hql = "SELECT SUM(costTotal),SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause;
+			String hql = "SELECT SUM(costTotal),SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause;
 			
 			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, null, null, true);
 			
@@ -1802,7 +1802,7 @@ public class ChainInventoryFlowOrderService {
 		    }
 		} else if (yearId == 0){
 			//@2. 展开所有年份的库存信息
-			String hql = "SELECT his.productBarcode.product.year.year_ID, SUM(costTotal),SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" GROUP BY his.productBarcode.product.year.year_ID ";
+			String hql = "SELECT his.productBarcode.product.year.year_ID, SUM(costTotal),SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" GROUP BY his.productBarcode.product.year.year_ID ";
 			
 			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, null, null, true);
 			
@@ -1822,7 +1822,7 @@ public class ChainInventoryFlowOrderService {
 		    }
 		} else if (quarterId == 0){
 			//@2. 展开所有季的库存信息
-			String hql = "SELECT his.productBarcode.product.quarter.quarter_ID, SUM(costTotal), SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? GROUP BY his.productBarcode.product.quarter.quarter_ID";
+			String hql = "SELECT his.productBarcode.product.quarter.quarter_ID, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? GROUP BY his.productBarcode.product.quarter.quarter_ID";
 			Object[] values = { yearId};
 			
 			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
@@ -1846,7 +1846,7 @@ public class ChainInventoryFlowOrderService {
 		    }
 		} else if (brandId == 0){
 			//@2. 展开所有品霞的库存信息
-			String hql = "SELECT his.productBarcode.product.brand.brand_ID, SUM(costTotal), SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? GROUP BY his.productBarcode.product.brand.brand_ID";
+			String hql = "SELECT his.productBarcode.product.brand.brand_ID, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? GROUP BY his.productBarcode.product.brand.brand_ID";
 			Object[] values = {yearId, quarterId};
 			
 			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
@@ -1878,7 +1878,7 @@ public class ChainInventoryFlowOrderService {
 		    }
 		} else if (brandId != 0) {
 			//@2. 展开当前品霞的库存信息
-			String hql = "SELECT his.productBarcode.id, SUM(costTotal), SUM(salePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.brand.brand_ID=? GROUP BY his.productBarcode.id";
+			String hql = "SELECT his.productBarcode.id, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.brand.brand_ID=? GROUP BY his.productBarcode.id";
 			Object[] values = { yearId, quarterId, brandId};
 			
 			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
