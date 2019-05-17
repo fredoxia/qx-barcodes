@@ -358,5 +358,56 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		
 		return SUCCESS;	
 	}
+	
+	/**
+	 * 验证密码
+	 * @return
+	 */
+	public String validateVIPPassword(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"validateVIPPassword : " + formBean);
+    	
+		Response response = new Response();
+		try {
+		    response = chainVIPService.validatePassword(formBean.getVipCard());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		try {
+		       jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e ){
+				e.printStackTrace();
+		}
 
+		
+		return SUCCESS;	
+	}
+
+	/**
+	 * 验证密码
+	 * @return
+	 */
+	public String updateVIPPassword(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"updateVIPPassword : " + formBean);
+    	
+		Response response = new Response();
+		try {
+		    response = chainVIPService.updateVIPPassword(userInfor, formBean.getVipCard().getId(), formBean.getVipCard().getPassword());
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+		}
+		
+		try {
+		       jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e ){
+				e.printStackTrace();
+		}
+
+		
+		return SUCCESS;	
+	}
 }

@@ -46,7 +46,7 @@ function searchOrdersBackProcess(data){
 			    }
 
 				if (orders[i].vipCard != null && orders[i].vipCard.id != undefined)
-					isVip = "是";
+					isVip = orders[i].vipCard.vipCardNo;
 		        if (orders[i] != "")  {
 			        var urlLink = "chainSalesJSPAction!getSalesOrderById?formBean.chainSalesOrder.id=" + orders[i].id;
 			          $("<tr class='InnerTableContent' style='" + bg + color +"' align='center'><td height='27'>"+ (j + pager.firstResult) +"</td><td>"+
@@ -188,12 +188,12 @@ function backProcessChangeChainStore(data){
 						<table width="100%"  align="left"  id="org_table">
 						  <tr class="PBAInnerTableTitale" align="center">
 						    <th width="20" height="35"></th>
-						    <th width="55">单据号</th>
+						    <th width="45">单据号</th>
 						    <th width="110">连锁店</th>
 						    <th width="75">单据日期</th>
 						    <th width="85">过账日期</th>
 						    <th width="40">状态</th>
-						    <th width="40">VIP</th>
+						    <th width="50">VIP</th>
 						    <th width="70">经手人</th>
 						    <th width="60">销售数量</th>
 						    <th width="60">销售金额</th>

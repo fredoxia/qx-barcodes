@@ -438,7 +438,9 @@
             <result name="upgradeVIP">/jsp/chainStore/vip/ChainVIPUpgrade.jsp</result>
             <result name="updateVIPScore">/jsp/chainStore/vip/ChainVIPScoreUpdate.jsp</result>
             <result name="depositVIPPrepaid">/jsp/chainStore/vip/ChainVIPPrepaidDeposit.jsp</result> 
-            <result name="searchVIPPrepaid">/jsp/chainStore/vip/SearchVIPPrepaidFlows.jsp</result>    
+            <result name="searchVIPPrepaid">/jsp/chainStore/vip/SearchVIPPrepaidFlows.jsp</result>  
+            <result name="updatePassword">/jsp/chainStore/vip/ChainVIPUpdatePassword.jsp</result>    
+            
         </action>  
                 <!-- the finance action -->
         <action name="financeChainJSP" class="com.onlineMIS.action.chainS.finance.FinanceChainJSPAction">

@@ -73,17 +73,34 @@ function draftOrderBKProcess(data){
         alert(returnMsg);
     }
 }
-function postSalesOrder2(){
-	postSalesOrder2();
-	postSalesOrder2();
-}
+
 function postSalesOrder(){
-	$("#submitBt").attr("disabled", true);
 
 	var isValidDraf = validateDraftSalesForm();
 	var isValidSalesOrder = validateSalesOrder(SALES_ORDER);
 	if (isValidDraf && isValidSalesOrder){
-		  $.messager.progress({
+		if ($("#chainPrepaidAmt").val() != 0){
+			var tips = "请输入VIP的密码";
+			$.messager.prompt("密码验证",tips, function(password){
+				var vipId = $("#vipCardIdHidden").val();
+				var params = "formBean.vipCard.id=" + vipId + "&formBean.vipCard.password=" + password
+				
+				$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!validateVIPPassword",params, postValidateVIPProcess,"json");    
+			});
+		} else {
+			submitOrder()
+		}
+
+		//$.post("<%=request.getContextPath()%>/actionChain/chainPostSalesJSONAction!postSalesOrder",params, postOrderBKProcess,"json");
+	} else {
+		$("#submitBt").removeAttr("disabled");
+	}
+}
+
+function submitOrder(){
+	 $("#submitBt").attr("disabled", true);
+
+	  $.messager.progress({
 			title : '提示',
 			text : '单据过账中，打印小票....'
 		   });
@@ -96,7 +113,7 @@ function postSalesOrder(){
 	    		timeout: 30000, 
 	            dataType: 'json',        
 	            error: function(XMLHttpRequest, textStatus, errorThrown){ 
-	            	alert("提交单据发生异常 : ");
+	            	$.messager.alert('失败警告', "提交单据发生异常 。 ", 'error');
 	            	$.messager.progress('close'); 
 	            	$("#submitBt").removeAttr("disabled");
 	            }, 
@@ -105,9 +122,14 @@ function postSalesOrder(){
 	            	postOrderBKProcess(result);
 	            }
 				});
-		   //$.post("<%=request.getContextPath()%>/actionChain/chainPostSalesJSONAction!postSalesOrder",params, postOrderBKProcess,"json");
+}
+
+function postValidateVIPProcess(data){
+
+	if (data.returnCode == SUCCESS){
+        submitOrder();
 	} else {
-		$("#submitBt").removeAttr("disabled");
+		$.messager.alert('失败警告', data.message, 'error');
 	}
 }
 
@@ -132,7 +154,7 @@ function postOrderBKProcess(data){
 		window.location.href = "chainSalesJSPAction!preNewSalesOrder?formBean.chainSalesOrder.saler.user_id=" + salerId;
 	} else {
 		$.messager.progress('close'); 
-        alert(returnMsg);
+        $.messager.alert('失败警告', returnMsg, 'error');
         $("#submitBt").removeAttr("disabled");
     }
 }

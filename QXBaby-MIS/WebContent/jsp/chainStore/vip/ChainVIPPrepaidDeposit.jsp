@@ -16,29 +16,51 @@ $(document).ready(function(){
 function deposit(){
     var chainId = $("#chainId").val();
     if (chainId == "" || chainId == 0){
-		alert("连锁店是必选项");
+
+		$.messager.alert('失败警告', "连锁店是必选项", 'error');
 		return ;
 	}
     
     var vipId = $("#vipCardIdHidden").val();
     if (vipId == "" || vipId == 0){
-		alert("VIP卡是必选项");
+
+		$.messager.alert('失败警告', "VIP卡是必选项", 'error');
 		$("#vipCardNo").focus();
 		return ;
 	}
 	
     var depositType = $("#depositType").val();
 	if (depositType == ""){
-		alert("现金/刷卡必须正确选择，否则帐目将无法正确");
+
+		$.messager.alert('失败警告', "现金/刷卡必须正确选择，否则帐目将无法正确", 'error');
 		return ;
 	}
 	
     var amount = $("#amount").val();
 	if (amount == "" || amount == 0){
-		alert("充值金额 必须大于0");
+
+		$.messager.alert('失败警告', "充值金额 必须大于0", 'error');
 		return ;
 	}
+	var tips = "请输入VIP的密码";
+	$.messager.prompt("密码验证",tips, function(password){
+		var vipId = $("#vipCardIdHidden").val();
+		var params = "formBean.vipCard.id=" + vipId + "&formBean.vipCard.password=" + password
 		
+		$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!validateVIPPassword",params, postValidateVIPProcess,"json");    
+	});	
+
+}
+
+function postValidateVIPProcess(data){
+	if (data.returnCode == SUCCESS){
+        submitOrder();
+	} else {
+		$.messager.alert('失败警告', data.message, 'error');
+	}
+}
+
+function submitOrder(){
 	var params = $("#vipPrepaidDepositForm").serialize();
 	$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!saveVIPPrepaidDeposit",params, backProcessDepositPrepaid,"json");
 	$.messager.progress({
