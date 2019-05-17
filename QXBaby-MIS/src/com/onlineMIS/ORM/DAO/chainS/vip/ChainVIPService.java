@@ -692,7 +692,7 @@ public class ChainVIPService {
 		 */
 		Map<Integer, Double> vipPrepaidAccumulated = new HashMap<Integer, Double>();
 		
-		if (vipCards.size() < 10000){
+		if (vipCards.size() < 20000){
 			vipScoreMap = chainVIPScoreImpl.getVIPCardScore(vipCards);
 			vipLastConsumpMap = chainVIPScoreImpl.getVIPCardLastConsump(vipCards);
 			vipPrepaidAccumulated = chainVIPPrepaidImpl.getVIPPrepaidAccumulateMap(vipCards);
