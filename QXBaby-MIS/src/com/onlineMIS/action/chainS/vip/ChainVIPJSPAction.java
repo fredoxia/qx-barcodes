@@ -449,4 +449,17 @@ public class ChainVIPJSPAction extends ChainVIPAction {
 		
 		return "searchVIPPrepaid";
 	}
+	
+	/**
+	 * 显示更新密码的页面
+	 * @return
+	 */
+	public String preUpdateVIPPassword(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.info(userInfor.getName() + " : chainVipJSPAction - preUpdateVIPPassword");
+
+		chainVIPService.prepareUpdatePasswordUI(formBean);
+		
+		return "updatePassword";
+	}
 }

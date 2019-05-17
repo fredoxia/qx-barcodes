@@ -76,7 +76,15 @@ public class ChainVIPCard implements Serializable {
     public static final int STATUS_CONSUMP_MORE_180 = 1;
     private int statusConsump = 0;
     
- 
+    private String password;
+    
+    
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	public int getStatusConsump() {
 		return statusConsump;
 	}

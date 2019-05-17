@@ -28,6 +28,7 @@
         <property name="status" column="status" type="integer"/>
         <property name="birthDay" column="birth_day" type="integer"/>
         <property name="birthMonth" column="birth_month" type="integer"/>
+        <property name="password" column="password" type="string" not-null="false"/>
         <many-to-one name="issueChainStore" column="issue_chain_store_id" fetch="join" lazy="false" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore"/>
      </class> 
      

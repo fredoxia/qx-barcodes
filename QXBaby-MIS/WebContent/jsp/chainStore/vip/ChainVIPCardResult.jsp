@@ -25,7 +25,7 @@ function openCardWin(url){
 function validateSubmit(){
 	var vipTypeId = $("input:radio[name='formBean.selectedCardId']:checked").val();
 	if (vipTypeId == null){
-       alert("请选中其中一个VIP卡,然后继续");
+       $.messager.alert('失败警告', "请选中其中一个VIP卡,然后继续", 'error');
        return false;
 	} else
 		return true;
@@ -146,11 +146,57 @@ function updateVipScoreBk(data){
 		flag = true;
 		var dialogA = $.modalDialog.handler;
 		dialogA.dialog('close');
-		alert("成功调整VIP积分");
 	    document.vipCardListForm.action="chainVIPJSPAction!searchVIPCards";
 	    document.vipCardListForm.submit();
 	} else 
-		alert(response.message);
+	    $.messager.alert('失败警告', response.message, 'error');
+}
+function showUpdatePasswordDialog(){
+	if (validateSubmit()){
+		var param = "formBean.vipCard.id="  + $("input:radio[name='formBean.selectedCardId']:checked").val() ;
+		
+		$.modalDialog({
+			title : '修改VIP密码',
+			width : 350,
+			height : 220,
+			modal : false,
+			href : '<%=request.getContextPath()%>/actionChain/chainVIPJSPAction!preUpdateVIPPassword?' + param,
+			buttons : [ {
+				text : '修改密码',
+				handler : function() {
+					updatePassword(); 
+				}
+			} ]
+			});
+	}
+}
+function updatePassword(){
+	 if ($('#vipPasswordUpdateForm').form('validate')){
+		 var password1= $("#password1").val();
+		 var password2= $("#password2").val();
+		 if (password1.length >6 || password2.length >6){
+			 $.messager.alert('失败警告', "密码不能超过六位字符", 'error');
+			 return ;
+		 } else if (password1 != password2){
+			 $.messager.alert('失败警告', "两次输入的密码不一致", 'error');
+			 return ;
+		 }
+		 
+		    var params = $("#vipPasswordUpdateForm").serialize(); 
+		    //var params += "&formBean.chainUserInfor.myChainStore.chain_id =" + chainId;
+		    $.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!updateVIPPassword",params, updateVipPasswordBk,"json");
+	 }
+}
+function updateVipPasswordBk(data){
+	var returnCode = data.returnCode;
+
+	if (returnCode == SUCCESS){
+
+		var dialogA = $.modalDialog.handler;
+		dialogA.dialog('close');
+		$.messager.alert('消息', "成功更新密码", 'info');
+	} else 
+		$.messager.alert('失败警告', data.message, 'error');
 }
 </script>
 </head>
@@ -245,6 +291,7 @@ function updateVipScoreBk(data){
 		      <td width="20%"><s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainVIPJSPAction!startVIPCard')"><input type="button" value="启用" onClick="startVIP();"/>&nbsp;</s:if>
 		      				  <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainVIPJSPAction!stopVIPCard')"><input type="button" value="停用" onclick="stopVIP();"/>&nbsp;</s:if>
 		                      <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainVIPJSPAction!lostVIPCard')"><input type="button" value="挂失" onclick="lostVIP();"/></s:if>
+		                      <input type="button" value="重设密码" onclick="showUpdatePasswordDialog();"/>
 		      </td>
 		      <td width="45%"><input type="button" value="VIP积分调整" onclick="updateVIPScoreDialog();"/>
 		                      <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainVIPJSPAction!preUpgradeVIP')"><input type="button" value="VIP升级" onclick="upgradeVIPDialog();"/></s:if>
