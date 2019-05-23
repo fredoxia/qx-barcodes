@@ -42,18 +42,33 @@ function deposit(){
 		$.messager.alert('失败警告', "充值金额 必须大于0", 'error');
 		return ;
 	}
-	var tips = "请输入VIP的密码";
-	$.messager.prompt("密码验证",tips, function(password){
+	
+	if ($("#prepaidPasswordRequired").val() == 1) {
+		var tips = "请输入VIP的密码";
 		var vipId = $("#vipCardIdHidden").val();
-		var params = "formBean.vipCard.id=" + vipId + "&formBean.vipCard.password=" + password
-		
-		$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!validateVIPPassword",params, postValidateVIPProcess,"json");    
-	});	
+		var params = "formBean.vipCard.id=" + vipId
+		$.modalDialog({
+			title : '请输入VIP密码',
+			width : 350,
+			height : 240,
+			modal : true,
+			href : '<%=request.getContextPath()%>/actionChain/chainVIPJSPAction!showVIPEnterPasswordPage?' + params,
+			buttons : [ {
+				text : '提交信息',
+				handler : function() {
+					validateVIPPassword(); 
+				}
+			} ]
+			});
+	} else 
+		submitOrder();
 
 }
 
 function postValidateVIPProcess(data){
 	if (data.returnCode == SUCCESS){
+		var dialogA = $.modalDialog.handler;
+		dialogA.dialog('close');
         submitOrder();
 	} else {
 		$.messager.alert('失败警告', data.message, 'error');
@@ -73,8 +88,6 @@ function backProcessDepositPrepaid(data){
 	$.messager.progress('close'); 
     var response = data.response;
     if (response.returnCode == SUCCESS){
-       alert(response.message);
-       
        var prepaid = response.returnValue;
        try {
     	   //alert((prepaid.accumulateVipPrepaid).toFixed(0));
@@ -86,16 +99,44 @@ function backProcessDepositPrepaid(data){
        document.vipPrepaidDepositForm.action = "actionChain/chainVIPJSPAction!preDepositVIPPrepaid";
 	   document.vipPrepaidDepositForm.submit();
     } else 
-       alert("操作失败:" + response.message);
+       $.messager.alert('失败警告', response.message, 'error');
 }
 
 function changeChainStore(chainId){
+	if (chainId != 0){
+		var params="formBean.chainStoreConf.chainId=" + chainId;
+		$.post("<%=request.getContextPath()%>/actionChain/chainMgmtJSON!getChainStoreConf",params, backProcessGetChainStore,"json");
+	}
+}
+function backProcessGetChainStore(data){
+	var response =  data.response;
+	var returnCode = response.returnCode;
+
+	if (returnCode != SUCCESS){
+		$.messager.alert('失败警告', response.message, 'error');
+	} else {
+		var chainStoreConf = response.returnValue;
+	
+		if (chainStoreConf != null){
+			 var printCopy = chainStoreConf.printCopy;
+			 var address = chainStoreConf.address;
+			 var prepaidType = chainStoreConf.prepaidCalculationType;
+			 var prepaidPasswordRequired = chainStoreConf.prepaidPasswordRequired;
+			 
+			 $("#printCopy").attr("value", printCopy);
+			 $("#address").attr("value",address);
+			 $("#prepaidType").attr("value",prepaidType);
+			 $("#prepaidPasswordRequired").attr("value",prepaidPasswordRequired);
+			 
+		}
+	}
 }
 </script>
 </head>
 <body>
    <s:hidden name="uiBean.chainStoreConf.printCopy" id="printCopy"/>
    <s:hidden name="uiBean.chainStoreConf.address" id="address"/>
+   <s:hidden name="uiBean.chainStoreConf.prepaidPasswordRequired" id="prepaidPasswordRequired"/>
    <s:hidden name="uiBean.chainStoreConf.prepaidCalculationType" id="prepaidCalculationType"/>
     
    <s:form action="" method="POST"  name="vipPrepaidDepositForm" id="vipPrepaidDepositForm" theme="simple"> 

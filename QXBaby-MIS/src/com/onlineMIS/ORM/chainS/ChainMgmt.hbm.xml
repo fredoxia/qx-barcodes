@@ -35,6 +35,9 @@
         <property name="allowMyPrepaidCrossStore" column="allow_my_prepaid_cross_store" type="integer"/> 
         <property name="prepaidCalculationType" column="prepaid_calculation_type" type="integer"/> 
         <property name="allowOtherVIPUseVIPScore" column="allow_vip_other_chain_vipscore" type="integer"/>
+        
+        <property name="prepaidPasswordRequired" column="prepaid_use_require_password" type="integer"/>
+        
       </class>
       
       <class name="ChainStoreGroupElement" table="chain_store_group_element">

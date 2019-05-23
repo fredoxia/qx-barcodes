@@ -8,7 +8,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=8" />
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSales.js?v=9.9"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSales.js?v=9.14"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSalesKeys.js?v=8.4"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/HtmlTable.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/print/print.js?v=10.12"></script>
@@ -79,14 +79,23 @@ function postSalesOrder(){
 	var isValidDraf = validateDraftSalesForm();
 	var isValidSalesOrder = validateSalesOrder(SALES_ORDER);
 	if (isValidDraf && isValidSalesOrder){
-		if ($("#chainPrepaidAmt").val() != 0){
-			var tips = "请输入VIP的密码";
-			$.messager.prompt("密码验证",tips, function(password){
-				var vipId = $("#vipCardIdHidden").val();
-				var params = "formBean.vipCard.id=" + vipId + "&formBean.vipCard.password=" + password
-				
-				$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!validateVIPPassword",params, postValidateVIPProcess,"json");    
-			});
+		if ($("#chainPrepaidAmt").val() != 0 && $("#prepaidPasswordRequired").val() == 1){
+			var vipId = $("#vipCardIdHidden").val();
+			var params = "formBean.vipCard.id=" + vipId
+			$.modalDialog({
+				title : '请输入VIP密码',
+				width : 350,
+				height : 220,
+				modal : true,
+				href : '<%=request.getContextPath()%>/actionChain/chainVIPJSPAction!showVIPEnterPasswordPage?' + params,
+				buttons : [ {
+					text : '提交信息',
+					handler : function() {
+						validateVIPPassword(); 
+					}
+				} ]
+				});
+
 		} else {
 			submitOrder()
 		}
@@ -127,6 +136,8 @@ function submitOrder(){
 function postValidateVIPProcess(data){
 
 	if (data.returnCode == SUCCESS){
+		var dialogA = $.modalDialog.handler;
+		dialogA.dialog('close');
         submitOrder();
 	} else {
 		$.messager.alert('失败警告', data.message, 'error');
@@ -187,6 +198,7 @@ function updateTabWithSaler(){
     <s:hidden name="uiBean.chainStoreConf.address" id="address"/>
     <s:hidden name="uiBean.chainStore.printHeader" id="printHeader"/>
     <s:hidden name="uiBean.chainStoreConf.hideDiscountPrint" id="hideDiscountPrint"/>
+    <s:hidden name="uiBean.chainStoreConf.prepaidPasswordRequired" id="prepaidPasswordRequired"/>
 	<s:hidden name="formBean.token"/>
     <div data-options="region:'north',split:false,border:false,noheader:true" style="height:65px;overflow:hidden;">
     

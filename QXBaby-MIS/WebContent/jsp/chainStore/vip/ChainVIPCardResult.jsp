@@ -164,30 +164,14 @@ function showUpdatePasswordDialog(){
 			buttons : [ {
 				text : '修改密码',
 				handler : function() {
-					updatePassword(); 
+					validateVIPPassword(); 
 				}
 			} ]
 			});
 	}
 }
-function updatePassword(){
-	 if ($('#vipPasswordUpdateForm').form('validate')){
-		 var password1= $("#password1").val();
-		 var password2= $("#password2").val();
-		 if (password1.length >6 || password2.length >6){
-			 $.messager.alert('失败警告', "密码不能超过六位字符", 'error');
-			 return ;
-		 } else if (password1 != password2){
-			 $.messager.alert('失败警告', "两次输入的密码不一致", 'error');
-			 return ;
-		 }
-		 
-		    var params = $("#vipPasswordUpdateForm").serialize(); 
-		    //var params += "&formBean.chainUserInfor.myChainStore.chain_id =" + chainId;
-		    $.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!updateVIPPassword",params, updateVipPasswordBk,"json");
-	 }
-}
-function updateVipPasswordBk(data){
+
+function postValidateVIPProcess(data){
 	var returnCode = data.returnCode;
 
 	if (returnCode == SUCCESS){

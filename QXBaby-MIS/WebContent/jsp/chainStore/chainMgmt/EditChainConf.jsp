@@ -47,6 +47,7 @@ function backProcessGetChainStore(data){
 			 var prepaidType = chainStoreConf.prepaidCalculationType;
 			 var defaultVipScoreMultiple = chainStoreConf.defaultVipScoreMultiple;
 			 var allowVIPScore = chainStoreConf.allowOtherVIPUseVIPScore;
+			 var prepaidPasswordRequired = chainStoreConf.prepaidPasswordRequired;
 			 
 			 $("#amtType").val(discountAmtType).attr("selected", true);
 			 $("#printCopy").attr("value", printCopy);
@@ -61,6 +62,8 @@ function backProcessGetChainStore(data){
 			 $("#prepaidType").attr("value",prepaidType);
 			 $("#defaultVipScoreMultiple").attr("value",defaultVipScoreMultiple);
 			 $("#vipScoreUsage").attr("value",allowVIPScore);
+			 $("#prepaidPasswordRequired").attr("value",prepaidPasswordRequired);
+			 
 		}
 	}
 }
@@ -120,6 +123,7 @@ function clearChainStoreConf(){
 	 $("#printTemplate").attr("value", 1);
 	 $("#address").attr("value", "");
 	 $("#hideDiscountPrint").attr("value", 0);
+	 $("#prepaidPasswordRequired").attr("value", 0);
 }
 
 
@@ -228,7 +232,16 @@ function clearChainStoreConf(){
    	      <td></td>
    	      <td></td>
    	      <td></td>
-       </tr>       
+       </tr>  
+       <tr class="InnerTableContent">
+   	      <td height="35"><strong>预存金 充值/消费安全策略</strong></td>
+   	      <td><s:select id="prepaidPasswordRequired" name="formBean.chainStoreConf.prepaidPasswordRequired"  list="#{0:'不需要密码',1:'需要密码'}" listKey="key" listValue="value" />
+   	      </td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+   	      <td></td>
+       </tr>             
        <tr class="InnerTableContent">
    	      <td height="35"><strong>连锁店地址 打印于小票</strong></td>
    	      <td>

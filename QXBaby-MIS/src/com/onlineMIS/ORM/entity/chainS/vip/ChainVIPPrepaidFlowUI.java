@@ -57,6 +57,22 @@ public class ChainVIPPrepaidFlowUI extends ChainVIPPrepaidFlow {
 	private String calculatedAmts = "";
 	
 	
+	public String getDepositWechat() {
+		return depositWechat;
+	}
+
+	public void setDepositWechat(String depositWechat) {
+		this.depositWechat = depositWechat;
+	}
+
+	public String getDepositAlipay() {
+		return depositAlipay;
+	}
+
+	public void setDepositAlipay(String depositAlipay) {
+		this.depositAlipay = depositAlipay;
+	}
+
 	public String getCalculatedAmts() {
 		return calculatedAmts;
 	}

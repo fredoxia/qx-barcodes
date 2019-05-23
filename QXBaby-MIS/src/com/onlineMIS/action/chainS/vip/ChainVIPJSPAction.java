@@ -462,4 +462,29 @@ public class ChainVIPJSPAction extends ChainVIPAction {
 		
 		return "updatePassword";
 	}
+	
+	/**
+	 * 1. 判断如果客户还没有设置密码,那么就显示设置密码页面
+	 * 2. 如果客户已经设置了密码，那么就显示录入密码页面
+	 * @return
+	 */
+	public String showVIPEnterPasswordPage(){
+		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.info(userInfor.getName() + " : chainVipJSPAction - showVIPEnterPasswordPage");
+
+		Response response = chainVIPService.checkVIPPasswordStatus(formBean.getVipCard().getId());
+		if (response.getReturnCode() == Response.WARNING){
+			addActionMessage("VIP还未设置密码,请设置密码");
+			return preUpdateVIPPassword();
+		} else if (response.getReturnCode() == Response.SUCCESS){
+			chainVIPService.prepareUpdatePasswordUI(formBean);
+			return "enterPasswordPage";
+		} else {
+			addActionError("无法找到VIP信息");
+			return ERROR;
+		}
+		
+		
+		
+	}
 }

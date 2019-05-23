@@ -1235,6 +1235,8 @@ public class ChainVIPService {
 		
 		totalPrepaid.setDepositCard("0");
 		totalPrepaid.setDepositCash("0");
+		totalPrepaid.setDepositAlipay("0");
+		totalPrepaid.setDepositWechat("0");
 		totalPrepaid.setConsump("0");
 		
 		double totalCalculatedAmt = 0;
@@ -1339,6 +1341,28 @@ public class ChainVIPService {
 		
 		formBean.setVipCard(card);
 		
+	}
+
+	/**
+	 * 获取vip的信息
+	 * 
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Response checkVIPPasswordStatus(int cardId) {
+		Response response = new Response();
+		
+		ChainVIPCard vipCard = chainVIPCardImpl.get(cardId, true);
+		if (vipCard == null){
+			response.setFail("无法找到信息");
+		} else {
+			if (StringUtils.isEmpty(vipCard.getPassword())){
+				response.setReturnCode(Response.WARNING);
+			} else 
+			    response.setReturnCode(Response.SUCCESS);
+		}
+		return response;
 	}
 
 

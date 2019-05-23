@@ -32,7 +32,6 @@ function checkVIPCardBackProcess(data){
 	
 	       $("#maxVipCash").attr("value",data.totalCash);
 	       $("#vipInfo").html(vipCard.issueChainStore.chain_name + " 姓名:" + vipCard.customerName + " 电话:" + vipCard.telephone + " VIP类型:" + vipCard.vipType.vipTypeName);
-	       alert("冲值前请确认VIP信息,正确");
 	    }
     }
 }

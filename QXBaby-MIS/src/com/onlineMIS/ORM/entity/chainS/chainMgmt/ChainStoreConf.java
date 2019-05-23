@@ -41,6 +41,10 @@ public class ChainStoreConf implements Serializable {
 	//1. 我的vip卡可以在关联连锁店消费/充值，
 	private int allowMyPrepaidCrossStore = 0;
 	private String shippingAddress = "";
+	private int prepaidPasswordRequired = 0;
+	public static final int PREPAID_PASSWORD_REQUIRED = 1;
+	public static final int PREPAID_PASSWORD_NOT_REQUIRED = 0;
+	
 	public static final int PREPAID_ALL_PREPAID_CROSS_STORE = 1;
 	
 	/**
@@ -62,6 +66,14 @@ public class ChainStoreConf implements Serializable {
 	
 	public ChainStoreConf(){
 		
+	}
+
+	public int getPrepaidPasswordRequired() {
+		return prepaidPasswordRequired;
+	}
+
+	public void setPrepaidPasswordRequired(int prepaidPasswordRequired) {
+		this.prepaidPasswordRequired = prepaidPasswordRequired;
 	}
 
 	public int getAllowOtherVIPUseVIPScore() {

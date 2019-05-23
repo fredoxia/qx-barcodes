@@ -837,6 +837,7 @@ function backProcessChangeChainStore(data){
 	    $("#discountAmtType").attr("value",chainConf.discountAmtType);
 	    $("#lowThanCostAlert").attr("value",chainConf.lowThanCostAlert);
 	    $("#defaultDiscount").attr("value", chainConf.defaultDiscount);
+	    $("#prepaidPasswordRequired").attr("value", chainConf.prepaidPasswordRequired);
 	}
 	
 	var chainStore = data.chainStore;
