@@ -3,6 +3,8 @@ package com.onlineMIS.ORM.entity.chainS.report;
 import java.io.Serializable;
 import java.util.Date;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
+import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 
 public class ChainPurchaseStatisReportItem implements Serializable {
 	/**
@@ -17,7 +19,7 @@ public class ChainPurchaseStatisReportItem implements Serializable {
 	protected Date startDate = new Date();
 	protected Date endDate = new Date();
 	protected ChainStore chainStore = new ChainStore();
-
+	private ProductBarcode productBarcode = new ProductBarcode();
 	/**
 	 * 总发货数量
 	 */
@@ -40,11 +42,27 @@ public class ChainPurchaseStatisReportItem implements Serializable {
 	public ChainPurchaseStatisReportItem(){
 		
 	}
-	
-	public ChainPurchaseStatisReportItem(ChainStore chainStore, Date rptStartDate, Date rptEndDate){
+
+
+	public ChainPurchaseStatisReportItem(ChainPurchaseStatisticReportItemVO item, ChainStore chainStore,
+			java.sql.Date rptStartDate, java.sql.Date rptEndDate, ProductBarcode pb) {
 		this.chainStore = chainStore;
 		this.startDate = rptStartDate;
 		this.endDate = rptEndDate;
+		this.productBarcode = pb;
+		this.purchaseQuantity = item.getPurchaseQuantity();
+		this.returnQuantity = item.getReturnQuantity();
+		this.netQuantity = item.getNetQuantity();
+		this.avgPrice = item.getAvgPrice();
+		this.purchaseTotalAmt = item.getPurchaseTotalAmt();
+	}
+
+	public ProductBarcode getProductBarcode() {
+		return productBarcode;
+	}
+
+	public void setProductBarcode(ProductBarcode productBarcode) {
+		this.productBarcode = productBarcode;
 	}
 
 	public Date getStartDate() {

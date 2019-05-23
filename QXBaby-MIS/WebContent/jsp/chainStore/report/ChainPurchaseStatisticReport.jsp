@@ -76,7 +76,22 @@ function back(){
     document.preGenReportForm.action="chainReportJSPAction!prePurchaseStatisticReport";
     document.preGenReportForm.submit();
 }
+function exportFile(){
+	
+	var node = $('#dataGrid').treegrid('getSelected');
 
+	if (node == null){
+		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
+	} else {
+		
+		$("#chainId").attr("value", node.chainId);
+	    $("#yearId").attr("value", node.yearId);
+		$("#quarterId").attr("value", node.quarterId);
+		$("#brandId").attr("value", node.brandId);
+        document.preGenReportForm.action="chainReportJSPAction!generateChainPurchaseStatisticExcelReport";
+        document.preGenReportForm.submit();
+	}
+}
 </script>
 </head>
 <body>
@@ -98,7 +113,7 @@ function back(){
 		        <div id="toolbar" style="display: none;">
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
 		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新采购信息</a>
-					
+					<a onclick="exportFile();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">导出报表</a>
 	             </div>
 		</div>
 	</div>					  
