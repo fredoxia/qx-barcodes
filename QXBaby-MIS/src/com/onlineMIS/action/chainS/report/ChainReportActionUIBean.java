@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import com.onlineMIS.ORM.entity.chainS.report.ChainBatchRptRepositoty;
-import com.onlineMIS.ORM.entity.chainS.report.ChainPurchaseStatisReportItem;
 
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
@@ -22,10 +21,7 @@ public class ChainReportActionUIBean {
 	 * sales statis report
 	 */
 	private ChainSalesStatisReportItem totalItem = new ChainSalesStatisReportItem();
-	/**
-	 * purchase statistic report
-	 */
-	private ChainPurchaseStatisReportItem purchaseTotalItem = new ChainPurchaseStatisReportItem();
+
 
 	/**
 	 * report repository的参数
@@ -64,13 +60,6 @@ public class ChainReportActionUIBean {
 		this.currentSalesDates = currentSalesDates;
 	}
 
-	public ChainPurchaseStatisReportItem getPurchaseTotalItem() {
-		return purchaseTotalItem;
-	}
-
-	public void setPurchaseTotalItem(ChainPurchaseStatisReportItem purchaseTotalItem) {
-		this.purchaseTotalItem = purchaseTotalItem;
-	}
 
 	public ChainSalesStatisReportItem getTotalItem() {
 		return totalItem;

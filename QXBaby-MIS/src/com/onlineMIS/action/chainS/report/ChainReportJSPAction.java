@@ -271,6 +271,34 @@ public class ChainReportJSPAction extends ChainReportAction {
 			return ERROR;		
 	}
 	
+	/**
+	 * 生成采购统计报表的excel格式
+	 * @return
+	 */
+	public String generateChainPurchaseStatisticExcelReport(){
+		ChainUserInfor loginUserInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.chainActionInfo(loginUserInfor,this.getClass().getName()+ "."+"generateChainPurchaseStatisticExcelReport");
+
+		HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
+		String contextPath= request.getRealPath("/"); 
+
+		Response response = new Response();
+		try {
+			response = chainReportService.generateChainPurchaseStatisticExcelReport(formBean.getParentId(),formBean.getChainStore().getChain_id(), formBean.getStartDate(), formBean.getEndDate(), formBean.getYear().getYear_ID(), formBean.getQuarter().getQuarter_ID(), formBean.getBrand().getBrand_ID(), loginUserInfor, contextPath + "WEB-INF\\template\\");     
+		} catch (Exception e) {
+			response.setReturnCode(Response.FAIL);
+			response.setMessage(e.getMessage());
+		}
+ 
+		if (response.getReturnCode() == Response.SUCCESS){
+		    InputStream excelStream= (InputStream)response.getReturnValue();
+		    this.setExcelStream(excelStream);
+		    this.setExcelFileName("PurchaseStatisticExcelReport.xls");
+		    return "report"; 
+		} else 
+			return ERROR;		
+	}
+	
 	
 	/**
 	 * 准备vip消费报表
