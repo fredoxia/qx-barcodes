@@ -179,6 +179,7 @@ public class ChainSalesJSONAction extends ChainSalesAction {
     	if (!validToken){
     		loggerLocal.error("系统发现当前操作是并拦截了重复提交单据风险" + userInfor.getName());
     		response.setFail("系统发现当前操作是并拦截了重复提交单据风险,请检查当前单据是否提交成功。 - 搜索零售单据");
+    		jsonMap.put("response", response);
     	} else {
     		removeToken(token);
     		

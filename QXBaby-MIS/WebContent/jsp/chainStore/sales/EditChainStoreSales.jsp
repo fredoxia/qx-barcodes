@@ -70,7 +70,7 @@ function draftOrderBKProcess(data){
 		window.location.href = "chainSalesJSPAction!preNewSalesOrder?formBean.chainSalesOrder.saler.user_id=" + salerId;
 	} else {
 		$.messager.progress('close'); 
-        alert(returnMsg);
+        $.messager.alert('失败警告', returnMsg, 'error');
     }
 }
 
@@ -284,6 +284,8 @@ $(document).ready(function(){
 	   $("#chainPrepaidAmt").removeAttr("disabled");
 	   $("#refreshBt").removeAttr("disabled");
 	   var vipScoreCash = $("#maxVipCash").val();
+	   
+	   changeDiscountCoupon();
     }
 	jQuery.excel('InnerTableContent');
 	jQuery.excel('PBAOuterTableTitale');
