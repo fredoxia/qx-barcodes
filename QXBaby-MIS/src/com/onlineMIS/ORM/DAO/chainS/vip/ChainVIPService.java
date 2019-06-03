@@ -1291,6 +1291,7 @@ public class ChainVIPService {
 	 * @param password
 	 * @return
 	 */
+	@Transactional
 	public Response updateVIPPassword(ChainUserInfor loginUser, int vipCardId, String newPassword){
 		Response response = new Response();
 		ChainVIPCard vipCard = chainVIPCardImpl.get(vipCardId, true);
@@ -1299,10 +1300,20 @@ public class ChainVIPService {
 			return response;
 		}
 		
+		int chainId = vipCard.getIssueChainStore().getChain_id();
+		ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
+		
 		if (!ChainUserInforService.isMgmtFromHQ(loginUser) && loginUser.getMyChainStore().getChain_id() != vipCard.getIssueChainStore().getChain_id()){
-			response.setFail("你没有权限修改其他连锁店vip的信息");
-			return response;
+			if (conf != null && conf.getAllowMyPrepaidCrossStore() == ChainStoreConf.PREPAID_ALL_PREPAID_CROSS_STORE){
+				int salesOrderChainId = loginUser.getMyChainStore().getChain_id();
+				Set<Integer> chainStoreAssociated = chainStoreGroupDaoImpl.getChainGroupStoreIdList(chainId, null, Common_util.CHAIN_ACCESS_LEVEL_3);
+				if (!chainStoreAssociated.contains(salesOrderChainId)){
+					response.setQuickValue(Response.ERROR, "预存金  只能在VIP卡的开户连锁店/关联连锁店中使用");
+					return response;
+				}	
+			}
 		}
+
 		
 		if (newPassword.length()>6 || !StringUtils.isNumeric(newPassword)){
 			response.setFail("密码只能是六位数的数字");

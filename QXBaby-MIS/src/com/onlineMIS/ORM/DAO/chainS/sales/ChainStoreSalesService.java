@@ -231,9 +231,8 @@ public class ChainStoreSalesService {
 		uiBean.getChainSalesOrder().setType(orderType);
 		
 		//5. get the chain store configuration information
-		ChainStoreConf chainStoreConf = null;
-		if (stores.size() > 0)
-		    chainStoreConf = chainStoreConfDaoImpl.getChainStoreConfByChainId(stores.get(0).getChain_id());
+		ChainStoreConf chainStoreConf = chainStoreConfDaoImpl.get(chainId, true);
+		
 		if (chainStoreConf == null)
 			chainStoreConf = new ChainStoreConf();
 		uiBean.setChainStoreConf(chainStoreConf);

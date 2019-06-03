@@ -23,8 +23,7 @@ public class ChainStoreConf implements Serializable {
 	//低于成本不报警
 	public static final int LOW_COST_NO_ALERT = 2;
 	
-	//允许我的连锁店的预存款跨自己连锁店过账
-	public static final int ALLOW_MY_PREPAID_CROSS = 1;
+
 
 	private int chainId;
 	private int printCopy = 1;
@@ -40,6 +39,11 @@ public class ChainStoreConf implements Serializable {
 	//0: 严格使用预存款,只能在当前连锁店使用当前vip
 	//1. 我的vip卡可以在关联连锁店消费/充值，
 	private int allowMyPrepaidCrossStore = 0;
+	
+	//允许我的连锁店的预存款跨自己连锁店过账
+	public static final int ALLOW_MY_PREPAID_CROSS = 1;
+	public static final int NOT_ALLOW_PREPAID_CROSS = 0;	
+	
 	private String shippingAddress = "";
 	private int prepaidPasswordRequired = 0;
 	public static final int PREPAID_PASSWORD_REQUIRED = 1;
