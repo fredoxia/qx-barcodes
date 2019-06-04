@@ -388,5 +388,31 @@ public class ChainReportJSPAction extends ChainReportAction {
 			return "vipSalesAnalysisRpt";
 		}
 	}
+	
+	/**
+	 * 下载 客户acct flow 成excel report
+	 * @return
+	 */
+	public String downloadVIPConsumpReport(){
+		loggerLocal.info(this.getClass().getName()+ ".downloadVIPConsumpReport");
+		HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
+		String contextPath= request.getRealPath("/"); 
+
+		Response response = new Response();
+		try {
+		     response = chainReportService.downloadVIPConsumpReport(formBean, contextPath + "WEB-INF\\template\\");
+		} catch (Exception e) {
+			response.setReturnCode(Response.FAIL);
+			response.setMessage(e.getMessage());
+		}
+		 
+		if (response.getReturnCode() == Response.SUCCESS){
+		    InputStream excelStream= (InputStream)response.getReturnValue();
+		    this.setExcelStream(excelStream);
+		    this.setExcelFileName("VIPXiaoFeiBaoBiao.xls");
+		    return "report"; 
+		} else 
+			return ERROR;	
+	}
 
 }
