@@ -63,7 +63,7 @@ $(document).ready(function(){
 						formatter: function (value, row, index){
 							return (row.netAmt).toFixed(1) ;
 						}},	
-					{field:'receiveAmt', width:58,title:'付刷卡+现金',
+					{field:'receiveAmt', width:58,title:'付款',
 							formatter: function (value, row, index){
 								return (row.receiveAmt).toFixed(1);
 						}},	
@@ -74,7 +74,12 @@ $(document).ready(function(){
 					{field:'couponSum', width:50,title:'代金券',
 						formatter: function (value, row, index){
 							return (row.couponSum).toFixed(0);
-						}}
+						}},	
+					{field:'prepaidAmt', width:50,title:'预存款消费',
+							formatter: function (value, row, index){
+								return (row.prepaidAmt).toFixed(1);
+						}},	
+					{field:'consumpCount', width:50,title:'消费次数'}
 			     ]]
 	});
 });
@@ -83,7 +88,10 @@ function genSalesReport(){
 	var params = $.serializeObject($('#preGenReportForm')); 
 	$('#dataGrid').datagrid('load',params); 
 }
-
+function downloadSalesReport(){
+	document.preGenReportForm.action="chainReportJSPAction!downloadVIPConsumpReport";
+	document.preGenReportForm.submit();
+}
 
 </script>
 </head>
@@ -109,7 +117,7 @@ function genSalesReport(){
                    <tr class="InnerTableContent">
 			      <td height="25">&nbsp;</td>
 			      <td>&nbsp;</td>
-			      <td colspan="2"><input type="button" value="生成报表" onclick="genSalesReport();"/>&nbsp;
+			      <td colspan="2"><input type="button" value="生成报表" onclick="genSalesReport();"/>&nbsp;<input type="button" value="下载报表" onclick="downloadSalesReport();"/>
 			      </td>
 			      <td>&nbsp;</td>
 			    </tr>

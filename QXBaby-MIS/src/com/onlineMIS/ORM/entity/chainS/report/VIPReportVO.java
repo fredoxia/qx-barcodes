@@ -20,8 +20,10 @@ public class VIPReportVO implements Serializable {
     private double couponSum = 0;
     private double receiveAmt = 0;
     private double discountAmt = 0;
+    private double prepaidAmt = 0;
+    private int consumpCount = 0;
 
-	public VIPReportVO(int saleQ, int returnQ, int freeQ, double salesAmt, double returnAmt, double couponSum, double receiveAmt, double discountAmt, ChainVIPCard vip){
+	public VIPReportVO(int saleQ, int returnQ, int freeQ, double salesAmt, double returnAmt, double couponSum, double receiveAmt, double discountAmt, ChainVIPCard vip, double prepaidAmt, int consumpCount){
 		this.saleQ = saleQ;
 		this.returnQ = returnQ;
 		this.freeQ = freeQ;
@@ -33,9 +35,31 @@ public class VIPReportVO implements Serializable {
 		this.netQ = saleQ - returnQ;
 		this.netAmt = salesAmt - returnAmt;
 		this.vip = vip;
+		this.prepaidAmt = prepaidAmt;
+		this.consumpCount = consumpCount;
 	}
     
     
+	public int getConsumpCount() {
+		return consumpCount;
+	}
+
+
+	public void setConsumpCount(int consumpCount) {
+		this.consumpCount = consumpCount;
+	}
+
+
+	public double getPrepaidAmt() {
+		return prepaidAmt;
+	}
+
+
+	public void setPrepaidAmt(double prepaidAmt) {
+		this.prepaidAmt = prepaidAmt;
+	}
+
+
 	public int getSaleQ() {
 		return saleQ;
 	}
