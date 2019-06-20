@@ -67,6 +67,7 @@ public class IpadJSONAction extends IpadAction {
 	}
 	
 	public String searchByProductCode(){
+		loggerLocal.info("IpadJSONAction-searchByProductCode" );
 		Response response = new Response();
 		
 		Object clientIdObj = ActionContext.getContext().getSession().get(IpadConf.HQ_SESSION_INFO_CLIENT_ID);
@@ -82,7 +83,7 @@ public class IpadJSONAction extends IpadAction {
 		if (orderIdObj != null)
 			orderId =  (Integer)orderIdObj;
 		
-		response = ipadService.searchByProductCode(formBean.getProductCode(), clientId, orderId);
+		response = ipadService.searchByProductCode(formBean.getProductCode(),formBean.getStoreId(), clientId, orderId);
 		
 		try{
 		    jsonObject = JSONObject.fromObject(response);
@@ -94,6 +95,7 @@ public class IpadJSONAction extends IpadAction {
 	}
 	
 	public String orderByBarcode(){
+		loggerLocal.info("IpadJSONAction-orderByBarcode" );
         Response response = new Response();
 		
 		Object clientIdObj = ActionContext.getContext().getSession().get(IpadConf.HQ_SESSION_INFO_CLIENT_ID);
@@ -104,7 +106,7 @@ public class IpadJSONAction extends IpadAction {
 			response.setFail("请先输入客户后再选货");
 		} else {
 			try {
-		       response = ipadService.orderProduct(clientIdObj, orderIdObj, formBean.getBarcode(), formBean.getQuantity(), loginUser);
+		       response = ipadService.orderProduct(clientIdObj, orderIdObj, formBean.getBarcode(), formBean.getStoreId(), formBean.getQuantity(), loginUser);
 		       
 		       if (response.isSuccess()){
 		    	   Object returnValue = response.getReturnValue();

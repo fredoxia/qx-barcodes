@@ -16,7 +16,9 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 @Repository
 public class ProductsMSDAOImpl extends BaseDAOMS<ProductsMS> {
 	public static final String GET_INVENTORY_PROCEDURE = "{Call Ts_W_GetCanSaleQty(?,?,?,?,?)}";
-	public static final int STORE_ID = 2;
+	public static final int FLOOR_6_STORE_ID = 2;
+	public static final int MENGYANG_STORE_ID = 11;
+	public static final int XILE_STORE_ID = 8;
 	
 	/**
 	 * to load all of the products from MS

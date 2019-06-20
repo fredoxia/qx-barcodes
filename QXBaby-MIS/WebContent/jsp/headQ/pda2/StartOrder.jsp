@@ -53,7 +53,7 @@ function addOrder(){
 		var barcode = $("#barcode").val();
 
 		$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
-		var params="formBean.barcode=" + barcode+ "&formBean.quantity=1";
+		var params="formBean.barcode=" + barcode+ "&formBean.quantity=1"+"&formBean.storeId=" + $("#storeId").val();
 
 		$("#barcodeHidden").attr("value",barcode);
 		
@@ -91,7 +91,7 @@ function deductOrder(){
 		var barcode = $("#barcodeHidden").val();
 
 		$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
-		var params="formBean.barcode=" + barcode+ "&formBean.quantity=-1";
+		var params="formBean.barcode=" + barcode+ "&formBean.quantity=-1" +"&formBean.storeId=" + $("#storeId").val();
 
 		$.post('<%=request.getContextPath()%>/action/ipadJSON!orderByBarcode', params, 
 		function(result) {
@@ -129,6 +129,7 @@ function deductOrder(){
 				    <tr>
 						<td><label for="productCode">条码: </label></td> 
 						<td><input id="barcode" name="barcode" placeholder="扫描条码"/></td>
+						<td><select id="storeId" name="storeId"><option value="11">濛阳</option><option value="2">六楼</option><option value="8">禧乐</option></select></td>
 					</tr>
 
 				</table>

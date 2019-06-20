@@ -131,7 +131,7 @@ public class IpadService {
 //		return client1;
 	}
 
-	public Response searchByProductCode(String productCode, Integer clientId, Integer orderId) {
+	public Response searchByProductCode(String productCode, Integer storeId, Integer clientId, Integer orderId) {
 		productCode = productCode.replaceAll("\\.", "_");
 		//System.out.println("-----------" + productCode);
 		Response response = new Response();
@@ -156,7 +156,7 @@ public class IpadService {
 			for (ProductBarcode pb: productBarcodes){
 				String barcode = pb.getBarcode();
 
-				int inventory = pbService.getProductInven(barcode);
+				int inventory = pbService.getProductInven(barcode, storeId);
 				
 				SaleHistory orderSalesHis = null;
 				if (clientId != null)
@@ -511,7 +511,7 @@ public class IpadService {
 
 	@Transactional
 	public Response orderProduct(Object clientIdObj, Object orderIdObj,
-			String barcode, int quantity, UserInfor loginUser) {
+			String barcode, Integer storeId, int quantity, UserInfor loginUser) {
 		Response response = new Response();
 		
 		ProductBarcode pb = productBarcodeDaoImpl.getByBarcode(barcode);
@@ -521,7 +521,7 @@ public class IpadService {
 		} else {
 			response = orderProduct(clientIdObj, orderIdObj, pb.getId(), quantity, loginUser);
 			if (response.isSuccess()){
-				int inventory = pbService.getProductInven(barcode);
+				int inventory = pbService.getProductInven(barcode, storeId);
 				
 				SaleHistory orderSalesHis = null;
 				Integer clientId = (Integer) clientIdObj;

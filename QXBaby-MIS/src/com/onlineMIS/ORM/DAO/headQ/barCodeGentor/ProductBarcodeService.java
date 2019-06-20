@@ -1088,14 +1088,18 @@ public class ProductBarcodeService {
 	 * @param barcode
 	 * @return
 	 */
-	public int getProductInven(String serialNum) {
+	public int getProductInven(String serialNum, Integer storeId) {
 		ProductsMS productsMS = productsMSImpl.getBySerialNum(serialNum);
 		
 		if (productsMS == null)
 		    return 0;
 		else {
 			int productId = productsMS.getProductID();
-			Object[] values = new Object[]{ProductsMSDAOImpl.STORE_ID, productId,0,0,0};
+			
+			int storeIdInt = ProductsMSDAOImpl.MENGYANG_STORE_ID;
+			if (storeId != null)
+				storeIdInt = storeId;
+			Object[] values = new Object[]{storeIdInt, productId,0,0,0};
 			
 			List<Object> inventoryObj = null;
 			try{

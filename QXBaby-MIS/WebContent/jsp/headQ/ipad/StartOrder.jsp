@@ -34,7 +34,7 @@ function checkSearch(){
 }
 function searchProduct(){
 	if (validateSearch()){
-		var params = "formBean.productCode=" + $("#productCode").val();
+		var params = "formBean.productCode=" + $("#productCode").val() +"&formBean.storeId=" + $("#storeId").val();
 
 		$.mobile.loading("show",{ theme: "b", text: "正在加载数据", textonly: false});
 		
@@ -131,6 +131,7 @@ function addOrder(pbId){
 				    <tr>
 						<td><label for="productCode">货号: </label></td> 
 						<td><input id="productCode" type="number" name="productCode" placeholder="输入至少四位货号" onkeyup="checkSearch();"/></td>
+						<td><select id="storeId" name="storeId"><option value="11">濛阳</option><option value="2">六楼</option><option value="8">禧乐</option></select></td>
 					</tr>
 
 				</table>

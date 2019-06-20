@@ -12,8 +12,17 @@ public class IpadActionFormBean {
     protected int quantity;
     protected int orderId;
     protected String barcode;
+    protected Integer storeId;
     
     
+	public Integer getStoreId() {
+		return storeId;
+	}
+
+	public void setStoreId(Integer storeId) {
+		this.storeId = storeId;
+	}
+
 	public String getBarcode() {
 		return barcode;
 	}
