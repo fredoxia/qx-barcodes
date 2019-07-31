@@ -125,7 +125,7 @@ public class ProductJSONAction extends ProductAction {
     	ProductBarcode barcode_org = productService.getPDAProductsByBarcodeCalWholePrice(barcode, clientId);
     	if (barcode_org != null){
     		barcodes.add(barcode_org);
-    		inventory = productService.getProductInven(barcode_org.getBarcode());
+    		inventory = productService.getProductInven(barcode_org.getBarcode(),null);
     	}
     	
 		jsonMap.put("barcodes", barcodes);
