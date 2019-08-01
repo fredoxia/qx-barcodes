@@ -18,7 +18,9 @@ import net.sf.json.JsonConfig;
 
 
 
+
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.headQ.SQLServer.ProductsMSDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandPriceIncreaseService;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
@@ -125,7 +127,7 @@ public class ProductJSONAction extends ProductAction {
     	ProductBarcode barcode_org = productService.getPDAProductsByBarcodeCalWholePrice(barcode, clientId);
     	if (barcode_org != null){
     		barcodes.add(barcode_org);
-    		inventory = productService.getProductInven(barcode_org.getBarcode());
+    		inventory = productService.getProductInven(barcode_org.getBarcode(),ProductsMSDAOImpl.MENGYANG_STORE_ID);
     	}
     	
 		jsonMap.put("barcodes", barcodes);
