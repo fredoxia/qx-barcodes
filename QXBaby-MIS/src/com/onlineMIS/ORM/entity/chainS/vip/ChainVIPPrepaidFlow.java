@@ -43,6 +43,7 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	private String comment = "";
 	private java.sql.Date dateD;
 	private Date createDate;
+	private double amt2;
 	
 	/**
 	 * 页面展示用
@@ -50,6 +51,13 @@ public class ChainVIPPrepaidFlow implements Serializable{
 	private double accumulateVipPrepaid = 0;
 	
 	
+	
+	public double getAmt2() {
+		return amt2;
+	}
+	public void setAmt2(double amt2) {
+		this.amt2 = amt2;
+	}
 	public double getCalculatedAmt() {
 		return calculatedAmt;
 	}

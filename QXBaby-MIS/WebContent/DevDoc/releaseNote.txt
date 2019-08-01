@@ -190,6 +190,7 @@ Release Date done
 Release Summary       
 		DB	: 1. add allow_vip_other_chain_vipscore in chain_store_conf
 		
-Release Date
-Release Summary : 1. add the fee_type column to the expense table		
+Release Date 
+Release Summary : 1. ALTER TABLE chain_vip_prepaid_flow
+                     ADD amt_2 double NOT NULL;	
 		  	                  
