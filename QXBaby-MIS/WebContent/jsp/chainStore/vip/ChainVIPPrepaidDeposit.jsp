@@ -76,12 +76,28 @@ function postValidateVIPProcess(data){
 }
 
 function submitOrder(){
-	var params = $("#vipPrepaidDepositForm").serialize();
-	$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!saveVIPPrepaidDeposit",params, backProcessDepositPrepaid,"json");
-	$.messager.progress({
-		title : '提示',
-		text : '数据处理中，请稍后....'
-	});
+	var amt = $("#amount").numberbox('getValue');
+	if (amt == 0){
+		 $.messager.alert('失败警告', '预存金不能为 0 ', 'error');
+	} else if (amt < 0){
+		$.messager.confirm('确认', '预存金为负数,你确定想要扣除客户预存金?', function(r){
+			if (r){
+				var params = $("#vipPrepaidDepositForm").serialize();
+				$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!saveVIPPrepaidDeposit",params, backProcessDepositPrepaid,"json");
+				$.messager.progress({
+					title : '提示',
+					text : '数据处理中，请稍后....'
+				});
+			}
+		});
+	} else {
+		var params = $("#vipPrepaidDepositForm").serialize();
+		$.post("<%=request.getContextPath()%>/actionChain/chainVIPJSONAction!saveVIPPrepaidDeposit",params, backProcessDepositPrepaid,"json");
+		$.messager.progress({
+			title : '提示',
+			text : '数据处理中，请稍后....'
+		});
+	}
 }
 
 function backProcessDepositPrepaid(data){
@@ -180,9 +196,15 @@ function backProcessGetChainStore(data){
 		    <tr class="InnerTableContent">
 		      <td>充值金额 *</td>
 		      <td colspan="2">
-		      	<s:textfield name="formBean.vipPrepaid.amount" id="amount" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:1,min:1,max:4000"/>
+		      	<s:textfield name="formBean.vipPrepaid.amount" id="amount" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:1,min:-4000,max:4000"/>
 		      </td>
-		    </tr>		
+		    </tr>	
+		    <tr class="InnerTableContent">
+		      <td>赠送金额 </td>
+		      <td colspan="2">
+		      	<s:textfield name="formBean.vipPrepaid.amt2" id="amt2" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:1,min:0,max:1000"/>
+		      </td>
+		    </tr>			    	
 		    <tr class="InnerTableContent">
 		      <td>备注</td>
 		      <td colspan="2">

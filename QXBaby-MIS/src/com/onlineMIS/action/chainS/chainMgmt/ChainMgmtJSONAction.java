@@ -319,6 +319,7 @@ public class ChainMgmtJSONAction extends ChainMgmtAction {
 		try{
 			response = chainMgmtService.saveChainStoreConf(chainStoreConf);
 		} catch (Exception e) {
+			e.printStackTrace();
 			loggerLocal.error(e);
 			response.setQuickValue(Response.FAIL, e.getMessage());
 		}

@@ -1016,10 +1016,12 @@ public class ChainVIPService {
 		vipCard = getVIPCardByCardId(vipCard.getId());
 		double amount = vipPrepaid.getAmount();
 		
-		if (amount <= 0) {
-			response.setFail("错误 : 充值金额必须大于0");
+		if (amount == 0) {
+			response.setFail("错误 : 充值金额不能为0");
+		} else if (vipPrepaid.getAmt2() <= 0) {
+			response.setFail("错误 : 赠送金额 必须大于0");
 		} else if (vipCard == null){
-			response.setFail("错误 : VIP卡  " + vipCard.getVipCardNo() + " 不存在");
+			response.setFail("错误 : VIP卡   不存在");
 		} else if (vipCard.getStatus() != ChainVIPCard.STATUS_GOOD) {
 			response.setFail("错误: 此vip卡已经处于停用/挂失状态，请修改vip卡状态之后,再充值");
 		} else if (vipCard.getIssueChainStore().getChain_id() != chainStore.getChain_id()){
@@ -1033,9 +1035,9 @@ public class ChainVIPService {
 		int chainId = chainStore.getChain_id();
 		ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
 		if (conf == null || conf.getPrepaidCalculationType() == ChainStoreConf.PREPAID_CALCULATION_TYPE_NORMAL)
-			vipPrepaid.setCalculatedAmt(amount);
+			vipPrepaid.setCalculatedAmt(amount + vipPrepaid.getAmt2());
 		else {
-			vipPrepaid.setCalculatedAmt(conf.getRatioByPrepaidType() * amount);
+			vipPrepaid.setCalculatedAmt(conf.getRatioByPrepaidType() * amount + vipPrepaid.getAmt2());
 		}
 		
 		//1. 第一步保存 prepaid
