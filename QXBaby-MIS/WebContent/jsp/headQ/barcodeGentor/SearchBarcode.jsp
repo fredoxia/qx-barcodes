@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+.<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@taglib prefix="s" uri="/struts-tags" %>
 <%@ page import="com.onlineMIS.ORM.entity.headQ.barcodeGentor.*,java.util.Date,java.text.SimpleDateFormat" %>
@@ -128,6 +128,15 @@ function backProcess(data){
 			      var belong = "";
 			      if (barcodes[i].chainStore.chain_id != undefined)
 				     belong = barcodes[i].chainStore.chain_name; 
+			      
+			      var size = "";
+			      if (barcodes[i].product.sizeMin != 0 || barcodes[i].product.sizeMax!=0)
+			    	  size = barcodes[i].product.sizeMin  + "-" + barcodes[i].product.sizeMax;
+			      
+			      var material ="";
+			      if (barcodes[i].product.material != "")
+			    	  material = "<textarea>"+barcodes[i].product.material+"</textarea>";
+			      
 		          $("<tr align='center' class='InnerTableContent'" + bg +"><td><input type='checkbox' name='selectedBarcodes' value='"+barcodes[i].barcode+"'/></td><td>"+
 				          j+"</td><td>"+
 				          barcodes[i].product.year.year + " " + barcodes[i].product.quarter.quarter_Name +"</td><td>"+
@@ -137,21 +146,23 @@ function backProcess(data){
 				          parseValue(barcodes[i].color.name)+"</td><td>"+
 //				          parseValue(barcodes[i].size.name)+"</td><td>"+
 				          barcodes[i].product.numPerHand + "/" + barcodes[i].product.unit +"</td><td>"+
+				          size +"</td><td>"+
 				          barcodes[i].product.salesPriceFactory +"</td><td>"+
 				          barcodes[i].product.discount +"</td><td>"+
 				          barcodes[i].product.salesPrice+"</td><td>"+
 				          barcodes[i].product.recCost+"</td><td>"+
 				          barcodes[i].product.wholeSalePrice+"</td><td>"+
 				          barcodes[i].barcode+"</td><td>"+
+				          material+"</td><td>"+
 				          barcodes[i].createDate+"</td><td>"+
-				          belong+"</td><td><s:if test="#session.LOGIN_USER.containFunction('productJSPAction!searchForUpdate')"><a href='#' onclick=\"window.open ('productJSPAction!searchForUpdate?formBean.productBarcode.barcode="+barcodes[i].barcode+"','新窗口','height=550, width=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');\"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orgTablebody");
+				          belong+"</td><td><s:if test="#session.LOGIN_USER.containFunction('productJSPAction!searchForUpdate')"><a href='#' onclick=\"window.open ('productJSPAction!searchForUpdate?formBean.productBarcode.barcode="+barcodes[i].barcode+"','新窗口','height=650, width=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');\"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orgTablebody");
 	        }
 	    }
 
-	    $("<tr class='InnerTableContent'><td colspan=17><div id='error' style='color:red;font-size:13px'></div><div id='tip'></div></td></tr>").appendTo("#orgTablebody");
-        $("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='left'><td></td><td colspan=16><input type='button' value='导出产品信息' onclick='exportBarcodeToExcel();'/><input type='button' value='导出条码打印' onclick='exportToPrintBarcode();'/><s:if test='#session.LOGIN_USER.containFunction(\"productJSONAction!synchronizePrice\")'><input type='button' value='同步价格' onclick='synchronizePrice();'/></s:if></td></tr>").appendTo("#orgTablebody");
+	    $("<tr class='InnerTableContent'><td colspan=19><div id='error' style='color:red;font-size:13px'></div><div id='tip'></div></td></tr>").appendTo("#orgTablebody");
+        $("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='left'><td></td><td colspan=18><input type='button' value='导出产品信息' onclick='exportBarcodeToExcel();'/><input type='button' value='导出条码打印' onclick='exportToPrintBarcode();'/><s:if test='#session.LOGIN_USER.containFunction(\"productJSONAction!synchronizePrice\")'><input type='button' value='同步价格' onclick='synchronizePrice();'/></s:if></td></tr>").appendTo("#orgTablebody");
     }else {
-    	$("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='center'><td colspan=17><font color='red'>对应信息没有查询信息</font> </td></tr>").appendTo("#orgTablebody");
+    	$("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='center'><td colspan=19><font color='red'>对应信息没有查询信息</font> </td></tr>").appendTo("#orgTablebody");
     }  
 }
 

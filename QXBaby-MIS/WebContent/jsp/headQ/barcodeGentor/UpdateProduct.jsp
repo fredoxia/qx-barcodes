@@ -182,7 +182,10 @@ function update(){
 	          <td height="18"><strong>颜色</strong>         :</td><td><s:property value="uiBean.product.color.name"/></td>
 	       </tr>
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
-	          <td height="18"><strong>尺码</strong>       :</td><td><s:property value="uiBean.product.size.name"/></td>
+	          <td height="18"><strong>最小码</strong>       :</td><td><s:select name="formBean.productBarcode.product.sizeMin" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMin" list="{'',60,70,80,90,100,110,120,130,140,150,160,170,180}" /></td>
+	       </tr>
+	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
+	          <td height="18"><strong>最大码</strong>       :</td><td><s:select name="formBean.productBarcode.product.sizeMax" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMax"   list="{'',80,90,100,110,120,130,140,150,160,170,180}" /></td>
 	       </tr>
 	       <tr class="InnerTableContent">
 	          <td height="18"><strong>连锁零售价 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.salesPrice" id="salesPrice" value="<s:if test="uiBean.product.product.salesPrice!=0"><s:property value="uiBean.product.product.salesPrice"/></s:if>" size="10"/></td>
@@ -204,7 +207,10 @@ function update(){
 	       </tr>
 	       <tr class="InnerTableContent">
 	          <td height="18"><strong>折扣 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.discount" id="discount" value="<s:if test="uiBean.product.product.discount!=0"><s:property value="uiBean.product.product.discount"/></s:if>" size="10"/></td>
-	       </tr>	    
+	       </tr>	
+	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
+	          <td height="18"><strong>面料成份</strong>       :</td><td><textarea name="formBean.productBarcode.product.material" id="material" rows="4" cols="30"><s:property value="uiBean.product.product.material"/></textarea></td>
+	       </tr>	           
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td colspan="2"> <input type="button" value="更新" onclick="update();"/>&nbsp;&nbsp;<input type="button" value="删除" onclick="del();"/>&nbsp;&nbsp;<input type="button" value="取消" onclick="window.close();"/></td>
 	       </tr>

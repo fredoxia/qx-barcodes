@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroup;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreInforVO;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
@@ -25,10 +26,17 @@ public class ChainMgmtActionUIBean {
 	private List<ChainStoreGroup> chainGroups = new ArrayList<ChainStoreGroup>();
 	protected List<ChainPriceIncrement> priceIncrements =  new ArrayList<ChainPriceIncrement>();
 	
+	protected List<ChainStoreInforVO> chainStoreVOs = new ArrayList<ChainStoreInforVO>();
 	private List<Year> yearList = new ArrayList<Year>();
 	private List<Quarter> quarterList = new ArrayList<Quarter>();
 	
 	
+	public List<ChainStoreInforVO> getChainStoreVOs() {
+		return chainStoreVOs;
+	}
+	public void setChainStoreVOs(List<ChainStoreInforVO> chainStoreVOs) {
+		this.chainStoreVOs = chainStoreVOs;
+	}
 	public List<ChainPriceIncrement> getPriceIncrements() {
 		return priceIncrements;
 	}

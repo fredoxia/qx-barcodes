@@ -459,7 +459,7 @@
             <result name="searchChainSalesPrice">/jsp/chainStore/chainMgmt/ChainSearchSalesPrice.jsp</result>
             <result name="editChainSalesPrice">/jsp/chainStore/chainMgmt/ChainEditSalesPrice.jsp</result>     
             <result name="preCreateConf">/jsp/chainStore/chainMgmt/EditQxbabyConf.jsp</result>  
-               
+            <result name="showAllChainAddressInfor">/jsp/chainStore/chainMgmt/ShowAllChainAddressInfor.jsp</result>    
         </action>   
          <action name="productJSPAction" class="com.onlineMIS.action.headQ.barCodeGentor.ProductJSPAction">
               <result name="BrandList">/jsp/headQ/barcodeGentor/BrandList.jsp</result>
