@@ -193,4 +193,8 @@ Release Summary
 Release Date 
 Release Summary : 1. ALTER TABLE chain_vip_prepaid_flow
                      ADD amt_2 double NOT NULL;	
+                     
+Release Date 
+Release Summary : 1. 添加产品信息资料
+				  2. update the access for the updatescore
 		  	                  

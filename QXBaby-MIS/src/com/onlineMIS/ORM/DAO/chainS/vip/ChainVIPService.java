@@ -916,12 +916,22 @@ public class ChainVIPService {
 		formBean.setVipCard(card);
 	}
 
-	public Response updateVipScore(ChainVIPCard vipCard, int vipScore, String comment) {
+	public Response updateVipScore(ChainVIPCard vipCard, int vipScore, String comment, ChainUserInfor userInfor) {
 		Response response = new Response();
 		
 		//1. 获取vip card
 		int vipCardId = vipCard.getId();
 		ChainVIPCard vipCard2 = chainVIPCardImpl.get(vipCardId, true);
+		
+		if (hasRightToUpdateVIPCard(vipCard.getId(), userInfor))
+		    response.setReturnCode(Response.SUCCESS);
+		  else {
+			response.setReturnCode(Response.NO_AUTHORITY);
+			response.setMessage("你没有权限修改其他连锁店VIP卡");
+		}
+		
+		if (!response.isSuccess())
+			return response;
 
 		//2. 更新vip score信息
 		ChainStore chainStore = vipCard2.getIssueChainStore();

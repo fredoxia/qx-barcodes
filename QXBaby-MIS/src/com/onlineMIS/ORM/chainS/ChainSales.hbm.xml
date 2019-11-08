@@ -116,6 +116,20 @@
         <property name="date" column="date" type="timestamp"/>
         <property name="used" column="used" type="integer"/>
       </class>
-    
+      
+       <class name="ChainErrorProduct" table="chain_error_product">
+
+        <id name="id" column="id">
+            <generator class="identity" />
+        </id>
+        <many-to-one name="chainStore" fetch="join" column="chain_store_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="true"/>
+        <many-to-one name="creator" fetch="join" column="user_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor" not-null="true"/>
+        <property name="status" column="status" type="integer"/>
+        <property name="createDate" column="create_date" type="timestamp"/>
+        <property name="lastUpdateTime" column="last_update_time" type="timestamp"/>
+        <property name="commentHistory" column="comment_history" type="string"/>
+        <property name="errorType" column="error_type" type="integer"/>
+        <many-to-one name="pb" fetch="join" column="pb_id" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode" not-null="true" lazy="false"/>
+      </class>  
        
 </hibernate-mapping>

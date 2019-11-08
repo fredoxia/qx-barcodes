@@ -239,7 +239,22 @@
                  </param>  
                 <param name="bufferSize">1024</param>  
             </result> 
-        </action>              
+        </action>   
+        
+        <!-- the error product JSP Action -->
+        <action name="chainErrorProductJSP" class="com.onlineMIS.action.chainS.errorProduct">
+            <result name="listErrorProduct">/jsp/chainS/errorProduct/listErrorProduct.jsp</result>
+            <result type="stream" name="download">  
+                 <param name="contentType">  
+                     application/vnd.ms-excel   
+                </param>  
+                <param name="inputName">formBean.fileStream</param>  
+               <param name="contentDisposition">  
+                    attachment;filename=${formBean.fileName}   
+                 </param>  
+                <param name="bufferSize">1024</param>  
+            </result> 
+        </action>             
        
        <!-- ipad 订货 -->
         <action name="ipadJSP" class="com.onlineMIS.action.headQ.ipad.IpadJSPAction">
@@ -256,7 +271,11 @@
     </package>
     
     <package name="headQJSONPackage" extends="json-default" namespace="/action">
-
+        <action name="chainErrorProductJSON" class="com.onlineMIS.action.chainS.errorProduct.ChainErrorProductJSONAction">
+            <result type="json">
+                 <param name="root">jsonObject</param>
+            </result>
+        </action>
         <action name="productJSONAction" class="com.onlineMIS.action.headQ.barCodeGentor.ProductJSONAction">
             <result type="json">
                  <param name="root">jsonObject</param>

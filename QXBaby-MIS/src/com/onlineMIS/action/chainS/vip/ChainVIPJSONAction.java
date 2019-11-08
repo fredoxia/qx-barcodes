@@ -214,7 +214,7 @@ public class ChainVIPJSONAction extends ChainVIPAction {
 		Response response = new Response();
 		
 		try {
-			response = chainVIPService.updateVipScore(formBean.getVipCard(), formBean.getVipScore(), formBean.getComment());
+			response = chainVIPService.updateVipScore(formBean.getVipCard(), formBean.getVipScore(), formBean.getComment(),userInfor);
 		} catch (Exception e) {
 			response.setReturnCode(Response.FAIL);
 			response.setMessage(e.getMessage());
