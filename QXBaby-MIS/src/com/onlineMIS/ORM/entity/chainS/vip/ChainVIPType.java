@@ -9,9 +9,9 @@ public class ChainVIPType implements Serializable {
 	 */
 	private static final long serialVersionUID = -2147273576778022351L;
 	
-	public static final int VIP1_ID = 1;
-	public static final int VIP2_ID = 2;
-	public static final int VIP3_ID = 3;
+	public static final int VIP1_ID = 1; //金卡
+	public static final int VIP2_ID = 2; //普通
+	public static final int VIP3_ID = 3; //家人 
 	
 	
     private int id;

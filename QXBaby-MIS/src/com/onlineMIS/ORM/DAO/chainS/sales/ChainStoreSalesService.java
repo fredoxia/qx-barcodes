@@ -775,9 +775,9 @@ public class ChainStoreSalesService {
 			Set<Integer> specialBrandSpringSet = SystemParm.getParmSet("SPECIAL_BRAND_2020_SPRING");
 			Set<Integer> specialBrandSummerSet = SystemParm.getParmSet("SPECIAL_BRAND_2020_SUMMER");
 			if (!specialBrandSpringSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSpring) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
-				if (salesOrder.getVipCard() != null && salesOrder.getVipCard().getId() != 0){
+				if (isHighVip(salesOrder.getVipCard())){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "VIP购买2020年春季的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2020年春季的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 						break;
 					}
 				} else 
@@ -789,9 +789,9 @@ public class ChainStoreSalesService {
 			} 
 			
 			if (!specialBrandSummerSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSummer) && (conf == null || (conf != null && conf.getDiscount2020Summer() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
-				if (salesOrder.getVipCard() != null && salesOrder.getVipCard().getId() != 0){
+				if (isHighVip(salesOrder.getVipCard())){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "VIP购买2020夏季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2020夏季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 						break;
 					}
 				} else 
@@ -806,6 +806,21 @@ public class ChainStoreSalesService {
 		return response;
 	}
 	
+	
+	
+	private boolean isHighVip(ChainVIPCard vipCard) {
+		if (vipCard != null){
+			int vipId = vipCard.getId();
+			vipCard = chainVIPCardImpl.get(vipId, true);
+			if (vipCard == null || vipCard.getVipType().getId() == ChainVIPType.VIP2_ID)
+				return false;
+			else {
+				return true;
+			}
+		} else 
+			return false;
+	}
+
 	@Transactional
 	private boolean isExclucded(int id) {
 		ProductBarcode pb = productBarcodeDaoImpl.get(id, true);

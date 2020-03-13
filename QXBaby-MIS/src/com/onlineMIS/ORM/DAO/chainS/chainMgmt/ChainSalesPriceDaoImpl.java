@@ -15,12 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
+import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPCardImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandPriceIncreaseDaoImpl;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainSalesPrice;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainSalesPriceId;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
+import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BrandPriceIncrease;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
@@ -39,6 +42,9 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 	BrandPriceIncreaseDaoImpl brandPriceIncreaseDaoImpl;
 	@Autowired
 	ChainStoreConfDaoImpl chainStoreConfDaoImpl;
+	
+	@Autowired
+	ChainVIPCardImpl chainVIPCardImpl;
 	
 	public ChainProductBarcodeVO convertProductBarcodeVO(ProductBarcode barcode, ChainStore chainStore, int vipId){
 		ChainProductBarcodeVO chainProductBarcodeVO = new ChainProductBarcodeVO();
@@ -64,14 +70,16 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 				Set<Integer> specialBrandSetSpring = SystemParm.getParmSet("SPECIAL_BRAND_2020_SPRING");
 				Set<Integer> specialBrandSetSummer = SystemParm.getParmSet("SPECIAL_BRAND_2020_SUMMER");
 				
+				ChainVIPCard vipCard = chainVIPCardImpl.get(vipId, true);
+				
 				if (!specialBrandSetSpring.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSpring) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
-					if (vipId != 0){
+					if (isHighVip(vipCard)){
 						chainProductBarcodeVO.setDiscount(ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 					} else 
 					    chainProductBarcodeVO.setDiscount(ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 					
 				} else if (!specialBrandSetSummer.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSummer) && (conf == null || (conf != null && conf.getDiscount2020Summer() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
-					if (vipId != 0){
+					if (isHighVip(vipCard)){
 						chainProductBarcodeVO.setDiscount(ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 					} else 
 					    chainProductBarcodeVO.setDiscount(ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
@@ -110,6 +118,13 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 		chainProductBarcodeVO.setChainId(chainId);
 		
 		return chainProductBarcodeVO;
+	}
+	private boolean isHighVip(ChainVIPCard vipCard) {
+		if (vipCard == null || vipCard.getVipType().getId() == ChainVIPType.VIP2_ID)
+			return false;
+		else {
+			return true;
+		}
 	}
 	public List<ChainProductBarcodeVO> convertProductBarcodeVO(List<ProductBarcode> barcodes, ChainStore chainStore){
 		List<ChainProductBarcodeVO> chainProductBarcodeVOs = new ArrayList<ChainProductBarcodeVO>();
