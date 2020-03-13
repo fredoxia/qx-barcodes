@@ -212,7 +212,7 @@ function clearChainStoreConf(){
        </tr>       
        <tr class="InnerTableContent">
    	      <td height="25"><strong>VIP积分换现金</strong></td>
-   	      <td><s:select id="vipScoreCashRatio" name="formBean.chainStoreConf.vipScoreCashRatio"  list="#{0.01:'一百分换一元',0.02:'一百分换两元',0.03:'一百分换三元',0.04:'一百分换四元',0.05:'一百分换五元',0.06:'一百分换六元',0.08:'一百分换八元',0.1:'一百分换十元'}" listKey="key" listValue="value" />
+   	      <td><s:select id="vipScoreCashRatio" name="formBean.chainStoreConf.vipScoreCashRatio"  list="#{0.01:'一百分换一元',0.02:'一百分换两元',0.03:'一百分换三元',0.04:'一百分换四元',0.05:'一百分换五元',0.06:'一百分换六元',0.08:'一百分换八元',0.1:'一百分换十元',1:'阶梯换分策略'}" listKey="key" listValue="value" />
    	      </td>
    	      <td></td>
    	      <td></td>

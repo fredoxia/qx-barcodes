@@ -45,7 +45,7 @@ function searchProductsProductCode(index_trigger, suffix){
  */
 function validateProductCodeInput(productCode){
 	if (productCode.length <= 1){
-       alert("输入的货号太短");
+		$.messager.alert('失败警告',"输入的货号太短", 'error');
        return false;
 	}
 	return true;
@@ -68,7 +68,7 @@ function backRetrievePByBarcodeProcess(data){
 	var suffix = data.suffix;
 	
 	if (error == true){
-		alert("无法找到对应货品.请检查条码，重新输入!");
+		$.messager.alert('失败警告',"无法找到对应货品.请检查条码，重新输入!", 'error');
 
 		clearRowCells(index_c);
 		
@@ -169,7 +169,7 @@ function backRetrievePByBarcodeProcess(data){
  */
 function validateRowInput(index_trigger,suffix, currentBarcode){
 	if (currentBarcode.length != 12){
-		alert(currentBarcode + " 不是一个正常条形.请重新输入.");
+		$.messager.alert('失败警告',currentBarcode + " 不是一个正常条形.请重新输入.", 'error');
 		clearRowCells(index_trigger);
 		$("#barcode" + suffix +index_trigger).select();
 		return false;
@@ -734,14 +734,14 @@ function validateDraftSalesForm(){
 				for (var i =0; i < errorIndexesF.length; i++){
 					$("#orderRowF" + errorIndexesF[i]).css('background-color', '#EE8553');
 				}
-				alert(error);
+				$.messager.alert('失败警告',error, 'error');
 				return false;
 			}else{
 				var totalQ = $("#totalQuantity").val();
 				var totalQR = $("#totalQuantityR").val();
 				var totalQF = $("#totalQuantityF").val();
 				if ((totalQ =="" || totalQ==0) && (totalQR =="" || totalQR==0) &&(totalQF =="" || totalQF==0)){
-					alert("请输入货品后再保存单据!");
+					$.messager.alert('失败警告', "请输入货品后再保存单据!", 'error');
 					return false;
 				}
 
@@ -750,10 +750,10 @@ function validateDraftSalesForm(){
 					var vipCash = parseFloat($("#vipScore").val());
 
 					if (vipCash != 0 && vipCash > vipMaxCash){
-						alert("超过此VIP卡最多可换现金 : " + vipMaxCash);
+						$.messager.alert('失败警告', "超过此VIP卡最多可换现金 : " + vipMaxCash, 'error');
 						return false;
 					} else if (vipCash < 0){
-						alert("积分换现金  必须为大于或者等于0");
+						$.messager.alert('失败警告', "积分换现金  必须为大于或者等于0", 'error');
 						return false;		
 					}
 				}
@@ -780,7 +780,7 @@ function validateSalesOrder(orderType){
 	
 	if (amountAfterDC >= 0){
 		if (returnAmount != returnValue || returnAmount < 0){
-			alert("请检查你的收款金额，刷卡金额和找零金额，你应该收现金");
+			$.messager.alert('失败警告',"请检查你的收款金额，刷卡金额和找零金额，你应该收现金", 'error');
 			return false;
 		} else if (cash < 0 || card < 0  || returnAmount < 0){
     		if (cash < 0)
@@ -788,15 +788,15 @@ function validateSalesOrder(orderType){
     		else if (card < 0)
     			$("#cardAmount").select();
     		
-			alert("请检查你的收款金额，刷卡金额和找零金额，你应该收现金");
+    		$.messager.alert('失败警告',"请检查你的收款金额，刷卡金额和找零金额，你应该收现金", 'error');
 			return false;
 		} else if (cash > 15000 || card > 15000  || returnAmount > 15000){
-			alert("现金/刷卡 不是一个正常的收银数字(超过15000),请检查");
+			$.messager.alert('失败警告',"现金/刷卡 不是一个正常的收银数字(超过15000),请检查", 'error');
 			return false;
 		}
     } else {
     	 if (cash > 15000 || card > 15000 || returnAmount > 15000){
-			alert("现金/刷卡 不是一个正常的收银数字(超过15000),请检查");
+    		 $.messager.alert('失败警告',"现金/刷卡 不是一个正常的收银数字(超过15000),请检查", 'error');
 			return false;
 		} else if ((cash == 0 && card == 0) || returnAmount >0){
 	    	if (cash > 0)
@@ -806,7 +806,7 @@ function validateSalesOrder(orderType){
 			else 
 				$("#cashAmount").select();
 			
-			alert("客户退货你应该付款。付款不够。请检查你的付现金 ");
+	    	$.messager.alert('失败警告',"客户退货你应该付款。付款不够。请检查你的付现金 ", 'error');
 			return false;
     	}
     }

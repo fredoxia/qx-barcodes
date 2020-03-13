@@ -403,7 +403,7 @@ public class ChainVIPService {
 			if (chainStoreConf != null && chainStoreConf.getVipScoreCashRatio() > 0)
 				vipScoreCashRatio = chainStoreConf.getVipScoreCashRatio();
 			
-			double avaibleCash = (initialScore + accumulateScore) * vipScoreCashRatio;
+			double avaibleCash = calculateVIPCash(initialScore + accumulateScore, vipScoreCashRatio);
 			
 			//2. 预付款
 			double totalVipPrepaid = getAcumulateVipPrepaid(vipCard);
@@ -415,6 +415,40 @@ public class ChainVIPService {
 		} 
 		
 		return results;
+	}
+
+	/**
+	 * 计算可以换的现金
+	 *  ratio < 1, 直接使用
+	 *  ratio = 1, 策略1， 1000分换60， 2000分换160， 3000分换300
+	 * @param d
+	 * @param vipScoreCashRatio
+	 * @return
+	 */
+	private double calculateVIPCash(double score, double vipScoreCashRatio) {
+		if (vipScoreCashRatio == 1) {
+			if (score >= 3000)
+				return score * 0.1;
+			else if (score >= 2000)
+				return score * 0.08;
+			else 
+				return score * 0.06;
+			
+		}
+		
+		return score * vipScoreCashRatio;
+	}
+	
+	public static double calculateVIPScore(double cash, double vipScoreCashRatio){
+		if (vipScoreCashRatio == 1){
+			if (cash >= 300)
+				return cash / 0.1;
+			else if (cash >= 200)
+				return cash / 0.08;
+			else 
+				return cash / 0.06;
+		} else 
+			return cash / vipScoreCashRatio;
 	}
 
 	public double getAcumulateVipPrepaid(ChainVIPCard vipCard) {
