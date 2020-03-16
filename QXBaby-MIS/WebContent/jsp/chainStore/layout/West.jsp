@@ -123,7 +123,14 @@ $(function() {
 						</s:if>
 					</ul>
 				  </li>
+			     <li data-options="iconCls:'icon-connect',state:'closed'">
+				    <span>货品质量管理</span>
+					<ul>
+						<li data-options="iconCls:'icon-connect',attributes:{url:'inventoryFlowJSPAction!preCreateOverflowOrder'}">管理质量问题货品</li>
+						<li data-options="iconCls:'icon-connect',attributes:{url:'inventoryFlowJSPAction!preCreateflowLossOrder'}">质量问题报表</li>
 
+					</ul>
+				  </li>
 				
 			     <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preSalesReport') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!prePurchaseReport') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preFinanceReport')|| #session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preGetCurrentInventory') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preSalesStatisticReport') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!prePurchaseStatisticReport')">
 				  <li data-options="iconCls:'icon-chart_bar',state:'open'">
@@ -228,7 +235,7 @@ $(function() {
 		</ul>
 
 	</div>  
-    <div title="大家比一比" style="padding:10px;">  
+    <div title="连锁店报表" style="padding:10px;">  
         <ul id="treeMenu2" class="easyui-tree" data-options="lines:true,animate:true" >  
            <li data-options="iconCls:'icon-money_yen',state:'open',border:false">  
 		            <span>销售比较</span>  

@@ -196,7 +196,7 @@ function backProcessGetChainStore(data){
 		    <tr class="InnerTableContent">
 		      <td>充值金额 *</td>
 		      <td colspan="2">
-		      	<s:textfield name="formBean.vipPrepaid.amount" id="amount" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:1,min:-4000,max:4000"/>
+		      	<s:textfield name="formBean.vipPrepaid.amount" id="amount" cssClass="easyui-numberspinner" style="width:80px;" required="required" data-options=" increment:1,min:-4000,max:30000"/>
 		      </td>
 		    </tr>	
 		    <tr class="InnerTableContent">

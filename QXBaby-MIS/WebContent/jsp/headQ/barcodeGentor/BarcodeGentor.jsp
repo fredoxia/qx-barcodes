@@ -147,6 +147,15 @@ function saveBarcodeBackProcess(data){
 			      var belong = "";
 			      if (barcodes[i].chainStore.chainId != undefined)
 				     belong = "连锁店"; 
+			      
+			      var size = "";
+			      if (barcodes[i].product.sizeMin != 0 || barcodes[i].product.sizeMax!=0)
+			    	  size = barcodes[i].product.sizeMin  + "-" + barcodes[i].product.sizeMax;
+			      
+			      var material ="";
+			      if (barcodes[i].product.material != "")
+			    	  material = "<textarea>"+barcodes[i].product.material+"</textarea>";
+			      
 		          $("<tr align='center' class='InnerTableContent'" + bg +"><td>"+barcodes[i].product.year.year + " " + barcodes[i].product.quarter.quarter_Name +"</td><td>"+
 				          barcodes[i].product.brand.brand_Name+"</td><td>"+
 				          barcodes[i].product.category.category_Name+"</td><td>"+
@@ -154,12 +163,14 @@ function saveBarcodeBackProcess(data){
 				          parseValue(barcodes[i].color.name)+"</td><td>"+
 //Size will be implement later				          parseValue(barcodes[i].size.name)+"</td><td>"+ 
 				          barcodes[i].product.numPerHand + "/" + barcodes[i].product.unit +"</td><td>"+
+				          size +"</td><td>"+
 				          barcodes[i].product.salesPriceFactory +"</td><td>"+
 				          barcodes[i].product.discount +"</td><td>"+
 				          barcodes[i].product.salesPrice+"</td><td>"+
 				          barcodes[i].product.recCost+"</td><td>"+
 				          barcodes[i].product.wholeSalePrice+"</td><td>"+
 				          barcodes[i].barcode+"</td><td>"+
+				          material+"</td><td>"+
 				          barcodes[i].createDate+"</td><td>"+
 				          belong+"</td><td><s:if test="#session.LOGIN_USER.containFunction('productJSPAction!searchForUpdate')"><a href='#' onclick=\"window.open ('productJSPAction!searchForUpdate?formBean.productBarcode.barcode="+barcodes[i].barcode+"','新窗口','height=550, width=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');\"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orgTablebody");
 		         }
@@ -214,8 +225,9 @@ function assignProductValue(p){
 		$("#brand_ID").attr("value",p.brand.brand_ID);
 		$("#brandName").attr("value",p.brand.brand_Name);
 		$("#salesPrice").attr("value",p.salesPrice);
-		$("#category_ID").combobox("select",p.category.category_ID);
-		
+		$("#sizeMin").combobox("select",p.sizeMin);
+		$("#sizeMax").combobox("select",p.sizeMax);
+		$("#material").attr("value",p.material);
 	}
 }
 function clearAllData(){
@@ -300,7 +312,7 @@ function clickSize(){
             <s:select name="formBean.productBarcode.product.quarter.quarter_ID" size="1" id="quarter_ID" list="uiBean.basicData.quarterList" listKey="quarter_ID" listValue="quarter_Name"  />
       </td>
       <td width="85"><strong>品牌：</strong></td>
-      <td colspan="3">
+      <td colspan="5">
          <%@ include file="SearchBrandStub.jsp"%>
       </td>     
     </tr>
@@ -318,9 +330,11 @@ function clickSize(){
       </td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>        
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>  
     </tr>
    <tr class="InnerTableContent">
-      <td height="4" colspan="8"><hr width="100%" color="#FFCC00"/></td>
+      <td height="4" colspan="10"><hr width="100%" color="#FFCC00"/></td>
     </tr>
     <tr class="InnerTableContent">
 		      <td width="80" height="19"><strong>货号：</strong></td>
@@ -334,7 +348,9 @@ function clickSize(){
 		      <td width="80"><strong>厂家零售价：</strong></td>
 		      <td width="110"><input type="text" name="formBean.productBarcode.product.salesPriceFactory" id="salesPriceFactory" onfocus="this.select();" size="9"/></td>
 		      <td width="60"><strong>折扣:</strong></td>
-		      <td><input type="text" name="formBean.productBarcode.product.discount" id="discount" onfocus="this.select();" size="9"/></td>
+		      <td width="110"><input type="text" name="formBean.productBarcode.product.discount" id="discount" onfocus="this.select();" size="9"/></td>
+		      <td width="80"><strong>最小码段：</strong></td>
+              <td><s:select name="formBean.productBarcode.product.sizeMin" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMin" list="{'',60,70,80,90,100,110,120,130,140,150,160,170,180}" /></td>  
 		    </tr>
 		    <tr class="InnerTableContent">
               <td><strong>连锁零售价：</strong></td>
@@ -345,29 +361,34 @@ function clickSize(){
 		      <td><input type="text" name="formBean.productBarcode.product.wholeSalePrice2" id="wholeSalePrice2" onfocus="this.select();" size="9"/></td>
 		      <td><strong>预设价3：</strong></td>
 		      <td><input type="text" name="formBean.productBarcode.product.wholeSalePrice3" id="wholeSalePrice3" onfocus="this.select();" size="9"/></td>
+		      <td><strong>最大码段：</strong></td>
+              <td><s:select name="formBean.productBarcode.product.sizeMax" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMax"   list="{'',80,90,100,110,120,130,140,150,160,170,180}" /></td>  
 		    </tr>  
     <tr class="InnerTableContent">
-		  <td height="4" colspan="8"><hr width="100%" color="#FFCC00"/></td>
+		  <td height="4" colspan="10"><hr width="100%" color="#FFCC00"/></td>
 	</tr>
     <tr class="InnerTableContent">
       <td height="19"><strong>商品编码：</strong></td>
-      <td colspan="7"><input type="text" name="formBean.productBarcode.product.serialNum" id="serialNum" onfocus="this.select();"/> <input type="button" value="获取已录信息" onclick="getProductColors();"/>(*当需要为已经存在的货品添加额外颜色和尺码的条码时，请输入) <br/> <div id="colorsDiv"></div></td>
+      <td colspan="9"><input type="text" name="formBean.productBarcode.product.serialNum" id="serialNum" onfocus="this.select();"/> <input type="button" value="获取已录信息" onclick="getProductColors();"/>(*当需要为已经存在的货品添加额外颜色和尺码的条码时，请输入) <br/> <div id="colorsDiv"></div></td>
     </tr>
     <tr class="InnerTableContent">
-      <td height="4" colspan="8"><hr width="100%" color="#FFCC00"/></td>
+      <td height="4" colspan="10"><hr width="100%" color="#FFCC00"/></td>
     </tr>
     <tr class="InnerTableContent">
       <td height="19"><strong>颜色：</strong></td>
-      <td colspan="4">*多个颜色间用 - 分开,比如"红-黑-黄"<br/>
+      <td colspan="3">*多个颜色间用 - 分开,比如"红-黑-黄"<br/>
           <input type="text" id="colorName" size="10" onfocus="this.select();"/><input id="searchColorBt" type="button" onclick="searchColor();" value="查找"/><br/><br/>
           <select name="formBean.colorIds" id="color" multiple size="5" style="width:94px"></select><input id="searchColorBt" type="button" onclick="removeColor();" value="删除"/></td>
-      <td></td>
-      <td><!--<strong>尺码：</strong>--></td>
-      <td><!--<s:select name="formBean.sizeIds" id="size" list="uiBean.basicData.sizeList" listKey="sizeId" listValue="name"  headerKey="" headerValue="--------无尺码---------"  multiple="true" size="15" onclick="clickSize();"/>--></td>
+      
+      <td><strong>面料成份：</strong></td>
+      <td><textarea name="formBean.productBarcode.product.material" id="material" rows="4" cols="40"></textarea>
+      
+      <!--<s:select name="formBean.sizeIds" id="size" list="uiBean.basicData.sizeList" listKey="sizeId" listValue="name"  headerKey="" headerValue="--------无尺码---------"  multiple="true" size="15" onclick="clickSize();"/>--></td>
+      <td colspan="3"></td>
     </tr>
 
     <tr class="InnerTableContent">
-      <td height="4" colspan="8"><hr width="100%" color="#FFCC00"/></td>
+      <td height="4" colspan="10"><hr width="100%" color="#FFCC00"/></td>
     </tr>
     <tr class="InnerTableContent">
       <td height="30">&nbsp;</td>
@@ -376,6 +397,8 @@ function clickSize(){
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>      
+            <td>&nbsp;</td>
+      <td>&nbsp;</td>  
     </tr>
   </table>
    </td></tr>

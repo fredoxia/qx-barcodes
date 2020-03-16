@@ -109,7 +109,7 @@ import com.onlineMIS.sorter.ChainStatisticReportItemVOSorter;
 
 @Service
 public class ChainReportService {
-	private final int lezhixile = 213;
+	private final List<Integer> noDisplaySet = new ArrayList<Integer>(Arrays.asList(213,275,288));
 	@Autowired
 	private ChainStoreService chainStoreService;
 	
@@ -350,8 +350,15 @@ public class ChainReportService {
 		String chainCriteriaPrepaid = "";
 		
 		if (chainId == Common_util.ALL_RECORD) {
-			chainCriteria = " chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID + " AND chainStore.chain_id <> " + lezhixile;
-			chainCriteriaPrepaid = " c.chainStore.chain_id <> " + ChainStore.CHAIN_ID_TEST_ID  + " AND chainStore.chain_id <> " + lezhixile;
+			String noDisplayStore = "(" + ChainStore.CHAIN_ID_TEST_ID;
+			for (int i = 0; i < noDisplaySet.size();i++){
+				noDisplayStore += "," +noDisplaySet.get(i);
+			}
+			noDisplayStore += ")";
+			
+			
+			chainCriteria = " chainStore.chain_id not in " + noDisplayStore;
+			chainCriteriaPrepaid = " chainStore.chain_id not in " + noDisplayStore;
 		} else {
 			chainCriteria = " chainStore.chain_id = " + chainId;
 			chainCriteriaPrepaid = " c.chainStore.chain_id = " + chainId;
@@ -588,8 +595,8 @@ public class ChainReportService {
 	    	ChainSalesReport rpt = reports.get(i);
 	    	int chainIdRpt = rpt.getChainStore().getChain_id();
 	    	
-	    	//剔除乐至喜乐仓
-	    	if (chainIdRpt == lezhixile){
+	    	//剔除乐至喜乐仓,巴中鞋子帐户
+	    	if (noDisplaySet.contains(chainIdRpt)){
 	    		removeId = i;
 	    	}
 	    	

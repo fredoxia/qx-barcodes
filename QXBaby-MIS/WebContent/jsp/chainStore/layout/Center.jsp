@@ -94,7 +94,7 @@ function reloadStatis(){
 									<td><hr/></td>
 								</tr>
 								<tr class="InnerTableContent">
-									<td><a href="/docs/QXBaby-MIS-Docs/contact.xls" target="_blank">连锁店联系电话</a></td>
+									<td><a href='javascript:addTab3("chainMgmtJSP!getAllChainAddressInfor","连锁店联系信息");'>连锁店联系信息</a></td>
 							 	</tr>
 							 	<tr height="10">
 									<td><hr/></td>

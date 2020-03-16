@@ -129,6 +129,9 @@
         <many-to-one name="quarter" column="quarter_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter" lazy="false"/>
         <many-to-one name="brand" column="brand_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand" lazy="false"/>
         <many-to-one name="category" column="category_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category" lazy="false"/>
+        <property name="material" column="material" type="string" not-null="true"/>
+        <property name="sizeMin" column="size_min" type="integer" not-null="false"/>
+        <property name="sizeMax" column="size_max" type="integer" not-null="false"/>        
    </class>
 
     <class name="ProductBarcode" table="product_barcode">

@@ -16,6 +16,7 @@ import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreGroupDaoImpl;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreInforVO;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
@@ -427,6 +428,44 @@ public class ChainStoreService {
 			return chainStores.get(0);
 		else 
 			return null;
+	}
+
+	/**
+	 * 获取连锁店的信息展示在一张网页上
+	 * @return
+	 */
+	public Response getAllChainInfo() {
+		Response response = new Response();
+		List<ChainStoreInforVO> chainStoreVOs = new ArrayList<ChainStoreInforVO>(); 
+
+		boolean cache = false;
+		
+		//只获取父连锁店
+		int isAll = 0;
+		DetachedCriteria searchCriteria = buildChainStoreHQCriteria(isAll);
+		searchCriteria.addOrder(Order.asc("pinYin"));
+		List<ChainStore> chainStores = chainStoreDaoImpl.getByCritera(searchCriteria, cache);
+
+		for (ChainStore store : chainStores){
+			int chainId = store.getChain_id();
+			
+			ChainStoreConf conf = chainStoreConfDaoImpl.get(chainId, true);
+			
+			ChainStoreInforVO chainStoreInforVO = new ChainStoreInforVO();
+			chainStoreInforVO.setChain_name(store.getChain_name());
+			chainStoreInforVO.setOwner_name(store.getOwner_name());
+			chainStoreInforVO.setPinYin(store.getPinYin());
+			
+			if (conf != null)
+			     chainStoreInforVO.setShippingAddress(conf.getShippingAddress());
+			
+			chainStoreVOs.add(chainStoreInforVO);
+		}
+		
+		response.setReturnValue(chainStoreVOs);
+		response.setReturnCode(Response.SUCCESS);
+		
+		return response;
 	}
 
 
