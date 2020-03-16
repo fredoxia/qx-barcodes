@@ -74,35 +74,6 @@ public class Product  implements Serializable{
      */
     private double discount;
     private ChainStore chainStore;
-    
-    private Integer sizeMin;
-    private Integer sizeMax;
-    private String material;
-
-    
-	public Integer getSizeMin() {
-		return sizeMin;
-	}
-
-	public void setSizeMin(Integer sizeMin) {
-		this.sizeMin = sizeMin;
-	}
-
-	public Integer getSizeMax() {
-		return sizeMax;
-	}
-
-	public void setSizeMax(Integer sizeMax) {
-		this.sizeMax = sizeMax;
-	}
-
-	public String getMaterial() {
-		return material;
-	}
-
-	public void setMaterial(String material) {
-		this.material = material;
-	}
 
 	public ChainStore getChainStore() {
 		return chainStore;

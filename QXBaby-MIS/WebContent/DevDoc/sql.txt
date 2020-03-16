@@ -1,3 +1,0 @@
-alter table product add size_min smallint default '0';
-alter table product add size_max smallint default '0';
-alter table product add material varchar(40) default '';
