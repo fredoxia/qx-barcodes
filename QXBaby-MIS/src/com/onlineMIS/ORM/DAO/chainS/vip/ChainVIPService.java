@@ -1018,8 +1018,8 @@ public class ChainVIPService {
 		
 		if (amount == 0) {
 			response.setFail("错误 : 充值金额不能为0");
-		} else if (vipPrepaid.getAmt2() <= 0) {
-			response.setFail("错误 : 赠送金额 必须大于0");
+		} else if (vipPrepaid.getAmt2() < 0) {
+			response.setFail("错误 : 赠送金额 不能小于0");
 		} else if (vipCard == null){
 			response.setFail("错误 : VIP卡   不存在");
 		} else if (vipCard.getStatus() != ChainVIPCard.STATUS_GOOD) {

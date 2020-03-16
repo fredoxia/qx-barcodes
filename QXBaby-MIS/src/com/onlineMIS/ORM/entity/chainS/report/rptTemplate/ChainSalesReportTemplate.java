@@ -39,12 +39,13 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 	private final int discount_column = 11;
 	private final int sales_discount_column= 12;
 	private final int coupon_column = 13;
-	private final int card_amt_column = 14;
-	private final int cash_amt_column= 15;
-	private final int alipay_amt_column = 16;
-	private final int wechat_amtr_column = 17;
-	private final int qx_net_amt_column = 18;
-	private final int qx_net_amt_lastYear_column = 19;
+	private final int prepaid_amt_column = 14;
+	private final int card_amt_column = 15;
+	private final int cash_amt_column= 16;
+	private final int alipay_amt_column = 17;
+	private final int wechat_amtr_column = 18;
+	private final int qx_net_amt_column = 19;
+	private final int qx_net_amt_lastYear_column = 20;
 	
 	private List<ChainSalesReport> salesRptEle = new ArrayList<ChainSalesReport>();
 	private Map<Integer, Double> lastYearMap = null;
@@ -86,6 +87,7 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 			row.createCell(discount_column).setCellValue(saleReport.getDiscountSum());
 			row.createCell(sales_discount_column).setCellValue(saleReport.getSalesDiscountAmtSum());
 			row.createCell(coupon_column).setCellValue(saleReport.getCouponSum());
+			row.createCell(prepaid_amt_column).setCellValue(saleReport.getVipPrepaidAmt());
 			row.createCell(card_amt_column).setCellValue(saleReport.getCardAmtSum());
 			row.createCell(cash_amt_column).setCellValue(saleReport.getCashNetSum());
 
@@ -122,7 +124,7 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 			row.createCell(coupon_column).setCellValue(saleReport.getCouponSum());
 			row.createCell(card_amt_column).setCellValue(saleReport.getCardAmtSum());
 			row.createCell(cash_amt_column).setCellValue(saleReport.getCashNetSum());
-			
+			row.createCell(prepaid_amt_column).setCellValue(saleReport.getVipPrepaidAmt());
 			row.createCell(alipay_amt_column).setCellValue(saleReport.getAlipaySum());
 			row.createCell(wechat_amtr_column).setCellValue(saleReport.getWechatAmtSum());
 			
