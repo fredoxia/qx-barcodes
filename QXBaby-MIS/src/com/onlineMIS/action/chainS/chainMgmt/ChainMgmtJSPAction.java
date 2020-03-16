@@ -7,7 +7,6 @@ import net.sf.json.JSONObject;
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainInitialStock;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainPriceIncrement;
-import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreInforVO;
 import com.onlineMIS.ORM.entity.chainS.user.ChainRoleType;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
@@ -340,32 +339,5 @@ public class ChainMgmtJSPAction extends ChainMgmtAction {
 		}
 		
 		return preEditChainProductPrice();
-	}
-	
-	/**
-	 * 获取连锁店的地址信息
-	 * @return
-	 */
-	public String getAllChainAddressInfor(){
-    	UserInfor userInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
-    	loggerLocal.info(userInfor.getUser_name() + "," + this.getClass().getName()+ "."+"getAllChainAddressInfor");
-    	
-		Response response = new Response();
-		
-		try {
-		     response = chainStoreService.getAllChainInfo();
-		} catch (Exception e) {
-			loggerLocal.error(e);
-			response.setQuickValue(Response.ERROR, response.getMessage());
-		}
-		
-		if (response.getReturnCode() == response.SUCCESS || response.getReturnCode() == response.WARNING){
-			List<ChainStoreInforVO> chainStores = (List<ChainStoreInforVO>)response.getReturnValue();
-			uiBean.setChainStoreVOs(chainStores);
-		} else {
-			addActionError("发生错误 : " + response.getMessage());
-		}
-		
-		return "showAllChainAddressInfor";
 	}
 }

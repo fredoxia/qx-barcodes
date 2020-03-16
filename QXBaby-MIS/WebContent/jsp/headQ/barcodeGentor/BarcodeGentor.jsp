@@ -147,15 +147,6 @@ function saveBarcodeBackProcess(data){
 			      var belong = "";
 			      if (barcodes[i].chainStore.chainId != undefined)
 				     belong = "连锁店"; 
-			      
-			      var size = "";
-			      if (barcodes[i].product.sizeMin != 0 || barcodes[i].product.sizeMax!=0)
-			    	  size = barcodes[i].product.sizeMin  + "-" + barcodes[i].product.sizeMax;
-			      
-			      var material ="";
-			      if (barcodes[i].product.material != "")
-			    	  material = "<textarea>"+barcodes[i].product.material+"</textarea>";
-			      
 		          $("<tr align='center' class='InnerTableContent'" + bg +"><td>"+barcodes[i].product.year.year + " " + barcodes[i].product.quarter.quarter_Name +"</td><td>"+
 				          barcodes[i].product.brand.brand_Name+"</td><td>"+
 				          barcodes[i].product.category.category_Name+"</td><td>"+
@@ -163,14 +154,12 @@ function saveBarcodeBackProcess(data){
 				          parseValue(barcodes[i].color.name)+"</td><td>"+
 //Size will be implement later				          parseValue(barcodes[i].size.name)+"</td><td>"+ 
 				          barcodes[i].product.numPerHand + "/" + barcodes[i].product.unit +"</td><td>"+
-				          size +"</td><td>"+
 				          barcodes[i].product.salesPriceFactory +"</td><td>"+
 				          barcodes[i].product.discount +"</td><td>"+
 				          barcodes[i].product.salesPrice+"</td><td>"+
 				          barcodes[i].product.recCost+"</td><td>"+
 				          barcodes[i].product.wholeSalePrice+"</td><td>"+
 				          barcodes[i].barcode+"</td><td>"+
-				          material+"</td><td>"+
 				          barcodes[i].createDate+"</td><td>"+
 				          belong+"</td><td><s:if test="#session.LOGIN_USER.containFunction('productJSPAction!searchForUpdate')"><a href='#' onclick=\"window.open ('productJSPAction!searchForUpdate?formBean.productBarcode.barcode="+barcodes[i].barcode+"','新窗口','height=550, width=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');\"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orgTablebody");
 		         }
@@ -225,9 +214,8 @@ function assignProductValue(p){
 		$("#brand_ID").attr("value",p.brand.brand_ID);
 		$("#brandName").attr("value",p.brand.brand_Name);
 		$("#salesPrice").attr("value",p.salesPrice);
-		$("#sizeMin").combobox("select",p.sizeMin);
-		$("#sizeMax").combobox("select",p.sizeMax);
-		$("#material").attr("value",p.material);
+		$("#category_ID").combobox("select",p.category.category_ID);
+		
 	}
 }
 function clearAllData(){
@@ -300,7 +288,7 @@ function clickSize(){
  <table width="95%" align="center"  class="OuterTable">
  <tr><td>
 
- <table width="100%" border="0">
+ <table width="100%" border="1">
     <s:hidden name="formBean.productBarcode.product.area.area_ID" value="1"/>     
     <tr class="InnerTableContent">
       <td width="80" height="19"><strong>年份：</strong></td>
