@@ -74,7 +74,7 @@ function printFooter(prepaid){
 	dfPrinter.FontSize=fontSize;
     var content = "此小票是充值凭证，请妥善保管";
       pazu.TPrinter.printToDefaultPrinter(content);
-    content = "服务热线:400-688-5581";
+    content = "服务热线:400-606-0849";
       pazu.TPrinter.printToDefaultPrinter(content);
     content = "微信号：QXbaby-HK";
       pazu.TPrinter.printToDefaultPrinter(content);
