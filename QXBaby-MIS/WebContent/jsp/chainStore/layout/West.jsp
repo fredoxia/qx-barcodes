@@ -123,14 +123,14 @@ $(function() {
 						</s:if>
 					</ul>
 				  </li>
-			     <li data-options="iconCls:'icon-connect',state:'closed'">
+			     <!--  <li data-options="iconCls:'icon-connect',state:'closed'">
 				    <span>货品质量管理</span>
 					<ul>
-						<li data-options="iconCls:'icon-connect',attributes:{url:'inventoryFlowJSPAction!preCreateOverflowOrder'}">管理质量问题货品</li>
+						<li data-options="iconCls:'icon-connect',attributes:{url:'chainErrorProductJSP!preErrorProductList'}">管理质量问题货品</li>
 						<li data-options="iconCls:'icon-connect',attributes:{url:'inventoryFlowJSPAction!preCreateflowLossOrder'}">质量问题报表</li>
 
 					</ul>
-				  </li>
+				  </li>-->
 				
 			     <s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preSalesReport') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!prePurchaseReport') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preFinanceReport')|| #session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preGetCurrentInventory') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!preSalesStatisticReport') || #session.LOGIN_CHAIN_USER.containFunction('chainReportJSPAction!prePurchaseStatisticReport')">
 				  <li data-options="iconCls:'icon-chart_bar',state:'open'">

@@ -234,9 +234,9 @@
                      application/vnd.ms-excel   
                 </param>  
                 <param name="inputName">formBean.fileStream</param>  
-               <param name="contentDisposition">  
+                <param name="contentDisposition">  
                     attachment;filename=${formBean.fileName}   
-                 </param>  
+                </param>  
                 <param name="bufferSize">1024</param>  
             </result> 
         </action>   
