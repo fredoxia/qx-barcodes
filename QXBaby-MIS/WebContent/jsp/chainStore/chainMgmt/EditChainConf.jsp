@@ -48,6 +48,7 @@ function backProcessGetChainStore(data){
 			 var defaultVipScoreMultiple = chainStoreConf.defaultVipScoreMultiple;
 			 var allowVIPScore = chainStoreConf.allowOtherVIPUseVIPScore;
 			 var prepaidPasswordRequired = chainStoreConf.prepaidPasswordRequired;
+			 var discount2020Spring = chainStoreConf.discount2020Spring;
 			 
 			 $("#amtType").val(discountAmtType).attr("selected", true);
 			 $("#printCopy").attr("value", printCopy);
@@ -63,7 +64,7 @@ function backProcessGetChainStore(data){
 			 $("#defaultVipScoreMultiple").attr("value",defaultVipScoreMultiple);
 			 $("#vipScoreUsage").attr("value",allowVIPScore);
 			 $("#prepaidPasswordRequired").attr("value",prepaidPasswordRequired);
-			 
+			 $("#discount2020Spring").attr("value",discount2020Spring);
 		}
 	}
 }
@@ -192,6 +193,11 @@ function clearChainStoreConf(){
    	      <td><s:textfield id="defaultDiscount" name="formBean.chainStoreConf.defaultDiscount" size="5"/></td>
    	      <td colspan="4">*在开单时，系统会自动使用默认折扣打折，比如在开张，做活动期间。之后请修改回'1'。</td>
        </tr>
+       <tr class="InnerTableContent">
+   	      <td height="25"><strong>2020春货品折扣</strong></td>
+   	      <td><s:select id="discount2020Spring" name="formBean.chainStoreConf.discount2020Spring"  list="#{1:'默认开启',2:'停止'}" listKey="key" listValue="value" /></td>
+   	      <td colspan="4">*2020春货品默认8.8折,vip默认8折,高于8折不能过帐</td>
+       </tr>       
        <tr class="InnerTableContent">
    	      <td height="25"><strong>VIP默认积分</strong></td>
    	      <td><s:select id="defaultVipScoreMultiple" name="formBean.chainStoreConf.defaultVipScoreMultiple"  list="#{1:'正常积分',2:'活动期间,两倍积分'}" listKey="key" listValue="value" /></td>
