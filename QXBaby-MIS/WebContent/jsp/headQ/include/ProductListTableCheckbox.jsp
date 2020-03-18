@@ -14,14 +14,12 @@
     <th width="90">货号</th>
     <th width="35">颜色</th>
     <th width="70">齐码/单位</th>
-    <th width="70">码数</th>
     <th width="70">厂家零售价</th>
     <th width="40">折扣</th>
     <th width="40">零售价</th>
     <th width="40">进价</th>
     <th width="48">预设价1</th>
     <th width="110">货品条型码</th>
-    <th width="110">面料</th>
     <th width="90">录入时间</th>
     <th width="60">归属</th>
     <td width="35">修改</td>	

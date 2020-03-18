@@ -211,7 +211,7 @@ function printFooter(order){
       pazu.TPrinter.printToDefaultPrinter(content);
     content = "特价商品不在三包范围之内)";
       pazu.TPrinter.printToDefaultPrinter(content);
-    content = "服务热线:400-688-5581";
+    content = "服务热线:400-606-0849";
       pazu.TPrinter.printToDefaultPrinter(content);
     content = "微信号：QXbaby-HK";
       pazu.TPrinter.printToDefaultPrinter(content);

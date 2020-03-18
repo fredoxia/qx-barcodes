@@ -896,12 +896,12 @@ public class ChainStoreSalesService {
 //			}
 			
 			int orderId = salesOrder.getId();
-			String commentScore = "";
+
 			if (isCancel)
-				commentScore = "红冲 ";
+				comment = "红冲 ";
 			if (salesOrder.getChainPrepaidAmt() != 0)
-				commentScore += "预付款消费" + Common_util.roundDouble(salesOrder.getChainPrepaidAmt(),0);
-			ChainVIPScore vipScoreObj = new ChainVIPScore(chainId,vipCard.getId(), ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue), Common_util.getDecimalDouble(coupon * multiple), commentScore);
+				comment += "预付款消费" + Common_util.roundDouble(salesOrder.getChainPrepaidAmt(),0);
+			ChainVIPScore vipScoreObj = new ChainVIPScore(chainId,vipCard.getId(), ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue), Common_util.getDecimalDouble(coupon * multiple), comment);
 			chainVIPScoreImpl.save(vipScoreObj, false);
 			
 			/**
