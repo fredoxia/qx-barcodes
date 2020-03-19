@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
+
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +35,10 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 	
 	@Autowired
 	BrandPriceIncreaseDaoImpl brandPriceIncreaseDaoImpl;
+	@Autowired
+	ChainStoreConfDaoImpl chainStoreConfDaoImpl;
 	
-	public ChainProductBarcodeVO convertProductBarcodeVO(ProductBarcode barcode, ChainStore chainStore){
+	public ChainProductBarcodeVO convertProductBarcodeVO(ProductBarcode barcode, ChainStore chainStore, int vipId){
 		ChainProductBarcodeVO chainProductBarcodeVO = new ChainProductBarcodeVO();
 		int chainId = 0;
 		
@@ -43,33 +48,47 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 			if (chainStore != null){
 				chainId = chainStore.getChain_id();
 				
-				//1. 如果是总部设定的涨价的货品
 				Product product = barcode.getProduct();
 				Year year = product.getYear();
 				Quarter quarter = product.getQuarter();
 				Brand brand = product.getBrand();
-				chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, null);
 				
-				BrandPriceIncrease brandPriceIncrease = brandPriceIncreaseDaoImpl.getByPK(year, quarter, brand);
-				if (brandPriceIncrease != null){
-					double increase = brandPriceIncrease.getIncrease();
+				
+				
+				
+				//0.1 特别的2020 春季产品
+				ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
+				if ((year.getYear_ID() == Year.SPECIAL_YEAR && quarter.getQuarter_ID() == Quarter.SPECIAL_QUARTER) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+					if (vipId != 0){
+						chainProductBarcodeVO.setDiscount(ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+					} else 
+					    chainProductBarcodeVO.setDiscount(ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 					
-					chainProductBarcodeVO.setDiscount(increase/100);
 				} else {
-					//2. 如果连锁店自己设定过价格,优先使用连锁店设定的价格
-					ChainSalesPriceId id = new ChainSalesPriceId(chainId, barcode.getBarcode());
-					ChainSalesPrice chainSalesPrice = this.get(id, true);
-					if (chainSalesPrice != null) {
-						myPrice = chainSalesPrice.getChainSalesPrice();
-//						chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, myPrice);
-						chainProductBarcodeVO.setMySalePrice(myPrice);
+					//1. 如果是总部设定的涨价的货品
+					chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, null);
+					
+					BrandPriceIncrease brandPriceIncrease = brandPriceIncreaseDaoImpl.getByPK(year, quarter, brand);
+					if (brandPriceIncrease != null){
+						double increase = brandPriceIncrease.getIncrease();
+						
+						chainProductBarcodeVO.setDiscount(increase/100);
 					} else {
-						//1. 获取连锁店涨价
-						ChainPriceIncrement priceIncre = chainStore.getPriceIncrement();
-						if (priceIncre != null && (barcode.getChainStore() == null || barcode.getChainStore().getChain_id() == 0)){
-							myPrice = ChainSalesPriceDaoImpl.calPriceIncre(barcode.getProduct().getSalesPrice(),priceIncre);
-							//chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, myPrice);
+						//2. 如果连锁店自己设定过价格,优先使用连锁店设定的价格
+						ChainSalesPriceId id = new ChainSalesPriceId(chainId, barcode.getBarcode());
+						ChainSalesPrice chainSalesPrice = this.get(id, true);
+						if (chainSalesPrice != null) {
+							myPrice = chainSalesPrice.getChainSalesPrice();
+	//						chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, myPrice);
 							chainProductBarcodeVO.setMySalePrice(myPrice);
+						} else {
+							//1. 获取连锁店涨价
+							ChainPriceIncrement priceIncre = chainStore.getPriceIncrement();
+							if (priceIncre != null && (barcode.getChainStore() == null || barcode.getChainStore().getChain_id() == 0)){
+								myPrice = ChainSalesPriceDaoImpl.calPriceIncre(barcode.getProduct().getSalesPrice(),priceIncre);
+								//chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, myPrice);
+								chainProductBarcodeVO.setMySalePrice(myPrice);
+							}
 						}
 					}
 				}

@@ -8,6 +8,7 @@ public class Quarter  implements Serializable{
 	 */
 	private static final long serialVersionUID = 8446289926712130617L;
 	public static final int QUARTER_FOUR_SEARSON = 8;
+	public static final int SPECIAL_QUARTER = 1;
 	private int quarter_ID;
     private String quarter_Name;
     private String quarter_Code;

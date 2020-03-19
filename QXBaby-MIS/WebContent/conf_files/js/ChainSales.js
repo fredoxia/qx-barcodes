@@ -56,7 +56,8 @@ function validateProductCodeInput(productCode){
 function retrieveProductByBarcode(index_trigger, suffix, currentBarcode){
 	if (validateRowInput(index_trigger,suffix,currentBarcode)){	
 		var discount = $("#vipDiscount").val();  
-	    var params= "formBean.barcode=" + currentBarcode + "&formBean.index=" + index_trigger + "&formBean.discount=" + discount + "&formBean.suffix=" + suffix+ "&formBean.chainId=" + $("#chainStore").val() ; 
+		var vipId = $("#vipCardIdHidden").val();  
+	    var params= "formBean.barcode=" + currentBarcode + "&formBean.index=" + index_trigger + "&formBean.discount=" + discount + "&formBean.suffix=" + suffix+ "&formBean.chainId=" + $("#chainStore").val()+ "&formBean.vipId=" + vipId ; 
 	
 	    $.post("actionChain/chainSalesJSONAction!scanByBarcode",params, backRetrievePByBarcodeProcess,"json");
 	}

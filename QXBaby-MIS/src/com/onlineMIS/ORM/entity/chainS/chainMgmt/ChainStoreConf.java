@@ -76,7 +76,8 @@ public class ChainStoreConf implements Serializable {
 	private int discount2020Spring = 1;
 	public static final int DISCOUNT_2020_ENABLE = 1;
 	public static final int DISCOUNT_2020_DISENABLE = 2;
-	
+	public static final double NORMAL_DISCOUNT_2020_SPRING = 0.88;
+	public static final double VIP_DISCOUNT_2020_SPRING = 0.8;
 	public ChainStoreConf(){
 		
 	}

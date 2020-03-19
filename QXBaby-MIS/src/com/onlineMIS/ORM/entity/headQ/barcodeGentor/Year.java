@@ -7,6 +7,9 @@ public class Year implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -4420317812621918098L;
+	
+	public static final int SPECIAL_YEAR = 8;//10;
+	
 	private int year_ID;
     private String year;
     private String year_Code;

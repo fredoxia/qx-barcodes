@@ -50,8 +50,9 @@ public class ChainSalesJSONAction extends ChainSalesAction {
     	
 		String barcode = formBean.getBarcode();
 		int index = formBean.getIndex();
+		int vipId = formBean.getVipId();
     	
-		ChainStoreSalesOrderProduct chainProduct = chainStoreSalesService.scanProductsByBarcode(barcode, formBean.getChainId());
+		ChainStoreSalesOrderProduct chainProduct = chainStoreSalesService.scanProductsByBarcode(barcode, formBean.getChainId(), vipId);
 		
 		double discount = 1;
 		

@@ -37,6 +37,7 @@
         <property name="allowOtherVIPUseVIPScore" column="allow_vip_other_chain_vipscore" type="integer"/>
         
         <property name="prepaidPasswordRequired" column="prepaid_use_require_password" type="integer"/>
+        <property name="discount2020Spring" column="discount_2020_spring" type="integer"/>
         
       </class>
       

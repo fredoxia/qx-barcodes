@@ -67,6 +67,7 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistory;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistoryId;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
@@ -257,7 +258,7 @@ public class ChainStoreSalesService {
 	 * @param barcode
 	 * @return
 	 */
-	public ChainStoreSalesOrderProduct scanProductsByBarcode(String barcode, int chainId) {
+	public ChainStoreSalesOrderProduct scanProductsByBarcode(String barcode, int chainId, int vipId) {
 		ProductBarcode product =  productBarcodeDaoImpl.getByBarcode(barcode);
 			
 		ChainStoreSalesOrderProduct chainOrderProduct = new ChainStoreSalesOrderProduct();
@@ -266,7 +267,7 @@ public class ChainStoreSalesService {
 		   ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
 		   
 		   //2. 获取涨价
-		   ChainProductBarcodeVO vo = chainSalesPriceDaoImpl.convertProductBarcodeVO(product, chainStore);
+		   ChainProductBarcodeVO vo = chainSalesPriceDaoImpl.convertProductBarcodeVO(product, chainStore, vipId);
 		   if (vo.getMySalePrice() != 0)
 			   product.getProduct().setSalesPrice(vo.getMySalePrice());
 		   if (vo.getDiscount() != 1)
@@ -622,6 +623,7 @@ public class ChainStoreSalesService {
 	 *    - 非总部管理人员不能跨连锁店过账
 	 *    - 使用积分策略验证
 	 *    - 所有数量必须是大于零的 数字
+	 *    - 是否有2020春 季货品
 	 * @param salesOrder
 	 * @return
 	 */
@@ -715,6 +717,8 @@ public class ChainStoreSalesService {
 					return response;  
 	    	  }
 	      }
+	      
+	    
 		
 		if (conf != null ){
 		   double minDiscountRate = conf.getMinDiscountRate();
@@ -750,6 +754,32 @@ public class ChainStoreSalesService {
 		      if (errorMsg.length() > 0)
 		    	  response.setQuickValue(Response.ERROR, errorMsg);
 		   }
+		}
+		
+		//更新2020 春 的产品
+		for (ChainStoreSalesOrderProduct product : products2){
+	    	  if (product == null || product.getProductBarcode() == null|| product.getProductBarcode().getBarcode() == null || product.getProductBarcode().getBarcode().equals(""))
+	    		  continue;
+	    	  
+	    	ProductBarcode pBarcode = productBarcodeDaoImpl.get(product.getProductBarcode().getId(), true);
+	    	  
+			Product p = pBarcode.getProduct();
+			Year year = p.getYear();
+			Quarter quarter = p.getQuarter();
+			
+			if ((year.getYear_ID() == Year.SPECIAL_YEAR && quarter.getQuarter_ID() == Quarter.SPECIAL_QUARTER) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+				if (salesOrder.getVipCard() != null && salesOrder.getVipCard().getId() != 0){
+					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
+						response.setQuickValue(Response.ERROR, "VIP购买2020年春季的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						break;
+					}
+				} else 
+					if (product.getDiscountRate() > ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING){
+						response.setQuickValue(Response.ERROR, "客户购买2020年春季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
+						break;
+					}
+				
+			} 
 		}
 
 		return response;
@@ -1564,7 +1594,7 @@ public class ChainStoreSalesService {
 		ChainProductBarcodeVO vo = new ChainProductBarcodeVO();
 		if (productBarcode != null ){
 			ChainStore chainStore = chainStoreService.getChainStoreByID(chainId);
-			vo = chainSalesPriceDaoImpl.convertProductBarcodeVO(productBarcode, chainStore);
+			vo = chainSalesPriceDaoImpl.convertProductBarcodeVO(productBarcode, chainStore, 0);
 					
 //			if (chainId > 0){
 //				int inventory = chainInOutStockDaoImpl.getProductStock(barcode, chainStore.getClient_id(), false);

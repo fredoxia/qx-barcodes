@@ -26,6 +26,7 @@ public class ChainSalesActionFormBean extends ChainActionFormBaseBean{
 	private double discount;
 	private double maxVipCash;
 	private int chainId;
+	private int vipId;
 	/**
 	 * used to indicate it is Return barcode or not
 	 * for sales bacode is ""
@@ -44,6 +45,12 @@ public class ChainSalesActionFormBean extends ChainActionFormBaseBean{
     private Pager pager = new Pager();
     private String token = "";
     
+	public int getVipId() {
+		return vipId;
+	}
+	public void setVipId(int vipId) {
+		this.vipId = vipId;
+	}
 	public int getChainOrderPay() {
 		return chainOrderPay;
 	}
