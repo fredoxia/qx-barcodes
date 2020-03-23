@@ -1670,6 +1670,7 @@ public class ChainReportService {
 		
 		boolean showCost = loginUserInfor.containFunction("purchaseAction!seeCost");
 
+		//1. part one is to calculate the summary
 		String whereClause = "";
 		if (chainId != Common_util.ALL_RECORD){
 			whereClause += " AND csp.chainSalesOrder.chainStore.chain_id = " + chainId;
@@ -1695,11 +1696,12 @@ public class ChainReportService {
 			whereClause += " AND csp.productBarcode.product.brand.brand_ID = " + brandId;
 		}
 		
-		criteria += whereClause + " GROUP BY csp.productBarcode.id, csp.type";
+		criteria += whereClause ;
+		String criteiraSummary = criteria + " GROUP BY csp.productBarcode.id, csp.type";
 		
-		List<Object> values = chainSalesOrderDaoImpl.executeHQLSelect(criteria, value_sale.toArray(), null, true);
+		List<Object> values = chainSalesOrderDaoImpl.executeHQLSelect(criteiraSummary, value_sale.toArray(), null, true);
 		
-		Map<Integer, ChainSalesStatisticReportItemVO> dataMap = new HashMap<Integer, ChainSalesStatisticReportItemVO>();
+		Map<String, ChainSalesStatisticReportItemVO> dataMap = new HashMap<String, ChainSalesStatisticReportItemVO>();
 		
 		if (values != null){
 			for (Object record : values ){
@@ -1711,7 +1713,7 @@ public class ChainReportService {
 				int pbId = Common_util.getInt(records[4]);
 				int type = Common_util.getInt(records[5]);
 				
-				ChainSalesStatisticReportItemVO levelFour = dataMap.get(pbId);
+				ChainSalesStatisticReportItemVO levelFour = dataMap.get(String.valueOf(pbId));
 				if (levelFour != null){
 					levelFour.putValue(quantity, type, sales, cost, salesDiscount);
 				} else {
@@ -1727,11 +1729,12 @@ public class ChainReportService {
 					levelFour.setIsChain(isChain);
 				}
 				
-				dataMap.put(pbId, levelFour);
+				dataMap.put(String.valueOf(pbId), levelFour);
 			}
 		}
 			
 		List<ChainSalesStatisReportItem> reportItems = new ArrayList<ChainSalesStatisReportItem>();
+		List<ChainSalesStatisReportItem> reportItemsDetail = new ArrayList<ChainSalesStatisReportItem>();
 		ChainSalesStatisReportItem totalItem = new ChainSalesStatisReportItem();
 		List<ChainSalesStatisticReportItemVO> reportItemVOs = new ArrayList<ChainSalesStatisticReportItemVO>(dataMap.values());
 		
@@ -1749,8 +1752,91 @@ public class ChainReportService {
 			reportItems.add(reportItem);
 		}
 		
+		//2. part two is to calculate the detail elements
+//		String whereClause = "";
+//		if (chainId != Common_util.ALL_RECORD){
+//			whereClause += " AND csp.chainSalesOrder.chainStore.chain_id = " + chainId;
+//		} else { 
+//			whereClause += " AND csp.chainSalesOrder.chainStore.chain_id <>  " +ChainStore.CHAIN_ID_TEST_ID;
+//		}
+//		
+//		if (salerId != Common_util.ALL_RECORD){
+//			whereClause += " AND csp.chainSalesOrder.saler.user_id = " + salerId;
+//		}	
+		
+		criteria = "SELECT SUM(quantity), SUM(retailPrice * discountRate * quantity), SUM(costPrice * quantity), SUM(retailPrice * (1 - discountRate) * quantity), csp.productBarcode.id,  csp.type, csp.chainSalesOrder.chainStore.chain_id, csp.chainSalesOrder.orderDate FROM ChainStoreSalesOrderProduct csp WHERE csp.chainSalesOrder.status = ? AND csp.chainSalesOrder.orderDate BETWEEN ? AND ? ";
+		
+//		if (yearId != 0){
+//			whereClause += " AND csp.productBarcode.product.year.year_ID = " + yearId;
+//		}
+//		
+//		if (quarterId != 0){
+//			whereClause += " AND csp.productBarcode.product.quarter.quarter_ID = " + quarterId;
+//		}
+//		
+//		if (brandId != 0){
+//			whereClause += " AND csp.productBarcode.product.brand.brand_ID = " + brandId;
+//		}
+//		
+		criteria += whereClause ;
+		String criteriaDetail = criteria + " GROUP BY csp.chainSalesOrder.chainStore.chain_id, csp.chainSalesOrder.orderDate, csp.productBarcode.id, csp.type";
+		
+		values = chainSalesOrderDaoImpl.executeHQLSelect(criteriaDetail, value_sale.toArray(), null, true);
+
+		
+		if (values != null){
+			for (Object record : values ){
+				Object[] records = (Object[])record;
+				int quantity = Common_util.getInt(records[0]);
+				double sales = Common_util.getDouble(records[1]);
+				double cost = Common_util.getDouble(records[2]);
+				double salesDiscount = Common_util.getDouble(records[3]);
+				int pbId = Common_util.getInt(records[4]);
+				int type = Common_util.getInt(records[5]);
+				int chainIdDB = Common_util.getInt(records[6]);
+				Date date = Common_util.getDate(records[7]);
+				
+				String key = formatKey(chainIdDB, date, pbId);
+				
+				ChainSalesStatisticReportItemVO levelFour = dataMap.get(key);
+				if (levelFour != null){
+					levelFour.putValue(quantity, type, sales, cost, salesDiscount);
+				} else {
+				    String name = "";
+					ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+					
+					boolean isChain = false;
+					if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
+						isChain = true;
+
+					levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandId,pbId, showCost, ChainSalesStatisticReportItemVO.STATE_OPEN);
+					levelFour.setChainName(chainStoreService.getChainStoreByID(chainIdDB).getChain_name());
+					levelFour.setDate(Common_util.dateFormat.format(date));
+					
+					levelFour.putValue(quantity, type, sales, cost, salesDiscount);
+					levelFour.setIsChain(isChain);
+				}
+				
+				dataMap.put(key, levelFour);
+			}
+		}
+			
+		List<ChainSalesStatisticReportItemVO> reportItemVOs2 = new ArrayList<ChainSalesStatisticReportItemVO>(dataMap.values());
+
+		
+		for (ChainSalesStatisticReportItemVO vo : reportItemVOs2){
+            int pbId = vo.getPbId();
+            ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+            
+            vo.reCalculate();
+            
+			ChainSalesStatisReportItem reportItem = new ChainSalesStatisReportItem(vo, chainStore, saler, startDate, endDate, pb);
+			//totalItem.add(reportItem);
+			reportItemsDetail.add(reportItem);
+		}
+		
 		/**
-		 * @2. 准备excel报表
+		 * @3. 准备excel报表
 		 */
 
 		try {
@@ -1760,6 +1846,7 @@ public class ChainReportService {
 			ChainSalesStatisticsReportTemplate chainSalesStatisticsReportTemplate = new ChainSalesStatisticsReportTemplate(reportItems,totalItem, chainStore, filePath, showCost, saler, startDate, endDate);
 			HSSFWorkbook wb = chainSalesStatisticsReportTemplate.process();
 			
+			//
 			ByteArrayInputStream byteArrayInputStream = ExcelUtil.convertExcelToInputStream(wb);
 			
 			response.setReturnValue(byteArrayInputStream);
@@ -1768,6 +1855,10 @@ public class ChainReportService {
 			response.setReturnCode(Response.FAIL);
 		}
 		return response;
+	}
+	
+	private String formatKey(int chainId, Date date, Integer pbId){
+		return chainId+"@"+date.toString()+"@"+pbId;
 	}
 
 	class ChainSalesStatisticComparator implements Comparator<ChainSalesStatisReportItem> {
