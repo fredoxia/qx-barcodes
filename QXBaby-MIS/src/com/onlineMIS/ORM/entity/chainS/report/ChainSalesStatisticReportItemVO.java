@@ -12,6 +12,10 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 	 * 
 	 */
 	private static final long serialVersionUID = 4747171410230537428L;
+	
+	protected String chainName = "";
+	protected String date = "";
+	
 	protected int salesQ = 0;
 	protected int returnQ = 0;
 	protected int netQ = 0;
@@ -42,7 +46,23 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 		this.setSeeCost(seeCost);
 
 	}
-	
+
+	public String getChainName() {
+		return chainName;
+	}
+
+	public void setChainName(String chainName) {
+		this.chainName = chainName;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public int getSalesQ() {
 		return salesQ;
 	}
@@ -122,6 +142,7 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 		this.netProfit = netProfit;
 	}
 	
+
 	public void putValue(int quantity, int type, double sales, double cost, double salesDiscount){
 		switch (type) {
 		case ChainStoreSalesOrderProduct.SALES_OUT:
@@ -144,7 +165,7 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 		}
 	}
 
-	
+
 	public void reCalculate(){
 		netQ = salesQ - returnQ;
 		netPrice = salesPrice - returnPrice;
