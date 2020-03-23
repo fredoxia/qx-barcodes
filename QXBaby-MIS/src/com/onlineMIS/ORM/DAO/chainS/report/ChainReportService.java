@@ -1783,7 +1783,7 @@ public class ChainReportService {
 		
 		values = chainSalesOrderDaoImpl.executeHQLSelect(criteriaDetail, value_sale.toArray(), null, true);
 
-		
+		dataMap = new HashMap<String, ChainSalesStatisticReportItemVO>();
 		if (values != null){
 			for (Object record : values ){
 				Object[] records = (Object[])record;
@@ -1798,6 +1798,8 @@ public class ChainReportService {
 				
 				String key = formatKey(chainIdDB, date, pbId);
 				
+				//System.out.println(key);
+				
 				ChainSalesStatisticReportItemVO levelFour = dataMap.get(key);
 				if (levelFour != null){
 					levelFour.putValue(quantity, type, sales, cost, salesDiscount);
@@ -1809,8 +1811,8 @@ public class ChainReportService {
 					if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
 						isChain = true;
 
-					levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandId,pbId, showCost, ChainSalesStatisticReportItemVO.STATE_OPEN);
-					levelFour.setChainName(chainStoreService.getChainStoreByID(chainIdDB).getChain_name());
+					levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainIdDB, yearId, quarterId, brandId,pbId, showCost, ChainSalesStatisticReportItemVO.STATE_OPEN);
+
 					levelFour.setDate(Common_util.dateFormat.format(date));
 					
 					levelFour.putValue(quantity, type, sales, cost, salesDiscount);
@@ -1830,7 +1832,9 @@ public class ChainReportService {
             
             vo.reCalculate();
             
-			ChainSalesStatisReportItem reportItem = new ChainSalesStatisReportItem(vo, chainStore, saler, startDate, endDate, pb);
+            ChainStore store = chainStoreService.getChainStoreByID(vo.getChainId());
+            
+			ChainSalesStatisReportItem reportItem = new ChainSalesStatisReportItem(vo, store, saler, startDate, endDate, pb);
 			//totalItem.add(reportItem);
 			reportItemsDetail.add(reportItem);
 		}
@@ -1843,7 +1847,7 @@ public class ChainReportService {
 			chainStore = this.getThisChainStore(chainStore.getChain_id());
 			if (saler.getUser_id() != Common_util.ALL_RECORD)
 				saler = chainUserInforDaoImpl.get(saler.getUser_id(), true);
-			ChainSalesStatisticsReportTemplate chainSalesStatisticsReportTemplate = new ChainSalesStatisticsReportTemplate(reportItems,totalItem, chainStore, filePath, showCost, saler, startDate, endDate);
+			ChainSalesStatisticsReportTemplate chainSalesStatisticsReportTemplate = new ChainSalesStatisticsReportTemplate(reportItems,reportItemsDetail,totalItem, chainStore, filePath, showCost, saler, startDate, endDate);
 			HSSFWorkbook wb = chainSalesStatisticsReportTemplate.process();
 			
 			//

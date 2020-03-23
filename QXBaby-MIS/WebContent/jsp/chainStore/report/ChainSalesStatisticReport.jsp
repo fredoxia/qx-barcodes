@@ -127,7 +127,7 @@ function exportFile(){
 	if (node == null){
 		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
 	} else {
-		
+
 		$("#chainId").attr("value", node.chainId);
 	    $("#yearId").attr("value", node.yearId);
 		$("#quarterId").attr("value", node.quarterId);

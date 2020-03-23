@@ -14,6 +14,7 @@ public class ChainSalesStatisReportItem implements Serializable {
 	protected Date endDate = new Date();
 	protected ChainStore chainStore = new ChainStore();
 	protected ChainUserInfor saler = new ChainUserInfor();
+	protected String date = "";
 	private ProductBarcode productBarcode = new ProductBarcode();
 	protected int salesQ = 0;
 	protected int returnQ = 0;
@@ -61,6 +62,15 @@ public class ChainSalesStatisReportItem implements Serializable {
 		this.setSalesDiscount(vo.getSalesDiscount());
 		this.setSalesQ(vo.getSalesQ());
 		this.setSalesPrice(vo.getSalesPrice());
+		this.setDate(vo.getDate());
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	public ProductBarcode getProductBarcode() {

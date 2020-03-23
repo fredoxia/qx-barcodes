@@ -13,7 +13,6 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 	 */
 	private static final long serialVersionUID = 4747171410230537428L;
 	
-	protected String chainName = "";
 	protected String date = "";
 	
 	protected int salesQ = 0;
@@ -47,13 +46,6 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 
 	}
 
-	public String getChainName() {
-		return chainName;
-	}
-
-	public void setChainName(String chainName) {
-		this.chainName = chainName;
-	}
 
 	public String getDate() {
 		return date;
