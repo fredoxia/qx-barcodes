@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 
@@ -28,6 +29,7 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.action.chainS.vo.ChainProductBarcodeVO;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.filter.SystemParm;
 
 
 @Repository
@@ -58,7 +60,12 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 				
 				//0.1 特别的2020 春季产品
 				ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
-				if ((year.getYear_ID() == Year.SPECIAL_YEAR && quarter.getQuarter_ID() == Quarter.SPECIAL_QUARTER) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+				int specialYear = Integer.parseInt(SystemParm.getParm("SPEICAL_YEAR"));
+				int specialQuarter = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER"));
+				
+				Set<Integer> specialBrandSet = SystemParm.getParmSet("SPECIAL_BRAND");
+				
+				if (!specialBrandSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarter) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 					if (vipId != 0){
 						chainProductBarcodeVO.setDiscount(ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 					} else 

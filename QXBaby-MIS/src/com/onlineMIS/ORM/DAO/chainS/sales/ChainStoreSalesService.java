@@ -79,6 +79,7 @@ import com.onlineMIS.action.chainS.vo.ChainProductBarcodeVO;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ERRORS;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.filter.SystemParm;
 
 @Service
 public class ChainStoreSalesService {
@@ -766,8 +767,13 @@ public class ChainStoreSalesService {
 			Product p = pBarcode.getProduct();
 			Year year = p.getYear();
 			Quarter quarter = p.getQuarter();
+			Brand brand = p.getBrand();
 			
-			if ((year.getYear_ID() == Year.SPECIAL_YEAR && quarter.getQuarter_ID() == Quarter.SPECIAL_QUARTER) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+			int specialYear = Integer.parseInt(SystemParm.getParm("SPEICAL_YEAR"));
+			int specialQuarter = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER"));
+			Set<Integer> specialBrandSet = SystemParm.getParmSet("SPECIAL_BRAND");
+			
+			if (!specialBrandSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarter) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 				if (salesOrder.getVipCard() != null && salesOrder.getVipCard().getId() != 0){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
 						response.setQuickValue(Response.ERROR, "VIP购买2020年春季的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);

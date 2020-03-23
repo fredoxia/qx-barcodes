@@ -2,7 +2,10 @@ package com.onlineMIS.filter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -37,6 +40,20 @@ public class SystemParm {
 		if (StringUtils.isEmpty(value))
 			return 0;
 		return Integer.parseInt(value);
+	}
+	
+	public static Set<Integer> getParmSet(String parmName){
+		Set<Integer> parmSet = new HashSet<Integer>();
+		String value = getParm(parmName);
+		if (!value.equals("")){
+			String[] valueArray = value.split(",");
+			for (String value2 : valueArray){
+				parmSet.add(Integer.parseInt(value2));
+			}
+		}
+			
+		return parmSet;
+		
 	}
 	
 	/**
