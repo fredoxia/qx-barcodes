@@ -136,6 +136,21 @@ function exportFile(){
         document.preGenReportForm.submit();
 	}
 }
+function exportDetailFile(){
+	var node = $('#dataGrid').treegrid('getSelected');
+
+	if (node == null){
+		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
+	} else {
+
+		$("#chainId").attr("value", node.chainId);
+	    $("#yearId").attr("value", node.yearId);
+		$("#quarterId").attr("value", node.quarterId);
+		$("#brandId").attr("value", node.brandId);
+        document.preGenReportForm.action="chainReportJSPAction!generateChainSalesStatisticExcelDetailReport";
+        document.preGenReportForm.submit();
+	}
+}
 
 </script>
 </head>
@@ -160,6 +175,7 @@ function exportFile(){
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
 		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新库存</a>
 					<a onclick="exportFile();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">导出报表</a>
+					<a onclick="exportDetailFile();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">导出明晰报表</a>
 	             </div>
 		</div>
 	</div>					  
