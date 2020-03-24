@@ -142,13 +142,17 @@ function exportDetailFile(){
 	if (node == null){
 		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
 	} else {
+		$.messager.confirm('功能确认', '如果日期选择过长,此功能会下载大量数据，如果在繁忙时间可能会拖垮服务器.你确定继续?', function(r){
+			if (r){
+				$("#chainId").attr("value", node.chainId);
+			    $("#yearId").attr("value", node.yearId);
+				$("#quarterId").attr("value", node.quarterId);
+				$("#brandId").attr("value", node.brandId);
+		        document.preGenReportForm.action="chainReportJSPAction!generateChainSalesStatisticExcelDetailReport";
+		        document.preGenReportForm.submit();
+			}
+		});
 
-		$("#chainId").attr("value", node.chainId);
-	    $("#yearId").attr("value", node.yearId);
-		$("#quarterId").attr("value", node.quarterId);
-		$("#brandId").attr("value", node.brandId);
-        document.preGenReportForm.action="chainReportJSPAction!generateChainSalesStatisticExcelDetailReport";
-        document.preGenReportForm.submit();
 	}
 }
 

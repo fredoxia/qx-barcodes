@@ -1901,6 +1901,8 @@ public class ChainReportService {
 			reportItemsDetail.add(reportItem);
 		}
 		
+		Collections.sort(reportItemsDetail, new ChainSalesStatisticDetailReportItemVOSorter());
+		
 		/**
 		 * @3. 准备excel报表
 		 */
@@ -1947,6 +1949,35 @@ public class ChainReportService {
 			    return p1.getYear().getYear_ID() - p2.getYear().getYear_ID();
 		}
 	}
+	
+	 class ChainSalesStatisticDetailReportItemVOSorter implements
+		Comparator<ChainSalesStatisReportItem> {
+
+		@Override
+		public int compare(ChainSalesStatisReportItem o1,
+				ChainSalesStatisReportItem o2) {
+			String date1 = o1.getDate();
+			String date2 = o2.getDate();
+			
+			int chainId1 = o1.getChainStore().getChain_id();
+			int chainId2 = o2.getChainStore().getChain_id();
+			
+			String pc1 = o1.getProductBarcode().getProduct().getProductCode();
+			String pc2 = o2.getProductBarcode().getProduct().getProductCode();
+			
+			
+			if (!date1.equals(date2)){
+				return date2.compareTo(date1);
+			} else if (chainId1 != chainId2){
+				return chainId1 - chainId2;
+			} else {
+				return pc1.compareTo(pc2);
+			}
+				
+		}
+	
+	}
+
 	public void prepareVIPConsumpReportUI(ChainReportActionFormBean formBean,
 			ChainReportActionUIBean uiBean, ChainUserInfor userInfor) {
 		if (!ChainUserInforService.isMgmtFromHQ(userInfor)){

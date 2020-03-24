@@ -120,7 +120,7 @@ public class ChainSalesStatisticsReportDetailTemplate  extends ExcelTemplate{
 	public HSSFWorkbook process(){
 		
 		//@明细sheet 2
-		HSSFSheet sheetDetail = templateWorkbook.getSheetAt(1);
+		HSSFSheet sheetDetail = templateWorkbook.getSheetAt(0);
 		//write header
 		Row headerDetail1 = sheetDetail.getRow(1);
 		headerDetail1.createCell(1).setCellValue(Common_util.dateFormat.format(startDate));
