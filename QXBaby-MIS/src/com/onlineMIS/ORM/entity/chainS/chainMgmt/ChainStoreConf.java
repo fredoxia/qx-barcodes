@@ -69,17 +69,26 @@ public class ChainStoreConf implements Serializable {
 	public static final int VIPSCORE_USAGE_ALL = 2;
 	
 	/**
-	 * 2020春货品默认8.8折,vip默认8折,高于8折不能过帐
+	 * 2020春货夏季 品默认8.8折,vip默认8折,高于8折不能过帐
 	 * 1 : 开启
 	 * 2  : 关闭
 	 */
 	private int discount2020Spring = 1;
+	private int discount2020Summer = 1;
 	public static final int DISCOUNT_2020_ENABLE = 1;
 	public static final int DISCOUNT_2020_DISENABLE = 2;
 	public static final double NORMAL_DISCOUNT_2020_SPRING = 0.88;
 	public static final double VIP_DISCOUNT_2020_SPRING = 0.8;
 	public ChainStoreConf(){
 		
+	}
+
+	public int getDiscount2020Summer() {
+		return discount2020Summer;
+	}
+
+	public void setDiscount2020Summer(int discount2020Summer) {
+		this.discount2020Summer = discount2020Summer;
 	}
 
 	public int getDiscount2020Spring() {

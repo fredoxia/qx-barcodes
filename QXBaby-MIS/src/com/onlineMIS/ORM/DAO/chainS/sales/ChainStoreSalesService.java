@@ -624,7 +624,7 @@ public class ChainStoreSalesService {
 	 *    - 非总部管理人员不能跨连锁店过账
 	 *    - 使用积分策略验证
 	 *    - 所有数量必须是大于零的 数字
-	 *    - 是否有2020春 季货品
+	 *    - 是否有2020春 季 夏季 货品
 	 * @param salesOrder
 	 * @return
 	 */
@@ -769,11 +769,12 @@ public class ChainStoreSalesService {
 			Quarter quarter = p.getQuarter();
 			Brand brand = p.getBrand();
 			
-			int specialYear = Integer.parseInt(SystemParm.getParm("SPEICAL_YEAR"));
-			int specialQuarter = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER"));
-			Set<Integer> specialBrandSet = SystemParm.getParmSet("SPECIAL_BRAND");
-			
-			if (!specialBrandSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarter) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+			int specialYear = Integer.parseInt(SystemParm.getParm("SPEICAL_YEAR_2020"));
+			int specialQuarterSpring = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER_SPRING"));
+			int specialQuarterSummer = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER_SUMMER"));
+			Set<Integer> specialBrandSpringSet = SystemParm.getParmSet("SPECIAL_BRAND_2020_SPRING");
+			Set<Integer> specialBrandSummerSet = SystemParm.getParmSet("SPECIAL_BRAND_2020_SUMMER");
+			if (!specialBrandSpringSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSpring) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 				if (salesOrder.getVipCard() != null && salesOrder.getVipCard().getId() != 0){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
 						response.setQuickValue(Response.ERROR, "VIP购买2020年春季的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
@@ -782,6 +783,20 @@ public class ChainStoreSalesService {
 				} else 
 					if (product.getDiscountRate() > ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING){
 						response.setQuickValue(Response.ERROR, "客户购买2020年春季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
+						break;
+					}
+				
+			} 
+			
+			if (!specialBrandSummerSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSummer) && (conf == null || (conf != null && conf.getDiscount2020Summer() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+				if (salesOrder.getVipCard() != null && salesOrder.getVipCard().getId() != 0){
+					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
+						response.setQuickValue(Response.ERROR, "VIP购买2020夏季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						break;
+					}
+				} else 
+					if (product.getDiscountRate() > ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING){
+						response.setQuickValue(Response.ERROR, "客户购买2020年夏季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 						break;
 					}
 				

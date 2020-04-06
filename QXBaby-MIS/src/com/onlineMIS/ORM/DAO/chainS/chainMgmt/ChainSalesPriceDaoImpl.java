@@ -54,24 +54,29 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 				Year year = product.getYear();
 				Quarter quarter = product.getQuarter();
 				Brand brand = product.getBrand();
-				
-				
-				
-				
+
 				//0.1 特别的2020 春季产品
 				ChainStoreConf conf = chainStoreConfDaoImpl.getChainStoreConfByChainId(chainId);
-				int specialYear = Integer.parseInt(SystemParm.getParm("SPEICAL_YEAR"));
-				int specialQuarter = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER"));
+				int specialYear = Integer.parseInt(SystemParm.getParm("SPEICAL_YEAR_2020"));
+				int specialQuarterSpring = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER_SPRING"));
+				int specialQuarterSummer = Integer.parseInt(SystemParm.getParm("SPECIAL_QUARTER_SUMMER"));
 				
-				Set<Integer> specialBrandSet = SystemParm.getParmSet("SPECIAL_BRAND");
+				Set<Integer> specialBrandSetSpring = SystemParm.getParmSet("SPECIAL_BRAND_2020_SPRING");
+				Set<Integer> specialBrandSetSummer = SystemParm.getParmSet("SPECIAL_BRAND_2020_SUMMER");
 				
-				if (!specialBrandSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarter) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+				if (!specialBrandSetSpring.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSpring) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 					if (vipId != 0){
 						chainProductBarcodeVO.setDiscount(ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 					} else 
 					    chainProductBarcodeVO.setDiscount(ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 					
-				} else {
+				} else if (!specialBrandSetSummer.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSummer) && (conf == null || (conf != null && conf.getDiscount2020Summer() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
+					if (vipId != 0){
+						chainProductBarcodeVO.setDiscount(ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+					} else 
+					    chainProductBarcodeVO.setDiscount(ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
+					
+				} else{
 					//1. 如果是总部设定的涨价的货品
 					chainProductBarcodeVO = new ChainProductBarcodeVO(barcode, null);
 					
@@ -80,7 +85,8 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 						double increase = brandPriceIncrease.getIncrease();
 						
 						chainProductBarcodeVO.setDiscount(increase/100);
-					} else {
+					}
+				}
 						//2. 如果连锁店自己设定过价格,优先使用连锁店设定的价格
 						ChainSalesPriceId id = new ChainSalesPriceId(chainId, barcode.getBarcode());
 						ChainSalesPrice chainSalesPrice = this.get(id, true);
@@ -97,10 +103,7 @@ public class ChainSalesPriceDaoImpl extends BaseDAO<ChainSalesPrice> {
 								chainProductBarcodeVO.setMySalePrice(myPrice);
 							}
 						}
-					}
-				}
-			}
-			
+				}			
 			
 		}
 		

@@ -2,3 +2,4 @@ alter table product add size_min smallint default '0';
 alter table product add size_max smallint default '0';
 alter table product add material varchar(40) default '';
 alter table chain_store_conf add discount_2020_spring smallint default '1';
+alter table chain_store_conf add discount_2020_summer smallint default '1';
