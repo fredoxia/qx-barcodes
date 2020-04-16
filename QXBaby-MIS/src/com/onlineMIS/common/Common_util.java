@@ -107,8 +107,10 @@ public class Common_util {
 	public static final int VIP_DATE = 8;
 	/**
 	 * vip 积分换现金
+	 * 
+	 * 默认阶梯
 	 */
-	public static final double VIP_CASH_RATIO = 0.01;
+	public static final double VIP_CASH_RATIO = 1;
 	
 	/**
 	 * chain store list的查看等级

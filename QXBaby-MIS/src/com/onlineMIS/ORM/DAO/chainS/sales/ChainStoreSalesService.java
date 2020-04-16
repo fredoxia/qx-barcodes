@@ -959,7 +959,7 @@ public class ChainStoreSalesService {
 				if (chainStoreConf != null)
 					vipCashRatio = chainStoreConf.getVipScoreCashRatio();
 				
-				double vipCoupon = vipScore / vipCashRatio * offset * (-1);
+				double vipCoupon = ChainVIPService.calculateVIPScore(vipScore, vipCashRatio) * offset * (-1);
 				double salesValue2 = salesValue;
 				ChainVIPScore vipScoreObj2 = new ChainVIPScore(chainId, vipCard.getId(),ChainVIPScore.TYPE_SALE, orderId, Common_util.getDecimalDouble(salesValue2), Common_util.getDecimalDouble(vipCoupon));
 				
