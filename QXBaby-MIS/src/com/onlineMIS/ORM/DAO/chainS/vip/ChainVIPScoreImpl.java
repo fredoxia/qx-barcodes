@@ -106,7 +106,7 @@ public class ChainVIPScoreImpl extends BaseDAO<ChainVIPScore> {
 					vipCardList += "'" + vipCardNo.getId() + "',";
 				vipCardList += "'" + vipCardNos.get(0).getId() + "')";
 				
-				String sql = "select vipCardId, max(date) from ChainVIPScore where vipCardId in "+ vipCardList +" group by vipCardId";
+				String sql = "select vipCardId, max(date) from ChainVIPScore where type !='"+ChainVIPScore.TYPE_MANUAL_ADJUST+"' AND vipCardId in "+ vipCardList +" group by vipCardId";
 				
 				List<Object> results_accu = this.executeHQLSelect(sql, new Object[]{}, null,true);
 				

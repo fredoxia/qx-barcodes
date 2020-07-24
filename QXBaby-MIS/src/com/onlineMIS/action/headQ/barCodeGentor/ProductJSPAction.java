@@ -34,6 +34,7 @@ public class ProductJSPAction extends ProductAction {
 	private InputStream excelStream;
 	private String excelFileName = "barcodeFiles.xls";
 	private final String JinsuanFileName = "JinSuanOrderTemplate.xls";
+	private final String barcodeCreation = "BarcodeCreationTemplate.xls";
 	
 	public InputStream getExcelStream() {
 		return excelStream;
@@ -56,7 +57,7 @@ public class ProductJSPAction extends ProductAction {
 	}
 
     /**
-     * export the barcodes to the file which could be used to crate the barcode
+     * export the barcodes to the file which could be used to crate the barcode file
      */
 	public String execute() throws Exception {   
 		HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
@@ -75,6 +76,18 @@ public class ProductJSPAction extends ProductAction {
 		String contextPath= request.getRealPath("/"); 
 
 		Map<String,Object> map= productService.generateJinsuanExcelReport(new HashSet<String>(selectedBarcodes),contextPath + "WEB-INF\\template\\" + JinsuanFileName);   
+		excelStream=(InputStream)map.get("stream");   
+		return "report";   
+	} 
+	
+	/**
+     * 导出条码给其他系统再生成
+     */
+	public String exportBarcodeForCreation() throws Exception {   
+		HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
+		String contextPath= request.getRealPath("/"); 
+
+		Map<String,Object> map= productService.generateBarcodeFile(new HashSet<String>(selectedBarcodes),contextPath + "WEB-INF\\template\\" + barcodeCreation);   
 		excelStream=(InputStream)map.get("stream");   
 		return "report";   
 	} 

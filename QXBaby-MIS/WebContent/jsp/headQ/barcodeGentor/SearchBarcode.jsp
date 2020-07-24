@@ -54,6 +54,14 @@ function exportToPrintBarcode(){
 	}
 }
 
+function exportBarcodeForCreation(){
+	if (validateCheckbox()){
+		var url = "action/productJSPAction!exportBarcodeForCreation";
+		document.searchedBarcodeForm.action = url;
+		document.searchedBarcodeForm.submit();	
+	}
+}
+
 function synchronizePrice(){
 	if (validateCheckbox()){
 		parent.$.messager.progress({
@@ -149,7 +157,7 @@ function backProcess(data){
 	    }
 
 	    $("<tr class='InnerTableContent'><td colspan=17><div id='error' style='color:red;font-size:13px'></div><div id='tip'></div></td></tr>").appendTo("#orgTablebody");
-        $("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='left'><td></td><td colspan=16><input type='button' value='导出产品信息' onclick='exportBarcodeToExcel();'/><input type='button' value='导出条码打印' onclick='exportToPrintBarcode();'/><s:if test='#session.LOGIN_USER.containFunction(\"productJSONAction!synchronizePrice\")'><input type='button' value='同步价格' onclick='synchronizePrice();'/></s:if></td></tr>").appendTo("#orgTablebody");
+        $("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='left'><td></td><td colspan=16><input type='button' value='导出产品信息' onclick='exportBarcodeToExcel();'/><input type='button' value='导出条码打印' onclick='exportToPrintBarcode();'/><input type='button' value='导出条码生成文件' onclick='exportBarcodeForCreation();'/><s:if test='#session.LOGIN_USER.containFunction(\"productJSONAction!synchronizePrice\")'><input type='button' value='同步价格' onclick='synchronizePrice();'/></s:if></td></tr>").appendTo("#orgTablebody");
     }else {
     	$("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='center'><td colspan=17><font color='red'>对应信息没有查询信息</font> </td></tr>").appendTo("#orgTablebody");
     }  

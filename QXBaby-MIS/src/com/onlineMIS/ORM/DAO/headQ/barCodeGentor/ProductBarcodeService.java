@@ -50,6 +50,7 @@ import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.PriceMS;
 import com.onlineMIS.ORM.entity.headQ.SQLServer.ProductsMS;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Area;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeCreationTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeImportTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeTemplate;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.BarcodeUpdateTemplate;
@@ -1343,6 +1344,55 @@ public class ProductBarcodeService {
 		}
 		
 		return response;
+	}
+
+	/**
+	 * 生成条码生成文件
+	 * @param selectedBarcodes
+	 * @param templatePosition
+	 * @return
+	 */
+	@Transactional
+	public Map<String, Object> generateBarcodeFile(HashSet<String> selectedBarcodes,
+			String templatePath) {
+		Map<String,Object> returnMap=new HashMap<String, Object>();   
+
+        
+		ByteArrayInputStream byteArrayInputStream;   
+		try {     
+			HSSFWorkbook wb = null;   
+			
+			//to get the order information from database
+			List<ProductBarcode> products = new ArrayList<ProductBarcode>();
+			
+			if (selectedBarcodes != null && selectedBarcodes.size()>0){
+				DetachedCriteria productCriteria = DetachedCriteria.forClass(ProductBarcode.class,"p");
+				productCriteria.add(Restrictions.in("p.barcode", selectedBarcodes));
+		        
+				products = productBarcodeDaoImpl.getByCritera(productCriteria,true);
+		    }
+			
+//			initializeProductBarcode(products);
+			
+			BarcodeCreationTemplate barcodeTemplate = new BarcodeCreationTemplate(products, templatePath);
+			
+			wb = barcodeTemplate.process();
+
+			ByteArrayOutputStream os = new ByteArrayOutputStream();   
+			try {   
+			    wb.write(os);   
+			} catch (IOException e) {   
+		        e.printStackTrace();   
+		    }   
+		    byte[] content = os.toByteArray();   
+		    byteArrayInputStream = new ByteArrayInputStream(content);   
+		    returnMap.put("stream", byteArrayInputStream);   
+         
+		    return returnMap;   
+		 } catch (Exception ex) {   
+			 loggerLocal.error(ex);    
+		 }   
+		return null;   
 	}
 	
 }
