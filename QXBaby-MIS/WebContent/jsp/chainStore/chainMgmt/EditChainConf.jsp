@@ -50,6 +50,8 @@ function backProcessGetChainStore(data){
 			 var prepaidPasswordRequired = chainStoreConf.prepaidPasswordRequired;
 			 var discount2020Spring = chainStoreConf.discount2020Spring;
 			 var discount2020Summer = chainStoreConf.discount2020Summer;
+			 var discount2020Auto = chainStoreConf.discount2020Auto;
+			 var discount2020Winter = chainStoreConf.discount2020Winter;
 			 
 			 $("#amtType").val(discountAmtType).attr("selected", true);
 			 $("#printCopy").attr("value", printCopy);
@@ -67,6 +69,8 @@ function backProcessGetChainStore(data){
 			 $("#prepaidPasswordRequired").attr("value",prepaidPasswordRequired);
 			 $("#discount2020Spring").attr("value",discount2020Spring);
 			 $("#discount2020Summer").attr("value",discount2020Summer);
+			 $("#discount2020Auto").attr("value",discount2020Auto);
+			 $("#discount2020Winter").attr("value",discount2020Winter);
 		}
 	}
 }
@@ -204,7 +208,17 @@ function clearChainStoreConf(){
    	      <td height="25"><strong>2020夏货品折扣</strong></td>
    	      <td><s:select id="discount2020Summer" name="formBean.chainStoreConf.discount2020Summer"  list="#{1:'默认开启',2:'停止'}" listKey="key" listValue="value" /></td>
    	      <td colspan="4">*2020夏季货品默认8.8折,vip默认8折,高于8折不能过帐</td>
-       </tr>            
+       </tr> 
+       <tr class="InnerTableContent">
+   	      <td height="25"><strong>2020秋货品折扣</strong></td>
+   	      <td><s:select id="discount2020Auto" name="formBean.chainStoreConf.discount2020Auto"  list="#{1:'默认开启',2:'停止'}" listKey="key" listValue="value" /></td>
+   	      <td colspan="4">*2020秋货品默认8.8折,vip默认8折,高于8折不能过帐</td>
+       </tr>      
+       <tr class="InnerTableContent">
+   	      <td height="25"><strong>2020冬货品折扣</strong></td>
+   	      <td><s:select id="discount2020Winter" name="formBean.chainStoreConf.discount2020Winter"  list="#{1:'默认开启',2:'停止'}" listKey="key" listValue="value" /></td>
+   	      <td colspan="4">*2020冬季货品默认8.8折,vip默认8折,高于8折不能过帐</td>
+       </tr>                    
        <tr class="InnerTableContent">
    	      <td height="25"><strong>VIP默认积分</strong></td>
    	      <td><s:select id="defaultVipScoreMultiple" name="formBean.chainStoreConf.defaultVipScoreMultiple"  list="#{1:'正常积分',2:'活动期间,两倍积分'}" listKey="key" listValue="value" /></td>

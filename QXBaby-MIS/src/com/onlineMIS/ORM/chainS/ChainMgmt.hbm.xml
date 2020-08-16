@@ -39,7 +39,8 @@
         <property name="prepaidPasswordRequired" column="prepaid_use_require_password" type="integer"/>
         <property name="discount2020Spring" column="discount_2020_spring" type="integer"/>
         <property name="discount2020Summer" column="discount_2020_summer" type="integer"/>
-        
+        <property name="discount2020Auto" column="discount_2020_auto" type="integer"/>
+        <property name="discount2020Winter" column="discount_2020_winter" type="integer"/>
       </class>
       
       <class name="ChainStoreGroupElement" table="chain_store_group_element">

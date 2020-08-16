@@ -75,12 +75,30 @@ public class ChainStoreConf implements Serializable {
 	 */
 	private int discount2020Spring = 1;
 	private int discount2020Summer = 1;
+	private int discount2020Auto = 1;
+	private int discount2020Winter = 1;	
 	public static final int DISCOUNT_2020_ENABLE = 1;
 	public static final int DISCOUNT_2020_DISENABLE = 2;
 	public static final double NORMAL_DISCOUNT_2020_SPRING = 0.88;
 	public static final double VIP_DISCOUNT_2020_SPRING = 0.8;
 	public ChainStoreConf(){
 		
+	}
+
+	public int getDiscount2020Auto() {
+		return discount2020Auto;
+	}
+
+	public void setDiscount2020Auto(int discount2020Auto) {
+		this.discount2020Auto = discount2020Auto;
+	}
+
+	public int getDiscount2020Winter() {
+		return discount2020Winter;
+	}
+
+	public void setDiscount2020Winter(int discount2020Winter) {
+		this.discount2020Winter = discount2020Winter;
 	}
 
 	public int getDiscount2020Summer() {

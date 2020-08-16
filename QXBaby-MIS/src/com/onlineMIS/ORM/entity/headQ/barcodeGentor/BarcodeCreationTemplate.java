@@ -31,7 +31,7 @@ public class BarcodeCreationTemplate extends ExcelTemplate{
 	protected final int salePrice_column= 11;
 	protected final int unit_column= 12;
 	protected final int numPerHand_column= 13;
-	
+	protected final int productNum_column= 14;
 	
 	private List<ProductBarcode> products = new ArrayList<ProductBarcode>();
 
@@ -95,6 +95,7 @@ public class BarcodeCreationTemplate extends ExcelTemplate{
 				row.createCell(salePrice_column).setCellValue(product.getSalesPrice());
 				row.createCell(unit_column).setCellValue(product.getUnit());
 				row.createCell(numPerHand_column).setCellValue(product.getNumPerHand());
+				row.createCell(productNum_column).setCellValue(product.getSerialNum());
 			}
 
 		return templateWorkbook;

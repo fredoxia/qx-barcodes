@@ -288,7 +288,7 @@ function clickSize(){
  <table width="95%" align="center"  class="OuterTable">
  <tr><td>
 
- <table width="100%" border="1">
+ <table width="100%" border="0">
     <s:hidden name="formBean.productBarcode.product.area.area_ID" value="1"/>     
     <tr class="InnerTableContent">
       <td width="80" height="19"><strong>年份：</strong></td>
@@ -337,8 +337,8 @@ function clickSize(){
 		      <td width="110"><input type="text" name="formBean.productBarcode.product.salesPriceFactory" id="salesPriceFactory" onfocus="this.select();" size="9"/></td>
 		      <td width="60"><strong>折扣:</strong></td>
 		      <td width="110"><input type="text" name="formBean.productBarcode.product.discount" id="discount" onfocus="this.select();" size="9"/></td>
-		      <td width="80"><strong>最小码段：</strong></td>
-              <td><s:select name="formBean.productBarcode.product.sizeMin" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMin" list="{'',60,70,80,90,100,110,120,130,140,150,160,170,180}" /></td>  
+		      <td width="80"></td>
+              <td></td>  
 		    </tr>
 		    <tr class="InnerTableContent">
               <td><strong>连锁零售价：</strong></td>
@@ -349,8 +349,8 @@ function clickSize(){
 		      <td><input type="text" name="formBean.productBarcode.product.wholeSalePrice2" id="wholeSalePrice2" onfocus="this.select();" size="9"/></td>
 		      <td><strong>预设价3：</strong></td>
 		      <td><input type="text" name="formBean.productBarcode.product.wholeSalePrice3" id="wholeSalePrice3" onfocus="this.select();" size="9"/></td>
-		      <td><strong>最大码段：</strong></td>
-              <td><s:select name="formBean.productBarcode.product.sizeMax" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMax"   list="{'',80,90,100,110,120,130,140,150,160,170,180}" /></td>  
+		      <td></td>
+              <td></td>  
 		    </tr>  
     <tr class="InnerTableContent">
 		  <td height="4" colspan="10"><hr width="100%" color="#FFCC00"/></td>
