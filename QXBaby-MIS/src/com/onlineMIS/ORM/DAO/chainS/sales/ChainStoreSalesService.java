@@ -492,7 +492,11 @@ public class ChainStoreSalesService {
 		    		
 					//1. update the nessary information
 					salesOrder.setOrderCreateDate(new Date());
-					salesOrder.setCreator(userInfor);
+					//有可能是总部用户过账
+					if (ChainUserInforService.isMgmtFromHQ(userInfor))
+					    salesOrder.setCreator(salesOrder.getSaler());
+					else 
+					    salesOrder.setCreator(userInfor);
 					salesOrder.setType(orderType);
 					salesOrder.setStatus(statusNew);
 			
