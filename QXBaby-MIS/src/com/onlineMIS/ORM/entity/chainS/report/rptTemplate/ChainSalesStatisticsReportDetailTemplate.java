@@ -6,11 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.chainS.report.ChainSalesStatisReportItem;
@@ -22,10 +20,11 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.Excel2007Template;
 import com.onlineMIS.common.ExcelTemplate;
 import com.onlineMIS.common.loggerLocal;
 
-public class ChainSalesStatisticsReportDetailTemplate  extends ExcelTemplate{
+public class ChainSalesStatisticsReportDetailTemplate  extends Excel2007Template{
 
 	private List<ChainSalesStatisReportItem> detailItems = new ArrayList<ChainSalesStatisReportItem>();
 	private ChainSalesStatisReportItem totalItem = null;
@@ -102,7 +101,7 @@ public class ChainSalesStatisticsReportDetailTemplate  extends ExcelTemplate{
     	super(file);
     }
 	
-	public ChainSalesStatisticsReportDetailTemplate(List<ChainSalesStatisReportItem> detailItems, ChainSalesStatisReportItem totalItem, ChainStore chainStore, String templateWorkbookPath, boolean showCost, ChainUserInfor saler, Date startDate, Date endDate) throws IOException{
+	public ChainSalesStatisticsReportDetailTemplate(List<ChainSalesStatisReportItem> detailItems, ChainSalesStatisReportItem totalItem, ChainStore chainStore, String templateWorkbookPath, boolean showCost, ChainUserInfor saler, Date startDate, Date endDate) throws Exception{
 		super(templateWorkbookPath);	
 		this.detailItems = detailItems;
 		this.chainStore = chainStore;
@@ -117,20 +116,20 @@ public class ChainSalesStatisticsReportDetailTemplate  extends ExcelTemplate{
 	 *  this is the function to inject the inventory order to Jinsuan order template
 	 * @return
 	 */
-	public HSSFWorkbook process(){
+	public XSSFWorkbook process(){
 		
 		//@明细sheet 2
-		HSSFSheet sheetDetail = templateWorkbook.getSheetAt(0);
+		XSSFSheet sheetDetail = templateWorkbook.getSheetAt(0);
 		//write header
-		Row headerDetail1 = sheetDetail.getRow(1);
+		XSSFRow headerDetail1 = sheetDetail.getRow(1);
 		headerDetail1.createCell(1).setCellValue(Common_util.dateFormat.format(startDate));
 		headerDetail1.createCell(3).setCellValue(Common_util.dateFormat.format(endDate));
 		
-		Row headerDetail2 = sheetDetail.getRow(2);
+		XSSFRow headerDetail2 = sheetDetail.getRow(2);
 		headerDetail2.createCell(1).setCellValue(chainStore.getChain_name());
 		
 		if (saler != null){
-			Row headerDetail3 = sheetDetail.getRow(3);
+			XSSFRow headerDetail3 = sheetDetail.getRow(3);
 			headerDetail3.createCell(1).setCellValue(saler.getName());
 		}
 		
@@ -140,7 +139,7 @@ public class ChainSalesStatisticsReportDetailTemplate  extends ExcelTemplate{
 		for (int i = 0; i < totalDataDetailRow; i++){
 
 			ChainSalesStatisReportItem levelFourItem = detailItems.get(i);
-			Row rowDetail = sheetDetail.createRow(data_row + i);
+			XSSFRow rowDetail = sheetDetail.createRow(data_row + i);
 
 			ProductBarcode pb = levelFourItem.getProductBarcode();
 			Product product = pb.getProduct();

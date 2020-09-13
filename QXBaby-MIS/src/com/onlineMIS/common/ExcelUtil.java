@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelUtil {
 	
@@ -36,6 +37,20 @@ public class ExcelUtil {
 			value = null;
 		
 		return value;
+	}
+	
+	public static ByteArrayInputStream convertExcel2007ToInputStream(XSSFWorkbook wb){
+		ByteArrayInputStream byteArrayInputStream;   
+		ByteArrayOutputStream os = new ByteArrayOutputStream();   
+		try {   
+		    wb.write(os);   
+		} catch (IOException e) {   
+			loggerLocal.error(e);
+	    }   
+	    byte[] content = os.toByteArray();   
+	    byteArrayInputStream = new ByteArrayInputStream(content);   
+	    
+	    return byteArrayInputStream;
 	}
 	
 	public static ByteArrayInputStream convertExcelToInputStream(HSSFWorkbook wb){

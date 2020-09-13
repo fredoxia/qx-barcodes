@@ -442,9 +442,17 @@ public class ChainStoreService {
 		
 		//只获取父连锁店
 		int isAll = 0;
-		DetachedCriteria searchCriteria = buildChainStoreHQCriteria(isAll);
-		searchCriteria.addOrder(Order.asc("pinYin"));
-		List<ChainStore> chainStores = chainStoreDaoImpl.getByCritera(searchCriteria, cache);
+		DetachedCriteria criteria = DetachedCriteria.forClass(ChainStore.class);
+		criteria.add(Restrictions.eq("status", ChainStore.STATUS_ACTIVE));
+		//获取父亲连锁店
+		if (isAll == 0){
+			criteria.add(Restrictions.isNull("parentStore.chain_id"));
+		//获取儿子连锁店
+		} else if (isAll == -1){
+			criteria.add(Restrictions.isNotNull("parentStore.chain_id"));
+		}
+		criteria.addOrder(Order.asc("pinYin"));
+		List<ChainStore> chainStores = chainStoreDaoImpl.getByCritera(criteria, cache);
 
 		for (ChainStore store : chainStores){
 			int chainId = store.getChain_id();

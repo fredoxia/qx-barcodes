@@ -5,14 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-
 
 public class Excel2007Template {
 	protected XSSFWorkbook  templateWorkbook;
@@ -59,7 +57,7 @@ public class Excel2007Template {
 		
 	}
 
-	public Excel2007Template(String templateWorkbookPath) throws IOException{
+	public Excel2007Template(String templateWorkbookPath) throws Exception{
 		this.templateWorkbookPath = templateWorkbookPath;
 		
 		InputStream is;   
@@ -73,7 +71,11 @@ public class Excel2007Template {
 		} catch (IOException e) {
 			loggerLocal.error(e);
 			throw e;
-		}   
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			e.printStackTrace();
+			throw e;
+		}  
 		
         initialize(wb);
 		

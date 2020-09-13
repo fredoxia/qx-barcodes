@@ -21,10 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.naming.java.javaURLContextFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -1869,6 +1872,9 @@ public class ChainReportService {
 				    String name = "";
 					ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
 					
+					if (pb == null)
+						continue;
+					
 					boolean isChain = false;
 					if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
 						isChain = true;
@@ -1912,14 +1918,14 @@ public class ChainReportService {
 			if (saler.getUser_id() != Common_util.ALL_RECORD)
 				saler = chainUserInforDaoImpl.get(saler.getUser_id(), true);
 			ChainSalesStatisticsReportDetailTemplate chainSalesStatisticsReportTemplate = new ChainSalesStatisticsReportDetailTemplate(reportItemsDetail,totalItem, chainStore, filePath, showCost, saler, startDate, endDate);
-			HSSFWorkbook wb = chainSalesStatisticsReportTemplate.process();
+			XSSFWorkbook wb = chainSalesStatisticsReportTemplate.process();
 			
 			//
-			ByteArrayInputStream byteArrayInputStream = ExcelUtil.convertExcelToInputStream(wb);
+			ByteArrayInputStream byteArrayInputStream = ExcelUtil.convertExcel2007ToInputStream(wb);
 			
 			response.setReturnValue(byteArrayInputStream);
 			response.setReturnCode(Response.SUCCESS);
-		} catch (IOException e){
+		} catch (Exception e){
 			response.setReturnCode(Response.FAIL);
 		}
 		return response;
