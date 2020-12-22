@@ -443,7 +443,7 @@ public class ChainVIPService {
 		if (vipScoreCashRatio == 1){
 			if (cash >= 300)
 				return cash / 0.1;
-			else if (cash >= 200)
+			else if (cash >= 160)
 				return cash / 0.08;
 			else 
 				return cash / 0.06;
