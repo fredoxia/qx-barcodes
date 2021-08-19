@@ -887,8 +887,12 @@ public class ChainStoreSalesService {
 			}
 			
 			List<Double> results = chainVIPService.getVIPCardTotalScore(vipCard.getId()) ;
-			double totalCoupon = results.get(1);
+			double totalScore = results.get(0);
 			double totalVipPrepaid = results.get(2);
+			
+			//计算 账面的金额需要多少积分才能处理
+			double requiredScore = chainVIPService.getVIPCardRequiredScore(vipCard.getId(), salesOrder.getVipScore());
+			
 			
 			//检查 vip卡的开卡 连锁店 是否和当前过账连锁店一致
 			//如果不一致，检查是否已经设置了可以在关联连锁店过账。如果没有设置，报错
@@ -918,8 +922,8 @@ public class ChainStoreSalesService {
 				return ;
 			}
 			
-			if (salesOrder.getVipScore()!= 0 && salesOrder.getVipScore() > totalCoupon){
-				response.setQuickValue(Response.ERROR, "超过此VIP卡最多可换现金 : " + totalCoupon);
+			if (salesOrder.getVipScore()!= 0 && requiredScore > totalScore){
+				response.setQuickValue(Response.ERROR, "当前vip的积分不够抵扣 : " + totalScore + " , " + requiredScore);
 				return ;
 			}else if (salesOrder.getVipScore() < 0) {
 				response.setQuickValue(Response.ERROR, "积分换现金  必须为大于或者等于0");

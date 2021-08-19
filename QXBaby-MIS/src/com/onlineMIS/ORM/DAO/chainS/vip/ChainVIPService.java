@@ -394,7 +394,7 @@ public class ChainVIPService {
 		ChainVIPCard vipCard = chainVIPCardImpl.get(vipCardId, true);
 		List<Double> results = null;
 		if (vipCard != null ){
-			//1. 积分和现金
+			//1. 当前vip卡，最多能换的现金
 			double initialScore = vipCard.getInitialScore();
 			double accumulateScore = chainVIPScoreImpl.getVIPScoreSum(vipCardId);
 			
@@ -437,6 +437,28 @@ public class ChainVIPService {
 		}
 		
 		return score * vipScoreCashRatio;
+	}
+	
+	/**
+	 * 计算当前输入的换现金需要多少积分才行
+	 * @param vipCard
+	 * @return
+	 */
+	@Transactional
+	public Double getVIPCardRequiredScore(int vipCardId,double cash){
+		double score = 1000000;
+		ChainVIPCard vipCard = chainVIPCardImpl.get(vipCardId, true);
+		if (vipCard != null ){
+
+			ChainStoreConf chainStoreConf = chainStoreConfDaoImpl.get(vipCard.getIssueChainStore().getChain_id(), true);
+			double vipScoreCashRatio = Common_util.VIP_CASH_RATIO;
+			if (chainStoreConf != null && chainStoreConf.getVipScoreCashRatio() > 0)
+				vipScoreCashRatio = chainStoreConf.getVipScoreCashRatio();
+			
+			score = calculateVIPScore(cash, vipScoreCashRatio);
+		} 
+		
+		return score;
 	}
 	
 	public static double calculateVIPScore(double cash, double vipScoreCashRatio){
