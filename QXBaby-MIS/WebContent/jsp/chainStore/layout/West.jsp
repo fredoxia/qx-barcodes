@@ -91,6 +91,9 @@ $(function() {
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!createTransferOrder')">
 							<li data-options="iconCls:'icon-database',attributes:{url:'chainTransferJSPAction!createTransferOrder'}">调货单</li>
 						</s:if>	
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preCreateInventoryTransferOrder')">
+							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCreateInventoryTransferOrder'}">老调货单</li>
+						</s:if>								
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!preSearchTransferOrder')">
 							<li data-options="iconCls:'icon-database',attributes:{url:'chainTransferJSPAction!preSearchTransferOrder'}">搜索调货单据</li>
 						</s:if>								

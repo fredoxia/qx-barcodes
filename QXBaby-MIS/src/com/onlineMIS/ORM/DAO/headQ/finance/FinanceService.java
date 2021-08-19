@@ -458,7 +458,8 @@ public class FinanceService {
 		Response response = new Response();
 		List<ChainAcctFlowReportItem> rptItems = new ArrayList<ChainAcctFlowReportItem>();
 		
-		if (chainId != -1 && chainId != 0){
+//		if (chainId != -1 && chainId != 0){
+//		}
 			/**
 			 * 1. 搜索所有采购单据
 			 */
@@ -493,7 +494,7 @@ public class FinanceService {
 			
 	
 			constructChainAcctFlowRptItems(purchaseOrders, financeBills, rptItems, chainId, isChain, startDate);
-		}
+
 		
 		Map data = new HashMap<String, List>();
 		data.put("rows", rptItems);
