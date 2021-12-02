@@ -26,7 +26,7 @@ function confirmLoginProcess(data){
 		dialogA.dialog('close');
 		ownerLoginSuccess();
 	} else {
-		alert(response.message);
+		$.messager.alert('信息', response.message, 'info');
 	}		
 }
 </script>

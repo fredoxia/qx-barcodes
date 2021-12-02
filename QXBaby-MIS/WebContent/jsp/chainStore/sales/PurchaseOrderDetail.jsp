@@ -38,7 +38,7 @@ function updatePurchaseStatusBKProcess(data){
     <s:actionerror cssStyle="color:red"/>
     <s:form action="" method="POST" id="inventoryOrderForm"  theme="simple"  name="inventoryOrderForm">
 	<input type="hidden" name="formBean.order.order_ID" id="orderId" value="<s:property value="uiBean.order.order_ID"/>"/>
-    <table width="90%" align="center"  class="OuterTable">
+    <table width="99%" align="center"  class="OuterTable">
 	    <tr><td>
 			 <table width="100%" border="0">
 			    <tr>
@@ -70,13 +70,14 @@ function updatePurchaseStatusBKProcess(data){
 			            <div id="p" class="easyui-panel" 
 			 			style="height:500px;padding:10px;background:#fafafa;"  
 	        			data-options="collapsible:false">  
-							<table width="99%" class="OuterTable" id="org_table">
+							<table width="100%" class="OuterTable" id="org_table">
 							  <tr  class="PBAInnerTableTitale">
 							    <th width="35" height="35">序号</th>
 							    <th width="70">产品品牌</th>
 							    <th width="70">产品货号</th>
 							    <th width="50">颜色</th>
-							    <th width="150">条形码</th>
+							    <th width="100">类别</th>
+							    <th width="130">条形码</th>
 							    <th width="40">年份</th>
 							    <th width="40">季度</th>
 							    <th width="50">单位</th>
@@ -94,6 +95,7 @@ function updatePurchaseStatusBKProcess(data){
 								      <td><s:property value="#orderProduct.productBarcode.product.brand.brand_Name"/></td>
 								      <td><s:property value="#orderProduct.productBarcode.product.productCode"/></td>
 								      <td><s:property value="#orderProduct.productBarcode.color.name"/></td>
+								      <td><s:property value="#orderProduct.productBarcode.product.category.category_Name"/></td>
 								      <td><s:property value="#orderProduct.productBarcode.barcode"/></td>
 								      <td><s:property value="#orderProduct.productBarcode.product.year.year"/></td>
 								      <td><s:property value="#orderProduct.productBarcode.product.quarter.quarter_Name"/></td>
@@ -109,6 +111,7 @@ function updatePurchaseStatusBKProcess(data){
 						       </s:iterator>	  
 						       <tr class="PBAOuterTableTitale" align="center">	      
 							      <td height="25">汇总</td>
+							      <td></td>
 							      <td></td>
 							      <td></td>
 							      <td></td>

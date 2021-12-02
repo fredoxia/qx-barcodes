@@ -52,6 +52,7 @@ import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.action.headQ.ipad.ProductBarcodeVO;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.filter.SystemParm;
 
 @Service
 public class IpadService {
@@ -148,7 +149,9 @@ public class IpadService {
 		productCriteria.addOrder(Order.asc("productCode"));
 		
 		//1. 生成CurrentOrderProduct map
-		List<ProductBarcode> productBarcodes = productBarcodeDaoImpl.getByCritera(criteria, 0, 15, true);
+		
+		int recordPerPage = Integer.parseInt(SystemParm.getParm("IPAD_DISPLAY_PROD_PER_PAGE"));
+		List<ProductBarcode> productBarcodes = productBarcodeDaoImpl.getByCritera(criteria, 0, recordPerPage, true);
 		if (productBarcodes == null || productBarcodes.size() == 0){
 			response.setReturnValue(null);
 		} else {

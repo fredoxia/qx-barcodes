@@ -165,6 +165,7 @@ $(document).ready(function(){
 				 		<th data-options="field:'3',width:100">产品品牌</th>			 					 		
 				 		<th data-options="field:'4',width:90">产品货号</th>	
 				 		<th data-options="field:'5',width:60">颜色</th>	
+				 		<th data-options="field:'14',width:80">品类</th>	
 				 		<th data-options="field:'6',width:50">年份</th>
 				 		<th data-options="field:'7',width:40">季度</th>	 				 		
 				 		<th data-options="field:'8',width:60">单位</th>	
@@ -183,6 +184,7 @@ $(document).ready(function(){
 				 		<td><s:property value="#order.productBarcode.product.brand.brand_Name"/></td>			 					 		
 				 		<td><s:property value="#order.productBarcode.product.productCode"/></td>	
 				 		<td><s:property value="#order.productBarcode.color.name"/></td> 	
+				 		<td><s:property value="#order.productBarcode.product.category.category_Name"/></td> 
 				 		<td><s:property value="#order.productBarcode.product.year.year"/></td>	
 				 		<td><s:property value="#order.productBarcode.product.quarter.quarter_Name"/></td>	
 				 		<td><s:property value="#order.productBarcode.product.unit"/></td>						 		
@@ -200,6 +202,7 @@ $(document).ready(function(){
 					 <td>&nbsp;</td>
 					 <td>&nbsp;</td>			 					 		
 					 <td>&nbsp;</td>	
+					 <td>&nbsp;</td>
 					 <td>&nbsp;</td>			 					 		
 					 <td>&nbsp;</td>		
 					 <td>&nbsp;</td>	 					 		

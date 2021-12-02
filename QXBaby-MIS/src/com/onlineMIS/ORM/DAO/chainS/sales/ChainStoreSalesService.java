@@ -1082,6 +1082,7 @@ public class ChainStoreSalesService {
      * @param salesOrder
      */
 	private void calculateCostPrice(ChainStoreSalesOrder salesOrder) {
+		
 		int clientId = salesOrder.getChainStore().getClient_id();
 		Set<ChainStoreSalesOrderProduct> chainStoreSalesOrderProducts = salesOrder.getProductSet();
 		double totalCost = 0;
@@ -1099,13 +1100,33 @@ public class ChainStoreSalesService {
 //				double salePrice = history.getSalesPrice();
 //				orderProduct.setRetailPrice(salePrice);
 			} else {
-				loggerLocal.error("Error " + ERRORS.ERROR_NO_HISTORY + " : 无法获取销售货品历史价格 : " + productId + " , " + clientId);
-				
-				ProductBarcode productBarcode2 = productBarcodeDaoImpl.get(productId, true);
-				orderProduct.setCostPrice(productBarcodeDaoImpl.getWholeSalePrice(productBarcode2));
-				
-//				double salePrice = productBarcode2.getProduct().getSalesPrice();
-//				orderProduct.setRetailPrice(salePrice);
+				 ChainStore childStore = chainStoreService.getChildChainStore(salesOrder.getChainStore().getChain_id());
+				 if (childStore != null){
+						HeadQSalesHistoryId idChild = new HeadQSalesHistoryId(productId, childStore.getClient_id());
+						HeadQSalesHistory historyChild = headQSalesHisDAOImpl.get(idChild, true);
+						
+						if (historyChild != null){
+							loggerLocal.error("INOF  : 从子账户获取价格信息 : " + productId + " , " + clientId);
+							double cost = historyChild.getWholePrice();
+							orderProduct.setCostPrice(cost);
+					    } else {
+							loggerLocal.error("Error " + ERRORS.ERROR_NO_HISTORY + " : 无法获取销售货品历史价格 : " + productId + " , " + clientId);
+							
+							ProductBarcode productBarcode2 = productBarcodeDaoImpl.get(productId, true);
+							orderProduct.setCostPrice(ProductBarcodeDaoImpl.getWholeSalePrice(productBarcode2));
+							
+//							double salePrice = productBarcode2.getProduct().getSalesPrice();
+//							orderProduct.setRetailPrice(salePrice);
+						}
+			    } else {
+					loggerLocal.error("Error " + ERRORS.ERROR_NO_HISTORY + " : 无法获取销售货品历史价格 : " + productId + " , " + clientId);
+					
+					ProductBarcode productBarcode2 = productBarcodeDaoImpl.get(productId, true);
+					orderProduct.setCostPrice(ProductBarcodeDaoImpl.getWholeSalePrice(productBarcode2));
+					
+//					double salePrice = productBarcode2.getProduct().getSalesPrice();
+//					orderProduct.setRetailPrice(salePrice);
+			    }
 			}
 			
 			

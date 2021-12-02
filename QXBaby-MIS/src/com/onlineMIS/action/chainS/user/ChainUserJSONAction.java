@@ -181,6 +181,9 @@ public class ChainUserJSONAction extends ChainUserAction {
 	 * @return
 	 */
 	public String ownerLogin(){
+    	ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+    	loggerLocal.chainActionInfo(userInfor,this.getClass().getName()+ "."+"");
+    	
 		Response response = chainUserInforService.validateOwnerLogin(formBean.getChainUserInfor());
 		response.setReturnValue(null);
 		jsonMap.put("response", response);

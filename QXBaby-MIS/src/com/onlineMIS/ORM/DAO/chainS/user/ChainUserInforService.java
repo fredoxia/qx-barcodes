@@ -449,8 +449,10 @@ public class ChainUserInforService {
 			if (user.getMyChainStore().getChain_id() != chainId){
 				response.setQuickValue(Response.ERROR, "登陆信息错误");
 			} else if (user.getResign() == UserInfor.RESIGNED || user.getMyChainStore().getStatus() == ChainStore.STATUS_DELETE)
-				response.setQuickValue(Response.ERROR, "此账户已经停用，请联系管理员");
-			else {
+				  response.setQuickValue(Response.ERROR, "此账户已经停用，请联系管理员");
+		      else if (!user.getRoleType().isOwner())
+			     response.setQuickValue(Response.ERROR, "请使用店铺老板账户登录");
+		      else {
 				response.setReturnCode(Response.SUCCESS);
 				response.setReturnValue(user);
 			}
