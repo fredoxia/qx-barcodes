@@ -204,10 +204,8 @@ function changeChainStore(chainId){
 						   <tr class="InnerTableContent">
 						     <td width="200" height="35">单据种类 ： <s:select id="financeBillType" name="formBean.financeBill.type"  list="formBean.financeBill.typeHQMap" listKey="key" listValue="value" /></td>
 
-						     <td>日期 ： <s:textfield id="billDate" readonly="true" name="formBean.financeBill.billDate" size="8"/>
-											  <a href="#" onclick="javascript:NewCssCal('billDate','yyyymmdd','arrow')">
-											      <img src="<%=request.getContextPath()%>/conf_files/web-image/cal.gif" width="16" height="16" alt="Pick a date" border="0"/>
-											  </a></td>
+						     <td>日期 ： <s:textfield id="billDate" name="formBean.financeBill.billDate" cssClass="easyui-datebox" data-options="width:100,editable:false"/>
+						     </td>
 							 <td width="400">连锁店 ： <%@ include file="../include/SearchChainStore.jsp"%>
 							 				  <input type="hidden" id="isAll" name="formBean.isAll" value="1"/>
 							 				  <input type="hidden" id="indicator" name="formBean.indicator" value="0"/>

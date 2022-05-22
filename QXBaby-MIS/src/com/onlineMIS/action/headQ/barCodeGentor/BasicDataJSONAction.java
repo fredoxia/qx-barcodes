@@ -41,7 +41,7 @@ public class BasicDataJSONAction extends BasicDataAction {
 
 		Response response = new Response();
 		try {
-		    response = basicDataService.prepareListUI(basicData,this.getPage(), this.getRows(), this.getSort(), this.getOrder());
+		    response = basicDataService.prepareListUI(basicData,this.getPage(), this.getRows(), this.getSort(), this.getOrder(), formBean.getBrand(), formBean.getCategory());
 		} catch (Exception e) {
 			loggerLocal.error(e);
 			response.setReturnCode(Response.FAIL);

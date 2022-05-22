@@ -47,7 +47,7 @@ public class SecurityFilterHeadQ implements Filter {
 			    	if (requestFunction.toLowerCase().endsWith("pda")){
 			    		res.sendRedirect(req.getContextPath() + "/4.jsp");
 			    	} else if (requestFunction.contains("ipad") || requestURL.contains("ipad"))
-			    		res.sendRedirect(req.getContextPath() + "/indexIPAD.jsp");
+			    		res.sendRedirect(req.getContextPath() + "/3.jsp");
 			    	else 
 		                res.sendRedirect(req.getContextPath() + "/1.jsp");
 		           

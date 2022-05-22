@@ -20,6 +20,7 @@ function selectBrand(brandName, brandId){
 		  <tr class="PBAInnerTableTitale" align='left'>
 		    <th width="95" height="35">品牌名</th>
 		    <th width="95">供应商</th>
+		    <th width="95">备注</th>
 		    <th width="50">所属</th>
 		    <th>&nbsp;</th>
 		  </tr>
@@ -27,8 +28,8 @@ function selectBrand(brandName, brandId){
 			    <tr class="InnerTableContent" <s:if test="#st.even"> style='<%=Common_util.EVEN_ROW_BG_STYLE %>'</s:if>>	      
 			      <td height="25"><s:property value="#brand.brand_Name"/></td>
 			      <td><s:property value="#brand.supplier"/></td>
-			      <td><s:property value="#brand.typeS"/>
-			      </td>
+			      <td><s:property value="#brand.comment"/></td>
+			      <td><s:property value="#brand.typeS"/></td>
 			      <td><a href="#" onclick="selectBrand('<s:property value="#brand.brand_Name"/>','<s:property value="#brand.brand_ID"/>');"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
 			    </tr>
 	       </s:iterator>

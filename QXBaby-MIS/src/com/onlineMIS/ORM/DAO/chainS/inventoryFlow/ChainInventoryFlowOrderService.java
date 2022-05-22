@@ -1869,7 +1869,11 @@ public class ChainInventoryFlowOrderService {
 						if (!StringUtils.isEmpty(pinyin)){
 							name = pinyin.substring(0, 1) + " ";
 						}
+
 						 name += brand.getBrand_Name();
+						 
+						 if (ChainUserInforService.isMgmtFromHQ(userInfor))
+							 name +=  " "+ brand.getComment();
 						
 						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId,  chainId, yearId, quarterId, brandIdDB,0, showCost);
 						headqInventoryVO.setIsChain(isChain);

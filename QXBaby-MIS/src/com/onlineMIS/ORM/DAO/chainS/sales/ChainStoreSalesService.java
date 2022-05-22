@@ -785,12 +785,12 @@ public class ChainStoreSalesService {
 			if (!specialBrandSpringSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSpring) && (conf == null || (conf != null && conf.getDiscount2020Spring() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 				if (isHighVip(salesOrder.getVipCard())){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2021年春季的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2022年春季的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 						break;
 					}
 				} else 
 					if (product.getDiscountRate() > ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "客户购买2021年春季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "客户购买2022年春季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 						break;
 					}
 			} 
@@ -798,12 +798,12 @@ public class ChainStoreSalesService {
 			if (!specialBrandSummerSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterSummer) && (conf == null || (conf != null && conf.getDiscount2020Summer() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 				if (isHighVip(salesOrder.getVipCard())){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2021夏季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2022夏季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 						break;
 					}
 				} else 
 					if (product.getDiscountRate() > ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "客户购买2021年夏季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "客户购买2022年夏季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 						break;
 					}
 			} 
@@ -811,12 +811,12 @@ public class ChainStoreSalesService {
 			if (!specialBrandAutoSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterAut) && (conf == null || (conf != null && conf.getDiscount2020Auto() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 				if (isHighVip(salesOrder.getVipCard())){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2021秋季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2022秋季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 						break;
 					}
 				} else 
 					if (product.getDiscountRate() > ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "客户购买2021年秋季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "客户购买2022年秋季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 						break;
 					}
 			} 
@@ -824,12 +824,12 @@ public class ChainStoreSalesService {
 			if (!specialBrandWinterSet.contains(brand.getBrand_ID()) && (year.getYear_ID() == specialYear && quarter.getQuarter_ID() == specialQuarterWinter) && (conf == null || (conf != null && conf.getDiscount2020Winter() == ChainStoreConf.DISCOUNT_2020_ENABLE))){
 				if (isHighVip(salesOrder.getVipCard())){
 					if (product.getDiscountRate() > ChainStoreConf.VIP_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2021冬季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "金卡和家人卡会员购买2022冬季 的产品,折扣不能高于 " + ChainStoreConf.VIP_DISCOUNT_2020_SPRING);
 						break;
 					}
 				} else 
 					if (product.getDiscountRate() > ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING){
-						response.setQuickValue(Response.ERROR, "客户购买2021年冬季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
+						response.setQuickValue(Response.ERROR, "客户购买2022年冬季的产品,折扣不能高于 " + ChainStoreConf.NORMAL_DISCOUNT_2020_SPRING);
 						break;
 					}
 			} 

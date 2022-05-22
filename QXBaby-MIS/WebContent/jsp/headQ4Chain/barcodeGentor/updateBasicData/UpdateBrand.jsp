@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <title>千禧宝贝连锁店管理信息系统</title>
+<%@ include file="../../../common/Style.jsp"%>
 <script>
 
 </script>
@@ -14,10 +15,8 @@
 <body>
 <script>
 function saveBrand(){
-	var brandName = $("#brand_Name").val();
-	var supplier = $("#supplier").val();
-	if (brandName =="" || supplier =="")
-		alert("品牌名称 和 供应商都不应该为空");
+    if (!$('#updateBrandForm').form('validate'))
+    	return ;
 	else {
 		var params=$("#updateBrandForm").serialize();
     	$.post("barcodeGenJSON!updateBrand",params, updateBrandBKProcess,"json");	
@@ -42,10 +41,10 @@ function updateBrandBKProcess(data){
 	       <tr class="InnerTableContent">
 	          <td>品牌名称    :</td><td>
 	          <s:hidden name="formBean.brand.brand_ID"/>
-	          <s:textfield id="brand_Name" name="formBean.brand.brand_Name" required="required"  maxlength="20"/>*</td>
+	          <s:textfield id="brand_Name" name="formBean.brand.brand_Name" cssClass="easyui-validatebox" data-options="required:true,validType:['length[2,15]']"/>*</td>
 	       </tr>
 	       <tr class="InnerTableContent">
-	          <td>供货商         :</td><td><s:textfield id="supplier" name="formBean.brand.supplier" required="required"  maxlength="20"/></td>
+	          <td>供货商         :</td><td><s:textfield id="supplier" name="formBean.brand.supplier"cssClass="easyui-validatebox" data-options="required:true,validType:['length[2,15]']"/></td>
 	       </tr>
 	       <tr class="InnerTableContent">
 	          <td>所属         :</td><td>

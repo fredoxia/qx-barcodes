@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
@@ -100,7 +102,7 @@ public class BasicDataService {
 	 * @param uiBean
 	 * @param basicData
 	 */
-	public Response prepareListUI(String basicData, Integer page, Integer rowPerPage, String sort, String sortOrder) {
+	public Response prepareListUI(String basicData, Integer page, Integer rowPerPage, String sort, String sortOrder, Brand brand, Category category) {
 		Response response = new Response();
 		Map dataMap = new HashMap();
 
@@ -119,11 +121,35 @@ public class BasicDataService {
 		} else if (basicData.equalsIgnoreCase("brand")){
 			//1. 获取总条数
 			DetachedCriteria brandTotalCriteria = DetachedCriteria.forClass(Brand.class);
+			if (brand != null) {
+				String brandName = brand.getBrand_Name().trim();
+				String supplier = brand.getSupplier().trim();
+				String comment = brand.getComment().trim();
+				
+				if (!brandName.isEmpty())
+					brandTotalCriteria.add(Restrictions.ilike("brand_Name", brandName, MatchMode.ANYWHERE));
+				if (!supplier.isEmpty())
+					brandTotalCriteria.add(Restrictions.ilike("supplier", supplier, MatchMode.ANYWHERE));
+				if (!comment.isEmpty())
+					brandTotalCriteria.add(Restrictions.ilike("comment", comment, MatchMode.ANYWHERE));
+			}
 			brandTotalCriteria.setProjection(Projections.rowCount());
 			int total = Common_util.getProjectionSingleValue(brandDaoImpl.getByCriteriaProjection(brandTotalCriteria, true));
 			
 			//2. 获取当页数据
 			DetachedCriteria brandCriteria = DetachedCriteria.forClass(Brand.class);
+			if (brand != null) {
+				String brandName = brand.getBrand_Name().trim();
+				String supplier = brand.getSupplier().trim();
+				String comment = brand.getComment().trim();
+				
+				if (!brandName.isEmpty())
+					brandCriteria.add(Restrictions.ilike("pinyin", brandName, MatchMode.ANYWHERE));
+				if (!supplier.isEmpty())
+					brandCriteria.add(Restrictions.ilike("supplier", supplier, MatchMode.ANYWHERE));
+				if (!comment.isEmpty())
+					brandCriteria.add(Restrictions.ilike("comment", comment, MatchMode.ANYWHERE));
+			}
 			if (sortOrder.equalsIgnoreCase("desc"))
 				brandCriteria.addOrder(Order.desc(sort));
 			else 
@@ -135,11 +161,23 @@ public class BasicDataService {
 		} else if (basicData.equalsIgnoreCase("category")){
 			//1. 获取总条数
 			DetachedCriteria categoryTotalCriteria = DetachedCriteria.forClass(Category.class);
+			if (category != null) {
+				String categoryName = category.getCategory_Name().trim();
+				
+				if (!categoryName.isEmpty())
+					categoryTotalCriteria.add(Restrictions.ilike("category_Name", categoryName, MatchMode.ANYWHERE));
+			}
 			categoryTotalCriteria.setProjection(Projections.rowCount());
 			int total = Common_util.getProjectionSingleValue(categoryDaoImpl.getByCriteriaProjection(categoryTotalCriteria, true));
 			
 			//2. 获取当页数据
 			DetachedCriteria categoryCriteria = DetachedCriteria.forClass(Category.class);
+			if (category != null) {
+				String categoryName = category.getCategory_Name().trim();
+				
+				if (!categoryName.isEmpty())
+					categoryCriteria.add(Restrictions.ilike("category_Name", categoryName, MatchMode.ANYWHERE));
+			}
 			List<Category> categories = categoryDaoImpl.getByCritera(categoryCriteria, Common_util.getFirstRecord(page, rowPerPage), rowPerPage, true);
 			
 			dataMap.put("rows", categories);
@@ -295,10 +333,12 @@ public class BasicDataService {
 		
 		try {
 			int brandId = brand.getBrand_ID();
-			String brandName = brand.getBrand_Name();
+			String brandName = brand.getBrand_Name().trim();
+			String comment = brand.getComment().trim();
 			
 			DetachedCriteria criteria = DetachedCriteria.forClass(Brand.class);
-			criteria.add(Restrictions.eq("brand_Name", brandName));
+			criteria.add(Restrictions.ne("brand_ID",brandId));
+			criteria.add(Restrictions.or(Restrictions.eq("brand_Name", brandName), Restrictions.eq("comment", comment)));
 			criteria.add(Restrictions.isNull("chainStore.chain_id"));
 			
 			List<Brand> brands = brandDaoImpl.getByCritera(criteria, true);
@@ -310,15 +350,13 @@ public class BasicDataService {
 				response.setReturnCode(Response.SUCCESS);
 			} else {
 				Brand brand2 = brands.get(0);
-				if (brandId != brand2.getBrand_ID()){
+				if (brandName.equalsIgnoreCase(brand2.getBrand_Name()))
 					response.setQuickValue(Response.FAIL, "品牌 重复,请检查重新输入");
-				} else {
-					brandDaoImpl.evict(brand2);
-					brand.setBrand_Code(String.valueOf(brandId).substring(0,1));
-					brand.setPinyin(Common_util.getPinyinCode(brandName, true));
-					brandDaoImpl.saveOrUpdate(brand, true);
-					response.setReturnCode(Response.SUCCESS);
-				}
+				else if (comment.equalsIgnoreCase(brand2.getComment()))
+					response.setQuickValue(Response.FAIL, "品牌备注 重复,请检查重新输入");
+				else 
+					response.setQuickValue(Response.FAIL, "品牌或者备注 重复,请检查重新输入");
+
 			}
 		} catch (Exception e) {
 			response.setFail(e.getMessage());

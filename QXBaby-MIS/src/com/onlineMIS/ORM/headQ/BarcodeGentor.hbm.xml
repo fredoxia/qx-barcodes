@@ -20,6 +20,7 @@
         <property name="brand_Code" column="brand_Code" type="string"/>
         <property name="supplier" column="supplier" type="string"/>
         <property name="pinyin" column="pin_yin" type="string"/>
+        <property name="comment" column="comment" type="string"/>
         <many-to-one name="chainStore" fetch="select" column="chain_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="false" lazy="false"/>
     </class>
     

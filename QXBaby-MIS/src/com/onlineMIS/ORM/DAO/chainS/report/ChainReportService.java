@@ -1437,7 +1437,9 @@ public class ChainReportService {
 						}
 						
 						 name += brand.getBrand_Name();
-						
+						 if (ChainUserInforService.isMgmtFromHQ(userInfor))
+							 name += " "+ brand.getComment();
+						 
 						levelFour = new ChainSalesStatisticReportItemVO(name, parentId, chainId, yearId, quarterId, brandIdDB,0, showCost, ChainSalesStatisticReportItemVO.STATE_CLOSED);
 						levelFour.setIsChain(isChain);
 						levelFour.putValue(quantity, type, sales, cost, salesDiscount);
@@ -2512,6 +2514,9 @@ public class ChainReportService {
 					
 					 name += brand.getBrand_Name();
 					
+					 if (ChainUserInforService.isMgmtFromHQ(userInfor))
+						 name +=  " "+ brand.getComment();
+					 
 					levelOneItem = new ChainPurchaseStatisticReportItemVO(name, parentId,chainId, yearId, quarterId, brandIdDB,0, showCost, ChainPurchaseStatisticReportItemVO.STATE_CLOSED);
 					levelOneItem.putValue(type, quantity, amount);
 					

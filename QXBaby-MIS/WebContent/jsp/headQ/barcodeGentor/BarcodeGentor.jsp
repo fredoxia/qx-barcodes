@@ -149,6 +149,7 @@ function saveBarcodeBackProcess(data){
 				     belong = "连锁店"; 
 		          $("<tr align='center' class='InnerTableContent'" + bg +"><td>"+barcodes[i].product.year.year + " " + barcodes[i].product.quarter.quarter_Name +"</td><td>"+
 				          barcodes[i].product.brand.brand_Name+"</td><td>"+
+				          barcodes[i].product.brand.comment+"</td><td>"+
 				          barcodes[i].product.category.category_Name+"</td><td>"+
 				          barcodes[i].product.productCode+"</td><td>"+
 				          parseValue(barcodes[i].color.name)+"</td><td>"+
@@ -164,8 +165,6 @@ function saveBarcodeBackProcess(data){
 				          belong+"</td><td><s:if test="#session.LOGIN_USER.containFunction('productJSPAction!searchForUpdate')"><a href='#' onclick=\"window.open ('productJSPAction!searchForUpdate?formBean.productBarcode.barcode="+barcodes[i].barcode+"','新窗口','height=550, width=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');\"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></s:if></td></tr>").appendTo("#orgTablebody");
 		         }
 		    }
-		    
-	        alert("成功生成条码");
 	    }else {
 	    	$("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='center'><td colspan=15><font color='red'>对应信息没有条形码存在</font> </td></tr>").appendTo("#orgTablebody");
 	    }

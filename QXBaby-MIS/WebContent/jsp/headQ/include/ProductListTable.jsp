@@ -6,7 +6,8 @@
     </tr>
   <tr class="PBAOuterTableTitale" align='center'>
     <th width="53">年份</th>
-    <th width="100">品牌</th>
+    <th width="50">品牌</th>
+    <th width="60">品牌备注</th>
     <th width="85">货品类</th>
     <th width="90">货号</th>
     <th width="35">颜色</th>

@@ -137,15 +137,15 @@ function changeChainStore(chainId){
 			      <td colspan="7">
 			         <!-- table to display the draft order information -->
 			         <div id="billsDiv" style="display: none">
-						<table width="70%"  align="left" class="OuterTable" id="org_table">
+						<table width="90%"  align="left" class="OuterTable" id="org_table">
 						    <tr class="PBAInnerTableTitale">
 						      <th width="40" height="32">编号</th>
-						      <th width="90">连锁店</th>
+						      <th width="120">连锁店</th>
 						      <th width="102">单据种类</th>
 						 	  <th width="150">过账日期</th>
 						      <th width="60">金额</th>
 						      <th width="60">状态</th>
-						      <th width="60">备注</th>
+						      <th width="160">备注</th>
 						      <th width="60"></th>
 						    </tr>
 						    <tbody id="bills">

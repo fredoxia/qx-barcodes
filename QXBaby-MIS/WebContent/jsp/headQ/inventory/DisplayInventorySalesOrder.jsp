@@ -157,15 +157,15 @@ $(document).ready(function(){
 					<td></td>
 			 	</tr>
 		 </table>
-		 <table class="easyui-datagrid"  style="width:900px;height:400px" data-options="singleSelect:true,border : false">			 	
+		 <table class="easyui-datagrid"  style="width:1000px;height:400px" data-options="singleSelect:true,border : false">			 	
 			   <thead>
 				 	<tr align="center" class="PBAOuterTableTitale" height="22">
 				 		<th data-options="field:'1',width:40">序号</th>
 				 		<th data-options="field:'2',width:90">条型码</th>	
-				 		<th data-options="field:'3',width:100">产品品牌</th>			 					 		
+				 		<th data-options="field:'3',width:130">产品品牌</th>			 					 		
 				 		<th data-options="field:'4',width:90">产品货号</th>	
 				 		<th data-options="field:'5',width:60">颜色</th>	
-				 		<th data-options="field:'14',width:80">品类</th>	
+				 		<th data-options="field:'14',width:90">品类</th>	
 				 		<th data-options="field:'6',width:50">年份</th>
 				 		<th data-options="field:'7',width:40">季度</th>	 				 		
 				 		<th data-options="field:'8',width:60">单位</th>	
@@ -181,7 +181,7 @@ $(document).ready(function(){
 				 	<tr>
 				 		<td><s:property value="#st.index+1"/></td>
 				 		<td><s:property value="#order.productBarcode.barcode"/></td>	
-				 		<td><s:property value="#order.productBarcode.product.brand.brand_Name"/></td>			 					 		
+				 		<td><s:property value="#order.productBarcode.product.brand.brand_Name"/> <s:property value="#order.productBarcode.product.brand.comment"/></td>			 					 		
 				 		<td><s:property value="#order.productBarcode.product.productCode"/></td>	
 				 		<td><s:property value="#order.productBarcode.color.name"/></td> 	
 				 		<td><s:property value="#order.productBarcode.product.category.category_Name"/></td> 

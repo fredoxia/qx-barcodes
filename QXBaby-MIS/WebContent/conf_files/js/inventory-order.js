@@ -132,7 +132,7 @@ function backProcess(data){
     	barcodeInput.attr("value",barcodes[0].barcode);
     	productIdInput.attr("value",barcodes[0].id);
 		unitInput.attr("value",barcodes[0].product.unit);
-		brandInput.attr("value",barcodes[0].product.brand.brand_Name);
+		brandInput.attr("value",barcodes[0].product.brand.brand_Name+" "+barcodes[0].product.brand.comment);
 		productCodeInput.attr("value",barcodes[0].product.productCode);
 		if (fullOrSingle == 0)
 		   quantityInput.attr("value",barcodes[0].product.numPerHand);
@@ -549,7 +549,7 @@ function retrieveProductByExcel(products){
         	barcodeInput.attr("value",products[i].productBarcode.barcode);
         	productIdInput.attr("value",products[i].productBarcode.id);
     		unitInput.attr("value",products[i].productBarcode.product.unit);
-    		brandInput.attr("value",products[i].productBarcode.product.brand.brand_Name);
+    		brandInput.attr("value",products[i].productBarcode.product.brand.brand_Name +" "+ products[i].productBarcode.product.brand.comment);
     		productCodeInput.attr("value",products[i].productBarcode.product.productCode);
     		quantityInput.attr("value",products[i].quantity);
     		yearInput.attr("value", products[i].productBarcode.product.year.year);

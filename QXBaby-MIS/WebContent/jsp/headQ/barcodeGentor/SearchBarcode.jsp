@@ -140,6 +140,7 @@ function backProcess(data){
 				          j+"</td><td>"+
 				          barcodes[i].product.year.year + " " + barcodes[i].product.quarter.quarter_Name +"</td><td>"+
 				          barcodes[i].product.brand.brand_Name+"</td><td>"+
+				          barcodes[i].product.brand.comment+"</td><td>"+
 				          barcodes[i].product.category.category_Name+"</td><td>"+
 				          barcodes[i].product.productCode+"</td><td>"+
 				          parseValue(barcodes[i].color.name)+"</td><td>"+
@@ -156,10 +157,10 @@ function backProcess(data){
 	        }
 	    }
 
-	    $("<tr class='InnerTableContent'><td colspan=17><div id='error' style='color:red;font-size:13px'></div><div id='tip'></div></td></tr>").appendTo("#orgTablebody");
-        $("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='left'><td></td><td colspan=16><input type='button' value='导出产品信息' onclick='exportBarcodeToExcel();'/><input type='button' value='导出条码打印' onclick='exportToPrintBarcode();'/><input type='button' value='导出条码生成文件' onclick='exportBarcodeForCreation();'/><s:if test='#session.LOGIN_USER.containFunction(\"productJSONAction!synchronizePrice\")'><input type='button' value='同步价格' onclick='synchronizePrice();'/></s:if></td></tr>").appendTo("#orgTablebody");
+	    $("<tr class='InnerTableContent'><td colspan=18><div id='error' style='color:red;font-size:13px'></div><div id='tip'></div></td></tr>").appendTo("#orgTablebody");
+        $("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='left'><td></td><td colspan=17><input type='button' value='导出产品信息' onclick='exportBarcodeToExcel();'/><input type='button' value='导出条码打印' onclick='exportToPrintBarcode();'/><input type='button' value='导出条码生成文件' onclick='exportBarcodeForCreation();'/><s:if test='#session.LOGIN_USER.containFunction(\"productJSONAction!synchronizePrice\")'><input type='button' value='同步价格' onclick='synchronizePrice();'/></s:if></td></tr>").appendTo("#orgTablebody");
     }else {
-    	$("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='center'><td colspan=17><font color='red'>对应信息没有查询信息</font> </td></tr>").appendTo("#orgTablebody");
+    	$("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='center'><td colspan=18><font color='red'>对应信息没有查询信息</font> </td></tr>").appendTo("#orgTablebody");
     }  
 }
 
@@ -247,6 +248,7 @@ function selectBrand(brandName, brandId){
 			      <td width="79"><strong>季度：</strong></td>
 			      <td width="175"><s:select name="formBean.productBarcode.product.quarter.quarter_ID" size="1" id="quarter_ID"  list="uiBean.basicData.quarterList" listKey="quarter_ID" listValue="quarter_Name"  headerKey="0" headerValue="---全选---" />			      </td>
 			      <td width="59"><strong>品牌：</strong></td>
+			      
 			      <td width="357" rowspan="4">
 				  	<s:textfield name="formBean.productBarcode.product.brand.brand_Name" id="brandName" size="10"/>
                        <input id="searchBt" type="button" onclick="searchBrand();" value="查找"/><br/>

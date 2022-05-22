@@ -37,6 +37,15 @@ public class Brand  implements Serializable{
     private String supplier;
     private String pinyin;
     private ChainStore chainStore = null;
+    private String comment = "";
+
+ 	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
 	public ChainStore getChainStore() {
 		return chainStore;

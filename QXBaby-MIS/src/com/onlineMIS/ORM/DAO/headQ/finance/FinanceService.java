@@ -298,7 +298,7 @@ public class FinanceService {
 		
 		//2. get the chain
 		int chain_id = formBean.getChainStore().getChain_id();
-		if (chain_id != Common_util.ALL_RECORD)
+		if (chain_id != Common_util.ALL_RECORD && chain_id != 0)
 			criteria.add(Restrictions.eq("chainStore.chain_id", chain_id));
 		
 		//4. set the date

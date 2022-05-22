@@ -64,6 +64,14 @@ $(document).ready(function(){
 							formatter: function (value, row, index){
 								return (row.receiveAmtSum).toFixed(0);
 						}},		
+					{field:'cardAmtSum', width:55,title:'刷卡',sortable:true,order:'desc',
+							formatter: function (value, row, index){
+								return (row.cardAmtSum).toFixed(0);
+						}},	
+					{field:'cashNetSum', width:55,title:'现金',sortable:true,order:'desc',
+							formatter: function (value, row, index){
+								return (row.cashNetSum).toFixed(0);
+						}},						
 						{field:'vipPrepaidAmt', width:57,title:'预存消费',
 							formatter: function (value, row, index){
 								return (row.vipPrepaidAmt).toFixed(0);

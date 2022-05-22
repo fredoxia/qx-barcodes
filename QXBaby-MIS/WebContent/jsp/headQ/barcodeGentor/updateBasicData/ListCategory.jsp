@@ -66,12 +66,47 @@ function EditCategory(categoryId){
 function refresh(){
 	$('#dataGrid').datagrid('load', $.serializeObject($('#basicDataForm')));
 }
+function clearSearch(){
+	$("#categoryName").val("");
+	refresh();
+}
 </script>
 </head>
 <body>
 	<div class="easyui-layout" border="false" style="width:500px;height:650px">
-		<div data-options="region:'north',border:false" style="height: 60px;">
-			<%@ include file="ChooseBasicData.jsp"%>
+		<div data-options="region:'north',border:false" style="height: 85px;">
+			<script>
+			function changeBasicData(value){
+			    if (value != ""){
+			    	document.basicDataForm.action="basicData!changeBasicData";
+			    	document.basicDataForm.submit(); 
+			    }
+			}
+			</script>
+			<s:form id="basicDataForm" name="basicDataForm" action="" theme="simple">
+				 <table width="90%" border="0">
+				    <tr>
+				      <td width="90">
+				         <strong>基础资料类别：</strong>
+				      </td>
+					  <td colspan="5">
+					      <s:select name="formBean.basicData" onchange="changeBasicData(this.value);"  list="#{'year':'年份','quarter':'季度','brand':'品牌','category':'货品类别','color':'颜色','productUnit':'货品单位','numPerHand':'齐手数量'}" listKey="key" listValue="value"  headerKey=""  headerValue="请选择"/>
+					  </td>
+				    </tr>
+				    <tr>
+				      <td> 货品类别    </td>
+					  <td><s:textfield id="categoryName" name="formBean.category.category_Name" cssClass="easyui-textbox"  style="width:80px"/></td>
+					  <td width="80"></td>
+					  <td></td>
+					  <td width="80"></td>
+					  <td></td>
+				    </tr>
+				    <tr>
+				      <td> </td>
+					  <td colspan="5"><input type="button" value="查询货品类别" onclick="refresh();"/><input type="button" value="清楚查询条件" onclick="clearSearch();"/></td>
+				    </tr>				    
+				 </table>
+			</s:form>
 		</div>
 		<div data-options="region:'center',border:false">
 				<table id="dataGrid">			       
