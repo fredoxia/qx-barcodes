@@ -678,6 +678,21 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		
 		return "download"; 
 	}
+	
+//	public String downloadPandianOrder() {
+//		
+//		ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+//		loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"downloadPandianOrder");
+//		InputStream fileStream = null;
+//		Date date = new Date();
+//		formBean.setFileName("pandianshuju.txt");
+//		
+//		fileStream = flowOrderService.genInventoryPandianFile(formBean.getFlowOrder().getId());
+//
+//		formBean.setFileStream(fileStream);
+//		
+//		return "download";
+//     }
 
 	
 	private String postSubmitFlowOrder(boolean toFinalize){

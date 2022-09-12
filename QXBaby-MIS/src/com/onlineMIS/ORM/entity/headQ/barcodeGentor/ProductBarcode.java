@@ -23,6 +23,7 @@ public class ProductBarcode implements Serializable {
 	private String barcode;
 	private Date createDate;
     private int boughtBefore = 0 ;
+    private int currentInventory = 0 ;
     private int status = 1;
     private ChainStore chainStore;
 
@@ -41,6 +42,14 @@ public class ProductBarcode implements Serializable {
 		this.setId(id);
 	}
 	
+	public int getCurrentInventory() {
+		return currentInventory;
+	}
+
+	public void setCurrentInventory(int currentInventory) {
+		this.currentInventory = currentInventory;
+	}
+
 	public ProductBarcode(Product product , Color color, Size size){
 		this.setColor(color);
 		this.setProduct(product);

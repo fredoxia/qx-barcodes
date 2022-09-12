@@ -27,15 +27,21 @@ $(document).ready(function(){
 		selectOnCheck : false,
 		singleSelect:true,
 		nowrap : false,
-		rownumbers : true,
+		rownumbers : false,
 		sortName : 'pinyin',
 		sortOrder : 'asc',
 		columns : [ [ {
+			field : 'brand_ID',
+			title : 'ID',
+			width : 60,
+			sortable:true,
+			order:'desc'
+		    },{			
 			field : 'pinyin',
 			title : '名字拼音',
 			width : 100,
 			sortable:true,
-			order:'desc',
+			order:'desc'
 		    },{
 				field : 'brand_Name',
 				title : '品牌名字',
@@ -47,7 +53,8 @@ $(document).ready(function(){
 		    }, {
 				field : 'comment',
 				title : '商品备注',
-				width : 120
+				width : 120,
+				order:'desc'
 			    }, {			    	
 			field : 'chain_name',
 			title : '所属',
@@ -99,7 +106,7 @@ function clearSearch(){
 </script>
 </head>
 <body>
-	<div class="easyui-layout" border="false" style="width:650px;height:560px">
+	<div class="easyui-layout" border="false" style="width:700px;height:560px">
 		<div data-options="region:'north',border:false" style="height: 85px;">
 			<script>
 			function changeBasicData(value){

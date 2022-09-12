@@ -44,7 +44,7 @@ function clearBrand(){
 }
 </script>
 
-         <s:textfield name="formBean.productBarcode.product.brand.brand_Name" id="brandName" size="10"/>
+         <s:textfield name="formBean.productBarcode.product.brand.brand_Name" id="brandName" size="20"/>
          <s:hidden name="formBean.productBarcode.product.brand.brand_ID" id="brand_ID"/> 
          <input id="searchBt" type="button" onclick="searchBrand();" value="查找"/>
          <input id="clearBt" type="button" onclick="clearBrand();" value="清除" disabled/>

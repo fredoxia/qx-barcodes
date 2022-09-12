@@ -217,7 +217,7 @@ function clearRowCells(index_c, suffix){
 	$("#productId" +suffix+index_c).attr("value","");  
    	$("#unit" +suffix+index_c).attr("value","");  
 	$("#brand" +suffix+index_c).attr("value","");   
-	$("#productCode"+suffix+index_c).attr("value",0); 
+	$("#productCode"+suffix+index_c).attr("value",""); 
 	$("#quantity"+suffix+index_c).attr("value",0); 
 	$("#retailPrice"+suffix+index_c).attr("value",0); 
 	$("#amount"+suffix+index_c).attr("value",0); 

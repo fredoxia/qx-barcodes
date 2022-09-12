@@ -49,6 +49,7 @@ import com.onlineMIS.ORM.DAO.headQ.SQLServer.ClientDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.SQLServer.ProductsMSDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.SQLServer.SalemanagebilldrfDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.finance.ChainAcctFlowDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.user.NewsService;
@@ -99,6 +100,8 @@ public class InventoryService {
 	private ProductsMSDAOImpl productsMSImpl;
 	@Autowired
 	private HeadQSalesHisDAOImpl headQSalesHisDAOImpl;
+	@Autowired
+	private ProductBarcodeService ProductBarcodeService;
 
 	@Autowired
 	private ClientDAOImpl clientDAOImpl;
@@ -1124,7 +1127,20 @@ public class InventoryService {
 			
 			//to get the order information from database
 			order = inventoryOrderDAOImpl.retrieveOrder(order.getOrder_ID());
-			PDAOrderTemplate orderTemplate = new PDAOrderTemplate(order, templatePosition);
+			
+			//获取库存
+			int inventory =  0 ;
+			Map<String, Integer> inventoryMap = new HashMap<String, Integer>();
+			
+			Set<InventoryOrderProduct> productsBarcodes = order.getProduct_Set();
+			for (InventoryOrderProduct product : productsBarcodes) {
+			    inventory = ProductBarcodeService.getProductInven(product.getProductBarcode().getBarcode(),ProductsMSDAOImpl.MENGYANG_STORE_ID);
+			    
+			    inventoryMap.put(product.getProductBarcode().getBarcode(), inventory);
+			}
+			
+			
+			PDAOrderTemplate orderTemplate = new PDAOrderTemplate(order, templatePosition, inventoryMap);
 			
 			wb = orderTemplate.process();
 

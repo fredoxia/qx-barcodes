@@ -34,14 +34,19 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 	private final int RANK_COL = 0;
 	private final int CHANIN_NAME_COL = 1;
 	private final int LAST_YEAR_PURCHASE_COL = 2;
-	private final int NET_PURCHASE_COL = 3;
-	private final int RETURN_RATIO_COL = 4;
-	private final int INVENTORY_AMT_COL = 5;
-	private final int INVENTORY_RATIO_COL = 6;
-	private final int SALES_AMT_COL = 7;
-	private final int SALES_RATIO_COL = 8;
-	private final int DELIVERY_AMT_COL = 9;
-	private final int DELIVERY_RATIO_COL = 10;
+	private final int NET_PURCHASE_Q_COL = 3;
+	private final int NET_PURCHASE_COL = 4;
+	private final int RETURN_RATIO_COL = 5;
+	private final int INVENTORY_Q_COL = 6;
+	private final int INVENTORY_AMT_COL = 7;
+	private final int INVENTORY_RATIO_COL = 8;
+	private final int SALES_Q_COL = 9;
+	private final int SALES_COST_COL = 10;
+	private final int SALES_AMT_COL = 11;
+	private final int SALES_RATIO_COL = 12;
+	private final int DELIVERY_Q_COL = 13;
+	private final int DELIVERY_AMT_COL = 14;
+	private final int DELIVERY_RATIO_COL = 15;
 	
 	private int formulaStart = DATA_ROW + 1;
 	private int formulaEnd = DATA_ROW;
@@ -79,6 +84,7 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 			row.createCell(CHANIN_NAME_COL).setCellValue(item.getChainStore().getChain_name());
 			row.createCell(LAST_YEAR_PURCHASE_COL).setCellValue(Common_util.formatDouble(item.getLastYearPurchase(), Common_util.df));
 			row.createCell(NET_PURCHASE_COL).setCellValue(Common_util.formatDouble(item.getNetPurchaseAmt(), Common_util.df));
+			row.createCell(NET_PURCHASE_Q_COL).setCellValue(item.getNetPurchaseQ());
 			
 			if (item.getReturnRatio() != Common_util.ALL_RECORD){
 				Cell cell = row.createCell(RETURN_RATIO_COL);
@@ -88,7 +94,7 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			}
 
-			
+			row.createCell(INVENTORY_Q_COL).setCellValue(item.getInventoryQ());
 			row.createCell(INVENTORY_AMT_COL).setCellValue(item.getInventoryAmt());
 			
 			if (item.getInventoryRatio() != Common_util.ALL_RECORD){
@@ -98,7 +104,9 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 				cell.setCellStyle(percentageStyle);
 			}
 			
+			row.createCell(SALES_Q_COL).setCellValue(item.getSalesQ());
 			row.createCell(SALES_AMT_COL).setCellValue(item.getSalesAmt());
+			row.createCell(SALES_COST_COL).setCellValue(item.getSalesCost());
 			
 			if (item.getSalesRatio() != Common_util.ALL_RECORD){
 
@@ -108,6 +116,7 @@ public class ChainCurrentSeasonSalesAnalysisTemplate extends ExcelTemplate{
 				cell.setCellStyle(percentageStyle);
 			}
 
+			row.createCell(DELIVERY_Q_COL).setCellValue(item.getInDeliveryQ());
 			row.createCell(DELIVERY_AMT_COL).setCellValue(item.getInDeliveryAmt());
 			
 			if (item.getInDeliveryRatio()!= Common_util.ALL_RECORD){

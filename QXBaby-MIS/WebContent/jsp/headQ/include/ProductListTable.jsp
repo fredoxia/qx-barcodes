@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!-- used by SearchBarcode.jsp -->
-<table width="95%"  align="center" class="OuterTable" id="org_table">
+<table width="100%"  align="center" class="OuterTable" id="org_table">
   <tr class="PBAOuterTableTitale">
        <td colspan="15">同类型条形码</td>
     </tr>

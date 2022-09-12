@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hp.hpl.sparta.xpath.ThisNodeTest;
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.chainS.batchRpt.ChainBatchRptService.ChainCurrentSalesAnalysisComparator;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.QxbabyConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainTransferFlowAcctDaoImpl;
@@ -549,7 +550,6 @@ public class ChainBatchRptService {
 			return response;
 		}
 		
-		
 		/**
 		 * 2. 采购数据
 		 */
@@ -560,10 +560,13 @@ public class ChainBatchRptService {
 		Map<Integer, Double> purchaseAccumulatedMap = new HashMap<Integer, Double>();
 		Map<Integer, Double> inDeliveryAccumulatedMap = new HashMap<Integer, Double>();		
 		Map<Integer, Double> returnAccumulatedMap = new HashMap<Integer, Double>();	
+		Map<Integer, Integer> purchaseAccumulateQMap = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> inDeliveryAccumulatedQMap = new HashMap<Integer, Integer>();		
+		Map<Integer, Integer> returnAccumulatedQMap = new HashMap<Integer, Integer>();	
         for (List<java.sql.Date> dates : dateList){
         	loggerLocal.infoB(new Date() + " 获取累计采购件数 : " + dates.get(0) + ", " + dates.get(1));
 			try {
-			    calculatePurchaseMapForSalesAnalysis(dates.get(0), dates.get(1), purchaseAccumulatedMap, inDeliveryAccumulatedMap, returnAccumulatedMap,year, quarter);
+			    calculatePurchaseMapForSalesAnalysis(dates.get(0), dates.get(1), purchaseAccumulatedMap, inDeliveryAccumulatedMap, returnAccumulatedMap,purchaseAccumulateQMap, inDeliveryAccumulatedQMap, returnAccumulatedQMap,year, quarter);
 			} catch (Exception e){
 				e.printStackTrace();
 				loggerLocal.errorB("获取累计采购件数出错 : " + dates.get(0) + ", " + dates.get(1));
@@ -576,7 +579,7 @@ public class ChainBatchRptService {
 		 * 3. 获取店铺库存信息
 		 */
 		loggerLocal.infoB("销售分析: 计算店铺库存件数");
-		String sqlInventory = "select i.clientId, sum(i.costTotal) from ChainInOutStock i where i.productBarcode.id in (select id from ProductBarcode b where b.product.productId in (select productId from Product where year.year_ID =? and quarter.quarter_ID=? and chainStore.chain_id = null)) group by i.clientId";
+		String sqlInventory = "select i.clientId, sum(i.costTotal), sum(i.quantity) from ChainInOutStock i where i.productBarcode.id in (select id from ProductBarcode b where b.product.productId in (select productId from Product where year.year_ID =? and quarter.quarter_ID=? and chainStore.chain_id = null)) group by i.clientId";
 		Object[] values = {year.getYear_ID(), quarter.getQuarter_ID()};
 		
 		try {
@@ -587,14 +590,17 @@ public class ChainBatchRptService {
 					Object[] recordResult = (Object[])object;
 					Integer clientId = (Integer)recordResult[0];
 					Double inventory =  (Double)recordResult[1];
-					
+					Long inventoryQ =  (Long)recordResult[2];
 					ChainStore store = chainStoreDaoImpl.getByClientId(clientId);
+					
 					if (store == null)
 						continue;
 					
 					ChainCurrentSeasonSalesAnalysisItem item = rptItemMap.get(store.getChain_id());
-					if (item != null)
+					if (item != null) {
 						item.setInventoryAmt(inventory);
+						item.setInventoryQ(inventoryQ.intValue());
+					}
 				  } 
 		     }
 		     chainInOutStockDaoImpl.clearSession();
@@ -608,10 +614,12 @@ public class ChainBatchRptService {
 		 */
 		loggerLocal.infoB("销售分析: 计算累计销售件数");
 		Map<Integer, Double> salesAccumulatedMap = new HashMap<Integer, Double>();
+		Map<Integer, Integer> salesAccumulatedQMap = new HashMap<Integer, Integer>();
+		Map<Integer, Double> salesAccumulatedCostMap = new HashMap<Integer, Double>();
         for (List<java.sql.Date> dates : dateList){
         	loggerLocal.infoB(new Date() + " 获取累计销售件数 : " + dates.get(0) + ", " + dates.get(1));
 			try {
-				calculateSalesMapForSalesAnalysis(dates.get(0), dates.get(1), salesAccumulatedMap, year, quarter);
+				calculateSalesMapForSalesAnalysis(dates.get(0), dates.get(1), salesAccumulatedMap,salesAccumulatedQMap, salesAccumulatedCostMap, year, quarter);
 			} catch (Exception e){
 				e.printStackTrace();
 				loggerLocal.errorB("获取累计销售件数出错 : " + dates.get(0) + ", " + dates.get(1));
@@ -643,13 +651,33 @@ public class ChainBatchRptService {
 					if (weeklyReturn != null)
 						item.setReturnAmt(weeklyReturn);
 					
-					Double salesAmt = salesAccumulatedMap.get(key);
+					Double salesAmt = salesAccumulatedMap.get(clientId);
 					if (salesAmt != null)
 						item.setSalesAmt(salesAmt);
+					
+					Double salesCost = salesAccumulatedCostMap.get(clientId);
+					if (salesCost != null)
+						item.setSalesCost(salesCost);
 					
 					Double inDeliveryAmt = inDeliveryAccumulatedMap.get(clientId);
 					if (inDeliveryAmt != null)
 						item.setInDeliveryAmt(inDeliveryAmt);
+					
+					Integer weeklyPurchaseQ = purchaseAccumulateQMap.get(clientId);
+					if (weeklyPurchaseQ != null)
+						item.setPurchaseQ(weeklyPurchaseQ);
+					
+					Integer weeklyReturnQ = returnAccumulatedQMap.get(clientId);
+					if (weeklyReturnQ != null)
+						item.setReturnQ(weeklyReturnQ);
+					
+					Integer salesQ = salesAccumulatedQMap.get(clientId);
+					if (salesQ != null)
+						item.setSalesQ(salesQ);
+					
+					Integer inDeliveryQ = inDeliveryAccumulatedQMap.get(clientId);
+					if (inDeliveryQ != null)
+						item.setInDeliveryQ(inDeliveryQ);
 					
 					item.calculateRatio();
 				}
@@ -667,9 +695,6 @@ public class ChainBatchRptService {
 		String webInf = this.getClass().getClassLoader().getResource("").getPath();
 		String contextPath = webInf.substring(1, webInf.indexOf("classes")).replaceAll("%20", " ");   
 
-		/**
-		 * 9. 保存数据
-		 */
 		
 		/**
 		 * 9.1 准备数据
@@ -719,37 +744,43 @@ public class ChainBatchRptService {
 	}
 	
 	private void calculateSalesMapForSalesAnalysis(java.sql.Date startDate,
-			java.sql.Date endDate, Map<Integer, Double> salesAccumulatedMap,
+			java.sql.Date endDate, Map<Integer, Double> salesAccumulatedMap,Map<Integer, Integer> salesAccumulatedQMap,Map<Integer, Double> salesAccumulatedCostMap,
 			Year year, Quarter quarter) {
 		DetachedCriteria salesCriteria = DetachedCriteria.forClass(ChainStoreSalesOrder.class);
 		salesCriteria.add(Restrictions.eq("status", ChainStoreSalesOrder.STATUS_COMPLETE));
 		salesCriteria.add(Restrictions.between("orderDate", startDate, endDate));
 		List<ChainStoreSalesOrder> salesOrders = chainStoreSalesOrderDaoImpl.getByCritera(salesCriteria, false);
 		for (ChainStoreSalesOrder order : salesOrders){
-			//loggerLocal.infoB("" + startDate + " " + endDate + " : " + order.getId());
+//			loggerLocal.infoB("" + startDate + " " + endDate + " : " + order.getId());
 			Set<ChainStoreSalesOrderProduct> orderProducts = order.getProductSet();
 			Iterator<ChainStoreSalesOrderProduct> orderProductIterator = orderProducts.iterator();
 			
 			double salesCost = 0;
-			int chainId = 0;
+			int salesQ = 0;
+			double salesAmt = 0;
+			int clientId = 0;
 			ChainStore store = order.getChainStore();
 			if (store == null)
 				continue;
 			else {
-			    chainId = store.getChain_id();
-			    store = chainStoreDaoImpl.get(chainId, true);
-			    
+			    store = chainStoreDaoImpl.get(store.getChain_id(), true);
+			    clientId = store.getClient_id();
 			    //如果是子连锁店就过略掉
 			    if (store.getParentStore() != null)
 			    	continue;
 			}
 			
+//			if (clientId == 2011)
+//				System.out.println("ggg");
+			
 			while (orderProductIterator.hasNext()){
 				ChainStoreSalesOrderProduct orderProduct = orderProductIterator.next();
 				ProductBarcode pb = orderProduct.getProductBarcode();
 				Product product = pb.getProduct();
+
 				
 				if (product.getChainStore() == null && product.getYear().getYear_ID() == year.getYear_ID() && product.getQuarter().getQuarter_ID() == quarter.getQuarter_ID()){
+					
 					int quantity = orderProduct.getQuantity();
 					int type = orderProduct.getType();
 					int flag = 1;
@@ -760,25 +791,37 @@ public class ChainBatchRptService {
 						flag = 0;
 					
 					salesCost += orderProduct.getCostPrice() * quantity * flag;
+					salesQ += quantity * flag;
+					salesAmt += orderProduct.getDiscountRate() * orderProduct.getRetailPrice() * quantity * flag;
 				}
 			}
 			
-			Double originalCost = salesAccumulatedMap.get(chainId);
+			Double originalSalesAmt = salesAccumulatedMap.get(clientId);
+			if (originalSalesAmt == null)
+				originalSalesAmt = new Double(0);
+			salesAccumulatedMap.put(clientId, originalSalesAmt + salesAmt);
+			
+			Double originalCost = salesAccumulatedCostMap.get(clientId);
 			if (originalCost == null)
 				originalCost = new Double(0);
+			salesAccumulatedCostMap.put(clientId, originalCost + salesCost);
 			
-			salesAccumulatedMap.put(chainId, originalCost + salesCost);
+			Integer originalQ = salesAccumulatedQMap.get(clientId);
+			if (originalQ == null)
+				originalQ = new Integer(0);
+			salesAccumulatedQMap.put(clientId, originalQ + salesQ);
 		}
 		chainStoreSalesOrderDaoImpl.clearSession();
 	}
 
 	private void calculatePurchaseMapForSalesAnalysis(java.sql.Date startDate,
 			java.sql.Date endDate, Map<Integer, Double> purchaseAccumulatedMap,
-			Map<Integer, Double> inDeliveryAccumulatedMap,Map<Integer, Double> returnAccumulatedMap, Year year,
+			Map<Integer, Double> inDeliveryAccumulatedMap,Map<Integer, Double> returnAccumulatedMap,Map<Integer, Integer> purchaseAccumulatedQMap,
+			Map<Integer, Integer> inDeliveryAccumulatedQMap,Map<Integer, Integer> returnAccumulatedQMap, Year year,
 			Quarter quarter) {
 		Set<Integer> clientIds = chainStoreDaoImpl.getAllClientIds();
 		DetachedCriteria purchaseCritiera = DetachedCriteria.forClass(InventoryOrder.class);
-		purchaseCritiera.add(Restrictions.in("client_id", clientIds));
+		purchaseCritiera.add(Restrictions.in("cust.id", clientIds));
 		purchaseCritiera.add(Restrictions.eq("order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
 		purchaseCritiera.add(Restrictions.between("order_EndTime", Common_util.formStartDate(startDate), Common_util.formEndDate(endDate)));
 		List<InventoryOrder> purchaseOrders = inventoryOrderDAOImpl.getByCritera(purchaseCritiera, false);
@@ -786,13 +829,18 @@ public class ChainBatchRptService {
 		Double purchaseAccumulated = null;
 		Double returnAccumulated = null;
 		Double inDeliveryAccumulated = null;
-
+		Integer purchaseAccumulatedQ = null;
+		Integer returnAccumulatedQ = null;
+		Integer inDeliveryAccumulatedQ = null;
 		
 		for (InventoryOrder order : purchaseOrders){
 			int clientId = order.getClient_id();
 			double purchaseAmt = 0;
 			double returnAmt = 0;
 			double inDeliveryAmt = 0;
+			int purchaseQ = 0;
+			int returnQ = 0;
+			int inDeliveryQ = 0;			
 
 			int chainConfirmStatus = order.getChainConfirmStatus();
 			
@@ -809,13 +857,17 @@ public class ChainBatchRptService {
 					if (order.getOrder_type() == InventoryOrder.TYPE_SALES_ORDER_W){
 						if (chainConfirmStatus == InventoryOrder.STATUS_CHAIN_NOT_CONFIRM){
 							inDeliveryAmt += orderProduct.getWholeSalePrice() * quantity;
+							inDeliveryQ += quantity;
 						}
 						purchaseAmt += orderProduct.getWholeSalePrice() * quantity;
+						purchaseQ += quantity;
 					} else {
 						if (chainConfirmStatus == InventoryOrder.STATUS_CHAIN_NOT_CONFIRM){
 							inDeliveryAmt -= orderProduct.getWholeSalePrice() * quantity;
+							inDeliveryQ -= quantity;
 						}
 						returnAmt += orderProduct.getWholeSalePrice() * quantity;
+						returnQ += quantity;
 					}
 				}
 			}
@@ -839,6 +891,27 @@ public class ChainBatchRptService {
 				if (inDeliveryAccumulated == null)
 					inDeliveryAccumulated = new Double(0);
 				inDeliveryAccumulatedMap.put(clientId, inDeliveryAccumulated + inDeliveryAmt);
+			}
+			
+			purchaseAccumulatedQ = purchaseAccumulatedQMap.get(clientId);
+			if (purchaseAccumulatedQ != null || purchaseQ != 0){
+				if (purchaseAccumulatedQ == null)
+					purchaseAccumulatedQ = new Integer(0);
+				purchaseAccumulatedQMap.put(clientId, purchaseAccumulatedQ + purchaseQ);
+			}
+			
+			returnAccumulatedQ = returnAccumulatedQMap.get(clientId);
+			if (returnAccumulatedQ != null || returnQ != 0){
+				if (returnAccumulatedQ == null)
+					returnAccumulatedQ = new Integer(0);
+				returnAccumulatedQMap.put(clientId, returnAccumulatedQ + returnQ);
+			}
+			
+			inDeliveryAccumulatedQ = inDeliveryAccumulatedQMap.get(clientId);
+			if (inDeliveryAccumulatedQ != null || inDeliveryQ != 0){
+				if (inDeliveryAccumulatedQ == null)
+					inDeliveryAccumulatedQ = new Integer(0);
+				inDeliveryAccumulatedQMap.put(clientId, inDeliveryAccumulatedQ + inDeliveryQ);
 			}
 		}
 		

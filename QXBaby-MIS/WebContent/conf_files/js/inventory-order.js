@@ -228,13 +228,18 @@ function backProcess(data){
         
 		numPerHandInput.attr("value",barcodes[0].product.numPerHand);
 		
+		var s = "";
 		if (barcodes[0].boughtBefore != 0){
 			document.getElementById("bgs").src = baseurl+"/conf_files/web-image/already.mp3";
 			boughtBeforeInput.attr("value",barcodes[0].boughtBefore);
-			takeBeforeDiv.html("配" + barcodes[0].boughtBefore);
-			takeBeforeDiv.show();
-         }else
-			takeBeforeDiv.hide();
+			
+			s = "配" + barcodes[0].boughtBefore;
+         }
+		
+		s += " 库 " +  barcodes[0].currentInventory;
+		
+		takeBeforeDiv.html(s);
+		takeBeforeDiv.show();
 		
 		$("#row"+preIndex).css('background-color', '');		
     } else {
@@ -340,7 +345,7 @@ function addNewRow(){
                "<input type='hidden' name='formBean.order.product_List["+index+"].productBarcode.id' id='productId"+index+"'/></td>";		 					 		
     str += "<td><input type='text' name='formBean.order.product_List["+index+"].productBarcode.product.productCode'  id='productCode"+index+"'  size='8'/></td>";
     str += "<td><input type='text' name='formBean.order.product_List["+index+"].productBarcode.color.name' readonly  id='color"+index+"'  size='2'/></td>";	
-    str += "<td><input type='text' name='formBean.order.product_List["+index+"].productBarcode.product.brand.brand_Name' readonly  id='brand"+index+"'  size='12'/></td>";			 					 		
+    str += "<td><input type='text' name='formBean.order.product_List["+index+"].productBarcode.product.brand.brand_Name' readonly  id='brand"+index+"'  size='22'/></td>";			 					 		
     str += "<td><input type='text' name='formBean.order.product_List["+index+"].productBarcode.product.year.year' readonly  id='year"+index+"'  size='2'/></td>";	
     str += "<td><input type='text' name='formBean.order.product_List["+index+"].productBarcode.product.quarter.quarter_Name' readonly  id='quarter"+index+"'  size='2'/></td>";	
     str += "<td><input type='text' name='formBean.order.product_List["+index+"].quantity' id='quantity"+index+"' value='0' size='2'  onchange='onQuantityChange();'  onfocus='this.select();'/>  <input type='hidden' name='formBean.order.product_List["+index+"].productBarcode.product.numPerHand' id='numPerHand"+index+"' size='5' value='0' /></td>";

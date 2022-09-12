@@ -362,6 +362,10 @@ public class ProductBarcodeService {
 			    int qBefore = inventoryOrderDAOImpl.getQuantityBefore(barcode_final,client_id_final);
 			    productBarcode.setBoughtBefore(qBefore);
 			    
+			    //1.1 get the current inventory
+			    int inventory = getProductInven(barcode,ProductsMSDAOImpl.MENGYANG_STORE_ID);
+			    productBarcode.setCurrentInventory(inventory);
+			    
 			    //2. get the sales history information
 			    int productId = productBarcode.getId();
 				DetachedCriteria criteria_history = DetachedCriteria.forClass(HeadQSalesHistory.class,"salesHistory");
@@ -1076,7 +1080,7 @@ public class ProductBarcodeService {
 	 */
 	public List<Brand> searchBrands(String brand_Name) {
 		DetachedCriteria criteria = DetachedCriteria.forClass(Brand.class);
-		criteria.add(Restrictions.like("brand_Name", "%" + brand_Name + "%"));
+		criteria.add(Restrictions.or(Restrictions.like("brand_Name", "%" + brand_Name + "%"), Restrictions.like("comment", "%" + brand_Name + "%")));
 		criteria.addOrder(Order.asc("brand_Name"));
 
 		

@@ -41,13 +41,16 @@ function updateBrandBKProcess(data){
 	       <tr class="InnerTableContent">
 	          <td>品牌名称    :</td><td>
 	          <s:hidden name="formBean.brand.brand_ID"/>
-	          <s:textfield id="brand_Name" name="formBean.brand.brand_Name" cssClass="easyui-validatebox" data-options="required:true,validType:['length[2,15]']"/>*</td>
+	          <s:textfield id="brand_Name" name="formBean.brand.brand_Name" cssClass="easyui-validatebox" data-options="required:true,validType:['length[2,15]']"/></td>
 	       </tr>
 	       <tr class="InnerTableContent">
-	          <td>供货商         :</td><td><s:textfield id="supplier" name="formBean.brand.supplier"cssClass="easyui-validatebox" data-options="required:true,validType:['length[2,15]']"/></td>
+	          <td>供货商         :</td><td><s:textfield id="supplier" name="formBean.brand.supplier" cssClass="easyui-validatebox" data-options="required:true,validType:['length[2,15]']"/></td>
 	       </tr>
 	       <tr class="InnerTableContent">
-	          <td>所属         :</td><td>
+	          <td>备注      :</td><td><s:textfield id="comment" name="formBean.brand.comment"  cssClass="easyui-validatebox" data-options="required:true,validType:['length[1,12]']"/></td>
+	       </tr>		       
+	       <tr class="InnerTableContent">
+	          <td>所属         :</td><td><s:hidden name="formBean.brand.chainStore.chain_id"/>
 	                               <s:property value="formBean.brand.chainStore.chain_name"/></td>
 	       </tr>
 	       <tr class="InnerTableContent">

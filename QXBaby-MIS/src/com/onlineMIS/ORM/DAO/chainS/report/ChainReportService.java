@@ -765,8 +765,8 @@ public class ChainReportService {
 			int countArray = Common_util.getInt(sales[3]);
 			int chainIdArray = Common_util.getInt(sales[4]);
 			
-			if (countArray < Common_util.SALES_ANALYSIS_BAD_STORE)
-				continue;
+//			if (countArray < Common_util.SALES_ANALYSIS_BAD_STORE)
+//				continue;
 			
 			ChainStore store = chainStoreDaoImpl.get(chainIdArray, true);
 			ChainDailySalesAnalysis dailySalesAnalysis = new ChainDailySalesAnalysis(store, null);

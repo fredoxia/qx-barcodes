@@ -3,6 +3,8 @@ package com.onlineMIS.ORM.entity.headQ.inventory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -26,18 +28,23 @@ public class PDAOrderTemplate extends ExcelTemplate{
 	private final int productCode_col_1 = 3;
 	private final int quantity_col_1 = 4;
 	private final int unit_col_1 = 5;
+	private final int inventory_col_1 = 6;
+	
 	private final int sequence_col_2 = 8;
 	private final int year_col_2 = 9;
 	private final int quarter_col_2 = 10;
 	private final int productCode_col_2 = 11;
 	private final int quantity_col_2 = 12;
 	private final int unit_col_2 = 13;	
+	private final int inventory_col_2 = 14;
 	
 	private InventoryOrder order;
+	private Map<String, Integer> inventoryMap;
 
-	public PDAOrderTemplate(InventoryOrder order, String templateWorkbookPath) throws IOException{
+	public PDAOrderTemplate(InventoryOrder order, String templateWorkbookPath,Map<String, Integer> inventoryMap) throws IOException{
 		super(templateWorkbookPath);		
 		this.order = order;	
+		this.inventoryMap = inventoryMap;
 	}
 	
 	public HSSFWorkbook process(){
@@ -88,9 +95,9 @@ public class PDAOrderTemplate extends ExcelTemplate{
 			Cell unitCell1 = row.createCell(unit_col_1);
 			 unitCell1.setCellValue(product.getUnit());
 			 unitCell1.setCellStyle(aroundLineStyle);
-			Cell emptyCell1 = row.createCell(unit_col_1+1);
-			 emptyCell1.setCellValue("");
-			 emptyCell1.setCellStyle(aroundLineStyle);
+			Cell invetoryCell1 = row.createCell(inventory_col_1);
+			 invetoryCell1.setCellValue(inventoryMap.get(orderProduct.getProductBarcode().getBarcode()));
+			 invetoryCell1.setCellStyle(aroundLineStyle);
 			
 			//2. write the second one
 			if (i + numOfRow < totalDataRow){
@@ -122,9 +129,9 @@ public class PDAOrderTemplate extends ExcelTemplate{
 				Cell unitCell2 = row.createCell(unit_col_2);
 				 unitCell2.setCellValue(product2.getUnit());
 				 unitCell2.setCellStyle(aroundLineStyle);
-				Cell emptyCell2 = row.createCell(unit_col_2+1);
-				 emptyCell2.setCellValue("");
-				 emptyCell2.setCellStyle(aroundLineStyle);
+				Cell invetoryCell2 = row.createCell(inventory_col_2);
+					 invetoryCell2.setCellValue(inventoryMap.get(orderProduct.getProductBarcode().getBarcode()));
+					 invetoryCell2.setCellStyle(aroundLineStyle);
 			}
 
 		}

@@ -30,6 +30,7 @@ public class Brand  implements Serializable{
 	public static final Integer[] BRAND_NOT_COUNT_INVENTORY = {new Integer(105), new Integer(106)};
 	public static final int TYPE_ALL = -1;
 	public static final int TYPE_CHAIN = 1;
+	public static final String START_CHAR = "千禧宝贝-";
 
     private int brand_ID;
     private String brand_Name;

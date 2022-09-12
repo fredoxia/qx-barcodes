@@ -402,6 +402,7 @@ public class BarcodeGenService {
 		        	product.setYear(newProduct.getYear());
 		        	product.setQuarter(newProduct.getQuarter());
 		        	product.setBrand(newProduct.getBrand());
+		        	product.setCreateDate(Common_util.getToday());
 	
 		        	productDaoImpl.saveOrUpdate(product,true);
         		} catch (Exception e) {

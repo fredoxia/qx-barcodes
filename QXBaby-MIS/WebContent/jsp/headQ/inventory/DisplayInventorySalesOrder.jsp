@@ -162,7 +162,7 @@ $(document).ready(function(){
 				 	<tr align="center" class="PBAOuterTableTitale" height="22">
 				 		<th data-options="field:'1',width:40">序号</th>
 				 		<th data-options="field:'2',width:90">条型码</th>	
-				 		<th data-options="field:'3',width:130">产品品牌</th>			 					 		
+				 		<th data-options="field:'3',width:140">产品品牌</th>			 					 		
 				 		<th data-options="field:'4',width:90">产品货号</th>	
 				 		<th data-options="field:'5',width:60">颜色</th>	
 				 		<th data-options="field:'14',width:90">品类</th>	

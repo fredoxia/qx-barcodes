@@ -147,8 +147,6 @@ function saveBarcodeBackProcess(data){
 				          barcodes[i].createDate+"</td><td><a href='#' onclick=\"window.open ('barcodeGenJSP!searchForUpdate?formBean.productBarcode.barcode="+barcodes[i].barcode+"','新窗口','height=550, width=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');\"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td></tr>").appendTo("#orgTablebody");
 		         }
 		    }
-		    
-	        alert("成功生成条码");
 	    }else {
 	    	$("<tr class='InnerTableContent' style='background-color: rgb(255, 250, 208);' align='center'><td colspan=11><font color='red'>对应信息没有条形码存在</font> </td></tr>").appendTo("#orgTablebody");
 	    }

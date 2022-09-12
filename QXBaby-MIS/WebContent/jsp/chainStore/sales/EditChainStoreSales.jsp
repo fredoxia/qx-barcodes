@@ -8,7 +8,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=8" />
 <title>千禧宝贝连锁店管理信息系统</title>
 <%@ include file="../../common/Style.jsp"%>
-<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSales.js?v=9.17"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSales.js?v=9.19"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/ChainSalesKeys.js?v=8.4"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/HtmlTable.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/conf_files/js/print/print.js?v=10.12"></script>

@@ -8,13 +8,20 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 	private int rank;
 	private ChainStore chainStore;
 	private double lastYearPurchase = 0;
+	private int purchaseQ = 0;
 	private double purchaseAmt = 0;
+	private int returnQ = 0;
 	private double returnAmt = 0;
+	private int netPurchaseQ = 0;
 	private double netPurchaseAmt = 0;
 	private double inDeliveryAmt = 0;
+	private int inDeliveryQ = 0;
 	private double returnRatio;
+	private int inventoryQ = 0;
 	private double inventoryAmt = 0;
 	private double inventoryRatio;
+	private double salesQ = 0;
+	private double salesCost = 0;
 	private double salesAmt = 0;
 	private double salesRatio;
 	private double inDeliveryRatio;
@@ -24,6 +31,62 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 		
 	}
 	
+	public double getSalesCost() {
+		return salesCost;
+	}
+
+	public void setSalesCost(double salesCost) {
+		this.salesCost = salesCost;
+	}
+
+	public int getNetPurchaseQ() {
+		return netPurchaseQ;
+	}
+
+	public void setNetPurchaseQ(int netPurchaseQ) {
+		this.netPurchaseQ = netPurchaseQ;
+	}
+
+	public int getReturnQ() {
+		return returnQ;
+	}
+
+	public void setReturnQ(int returnQ) {
+		this.returnQ = returnQ;
+	}
+
+	public int getInDeliveryQ() {
+		return inDeliveryQ;
+	}
+
+	public void setInDeliveryQ(int inDeliveryQ) {
+		this.inDeliveryQ = inDeliveryQ;
+	}
+
+	public int getPurchaseQ() {
+		return purchaseQ;
+	}
+
+	public void setPurchaseQ(int purchaseQ) {
+		this.purchaseQ = purchaseQ;
+	}
+
+	public int getInventoryQ() {
+		return inventoryQ;
+	}
+
+	public void setInventoryQ(int inventoryQ) {
+		this.inventoryQ = inventoryQ;
+	}
+
+	public double getSalesQ() {
+		return salesQ;
+	}
+
+	public void setSalesQ(double salesQ) {
+		this.salesQ = salesQ;
+	}
+
 	public double getInDeliveryRatio() {
 		return inDeliveryRatio;
 	}
@@ -117,6 +180,7 @@ public class ChainCurrentSeasonSalesAnalysisItem {
 
 	public void calculateRatio() {
 		netPurchaseAmt = purchaseAmt - returnAmt;
+		netPurchaseQ = purchaseQ - returnQ;
 		
 		if (purchaseAmt == 0) {
 			returnRatio = Common_util.ALL_RECORD;

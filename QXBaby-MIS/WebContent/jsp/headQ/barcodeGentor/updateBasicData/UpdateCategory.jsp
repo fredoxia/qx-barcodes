@@ -11,8 +11,8 @@
 <body>
 <script>
 function saveCategory(){
-	if ($("#categoryName").val() == "")
-		alert("类别不能为空");
+    if (!$('#updateCategoryForm').form('validate'))
+    	return ;
 	else {
 	    var params=$("#updateCategoryForm").serialize();
 
@@ -30,14 +30,14 @@ function updateCategoryBKProcess(data){
 	}		
 }
 </script>
-    <s:form id="updateCategoryForm" name="updateCategoryForm" method="post" action="" theme="simple" onsubmit="return validateForm();">
+    <s:form id="updateCategoryForm" name="updateCategoryForm" method="post" action=""  cssClass="easyui-form" theme="simple" onsubmit="return validateForm();">
 	    <table width="100%" border="0">
 	       <tr>
 	          <td colspan="2"></td>
 	       </tr>
 	       <tr class="InnerTableContent">
 	          <td>类别:</td><td><s:hidden name="formBean.category.category_ID"/>
-	          <s:textfield id="categoryName" name="formBean.category.category_Name" maxLength="15" required="required" /></td>
+	          <s:textfield id="categoryName" name="formBean.category.category_Name" cssClass="easyui-validatebox" data-options="required:true,validType:['length[2,20]']"/></td>
 	       </tr>
 	       <tr class="InnerTableContent">
 	          <td>所属         :</td><td><s:select id="type" name="formBean.category.chainId" list="#{-1:'总部类别',1:'连锁店类别'}" listKey="key" listValue="value"/></td>

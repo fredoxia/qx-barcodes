@@ -30,6 +30,8 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Size;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.action.headQ.barCodeGentor.BasicDataActionUIBean;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.loggerLocal;
+import com.onlineMIS.filter.SystemParm;
 
 @Service
 public class BasicDataService {
@@ -127,11 +129,11 @@ public class BasicDataService {
 				String comment = brand.getComment().trim();
 				
 				if (!brandName.isEmpty())
-					brandTotalCriteria.add(Restrictions.ilike("brand_Name", brandName, MatchMode.ANYWHERE));
+					brandTotalCriteria.add(Restrictions.ilike("pinyin", "%"+brandName+"%"));
 				if (!supplier.isEmpty())
-					brandTotalCriteria.add(Restrictions.ilike("supplier", supplier, MatchMode.ANYWHERE));
+					brandTotalCriteria.add(Restrictions.ilike("supplier", "%"+supplier+"%"));
 				if (!comment.isEmpty())
-					brandTotalCriteria.add(Restrictions.ilike("comment", comment, MatchMode.ANYWHERE));
+					brandTotalCriteria.add(Restrictions.like("comment", "%"+comment+"%"));
 			}
 			brandTotalCriteria.setProjection(Projections.rowCount());
 			int total = Common_util.getProjectionSingleValue(brandDaoImpl.getByCriteriaProjection(brandTotalCriteria, true));
@@ -144,11 +146,11 @@ public class BasicDataService {
 				String comment = brand.getComment().trim();
 				
 				if (!brandName.isEmpty())
-					brandCriteria.add(Restrictions.ilike("pinyin", brandName, MatchMode.ANYWHERE));
+					brandCriteria.add(Restrictions.ilike("pinyin", "%"+brandName+"%"));
 				if (!supplier.isEmpty())
-					brandCriteria.add(Restrictions.ilike("supplier", supplier, MatchMode.ANYWHERE));
+					brandCriteria.add(Restrictions.ilike("supplier", "%"+supplier+"%"));
 				if (!comment.isEmpty())
-					brandCriteria.add(Restrictions.ilike("comment", comment, MatchMode.ANYWHERE));
+					brandCriteria.add(Restrictions.like("comment", "%"+comment+"%"));
 			}
 			if (sortOrder.equalsIgnoreCase("desc"))
 				brandCriteria.addOrder(Order.desc(sort));
@@ -165,7 +167,7 @@ public class BasicDataService {
 				String categoryName = category.getCategory_Name().trim();
 				
 				if (!categoryName.isEmpty())
-					categoryTotalCriteria.add(Restrictions.ilike("category_Name", categoryName, MatchMode.ANYWHERE));
+					categoryTotalCriteria.add(Restrictions.like("category_Name", "%"+categoryName+"%"));
 			}
 			categoryTotalCriteria.setProjection(Projections.rowCount());
 			int total = Common_util.getProjectionSingleValue(categoryDaoImpl.getByCriteriaProjection(categoryTotalCriteria, true));
@@ -176,7 +178,7 @@ public class BasicDataService {
 				String categoryName = category.getCategory_Name().trim();
 				
 				if (!categoryName.isEmpty())
-					categoryCriteria.add(Restrictions.ilike("category_Name", categoryName, MatchMode.ANYWHERE));
+					categoryCriteria.add(Restrictions.like("category_Name", "%"+categoryName+"%"));
 			}
 			List<Category> categories = categoryDaoImpl.getByCritera(categoryCriteria, Common_util.getFirstRecord(page, rowPerPage), rowPerPage, true);
 			
@@ -328,7 +330,7 @@ public class BasicDataService {
 	}
 
 	@Transactional
-	public Response updateBrand(Brand brand) {
+	public synchronized Response updateBrand(Brand brand) {
 		Response response = new Response();
 		
 		try {
@@ -344,8 +346,16 @@ public class BasicDataService {
 			List<Brand> brands = brandDaoImpl.getByCritera(criteria, true);
 
 			if (brands == null || brands.size() == 0){
+				System.out.println(Brand.START_CHAR);
+				if (brandName.equalsIgnoreCase(Brand.START_CHAR)) {
+					brandName += (getMaxBrandNum()+1);
+					brand.setBrand_Name(brandName);
+				}
+					
+				
 				brand.setBrand_Code(String.valueOf(brandId).substring(0,1));
 				brand.setPinyin(Common_util.getPinyinCode(brandName, true));
+				
 				brandDaoImpl.saveOrUpdate(brand, true);
 				response.setReturnCode(Response.SUCCESS);
 			} else {
@@ -363,6 +373,32 @@ public class BasicDataService {
 		}
 		
 		return response;
+	}
+	
+	private int getMaxBrandNum() {
+		DetachedCriteria brandCriteria = DetachedCriteria.forClass(Brand.class);
+		brandCriteria.add(Restrictions.like("brand_Name", Brand.START_CHAR+"%"));
+		List<Brand> brands = brandDaoImpl.getByCritera(brandCriteria, true);
+		
+		int maxBrandNum = 0;
+		for (Brand brand : brands) {
+			String brandName = brand.getBrand_Name();
+			String brandNumS = brandName.replace(Brand.START_CHAR, "").trim();
+			if (!brandNumS.isEmpty()) {
+				int brandNum = 0;
+				try {
+				    brandNum = Integer.parseInt(brandNumS);
+				} catch (Exception e) {
+//					loggerLocal.error(e);
+				}
+				
+				if (brandNum > maxBrandNum)
+					maxBrandNum = brandNum;
+			}
+			brandDaoImpl.evict(brand);
+		}
+		
+		return maxBrandNum;
 	}
 
 	@Transactional

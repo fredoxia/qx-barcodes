@@ -31,7 +31,7 @@ function selectBrand(brandName, brandId){
 			      <td><s:property value="#brand.comment"/></td>
 			      <td><s:property value="#brand.chainStore.chain_name"/>
 			      </td>
-			      <td><a href="#" onclick="selectBrand('<s:property value="#brand.brand_Name"/>','<s:property value="#brand.brand_ID"/>');"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
+			      <td><a href="#" onclick="selectBrand('<s:property value="#brand.brand_Name"/>'+' ' +'<s:property value="#brand.comment"/>','<s:property value="#brand.brand_ID"/>');"><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a></td>
 			    </tr>
 	       </s:iterator>
 	       <s:if test="uiBean.brands.size==0">

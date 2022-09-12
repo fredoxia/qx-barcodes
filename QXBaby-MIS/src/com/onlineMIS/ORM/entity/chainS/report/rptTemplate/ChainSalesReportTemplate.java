@@ -45,7 +45,8 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 	private final int alipay_amt_column = 17;
 	private final int wechat_amtr_column = 18;
 	private final int qx_net_amt_column = 19;
-	private final int qx_net_amt_lastYear_column = 20;
+	private final int qx_net_amt_lastYear_column = 21;
+	private final int qx_net_cost_column = 20;
 	
 	private List<ChainSalesReport> salesRptEle = new ArrayList<ChainSalesReport>();
 	private Map<Integer, Double> lastYearMap = null;
@@ -103,6 +104,7 @@ public class ChainSalesReportTemplate extends ExcelTemplate{
 			   row.createCell(qx_net_amt_lastYear_column).setCellValue("-");
 			else 
 			   row.createCell(qx_net_amt_lastYear_column).setCellValue(lastYearData);
+			row.createCell(qx_net_cost_column).setCellValue(saleReport.getQxCost());
 		}
 		
 		if (salesRptFooter != null){

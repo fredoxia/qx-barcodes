@@ -99,7 +99,7 @@ public class BarcodeGenJSPAction extends BarcodeGenAction {
 	}
 	
 	public String searchColor(){
-		loggerLocal.info("ProductJSPAction - scanColor");
+		loggerLocal.info("BarcodeGenJSPAction - scanColor");
 		
 		String colorNames = Common_util.decode(formBean.getColorNames());
 		
@@ -142,6 +142,7 @@ public class BarcodeGenJSPAction extends BarcodeGenAction {
 	}
 	
 	public String updateProduct(){
+		loggerLocal.info("BarcodeGenJSPAction - updateProduct");
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	
 		Response response = barcodeGenService.updateChainProduct(formBean.getProductBarcode(),userInfor.getMyChainStore());
@@ -154,6 +155,8 @@ public class BarcodeGenJSPAction extends BarcodeGenAction {
 	}
 	
 	public String deleteBarcode(){
+		loggerLocal.info("BarcodeGenJSPAction - deleteBarcode");
+		
 		ChainUserInfor userInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
     	
 		Response response = barcodeGenService.deleteChainBarcode(formBean.getProductBarcode(),userInfor.getMyChainStore());
