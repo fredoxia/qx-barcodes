@@ -821,7 +821,7 @@ public class ChainBatchRptService {
 			Quarter quarter) {
 		Set<Integer> clientIds = chainStoreDaoImpl.getAllClientIds();
 		DetachedCriteria purchaseCritiera = DetachedCriteria.forClass(InventoryOrder.class);
-		purchaseCritiera.add(Restrictions.in("cust.id", clientIds));
+		purchaseCritiera.add(Restrictions.in("client_id", clientIds));
 		purchaseCritiera.add(Restrictions.eq("order_Status", InventoryOrder.STATUS_ACCOUNT_COMPLETE));
 		purchaseCritiera.add(Restrictions.between("order_EndTime", Common_util.formStartDate(startDate), Common_util.formEndDate(endDate)));
 		List<InventoryOrder> purchaseOrders = inventoryOrderDAOImpl.getByCritera(purchaseCritiera, false);
